@@ -1,0 +1,9 @@
+Some very small and few utilities for SuperCollider started in Feb 2014 — Edit
+
+Plans:
+
+- Add Notification class and Object methods for it (from previous libs).
+- Add shortcuts for creating envelopes (Adsr ...)
+- ...
+
+IZ Tue, 25 Feb 2014 16:20:26
