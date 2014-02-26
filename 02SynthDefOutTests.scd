@@ -23,7 +23,7 @@ r.stop;
 q = {
 	loop {
 		Synth("percnoise", [\out, 2.rand, \amp, [0.05, 0.1].choose]);
-		[0.1 ! 4, 0.2 ! 6, 0.4 ! 2, 0.8].flat.choose.wait;
+		[0.1 ! 8, 0.2 ! 6, 0.4 ! 2, 0.8].flat.choose.wait;
 	}
 }.fork
 

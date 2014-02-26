@@ -8,12 +8,13 @@ SynthDef("test", { | out = 0 | Out.ar(out, WhiteNoise.ar(0.1)) }).add;
 Write: 
 SynthDef("test", { WhiteNoise.ar(0.1).out }).add; 
 
-Todo: Auto-detect if the UGen is ar or kr, and create corresponding ugen.
-
 */
 
 + UGen {
 	out { | outName = \out, outValue = 0 |
-		^Out.ar(outName.perform(\ar, outValue), this)
+		^Out.ar(
+			outName.perform(if (this.rate == \control) { \kr } { \ar }, outValue),
+			this
+		)
 	}
 }
