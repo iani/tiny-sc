@@ -8,17 +8,50 @@ Not done yet.
 */
 
 Adsr {
-	*new { | attackTime = 0.01, decayTime = 0.3, sustainLevel = 0.5, releaseTime = 1, 
+	*new { | attackTime = 0.02, decayTime = 0.3, sustainLevel = 0.5, releaseTime = 1, 
 		peakLevel = 1, curve = -4, bias = 0, 
 		gateName = \gate, gateValue = 1,
 		ampName = \amp, ampValue = 0.1,
 		doneAction = 2 |
 		^EnvGen.kr(
 			Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, peakLevel, curve, bias),
-			gate: Control.kr(gateName, gateValue), 
-			levelScale: Control.kr(ampName, ampValue), 
-			levelBias: 0, 
-			timeScale: 1, doneAction: doneAction
+			gate: gateName.perform(\kr, gateValue),
+			levelScale: ampName.perform(\kr, ampValue),
+			levelBias: 0,
+			timeScale: 1,
+			doneAction: doneAction;
+		)
+	}
+}
+
+Perc {
+	*new { | attackTime = 0.02, releaseTime = 1, level = 1, curve = -4, 
+		gateName = \gate, gateValue = 1,
+		ampName = \amp, ampValue = 0.1,
+		doneAction = 2 |
+		^EnvGen.kr(
+			Env.perc(attackTime, releaseTime, level, curve),
+			gate: gateName.perform(\kr, gateValue),
+			levelScale: ampName.perform(\kr, ampValue),
+			levelBias: 0,
+			timeScale: 1,
+			doneAction: doneAction;
+		)
+	}
+}
+
+Sine {
+	*new { | dur = 1, level = 1, 
+		gateName = \gate, gateValue = 1,
+		ampName = \amp, ampValue = 0.1,
+		doneAction = 2 |
+		^EnvGen.kr(
+			Env.sine(dur, level),
+			gate: gateName.perform(\kr, gateValue),
+			levelScale: ampName.perform(\kr, ampValue),
+			levelBias: 0,
+			timeScale: 1,
+			doneAction: doneAction;
 		)
 	}
 }
