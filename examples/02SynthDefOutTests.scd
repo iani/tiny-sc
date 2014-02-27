@@ -22,10 +22,18 @@ r.stop;
 //:
 q = {
 	loop {
-		Synth("percnoise", [\out, 2.rand, \amp, [0.05, 0.1].choose]);
+		Synth("percnoise", [\out, 2.rand, \amp, [0.05 ! 4, 0.1].flat.choose]);
 		[0.1 ! 8, 0.2 ! 6, 0.4 ! 2, 0.8].flat.choose.wait;
 	}
 }.fork
 
 //:
 q.stop;
+
+//:
+u = Pbind(
+	\dur, Prand([0.1 ! 8, 0.2 ! 6, 0.4 ! 2].flat, inf), 
+	\instrument, \percnoise
+).play;
+//:
+u.stop;

@@ -1,9 +1,27 @@
 Some very small and few utilities for SuperCollider started in Feb 2014 — Edit
 
-Plans:
+* Done:
+
+- Adsr, Sine, Perc: Env shortcuts
+- out: Out.ar/kr shortcut.
+
+* Plans:
 
 - Add Notification class and Object methods for it (from previous libs).
-- Add shortcuts for creating envelopes (Adsr ...)
-- ...
+- Add sclang-snippets.el for Emacs (from own emacs repo).
+- Add to sclang-snippets:
+  - Each snippet eval output is stored in list of objects, in emacs buffer,
+    for access, eg. to free or pause a synth, routine, group, pattern player etc.
+  - If return value is synth: store synth
+  - If return value is routine: create own group for putting synths in,
+    so that synths are also freed when routine is stopped?
+    Possible?  Only via currentEnvironment.  Use variant of Synth.new
+    to access currentEnvironment's target?
+    This could be method synth of string or symbol, called in similar manner as Synth.new:
+    Instead of Synth("test"), write synth("test").
+  - Similar to routine, also for Pbinds.
+    Check if Pbind accesses currentEnvironment to get \target value.
+    If so, then implementing private group per snippet should be easy.
 
-IZ Tue, 25 Feb 2014 16:20:26
+
+IZ Tue, 25 Feb 2014 16:20:26ff
