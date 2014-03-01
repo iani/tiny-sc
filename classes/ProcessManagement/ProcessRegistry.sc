@@ -29,20 +29,20 @@ ProcessRegistry {
 		^this.newCopyArgs(OrderedIdentitySet());
 	}
 
-	*register { | anObject |
-		this.default register: anObject;
+	*register { | process |
+		this.default register: process;
 	}
 
-	register { | object |
-		// objects that can run add themselves to 
-		object.registerProcess(this);
+	register { | process |
+		// processss that can run add themselves to the registry
+		process.registerProcess(this);
 	}
 
-	add { | object, message |
-		// add object to the processes list
-		processes add: object;
-		this.addNotifierOneShot(object, message, { this.processEnded(object) });
-		this.changed(\processAdded, object);
+	add { | process, message |
+		// add process to the processes list
+		processes add: process;
+		this.addNotifierOneShot(process, message, { this.processEnded(process) });
+		this.changed(\processAdded, process);
 	}
 
 	processEnded { | process |
@@ -115,6 +115,19 @@ ProcessRegistryGui {
 		listView.items = processRegistry.processes collect: _.asString;
 	}
 }
+
+NamedProcess {
+
+	var <process, <id, <name;
+
+	*new { | process, id, name |
+		^this.newCopyArgs(process, id, name);
+	}
+
+	stop { process.stop }
+
+}
+
 
 // Shortcuts
 

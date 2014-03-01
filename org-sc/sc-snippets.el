@@ -50,6 +50,11 @@
   (sclang-goto-next-snippet)
   (sclang-execute-current-snippet))
 
+(defun sclang-process-registry-gui ()
+  "Show ProcessRegistryGui window."
+  (interactive)
+  (sclang-eval-string "ProcessRegistryGui.gui"))
+
 (defun sc-snippets ()
   "Define sclang mode keys for snippets."
   (local-set-key (kbd "C-c .") 'sclang-execute-current-snippet)
@@ -63,6 +68,7 @@
   (local-set-key (kbd "C-H-b") 'sclang-goto-previous-snippet)
   (local-set-key (kbd "C-H-n") 'sclang-execute-next-snippet)
   (local-set-key (kbd "C-H-p") 'sclang-execute-previous-snippet)
+  (local-set-key (kbd "C-H-r") 'sclang-process-registry-gui)
   ;; additional key for convenience: provide SC-IDE shortcut for clearing buffer:
   (local-set-key (kbd "M-C") 'sclang-clear-post-buffer))
 

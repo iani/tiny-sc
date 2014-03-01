@@ -1,14 +1,34 @@
-Some very small and few utilities for SuperCollider started in Feb 2014 — Edit
+Some utilities for SuperCollider and SuperCollider / Org-mode started in Feb 2014 — Edit
 
 * Done:
 
-- Adsr, Sine, Perc: Env shortcuts
-- out: Out.ar/kr shortcut.
+- Adsr, Sine, Perc :: Env shortcuts
+- out :: Out.ar/kr shortcut.
+- Notification :: Filter "changed" notifications, add and remove notifiers.
+- ProcessRegistry :: Keep track of running Nodes, Routines, Patterns.
+- ProcessRegistryGui :: Display list of running processes, delete key stops selected process.
+- sclang-snippets :: Shortcuts to navigate and run code blocks separated by //:
+- org-sc :: Evaluate SC code in org-mode sections and babel blocks.
 
-* Plans:
+* Plans
 
-- Add Notification class and Object methods for it (from previous libs).
-- Add sclang-snippets.el for Emacs (from own emacs repo).
+Next:
+
+Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
+
+Implementation: Pass the id of the current snippet/section to an environment variable or class variable by running code with =sc-lang-eval-string=:
+
+#+BEGIN_SRC elisp
+  (sclang-eval-string
+   (concat
+    "ProcessRegistry setID: "
+    (org-id-get-create)))
+#+END_SRC
+
+Storing the ID-process correspondences in SC: Store each process in an instance of NamedProcess, with its snippet ID and name.
+
+* Older Plans:
+
 - Add to sclang-snippets:
   - Each snippet eval output is stored in list of objects, in emacs buffer,
     for access, eg. to free or pause a synth, routine, group, pattern player etc.
