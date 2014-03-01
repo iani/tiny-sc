@@ -23,10 +23,30 @@ Keyboard shortcut: Command-Meta-x.  (C-M-x).
                  (widen)
                  (org-back-to-heading)
                  (setq element (cadr (org-element-at-point)))
+                 (org-id-get-create)
+                 (search-forward ":END:")
+                 (end-of-line)
                  (sclang-eval-string
-                          (buffer-substring
-                           (plist-get element :contents-begin)
-                           (plist-get element :contents-end)))))))))
+                  (concat
+                   "(source_id: '"
+                   (org-id-get-create)
+                   "', eval_id: UniqueID.next) use: {\n"
+                   (buffer-substring
+                    (point)
+                    (plist-get element :contents-end))
+                   "\n}")
+                  t)))))))
+
+  (defun org-sc-eval-string-with-id (string &optional replace-p)
+    "Eval string in SuperCollider, providing the id of the section
+  from which the string originates and the number of times that
+  this section has been evaluated as environment variables.
+  If replace-p is not nil, then remove all processes from the previous
+  evaluation of this section before evaluating the string."
+    ;; UNDER DEVELOPMENT
+
+
+  )
 
   (defun org-sc-eval-next ()
     "Go to next org-mode section and evaluate its contents as SuperCollider code."
@@ -40,10 +60,26 @@ Keyboard shortcut: Command-Meta-x.  (C-M-x).
     (outline-previous-heading)
     (org-sc-eval))
 
+  (defun org-sc-stop-section-processes ()
+    "Stop the nodes, routines, patterns started from the current org-section."
+    (interactive)
+    (sclang-eval-string
+     (concat
+      "ProcessRegistry.removeProcessesForID('"
+      (org-id-get-create)
+      "')")))
+
   (define-key org-mode-map (kbd "C-M-x") 'org-sc-eval)
   (define-key org-mode-map (kbd "C-M-n") 'org-sc-eval-next)
   (define-key org-mode-map (kbd "C-M-p") 'org-sc-eval-previous)
+  ;; this overrides the default binding org-schedule, which I do not use often:
+  (define-key org-mode-map (kbd "C-c C-s") 'sclang-main-stop)
+  (define-key org-mode-map (kbd "H-C-r") 'sclang-process-registry-gui)
+  (define-key org-mode-map (kbd "C-c C-M-.") 'org-sc-stop-section-processes)
 #+END_SRC
+
+#+RESULTS:
+: sclang-process-registry-gui
 
 Test the above command by typing Command-Meta-x (1)  the cursor inside the src block, and then (2) with the cursor inside the section below, named: =SC Block=.
 Test for case 1: src-block:
@@ -56,4 +92,7 @@ Server.default.postln;
 Test for case 2:
 
 ** SC Block
+:PROPERTIES:
+:ID:       3EDDDE71-8FCF-42C8-BA29-D77A58668E0C
+:END:
 (21..30).post

@@ -7,7 +7,7 @@ Some utilities for SuperCollider and SuperCollider / Org-mode started in Feb 201
 - Notification :: Filter "changed" notifications, add and remove notifiers.
 - ProcessRegistry :: Keep track of running Nodes, Routines, Patterns.
 - ProcessRegistryGui :: Display list of running processes, delete key stops selected process.
-- sclang-snippets :: Shortcuts to navigate and run code blocks separated by //:
+- sclang-snippets :: Shortcuts to navigate and run code blocks separated by =//:=.
 - org-sc :: Evaluate SC code in org-mode sections and babel blocks.
 
 * Plans
@@ -16,16 +16,26 @@ Next:
 
 Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
 
-Implementation: Pass the id of the current snippet/section to an environment variable or class variable by running code with =sc-lang-eval-string=:
+Implementation: Pass the id of the current snippet/section as environment variable by enclosing the code to be evaluated with =sc-lang-eval-string= in a function evaluated within a new environment.
 
 #+BEGIN_SRC elisp
   (sclang-eval-string
-   (concat
-    "ProcessRegistry setID: "
-    (org-id-get-create)))
+     (concat
+      "(source_id: '"
+      (org-id-get-create)
+      "', eval_id: UniqueID.next) use: {\n"
+      string
+      "\n}"
+  ))
 #+END_SRC
 
-Storing the ID-process correspondences in SC: Store each process in an instance of NamedProcess, with its snippet ID and name.
+Storing the ID-process correspondences in SC: Store each process in an instance of NamedProcess, with its org-section (source) ID and eval ID (the number of times that this snippet is currently running).
+
+The eval id is stored as property in the org-section .
+
+** Process trees?
+
+To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EventStreamPlayer) and notify the children when the thread stops.  Similarly for EventStreamPlayer.  Registering processes under a snippet/org-section id is a simpler alternative. However process-tree based stopping is a different thing, because one may want to kill a parent-process through the gui, independent fom the snippet grouping which may contain also other processes.
 
 * Older Plans:
 

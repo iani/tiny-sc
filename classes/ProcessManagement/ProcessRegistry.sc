@@ -9,8 +9,6 @@ In this way, one may be able to build similar widgets as the Virtual Machine Mon
 
 UNDER CONSTRUCTION.
 
-Note: To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EventStreamPlayer) and notify the children when the thread stops.  Similarly for EventStreamPlayer.
-
 IZ 27 Feb 2014 15:35:58
 */
 
@@ -24,7 +22,7 @@ ProcessRegistry {
 		if (default.isNil) { default = this.new };
 		^default;
 	}
-
+	
 	*new {
 		^this.newCopyArgs(OrderedIdentitySet());
 	}
@@ -40,8 +38,10 @@ ProcessRegistry {
 
 	add { | process, message |
 		// add process to the processes list
+		process = NamedProcess(process);
 		processes add: process;
-		this.addNotifierOneShot(process, message, { this.processEnded(process) });
+		this.addNotifierOneShot(process.process, message,
+			{ this.processEnded(process) });
 		this.changed(\processAdded, process);
 	}
 
@@ -60,6 +60,17 @@ ProcessRegistry {
 		};
 	}
 	clear { processes = OrderedIdentitySet(); }
+
+	*removeProcessesForID { | source_id, eval_id |
+		this.default.removeProcessesForID(source_id, eval_id);
+	}
+	removeProcessesForID { | source_id, eval_id |
+		[this, thisMethod.name, "scr:", source_id, "eval:", eval_id].postln;
+		processes.asArray do: { | p |
+			[p, p.source_id, p.eval_id].postln;
+			if (p.source_id === source_id) { p.stop };
+		}
+	}
 }
 
 ProcessRegistryGui {
@@ -112,20 +123,21 @@ ProcessRegistryGui {
 	}
 
 	*updateView { | processRegistry, listView |
-		listView.items = processRegistry.processes collect: _.asString;
+		{ listView.items = processRegistry.processes collect: _.asString; }.defer;
 	}
 }
 
 NamedProcess {
 
-	var <process, <id, <name;
+	var <process, <source_id, <eval_id;
 
-	*new { | process, id, name |
-		^this.newCopyArgs(process, id, name);
+	*new { | process |
+		^this.newCopyArgs(process, ~source_id, ~eval_id);
 	}
 
 	stop { process.stop }
 
+	asString { ^format("% (%:%)", process.asString, eval_id ? "", source_id ? "") }
 }
 
 

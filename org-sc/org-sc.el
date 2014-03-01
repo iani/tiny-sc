@@ -13,10 +13,19 @@ If inside a src block, evaluate contents of block."
                (widen)
                (org-back-to-heading)
                (setq element (cadr (org-element-at-point)))
+               (org-id-get-create)
+               (search-forward ":END:")
+               (end-of-line)
                (sclang-eval-string
-                        (buffer-substring
-                         (plist-get element :contents-begin)
-                         (plist-get element :contents-end)))))))))
+                (concat
+                 "(process_id: '"
+                 (org-id-get-create)
+                 "', eval_id: UniqueID.next) use: {\n"
+                 (buffer-substring
+                  (point)
+                  (plist-get element :contents-end))
+                 "\n}")
+                t)))))))
 
 (defun org-sc-eval-next ()
   "Go to next org-mode section and evaluate its contents as SuperCollider code."
@@ -33,3 +42,6 @@ If inside a src block, evaluate contents of block."
 (define-key org-mode-map (kbd "C-M-x") 'org-sc-eval)
 (define-key org-mode-map (kbd "C-M-n") 'org-sc-eval-next)
 (define-key org-mode-map (kbd "C-M-p") 'org-sc-eval-previous)
+;; this overrides the default binding org-schedule, which I do not use often:
+(define-key org-mode-map (kbd "C-c C-s") 'sclang-main-stop)
+(define-key org-mode-map (kbd "H-M-r") 'sclang-process-registry-gui)

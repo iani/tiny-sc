@@ -1,0 +1,26 @@
+* test organising and running sc-code in sections ...
+:PROPERTIES:
+:ID:       C095DB31-74B5-4801-9541-463584DB57E5
+:END:
+
+{ WhiteNoise.ar(0.1) }.pla;
+
+* test removing
+:PROPERTIES:
+:ID:       2E4A1F5A-136F-4618-9A08-E22054E48853
+:END:
+
+{ SinOsc.ar(400, 0, 0.1) }.pla;
+
+* once more getting contents
+:PROPERTIES:
+:ID:       275EFD70-DF36-42FA-BB0F-876FE1764239
+:END:
+
+#+BEGIN_SRC elisp
+(org-back-to-heading)
+(org-element-at-point)
+#+END_SRC
+
+#+RESULTS:
+| headline | (:raw-value once more getting contents :begin 183 :end 372 :pre-blank 0 :hiddenp nil :contents-begin 212 :contents-end 371 :level 1 :priority nil :tags nil :todo-keyword nil :todo-type nil :post-blank 0 :footnote-section-p nil :archivedp nil :commentedp nil :quotedp nil :ID 275EFD70-DF36-42FA-BB0F-876FE1764239 :CATEGORY org-sc-tests :title once more getting contents) |
