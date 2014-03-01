@@ -6,30 +6,6 @@
 
 ;;; CODE:
 
-;; Modify sclang-eval-string to provide process-monitoring a-la Audicle.
-;; To work, this file must be loaded after sclang.el.
-
-(defcustom sclang-register-processes t
-  "Non-nil means use ProcessRegistry to monitor processes a-la Audicle."
-  :type 'boolean
-  :group 'sclang)
-
-(defun sclang-eval-string (string &optional print-p)
-  "Send STRING to the sclang process for evaluation and print the result
-if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
-  (sclang-send-string
-   (if print-p sclang-token-interpret-print-cmd-line sclang-token-interpret-cmd-line)
-   (if sclang-register-processes
-       (concat
-        "var sclang_evaluation_result;
-sclang_evaluation_result = { \n"
-        string
-        "\n }.value;
-ProcessRegistry.register(sclang_evaluation_result);
-sclang_evaluation_result; ")
-     string)))
-
-
 (defun sclang-execute-current-snippet ()
   "Evaluate region between //: comments in sclang."
   (interactive)

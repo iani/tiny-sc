@@ -9,6 +9,8 @@ In this way, one may be able to build similar widgets as the Virtual Machine Mon
 
 UNDER CONSTRUCTION.
 
+Note: To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EventStreamPlayer) and notify the children when the thread stops.  Similarly for EventStreamPlayer.
+
 IZ 27 Feb 2014 15:35:58
 */
 
@@ -49,11 +51,28 @@ ProcessRegistry {
 	}
 
 	processes { ^processes.asArray }
+
+	removeSelection { | selection |
+		var processArray;
+		processArray = this.processes;
+		selection do: { | index |
+			processArray[index].stop;
+		};
+	}
+	clear { processes = OrderedIdentitySet(); }
 }
 
 ProcessRegistryGui {
 	classvar guis;
-	
+
+	*initClass {
+		StartUp.add({
+			CmdPeriod.add({
+				this.changed(\cmdPeriod);
+			});
+		});
+	}
+
 	*guis {
 		if (guis.isNil) { guis = IdentityDictionary() };
 		^guis;
@@ -77,8 +96,16 @@ ProcessRegistryGui {
 		listView.addNotifier(processRegistry, \processEnded,
 			{ this.updateView(processRegistry, listView); }
 		);
+		listView.addNotifier(this, \cmdPeriod, {
+			processRegistry.clear;
+			this.updateView(processRegistry, listView);
+		});
+		listView.keyDownAction = { |  view, char, modifiers, unicode, keycode, key |
+			switch (keycode, 51, { processRegistry.removeSelection(listView.selection); });
+		};
 		window.onClose = {
 			listView.removeNotifier(processRegistry);
+			listView.removeNotifier(this);
 			this.guis[processRegistry] = nil;
 		};
 		^window;
@@ -89,47 +116,70 @@ ProcessRegistryGui {
 	}
 }
 
-+ Object {
-	registerProcess {}
+// Shortcuts
+
+Syn {
+	*new { | ... args |
+		^Synth(*args).rp;
+	}
+}
+
+Gro {
+	*new { | ... args |
+		^Group(*args).rp;
+	}
+}
+
+Pbi {
+	*new { | ... args |
+		^Pbind(*args).rp
+	}
 }
 
 + Node {
-	registerProcess { | processRegistry |
+	rp { | processRegistry |
 		// add myself to processRegistry, and prepare to notify when I end
-		processRegistry.add(this, \n_end);
+		(processRegistry ?? { ProcessRegistry.default }).add(this, \n_end);
 		NodeWatcher.register(this);
 	}
 	stop { this.free }
 }
 
 + Routine {
-	registerProcess { | processRegistry |
+	rp { | processRegistry |
 		// add myself to processRegistry
-		processRegistry.add(this, \p_end);
+		(processRegistry ?? { ProcessRegistry.default }).add(this, \p_end);
 	}
 	stop {
 		// Also notify ProcessRegistry.
-		// still debugging this.
-		[this.class, thisMethod.name, this.hash].postln;
 		this.changed(\p_end);
-		thisThread.changed(\p_end);		
+		//		thisThread.changed(\p_end);		
 		if (this === thisThread) { nil.alwaysYield } { this.prStop };
 
 	}
 }
 
 + EventStreamPlayer {
-	registerProcess { | processRegistry |
+	rp { | processRegistry |
 		// add myself to processRegistry
-		processRegistry.add(this, \stopped);
+		(processRegistry ?? { ProcessRegistry.default }).add(this, \stopped);
 	}
 }
 
 + Function {
-	forkn { | clock, quant, stackSize |
+	rp { | clock, quant, stackSize, processRegistry |
 		^Routine({
 			this.value;
 			thisThread.changed(\p_end);
-		}, stackSize).play(clock, quant);
+		}, stackSize).play(clock, quant).rp(processRegistry);
+	}
+
+	// in analogy to shortcuts below
+	for { | ... args |
+		^this.rp(*args);
+	}
+
+	pla { | ... args |
+		^this.play(*args).rp;
 	}
 }
