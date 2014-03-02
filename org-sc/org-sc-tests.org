@@ -1,37 +1,70 @@
+#+STARTUP: showall
 * test organising and running sc-code in sections|
 :PROPERTIES:
 :ID:       485215FB-C773-4785-8503-D70AA06EC85D
-:eval-id:  19
+:eval-id:  119
 :END:
 
-{ SinOsc.ar(500, 0, 0.1) }.pla;
+loop {
+	~a = { SinOsc.ar((60..90).choose.midicps, 0, 0.1) }.pla;
+	[0.1, 0.2, 0.4].choose.wait;
+	~a.release(0.01.exprand(5.0));
+	[0.1, 0.2].choose.wait;
+};
 
 * test removing
 :PROPERTIES:
 :ID:       2E4A1F5A-136F-4618-9A08-E22054E48853
-:eval-id:  2
+:eval-id:  15
 :END:
 
-{ SinOsc.ar(400, 0, 0.1) }.pla;
+a.release(3);
 
 * once more getting contents
 :PROPERTIES:
 :ID:       275EFD70-DF36-42FA-BB0F-876FE1764239
-:eval-id:  10954
+:eval-id:  10961
 :END:
-asd
-#+BEGIN_SRC elisp
-  (org-back-to-heading)
-  (let ((end (plist-get (cadr (org-element-at-point)) :contents-end)))
-    (goto-char (plist-get (cadr (org-element-at-point)) :contents-begin))
-    (if (equal 'property-drawer (car (org-element-at-point)))
-        (goto-char (plist-get (cadr (org-element-at-point)) :end))
-      )
-    (buffer-substring (point) end)
 
-  )
+{ LFTri.ar(400, 0, 0.1) }.pla;
 
-#+END_SRC
+* test new yasnippets
+:PROPERTIES:
+:ID:       99AEE7C0-02D3-4D7E-A9BD-E2EF1CA6EAB8
+:eval-id:  8
+:END:
+
+SynthDef(\babla, {
+    var source;
+    source = SinOsc.ar(\freq.kr(400));
+    source = source * Perc();
+    source.out;
+}).add;
+
+* test above synthdef
+:PROPERTIES:
+:ID:       D914E069-840F-4544-9EE3-8F77D10C737F
+:eval-id:  9
+:END:
+
+a = Syn(\babla);
+1.wait;
+a release: 5;
 
 
-asdf asdf
+SynthDef(\asdf, {
+    var source;
+    source = SinOsc.ar(\freq.kr(400));
+    source = source * Adsr();
+    
+    source.out;
+}).add;
+
+SynthDef(\testing123, {
+    var source;
+    source = SinOsc.ar(\freq.kr(400));
+    source = source * Adsr();
+
+
+    source.out;
+}).add;

@@ -65,9 +65,9 @@ ProcessRegistry {
 		this.default.removeProcessesForID(source_id, eval_id);
 	}
 	removeProcessesForID { | source_id, eval_id |
-		[this, thisMethod.name, "scr:", source_id, "eval:", eval_id].postln;
+		// [this, thisMethod.name, "scr:", source_id, "eval:", eval_id].postln;
 		processes.asArray do: { | p |
-			[p, p.source_id, p.eval_id].postln;
+			//	[p, p.source_id, p.eval_id].postln;
 			if (p.source_id === source_id) { p.stop };
 		}
 	}
