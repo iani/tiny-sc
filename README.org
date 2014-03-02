@@ -1,4 +1,7 @@
-Some utilities for SuperCollider and SuperCollider / Org-mode started in Feb 2014 — Edit
+- UGen shortcuts: Env, out
+- ProcessRegistry:  Register Nodes, Routines, EventStreamPlayers and stop them from a GUI
+- Emacs: Eval code blocks between comments
+- Emacs/org-mode:  Eval code in sections, replace/stop processes belonging to a section
 
 * Done:
 
