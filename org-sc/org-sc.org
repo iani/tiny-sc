@@ -9,44 +9,67 @@ One command, works in two contexts:
 Keyboard shortcut: Command-Meta-x.  (C-M-x).
 
 #+BEGIN_SRC emacs-lisp
-  (defun org-sc-eval ()
+  (defun org-sc-eval (replace-p)
     "Evaluate contents of org-mode element as SuperCollider code.
   If inside a section, evaluate whole contents of section.
-  If inside a src block, evaluate contents of block."
-    (interactive)
-    (let ((element (org-element-at-point)))
-      (cond ((equal (car element) 'src-block)
-             (sclang-eval-string (plist-get (cadr element) :value)))
-            (t
-             (save-excursion
-               (save-restriction
-                 (widen)
-                 (org-back-to-heading)
-                 (setq element (cadr (org-element-at-point)))
-                 (org-id-get-create)
-                 (search-forward ":END:")
-                 (end-of-line)
-                 (sclang-eval-string
-                  (concat
-                   "(source_id: '"
-                   (org-id-get-create)
-                   "', eval_id: UniqueID.next) use: {\n"
-                   (buffer-substring
-                    (point)
-                    (plist-get element :contents-end))
-                   "\n}")
-                  t)))))))
+  If inside a src block, evaluate contents of block.
+  If replace-p is not nil, then remove all processes from the previous
+  evaluation of this section before evaluating the string.
+  If replace-p is '(16) (C-u C-u), then just stop all processes of this section."
+    (interactive "P")
+    (let* ((element (org-element-at-point))
+           (plist (cadr element))
+           end
+           (string
+            (if (equal (car element) 'src-block)
+                (plist-get (cadr element) :value)
+              (save-excursion
+                (save-restriction
+                  (widen)
+                  (org-back-to-heading)
+                  (setq plist (cadr (org-element-at-point)))
+                  (setq end (plist-get plist :end))
+                  (goto-char (plist-get plist :contents-begin))
+                  ;; skip property drawer if it exists:
+                  (setq element (org-element-at-point))
+                  (if (equal 'property-drawer (car element))
+                      (goto-char (plist-get (cadr element) :end)))
+                  (buffer-substring (point) end))))))
+      (org-sc-eval-string-with-id string replace-p)))
 
   (defun org-sc-eval-string-with-id (string &optional replace-p)
     "Eval string in SuperCollider, providing the id of the section
   from which the string originates and the number of times that
   this section has been evaluated as environment variables.
   If replace-p is not nil, then remove all processes from the previous
-  evaluation of this section before evaluating the string."
+  evaluation of this section before evaluating the string.
+  If replace-p is '(16) (C-u C-u), then just stop all processes of this section."
     ;; UNDER DEVELOPMENT
-
-
-  )
+    (let ((eval-id (or (org-entry-get (point) "eval-id") "1"))
+          (source-id (org-id-get-create)))
+      (if replace-p
+          (sclang-eval-string
+           (concat
+            "ProcessRegistry.removeProcessesForID('"
+            source-id
+            "', "
+            eval-id
+            ");"
+            ))
+        (setq eval-id (format "%d" (+ 1 (eval (read eval-id))))))
+      (unless (equal replace-p '(16))
+        (org-set-property "eval-id" eval-id)
+        (sclang-eval-string
+         (concat
+          "(source_id: '"
+          source-id
+          "', eval_id: "
+          eval-id
+          ") use: {\n"
+          string
+          "\n}")
+         t))
+      ))
 
   (defun org-sc-eval-next ()
     "Go to next org-mode section and evaluate its contents as SuperCollider code."

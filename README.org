@@ -9,14 +9,13 @@ Some utilities for SuperCollider and SuperCollider / Org-mode started in Feb 201
 - ProcessRegistryGui :: Display list of running processes, delete key stops selected process.
 - sclang-snippets :: Shortcuts to navigate and run code blocks separated by =//:=.
 - org-sc :: Evaluate SC code in org-mode sections and babel blocks.
+- Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
 
-* Plans
+* Implementation notes
 
-Next:
+** Stopping processes started from code contained in an org-mode section
 
-Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
-
-Implementation: Pass the id of the current snippet/section as environment variable by enclosing the code to be evaluated with =sc-lang-eval-string= in a function evaluated within a new environment.
+Pass the id of the current snippet/section as environment variable by enclosing the code to be evaluated with =sc-lang-eval-string= in a function evaluated within a new environment.
 
 #+BEGIN_SRC elisp
   (sclang-eval-string
