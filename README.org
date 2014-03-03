@@ -6,10 +6,7 @@
   - Wrap code in Routine to permit using =wait=, and play loops.
   - Load all sections whose AUTOLOAD property is non-nil.
 
-* Next plans:
-
-Org-table as score?
-
+* Underway
 ** MixBus class
 
 Subclass of Bus.
@@ -37,6 +34,49 @@ When created:
 - Create GUI for MixBus.  The gui can show all mixbusses stored in MixBus.all.
 - The =gain= synth can be released to shut output of a mixbus.  A new gain synth can be created at any moment to restart output, or even to crossfade a different type of output.
 - To remove a mixBus entirely call mixBus.remove.  This releases the gain synth, removes the group when the gain synth is freed, removes the mixBus from the =all= variable, and frees the bus.
+
+* Next plans:
+
+** More convenient ways to map/set Synth parameters
+
+- method bmap :: map to bus created implicitly for a control-rate synth.
+- method rmap :: map to routine created implicitly for a stream.
+- method gmap :: map to gui instance created from specs.
+
+*** bmap
+
+bmap(\parameter, controlSynth)
+
+Access bus as value in a global dictionary of Synth-bus or symbol-bus associations.
+Create new bus if not already present, and set output of controlSynth to bus index.
+Map parameter to index of bus.
+
+bus should be freed and removed from global dictionary when all of its synth inputs are freed.
+
+*** rmap
+
+rmap(parameter, valueStream, timeStream, controlName)
+
+- =parameter= :: A symbol.
+- =valueStream= :: Any object.  Values are obtained from the stream by sending it the message next.  Patterns are converted to streams with asStream before being used.
+- =timeStream= :: Any object that returns a stream of positive integers (duration values) when sent the message next. (Similar to valueStream).
+- =controlName= :: A symbol.  Defaults to the value of =parameter=.  rmap will try to access an existing routine
+A routine is accessed by \controlName, or created:
+
+{
+	var val, dur;
+	while { (val = valStream.next).notNil and: { (dur = durStream.next).notNil } }
+	{
+		thisThread.changed(\value, val, dur);
+		dur.wait;
+	};
+	this.changed(\p_end);
+}
+
+The controlled Synth may choose to =free= or =release= itself when receiving =\p_end= at the end of the routine process.
+
+
+** Org-table as score?
 
 * Done:
 

@@ -177,23 +177,29 @@ Adapted from org-toggle-ordered-property."
       t)) 
    "AUTOLOAD" 'file))
 
-(define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-(define-key sclang-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-(define-key org-mode-map (kbd "C-M-x") 'org-sc-eval)
-(define-key org-mode-map (kbd "C-M-z") 'org-sc-stop-section-processes)
-(define-key org-mode-map (kbd "H-C-x") 'org-sc-eval-in-routine)
-;; convenient parallel to H-C-x:
-(define-key org-mode-map (kbd "H-C-z") 'org-sc-stop-section-processes)
-(define-key org-mode-map (kbd "C-M-n") 'org-sc-eval-next)
-(define-key org-mode-map (kbd "C-M-p") 'org-sc-eval-previous)
-;; this overrides the default binding org-schedule, which I do not use often:
-(define-key org-mode-map (kbd "C-c C-s") 'sclang-main-stop)
-(define-key org-mode-map (kbd "H-C-r") 'sclang-process-registry-gui)
-(define-key org-mode-map (kbd "C-c C-M-.") 'org-sc-stop-section-processes)
-(define-key org-mode-map (kbd "H-C-n") 'org-sc-next-section)
-(define-key org-mode-map (kbd "H-C-p") 'org-sc-previous-section)
-(define-key org-mode-map (kbd "C-c C-x l") 'org-sc-toggle-autoload)
-(define-key org-mode-map (kbd "C-c C-x C-l") 'org-sc-load-marked)
+(eval-after-load "org"
+'(progn
+   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "C-M-x") 'org-sc-eval)
+   (define-key org-mode-map (kbd "C-M-z") 'org-sc-stop-section-processes)
+   (define-key org-mode-map (kbd "H-C-x") 'org-sc-eval-in-routine)
+   ;; convenient parallel to H-C-x:
+   (define-key org-mode-map (kbd "H-C-z") 'org-sc-stop-section-processes)
+   (define-key org-mode-map (kbd "C-M-n") 'org-sc-eval-next)
+   (define-key org-mode-map (kbd "C-M-p") 'org-sc-eval-previous)
+   ;; this overrides the default binding org-schedule, which I do not use often:
+   (define-key org-mode-map (kbd "C-c C-s") 'sclang-main-stop)
+   (define-key org-mode-map (kbd "H-C-r") 'sclang-process-registry-gui)
+   (define-key org-mode-map (kbd "C-c C-M-.") 'org-sc-stop-section-processes)
+   (define-key org-mode-map (kbd "H-C-n  )") 'org-sc-next-section)
+   (define-key org-mode-map (kbd "H-C-p") 'org-sc-previous-section)
+   (define-key org-mode-map (kbd "C-c C-x l") 'org-sc-toggle-autoload)
+   (define-key org-mode-map (kbd "C-c C-x C-l") 'org-sc-load-marked)))
+
+(eval-after-load "sclang"
+  '(progn
+     (define-key sclang-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)))
+
 
 (provide 'org-sc)
 

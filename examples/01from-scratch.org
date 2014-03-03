@@ -3,7 +3,7 @@
 :PROPERTIES:
 :AUTOLOAD: t
 :ID:       D08DBD21-2F34-47B3-BA17-3BECF7B6AC28
-:eval-id:  2
+:eval-id:  3
 :END:
 
 SynthDef(\adsrsine, {
@@ -16,7 +16,7 @@ SynthDef(\adsrsine, {
 ** sine adsr try1
 :PROPERTIES:
 :ID:       3D462B11-D7F9-41D5-B8AC-8E5C199203A0
-:eval-id:  3
+:eval-id:  4
 :END:
 
 ~a = Syn("adsrsine");
@@ -26,7 +26,7 @@ SynthDef(\adsrsine, {
 ** sine adsr cluster
 :PROPERTIES:
 :ID:       96BDA051-5E05-45FA-B78C-AB4FD02F40B0
-:eval-id:  13
+:eval-id:  15
 :END:
 
 var synths, fwalk, swalk, synth;
@@ -52,24 +52,33 @@ loop {
 Syn("adsrsine");
 
 * ringz noise adsr
-* ringz noise adsr synthdef                                        :AUTOLOAD:
+** ringz noise adsr synthdef                                      :AUTOLOAD:
 :PROPERTIES:
 :AUTOLOAD: t
 :ID:       76813E41-EF3E-4990-84FB-305847543C4B
-:eval-id:  6
+:eval-id:  7
 :END:
 
 SynthDef(\adsrringz, {
     var source;
     source = WhiteNoise.ar(0.05);
-    source = Ringz.ar(source, \freq.kr(440), \decaytime.kr(1));
+    source = Ringz.ar(source, \freq.kr(440), \decayTime.kr(1));
     source = source * Adsr(\attack.kr(0.1));
     source.out;
 }).add;
-
-* ringz noise adsr cluster
+** ringz noise adsr test
 :PROPERTIES:
-:eval-id:  18
+:ID:       2D99216F-22B3-421D-8524-B8DCFA68A83E
+:eval-id:  6
+:END:
+
+~a = Syn("adsrringz");
+1.wait;
+~a.set(\decayTime, 0.1);
+
+** ringz noise adsr cluster
+:PROPERTIES:
+:eval-id:  25
 :ID:       197D3D93-FE56-4BC1-B290-C62EED1B252E
 :END:
 
@@ -79,7 +88,7 @@ fwalk = (Pbrown(30, 90, 0.75, inf) + Pfunc({ 0.01.exprand(1.5)})).asStream;
 swalk = Pbrown(0, 30, 1, inf).asStream;
 loop {
 	if (swalk.next > synths.size) {
-		synths add: Syn("adsrringz", [\freq, fwalk.next.midicps, \decayTime, 4]);
+		synths add: Syn("adsrringz", [\freq, fwalk.next.midicps, \decayTime, 0.25, \amp, 0.02]);
 	}{
 		synth = synths.choose;
 		synth.release(1.0.exprand(5.0));

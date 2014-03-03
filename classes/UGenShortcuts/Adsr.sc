@@ -13,10 +13,10 @@ Adsr {
 		gateName = \gate, gateValue = 1,
 		ampName = \amp, ampValue = 0.1,
 		doneAction = 2 |
-		^EnvGen.kr(
+		^ampName.perform(\kr, ampValue) * EnvGen.kr(
 			Env.adsr(attackTime, decayTime, sustainLevel, releaseTime, peakLevel, curve, bias),
 			gate: gateName.perform(\kr, gateValue),
-			levelScale: ampName.perform(\kr, ampValue),
+			levelScale: 1,
 			levelBias: 0,
 			timeScale: 1,
 			doneAction: doneAction;

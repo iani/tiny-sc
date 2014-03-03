@@ -72,6 +72,11 @@
 (defun sc-snippets ()
   "Define sclang mode keys for snippets."
   (local-set-key (kbd "C-c .") 'sclang-execute-current-snippet)
+  ;; For some aggravating reason, cannot un-bind C-c C-c from sclang-eval-dwim
+  ;; But I do not want to modify the source code of sc-extensions
+  ;; So instead: 
+  (local-set-key (kbd "C-c C-,") 'sclang-eval-line)
+  
   (local-set-key (kbd "C-c C-.") 'sclang-select-snippet)
   (local-set-key (kbd "C-M-x") 'sclang-execute-current-snippet) ;; alternative
   (local-set-key (kbd "C-M-f") 'sclang-goto-next-snippet)
@@ -84,6 +89,8 @@
   (local-set-key (kbd "C-H-n") 'sclang-execute-next-snippet)
   (local-set-key (kbd "C-H-p") 'sclang-execute-previous-snippet)
   (local-set-key (kbd "C-H-r") 'sclang-process-registry-gui)
+  ;; C-c C-l is overrriden by sc-extensions. Therefore substitute:
+  (local-set-key (kbd "C-c l") 'sclang-recompile)
   ;; additional key for convenience: provide SC-IDE shortcut for clearing buffer:
   (local-set-key (kbd "M-C") 'sclang-clear-post-buffer))
 

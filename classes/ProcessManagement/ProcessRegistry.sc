@@ -147,6 +147,11 @@ NamedProcess {
 		NodeWatcher.register(this);
 	}
 	stop { this.free }
+
+	onEnd { | listener, action |
+		NodeWatcher.register(this);
+		listener.addNotifierOneShot(this, \n_end, action);
+	}
 }
 
 + Routine {
