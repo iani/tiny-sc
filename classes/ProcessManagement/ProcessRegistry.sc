@@ -99,7 +99,7 @@ ProcessRegistryGui {
 		window = Window("ProcessMonitor", 
 			Rect(Window.screenBounds.width - 200, 0, 200, 200));
 		this.guis[processRegistry] = window;
-		listView = ListView(window, window.view.bounds);
+		listView = ListView(window, window.view.bounds).resize = 5;
 		this.updateView(processRegistry, listView);
 		listView.addNotifier(processRegistry, \processAdded,
 			{ this.updateView(processRegistry, listView); }
@@ -138,27 +138,6 @@ NamedProcess {
 	stop { process.stop }
 
 	asString { ^format("% (%:%)", process.asString, eval_id ? "", source_id ? "") }
-}
-
-
-// Shortcuts
-
-Syn {
-	*new { | ... args |
-		^Synth(*args).rp;
-	}
-}
-
-Gro {
-	*new { | ... args |
-		^Group(*args).rp;
-	}
-}
-
-Pbi {
-	*new { | ... args |
-		^Pbind(*args).rp
-	}
 }
 
 + Node {

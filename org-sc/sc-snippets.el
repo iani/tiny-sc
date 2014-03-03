@@ -50,6 +50,20 @@
   (sclang-goto-next-snippet)
   (sclang-execute-current-snippet))
 
+(defun sclang-select-snippet ()
+  "Select the region between two //: comments."
+  (interactive)
+  (let ((here (point))
+        (blockstart (re-search-backward "^//:" nil t))
+        (blockend))
+    (if (not blockstart) (setq blockstart 0))
+    (set-mark blockstart)
+    (goto-char here)
+    (setq blockend (re-search-forward "^//:" nil t))
+    (if (not blockend) (setq blockend (point-max)))
+    (goto-char blockend)
+    (beginning-of-line)))
+
 (defun sclang-process-registry-gui ()
   "Show ProcessRegistryGui window."
   (interactive)
@@ -58,6 +72,7 @@
 (defun sc-snippets ()
   "Define sclang mode keys for snippets."
   (local-set-key (kbd "C-c .") 'sclang-execute-current-snippet)
+  (local-set-key (kbd "C-c C-.") 'sclang-select-snippet)
   (local-set-key (kbd "C-M-x") 'sclang-execute-current-snippet) ;; alternative
   (local-set-key (kbd "C-M-f") 'sclang-goto-next-snippet)
   (local-set-key (kbd "C-M-b") 'sclang-goto-previous-snippet)

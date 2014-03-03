@@ -1,13 +1,42 @@
 - UGen shortcuts: Env, out
 - ProcessRegistry:  Register Nodes, Routines, EventStreamPlayers and stop them from a GUI
-- Emacs: Eval code blocks between comments
+- Emacs: Eval / select code blocks between comments
 - Emacs/org-mode:
   - Eval code in sections, replace/stop processes belonging to a section
   - Wrap code in Routine to permit using =wait=, and play loops.
+  - Load all sections whose AUTOLOAD property is non-nil.
 
 * Next plans:
 
-Load entire org-mode files, selecting those sections which are not marked =disabled=.  This is good for configuring, for example the loading of groups of SynthDefs or soundfiles.
+Org-table as score?
+
+** MixBus class
+
+Subclass of Bus.
+
+MixBus(name, numChans, out); // create new instance if needed, and make it current.
+
+Alternative for above:
+\name.mixBus(numChans, out);
+
+Also creates its own Group.
+When created:
+
+- registers itself in MixBus.all class variable under its given name (symbol), for access.
+- sets the following current environemnt variables:
+  - ~out :: index of the bus. Synths can write to this bus.
+  - ~target :: its group
+- Creates synth called =gain= positioned after =~target=, providing:
+  - global level control (control name: =gain=)
+  - adsr envelope for fadeout with method =release(releaseTime)=
+- The =gain= synth directs its output to another channel, per default channel 0.
+- Different types of =gain= synths can be used, to provide effects and multichannel output
+- Other synths can be added before =gain= to provide additional effects.
+- Syn(...) reads ~out an ~target from the environment, and therefore by default uses the installed MixBus, if present.
+- Define keyboard shortcuts in SC for altering the level control of the current mixbus (the one belonging to the current environment).
+- Create GUI for MixBus.  The gui can show all mixbusses stored in MixBus.all.
+- The =gain= synth can be released to shut output of a mixbus.  A new gain synth can be created at any moment to restart output, or even to crossfade a different type of output.
+- To remove a mixBus entirely call mixBus.remove.  This releases the gain synth, removes the group when the gain synth is freed, removes the mixBus from the =all= variable, and frees the bus.
 
 * Done:
 
@@ -20,6 +49,9 @@ Load entire org-mode files, selecting those sections which are not marked =disab
 - org-sc :: Evaluate SC code in org-mode sections and babel blocks.
 - Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
 
+** More features
+- org-sc :: Load org-mode sections marked with AUTOLOAD property.
+- sclang-snippets :: select current snippet region.
 * Implementation notes
 
 ** Stopping processes started from code contained in an org-mode section

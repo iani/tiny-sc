@@ -12,8 +12,9 @@ SynthDef("test", { WhiteNoise.ar(0.1).out }).add;
 
 + UGen {
 	out { | outName = \out, outValue = 0 |
-		^Out.ar(
-			outName.perform(if (this.rate == \control) { \kr } { \ar }, outValue),
+		^Out.perform(
+			if (this.rate == \control) { \kr } { \ar },
+			outName.kr(outValue),
 			this
 		)
 	}

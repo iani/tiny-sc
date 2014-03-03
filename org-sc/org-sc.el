@@ -105,8 +105,6 @@ in a routine:
 (defun org-sc-toggle-mode ()
   "Toggle between org-mod an sc-mode for editing/running code."
   (interactive)
-  (message "MODE %s" major-mode)
-  (message "is it org? %s" (equal major-mode 'org-mode))
   (cond ((equal major-mode 'org-mode)
          (sclang-mode))
         (t
