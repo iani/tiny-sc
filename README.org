@@ -1,3 +1,4 @@
+* Done
 - UGen shortcuts: Env, out
 - ProcessRegistry:  Register Nodes, Routines, EventStreamPlayers and stop them from a GUI
 - Emacs: Eval / select code blocks between comments
@@ -5,6 +6,8 @@
   - Eval code in sections, replace/stop processes belonging to a section
   - Wrap code in Routine to permit using =wait=, and play loops.
   - Load all sections whose AUTOLOAD property is non-nil.
+- MixBus alpha
+  - also shortcut: synth => \mixBusName
 
 * Underway
 ** MixBus class
@@ -43,25 +46,28 @@ When created:
 - method rmap :: map to routine created implicitly for a stream.
 - method gmap :: map to gui instance created from specs.
 
-*** bmap
+*** Synth:bmap : map parameter to a bus to which a synth outputs.
 
-bmap(\parameter, controlSynth)
+bmap(parameter/controller, controlSynth)
+
+=parameter/controller= :: A symbol or an association parameter->controller. =parameter= is the name of the parameter of the synth to be mapped. =controller= is the symbol under which the synth is stored. If no controller name is given, then the controller name defaults to the parameter name.
 
 Access bus as value in a global dictionary of Synth-bus or symbol-bus associations.
 Create new bus if not already present, and set output of controlSynth to bus index.
 Map parameter to index of bus.
 
-bus should be freed and removed from global dictionary when all of its synth inputs are freed.
+bus should/may be freed and removed from global dictionary when all of its synth inputs are freed.
 
-*** rmap
+*** Node:rmap : set parameter of node to values obtained by a routine
 
-rmap(parameter, valueStream, timeStream, controlName)
+rmap(parameter/controller, valueStream, timeStream)
 
-- =parameter= :: A symbol.
+- =parameter/controller= :: A symbol or an association parameter->controller. =parameter= is the name of the parameter of the synth to be set by the routine. =controller= is the symbol under which the routine is stored. If no controller name is given, then the controller name defaults to the parameter name.
 - =valueStream= :: Any object.  Values are obtained from the stream by sending it the message next.  Patterns are converted to streams with asStream before being used.
 - =timeStream= :: Any object that returns a stream of positive integers (duration values) when sent the message next. (Similar to valueStream).
-- =controlName= :: A symbol.  Defaults to the value of =parameter=.  rmap will try to access an existing routine
-A routine is accessed by \controlName, or created:
+
+*** first prototype - polling streams with a routine and timing
+The routine is created rougly like this:
 
 {
 	var val, dur;
@@ -75,6 +81,11 @@ A routine is accessed by \controlName, or created:
 
 The controlled Synth may choose to =free= or =release= itself when receiving =\p_end= at the end of the routine process.
 
+*** extension: encapsulate routine in Source object
+
+Encapsulate the routine in another object that sends the notifications, so that one may substitute a new routine in that object and still keep the connections to all listeners controlled by the object.
+
+This object/class could be called Source (Streamer, Poller, Brodcaster?).  It can hold any object that wants to broadcast a stream of values, such as a poller of audio or control stream values, a tcp poller, an osc or midi event listener, a gui widget event listerer etc.  Finally, the listening objects receiving notifications from the Source instance can use adapters to react differently to the data received.  We thus have:
 
 ** Org-table as score?
 
