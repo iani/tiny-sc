@@ -1,3 +1,4 @@
+#+STARTUP: showall
 * sine adsr
 ** sine adsr synthdef                                              :AUTOLOAD:
 :PROPERTIES:
@@ -56,7 +57,7 @@ Syn("adsrsine");
 :PROPERTIES:
 :AUTOLOAD: t
 :ID:       76813E41-EF3E-4990-84FB-305847543C4B
-:eval-id:  7
+:eval-id:  8
 :END:
 
 SynthDef(\adsrringz, {
@@ -102,6 +103,8 @@ loop {
 ** sine perc synthdef                                             :AUTOLOAD:
 :PROPERTIES:
 :AUTOLOAD: t
+:ID:       1ABA58CA-9BC1-424D-B24B-4314A7823AA3
+:eval-id:  2
 :END:
 
 SynthDef(\percsine, {

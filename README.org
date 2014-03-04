@@ -46,7 +46,7 @@ Get or create a Source instance, and connect its output to anObject.  Return the
 
 : anObject.src(source, [500, 600].mapSet(\freq));
 
-The above makes the object =source= send to =anObject= (usually a Synth instance), the message =set= for setting parameter =freq= with a value mapped from an input in the range of 0-1 to the range of 500-600.  The source can be any object that generates values in time, for example a Routine, an OSCFunc, a MIDIFunc, a gui Slider, etc.  The object given to method =src= as its =source= parameter can be either a symbol for accessing an already existing Source instance from a global dictionary, or a template that is used by Source to create a Source instance which will broadcast the generated values.
+The above makes the object =source= send to =anObject= (usually a Synth instance), the message =set= for setting parameter =freq= with a value mapped from an input in the range of 0-1 to the range of 500-600.  The source can be any object that generates values in time, for example a Task (Routine not supported yet), an OSCFunc, a MIDIFunc, a gui Slider, etc.  The object given to method =src= as its =source= parameter can be either a symbol for accessing an already existing Source instance from a global dictionary, or a template that is used by Source to create a Source instance which will broadcast the generated values.
 
 Here are the steps of this mechanism:
 

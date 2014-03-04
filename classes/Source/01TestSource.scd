@@ -27,9 +27,7 @@ a.addNotifier(~source, \value, { | val | a.set(\freq, val * 100 + 400) });
 
 //: Now change the source of ~source
 
-~source.source = 0.15345;
-
-
+~source.source = 0.
 //: start the source
 
 ~source.start;

@@ -2,11 +2,11 @@
 * test organising and running sc-code in sections|
 :PROPERTIES:
 :ID:       485215FB-C773-4785-8503-D70AA06EC85D
-:eval-id:  119
+:eval-id:  121
 :END:
 
 loop {
-	~a = { SinOsc.ar((60..90).choose.midicps, 0, 0.1) }.pla;
+	~a = { LFSaw.ar((60..90).choose.midicps, 0, 0.1) }.pla;
 	[0.1, 0.2, 0.4].choose.wait;
 	~a.release(0.01.exprand(5.0));
 	[0.1, 0.2].choose.wait;
@@ -23,10 +23,10 @@ a.release(3);
 * once more getting contents
 :PROPERTIES:
 :ID:       275EFD70-DF36-42FA-BB0F-876FE1764239
-:eval-id:  10961
+:eval-id:  10966
 :END:
 
-{ LFTri.ar(400, 0, 0.1) }.pla;
+{ LFTri.ar(400 rrand: 1000, 0, 0.1) }.pla;
 
 * test new yasnippets
 :PROPERTIES:
@@ -56,7 +56,7 @@ SynthDef(\asdf, {
     var source;
     source = SinOsc.ar(\freq.kr(400));
     source = source * Adsr();
-    
+
     source.out;
 }).add;
 

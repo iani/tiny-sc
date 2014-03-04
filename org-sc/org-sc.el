@@ -170,12 +170,18 @@ Adapted from org-toggle-ordered-property."
 (defun org-sc-load-marked ()
   "Load the code of all sections marked with property AUTOLOAD set to non-nil."
   (interactive)
-  (org-map-entries 
-   (lambda ()
-     (sclang-eval-string
-      (org-get-section-contents)
-      t)) 
-   "AUTOLOAD" 'file))
+  (save-excursion
+   (save-restriction
+     (widen)
+     (run-hook-with-args 'org-pre-cycle-hook 'all)
+     (show-all)
+     (run-hook-with-args 'org-cycle-hook 'all)
+     (org-map-entries 
+     (lambda ()
+       (sclang-eval-string
+        (org-get-section-contents)
+        t))
+     "AUTOLOAD" 'file))))
 
 (eval-after-load "org"
 '(progn
