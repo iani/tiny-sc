@@ -17,7 +17,7 @@ SynthDef(\adsrsine, {
 ** sine adsr try1
 :PROPERTIES:
 :ID:       3D462B11-D7F9-41D5-B8AC-8E5C199203A0
-:eval-id:  4
+:eval-id:  5
 :END:
 
 ~a = Syn("adsrsine");
@@ -27,7 +27,7 @@ SynthDef(\adsrsine, {
 ** sine adsr cluster
 :PROPERTIES:
 :ID:       96BDA051-5E05-45FA-B78C-AB4FD02F40B0
-:eval-id:  15
+:eval-id:  17
 :END:
 
 var synths, fwalk, swalk, synth;
@@ -70,16 +70,18 @@ SynthDef(\adsrringz, {
 ** ringz noise adsr test
 :PROPERTIES:
 :ID:       2D99216F-22B3-421D-8524-B8DCFA68A83E
-:eval-id:  6
+:eval-id:  9
 :END:
 
 ~a = Syn("adsrringz");
 1.wait;
 ~a.set(\decayTime, 0.1);
+1.wait;
+~a.release(5);
 
 ** ringz noise adsr cluster
 :PROPERTIES:
-:eval-id:  25
+:eval-id:  28
 :ID:       197D3D93-FE56-4BC1-B290-C62EED1B252E
 :END:
 

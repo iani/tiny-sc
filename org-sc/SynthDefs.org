@@ -1,5 +1,7 @@
 Collection of SynthDefs
 
+STILL JUST A TEST FILE
+
 IZ Sun, 02 Mar 2014 16:41:47
 
 * test                                                             :AUTOLOAD:
@@ -17,24 +19,3 @@ SynthDef("test", { Blip.ar(400, 3, Adsr()).out }).add;
 
 SynthDef("sine", { SinOsc.ar(400, 3, Adsr()).out }).add;
 
-(
-SynthDef(\foo, { |out=0|
-    
-    Out.ar(out, )
-}).add;
-
-* asdf
-:PROPERTIES:
-:ORDERED:  t
-:ID:       6AFA2C35-9CEF-47D8-9DEC-C021E2891935
-:eval-id:  20
-:END:
-
-a = Syn("test", [\amp, 0.1]);
-
-* more
-:PROPERTIES:
-:ID:       79DC47C5-1B3C-4436-984C-DFB720D7F983
-:eval-id:  9
-:END:
-a.release(10);
