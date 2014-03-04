@@ -13,56 +13,84 @@ IZ Tue, Mar  4 2014, 01:01 EET
 */
 
 Source {
-    classvar all;
+    classvar registered; // do not necessarily register all sources
     classvar <>pollRate = 0.1;
 
-    var <name;
     var <>message;
-    var <action;
+    var <source; // routine, responder, view, (other?)
+    // No more state. Keep it simple!
 
-    *new { | name, message = \value, action |
-        var instance;
-        instance = this.all[name];
-        if (instance.isNil) {
-            instance = this.newCopyArgs(name, message, action);
-            all[name] = instance;
-        };
-        ^instance;
+    *registered { ^registered ?? { registered = IdentityDictionary() } }
+
+    *new { | source, message = \value |
+        ^this.newCopyArgs(message).init(source);
     }
 
-    *all { ^all ?? { all = IdentityDictionary() } }
+    init { | argSource |
+        source = argSource.asSource(this);
+    }
 
+    /* Either redefine start, stop, reset for all relevant objects,
+        or store the custom messages in a dictionary and translate 
+        each time.  The second solution seems unnecessarily complex.
+        If start, stop, reset cause conflicts, 
+        then use startSource, stopSource, resetSource.
+    */
     start {
-        action.start;
+        source.start;
     }
 
     stop {
-        action.stop;
+        source.stop;
     }
 
     reset {
-        action.reset;
-    }
-
-    // Shortcuts for creating different kinds of action funcs
-    osc { | responderSpecs |
-        
-    }
-
-    midi { | midiSpecs |
-
-    }
-
-    routine { | values, durations |
-        
-    }
-
-    widget { | widget |
-        // set action of widget ...
+        source.reset;
     }
 }
 
-/* Shortcut for creating Source instances.
++ Object {
+    asSource { | source |
+        ^r {
+            loop {
+                source.changed(\value, this, source);
+                source.pollRate.wait;
+            };
+        }
+    }
+}
+
++ AbstractResponderFunc {
+    asSource { | source |
+        this.prFunc = { | ... args |
+            source.changed(\value, *(args add: this)) 
+        };
+    }
+}
+
++ View {
+    asSource { | source |
+        this.action = {
+            source.changed(\value, this.value, source)
+        }
+    }
+}
+
++ SequenceableCollection {
+    asSource { | source |
+        var stream;
+        stream = Pseq(this, inf).asStream;
+        ^r {
+            loop {
+                source.changed(\value, stream.next, source);
+                source.pollRate.wait;
+            }
+        }
+    }
+}
+
+/* NEEDS RETHINKING?
+Shortcut for creating Source instances.
 OSCFunc and MIDIFunc instances are passed an function that broadcasts.
 Arrays are treated as Pseqs with infinite repeat and polled at pollRate.
 Functions create Pfunc instances polled at pollRate.
