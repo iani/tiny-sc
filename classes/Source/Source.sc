@@ -51,9 +51,10 @@ Source {
 
 + Object {
     asSource { | source |
+        source = source ?? { Source.newCopyArgs(\value) };
         ^r {
             loop {
-                source.changed(\value, this, source);
+                source.changed(\value, this.(source), source);
                 source.pollRate.wait;
             };
         }
@@ -61,8 +62,10 @@ Source {
 }
 
 + AbstractResponderFunc {
+    
     asSource { | source |
-        this.prFunc = { | ... args |
+    source = source ?? { Source.newCopyArgs(\value) };
+    this.prFunc = { | ... args |
             source.changed(\value, *(args add: this)) 
         };
     }
@@ -70,6 +73,7 @@ Source {
 
 + View {
     asSource { | source |
+        source = source ?? { Source.newCopyArgs(\value) };
         this.action = {
             source.changed(\value, this.value, source)
         }
@@ -80,6 +84,7 @@ Source {
     asSource { | source |
         var stream;
         stream = Pseq(this, inf).asStream;
+        source = source ?? { Source.newCopyArgs(\value) };
         ^r {
             loop {
                 source.changed(\value, stream.next, source);
