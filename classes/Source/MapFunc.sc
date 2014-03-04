@@ -20,8 +20,8 @@ MapFunc {
         ^this.newCopyArgs(source, listener, mapper);
     }
 
-    value { | ... args |
-        listener.perform(mapper.(*args));
+    valueArray { | ... args |
+        listener.perform(*mapper.(*args));
     }
     /* Note: Although practically all of the functionality of a mapper can be 
         encapsulated in the func, it may be simpler and more efficient
@@ -38,23 +38,29 @@ MapFunc {
         source = argSource;
         listener = argListener;
     }
+
+    asMapper { | argSource, argListener |
+        // sent by Object.src, to create mapper and install source and listener 
+        source = argSource;
+        listener = argListener;
+    }
 }
 
 MapSet : MapFunc {
     var parameter;
 
     *new { | parameter, spec |
-        ^this.newCopyArgs(nil, nil, spec, parameter);
+        ^this.newCopyArgs(nil, nil, spec.asSpec, parameter);
     }
 
-    value { | val |
-        listener.set(parameter, mapper.map(val));
+    valueArray { | val |
+        listener.set(parameter, mapper.map(*val));
     }
 }
 
 UnmapSet : MapSet {
 
-    value { | val |
+    valueArray { | val |
         listener.set(parameter, mapper.unmap(val));
     }
 }
@@ -71,17 +77,17 @@ BimapSet : MapSet {
 
 
     *new { | parameter, mapSpec, unmapSpec |
-        ^this.newCopyArgs(nil, nil, mapSpec, parameter, unmapSpec);
+        ^this.newCopyArgs(nil, nil, mapSpec.asSpec, parameter, unmapSpec.asSpec);
     }
 
-    value { | val |
-        listener.set(parameter, mapper.map(unmapper unmap: val));
+    valueArray { | val |
+        listener.set(parameter, mapper.map(unmapper.unmap(*val)));
     }
 }
 
 Args2Message : MapFunc {
     
-    value { | ... args |
+    valueArray { | ... args |
         listener.perform(*mapper.collect(_.(*args)))
     }
 }

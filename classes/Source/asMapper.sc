@@ -13,11 +13,11 @@ IZ Tue, Mar  4 2014, 15:20 EET
 + Object {
 
     mapSet { | parameter |
-        ^MapSet(this.asSpec, parameter)
+        ^MapSet(parameter, this.asSpec)
     }
 
     unmapSet { | parameter |
-        ^UnmapSet(this.asSpec, parameter)
+        ^UnmapSet(parameter, this.asSpec)
     }
 
     bimapSet { | parameter, unmapSpec |
@@ -25,11 +25,23 @@ IZ Tue, Mar  4 2014, 15:20 EET
     }
 
     selectFunc {
+        // only send value to listener when a condition succeeds
 
     }
 
     rejectFunc {
+        // only send value to listener when a condition fails
 
     }
 }
 
++ Symbol {
+    mapSet { | spec |
+        ^MapSet(this, (spec ? this).asSpec)
+    }
+
+    asMapper { | source, listener |
+        ^this.mapSet.asMapper(source, listener);
+        //  { "still debugging".postln; }
+    }
+}

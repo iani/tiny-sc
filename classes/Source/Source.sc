@@ -48,7 +48,6 @@ Source {
         then use startSource, stopSource, resetSource.
     */
     start {
-        source.postln;
         source.start(this);
     }
 
@@ -59,6 +58,8 @@ Source {
     reset {
         this.source = template;
     }
+
+    pollRate { ^pollRate }
 }
 
 + Task {
@@ -70,13 +71,22 @@ Source {
 
 
 + Object {
+    setSource { | source, action |
+        // simple version, for debugging.
+        this.addNotifier(source, \value, action ?? {{ | ... args | args.postln }}); 
+    }
+
     src { | source, mapper |
         // convert source to Source instance and connect it to self
         /* mapper becomes an object that responds to .value by taking
             the arguments passed from the source, maps them or otherwise
             processes them, and finally sends a message to the listener */
         source = source.asSource;
-        this.addNotifier(source, \value, mapper.asMapper(source, this));
+        this.addNotifier(source, \value,
+            // { "src works?".postln; }
+                mapper.asMapper(source, this)
+        );
+
     }
 
     asSource { ^Source(this); }
