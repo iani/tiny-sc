@@ -2,12 +2,15 @@
 Encapsulate any source that emits values upon to which many different objects can be interested.
 
 Such can be: 
-- a routine that gets values from a stream
-- an OSCFunc or a MIDIFunc
+- A Task that computes values or otherwise gets values from a stream.
+    Note: Source is not coded for using Routines safely: Restarting it while
+    its previous routine is playing, will add a second copy of the schedule task
+    and cause the timing to break.
+- An OSCFunc or a MIDIFunc
 - A GUI widget. 
+- A function, that gets evaluated to return a value each time.
+- Any other object, which gets evaluated (object.value(source)) each time.
 
-To create source functions from objects that can generate streams of values, use 
-aSymbol.source(generator, message);
 
 IZ Tue, Mar  4 2014, 01:01 EET
 */
@@ -16,19 +19,27 @@ Source {
     classvar registered; // do not necessarily register all sources
     classvar <>pollRate = 0.1;
 
-    var <>message;
     var <source; // routine, responder, view, (other?)
-    // No more state. Keep it simple!
-
+    var <template; // object that created the source. Used for reset.
+    
     *registered { ^registered ?? { registered = IdentityDictionary() } }
 
-    *new { | source, message = \value |
-        ^this.newCopyArgs(message).init(source);
+    *new { | source |
+        ^super.new.source_(source);
     }
 
-    init { | argSource |
-        source = argSource.asSource(this);
+    source_ { | argSource |
+        var isPlaying = false;
+        if (source.isPlaying) {
+            source.stop;
+            isPlaying = true;
+        };
+        template = argSource;
+        source = argSource.makeSourceAction(this);
+        if (isPlaying) { this.start };
     }
+
+    asSource { /* just return yourself... */ }
 
     /* Either redefine start, stop, reset for all relevant objects,
         or store the custom messages in a dictionary and translate 
@@ -37,24 +48,43 @@ Source {
         then use startSource, stopSource, resetSource.
     */
     start {
-        source.start;
+        source.postln;
+        source.start(this);
     }
 
     stop {
-        source.stop;
+        source.stop(this);
     }
 
     reset {
-        source.reset;
+        this.source = template;
     }
 }
 
++ Task {
+    start {
+        if (this.streamHasEnded) { this.reset };
+        this.play;
+    }
+}
+
+
 + Object {
-    asSource { | source |
-        source = source ?? { Source.newCopyArgs(\value) };
-        ^r {
+    src { | source, mapper |
+        // convert source to Source instance and connect it to self
+        /* mapper becomes an object that responds to .value by taking
+            the arguments passed from the source, maps them or otherwise
+            processes them, and finally sends a message to the listener */
+        source = source.asSource;
+        this.addNotifier(source, \value, mapper.asMapper(source, this));
+    }
+
+    asSource { ^Source(this); }
+
+    makeSourceAction { | source |
+        ^Task {
             loop {
-                source.changed(\value, this.(source), source);
+                source.changed(\value, this.(source));
                 source.pollRate.wait;
             };
         }
@@ -62,32 +92,39 @@ Source {
 }
 
 + AbstractResponderFunc {
-    
-    asSource { | source |
-    source = source ?? { Source.newCopyArgs(\value) };
-    this.prFunc = { | ... args |
-            source.changed(\value, *(args add: this)) 
-        };
+    makeSourceAction { | source |
+        this.prFunc = { | ... args | source.changed(\value, *args) }; 
+        /* return self */
     }
+
+    start { this.enable }
+    stop { this.disable }
+    isPlaying { ^this.enabled }
 }
 
-+ View {
-    asSource { | source |
-        source = source ?? { Source.newCopyArgs(\value) };
-        this.action = {
-            source.changed(\value, this.value, source)
-        }
+/* Note: Cannot define this in View, because it is a redirect class, and returns
+platform specific classes instead.  Therefore, doing it for QT.  Other GUI
+    classes can be added in a similar way */
+
++ QView {
+    makeSourceAction { | source | 
+        this.action = { source.changed(\value, this.value) };
+        /* return self */
     }
+    start { | source |
+        this.makeSourceAction(source);
+    }
+    stop { this.action = nil }
+    isPlaying { ^this.action.notNil }
 }
 
 + SequenceableCollection {
-    asSource { | source |
+    makeSourceAction { | source |
         var stream;
         stream = Pseq(this, inf).asStream;
-        source = source ?? { Source.newCopyArgs(\value) };
-        ^r {
+        ^Task {
             loop {
-                source.changed(\value, stream.next, source);
+                source.changed(\value, stream.next);
                 source.pollRate.wait;
             }
         }
