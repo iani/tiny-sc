@@ -113,7 +113,13 @@ Notification {
 		Notification.remove(notifier, message, this);
 	}
 
-	// First remove any previous notifier that sends me this message, then add notifier, message
+	// Review? Possibly used by AppModel. 
+	// But the correct form should be 
+	// Notification.remove(notifier, message, this);
+	// Maybe use another name for the correct form in order not to break
+	// AppModel. INVESTIGATE!
+	// First remove any previous notifiers that send me this message, 
+	// then add the new notifier, message, and action.
 	replaceNotifier { | notifier, message, action |
 		this removeMessage: message;
 		this.addNotifier(notifier, message, action);
