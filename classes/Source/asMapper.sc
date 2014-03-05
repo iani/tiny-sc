@@ -12,6 +12,12 @@ IZ Tue, Mar  4 2014, 15:20 EET
 
 + Object {
 
+	asMapper { | source, listener |
+		^MapSet(listener.sourceMsg, this.asSpec).asMapper(source, listener);
+	}
+
+	sourceMsg { ^\set }
+
     mapSet { | parameter |
         ^MapSet(parameter, this.asSpec)
     }

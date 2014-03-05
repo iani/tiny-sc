@@ -28,6 +28,10 @@ MappingView {
         view.action = {
             source.changed(\value, spec map: view.value);
         };
+		view.onClose = {
+			// this notifies "objectClosed" and then disconnects:
+			view.objectClosed;
+		}
         /* return self */
     }
     start { | source |
@@ -65,6 +69,11 @@ platform specific classes instead.  Therefore, doing it for QT.  Other GUI
     map { | spec |
         ^MappingView(this, spec.asSpec); 
     }
+
+    set { | param, val |
+        // make views work as listeners of a source
+        { this.value = val; }.defer;
+    }
     /*
     makeSourceAction { | source | 
         this.action = { source.changed(\value, this.value) };
@@ -75,9 +84,5 @@ platform specific classes instead.  Therefore, doing it for QT.  Other GUI
     }
     stop { this.action = nil }
     isPlaying { ^this.action.notNil }
-    set { | param, val |
-        // make views work as listeners of a source
-        { this.value = val; }.defer;
-    }
     */
 }

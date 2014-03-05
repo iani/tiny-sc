@@ -54,3 +54,7 @@ IZ Tue, Mar  4 2014, 22:25 EET.
 
 UnmapSet(\x, [1, 10]);
 
+//:
+
+Pfuncn({ 10.rand }, 3).asStream.nextN(5);
+

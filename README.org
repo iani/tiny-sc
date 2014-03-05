@@ -1,3 +1,9 @@
+#+TITLE: Tiny-sc
+
+/Compact but powerful tools for SuperCollider, with Emacs Org-mode intergration/
+
+(IZ Tue, 25 Feb 2014 16:20:26ff)
+
 * Done
 
 - Adsr, Sine, Perc :: Env shortcuts
@@ -13,11 +19,13 @@
   - Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
   - Load org-mode sections marked with AUTOLOAD property.
 
-* Underway
+* Undergoing first tests
 
-** Object:src
+** =Source=: Flexibly connect objects to data sources
 
-Make any object receive messages from a data source.  Set or replace the origin of the data source at any time (Pattern/Stream, View, OSCFunc, MIDIFunc, constant).
+Make any object receive messages from a data source.  Set or replace the origin of the data source at any time. Work interchangeably with Patterns/Streams, Views, OSCFuncs, MIDIFuncs, constant values.  Customize, map and/or filter the messages and values sent to listening objects.
+
+*** Basic method: =src=
 
 : anObject.src(source, mapper);
 
@@ -64,73 +72,11 @@ The routine is created rougly like this:
 
 The controlled Synth may choose to =free= or =release= itself when receiving =\p_end= at the end of the routine process.
 
-** MixBus class
+*** Details: encapsuling routines and other data sources
 
-Subclass of Bus.
+Source Encapsulates the routine in another object that sends the notifications, so that one may substitute a new routine in that object and still keep the connections to all listeners controlled by the object.  It can hold any object that wants to broadcast a stream of values, such as a poller of audio or control stream values, a tcp poller, an osc or midi event listener, a gui widget event listerer etc.  Finally, the listening objects receiving notifications from the Source instance can use adapters to react differently to the data received.
 
-MixBus(name, numChans, out); // create new instance if needed, and make it current.
-
-Alternative for above:
-\name.mixBus(numChans, out);
-
-Also creates its own Group.
-When created:
-
-- registers itself in MixBus.all class variable under its given name (symbol), for access.
-- sets the following current environemnt variables:
-  - ~out :: index of the bus. Synths can write to this bus.
-  - ~target :: its group
-- Creates synth called =gain= positioned after =~target=, providing:
-  - global level control (control name: =gain=)
-  - adsr envelope for fadeout with method =release(releaseTime)=
-- The =gain= synth directs its output to another channel, per default channel 0.
-- Different types of =gain= synths can be used, to provide effects and multichannel output
-- Other synths can be added before =gain= to provide additional effects.
-- Syn(...) reads ~out an ~target from the environment, and therefore by default uses the installed MixBus, if present.
-- Define keyboard shortcuts in SC for altering the level control of the current mixbus (the one belonging to the current environment).
-- Create GUI for MixBus.  The gui can show all mixbusses stored in MixBus.all.
-- The =gain= synth can be released to shut output of a mixbus.  A new gain synth can be created at any moment to restart output, or even to crossfade a different type of output.
-- To remove a mixBus entirely call mixBus.remove.  This releases the gain synth, removes the group when the gain synth is freed, removes the mixBus from the =all= variable, and frees the bus.
-
-* Next plans:
-
-** More convenient ways to map/set Synth parameters
-
-- method bmap :: map to bus created implicitly for a control-rate synth.
-- method rmap :: map to routine created implicitly for a stream.
-- method gmap :: map to gui instance created from specs.
-
-*** Synth:busctl : map parameter to a bus to which a synth outputs.
-
-(note: older name of method was =nmap=).
-
-: aSynth.busctl(busname[->parname], controlSynth)
-
-This method maps a bus stored under a name =busname= to a input parameter (control) of the synth being controlled. =parname= is the name of the parameter to which the bus is mapped.
-
-- =busname[->parname]= :: A symbol =busname= or an association =busname->parname=. If no =parname= is given, then =busname= is used as the name of the bus to which to map and the name of the parameter that this bus will be mapped to.  If an association =busname->parname= is given, then =busname= is the name of the bus and =parname= is the name of the parameter to which the parameter is mapped.
-- =controlSynth= :: A control-rate synth to be mapped.
-
-For example:
-
-: { SinOsc.ar(\freq.kr(400), 0, 0.1) }.play
-: .busctl(\freq, { LFNoise0.kr(5).range(400, 500).out }.play);
-
-Outline of actions done by this method:
-
-1. Access bus as value in a global dictionary of Synth-bus or symbol-bus associations.
-2. Create new bus if not already present, and set output of controlSynth to bus index.
-3. Map parameter to index of bus.
-
-Note: bus should/may be freed and removed from global dictionary when all of its synth inputs are freed.
-
-*** Source (Broadcast?): encapsulate routine or other data source in an object
-
-Encapsulate the routine in another object that sends the notifications, so that one may substitute a new routine in that object and still keep the connections to all listeners controlled by the object.
-
-This object/class could be called Source (Streamer, Poller, Brodcaster?).  It can hold any object that wants to broadcast a stream of values, such as a poller of audio or control stream values, a tcp poller, an osc or midi event listener, a gui widget event listerer etc.  Finally, the listening objects receiving notifications from the Source instance can use adapters to react differently to the data received.  We thus have:
-
-*** MapFunc: Encapsulate mapping action and sending message to listener
+** =MapFunc= Encapsulate mapping action and sending message to listener
 
 Encapsulate the spec in the mapping function, thereby saving the trouble to store specs in an extra variable.  Also exchange mapping or other type of response functions at any moment, without having to store these actions anywhere.  Use =Object:removeNotifier(notifier, message)= to remove the previous instance of the notification and replace it with the new one.
 
@@ -144,7 +90,7 @@ The three items above can be useful to the =MapFunc= as sources of further infor
 
 - action :: function that maps or otherwise acts on the value received from the update.  Note: A spec does not need to be stored separately, because it can be made available to the function through a closure created by another function that creates the action function.  The action returns an array whose first element is the message to be performed by the listener and the rest of the elements are arguments to that message.
 
-**** Connecting an object to an updater (Source)
+*** Connecting an object to an updater (Source)
 NO LONGER VALID!:
 Message for connecting an object to an updater (Source) - yet see next subsection below!
 
@@ -156,7 +102,7 @@ For example =\freq.asSpec.setter(\freq)= would return a function that returns an
 
 Here is maybe a better version:
 
-**** Shortcuts for connecting an object to a Source:
+*** Shortcuts for connecting an object to a Source:
 
 Use standard prefix v (variable) or s (source) for the method names.  For example:
 
@@ -164,7 +110,7 @@ Use standard prefix v (variable) or s (source) for the method names.  For exampl
 
 =vmap= is sent to a Symbol.  It creates a MapFunc instance, named after the symbol, without an action.  The action can then be set by sending the instance messages. Such messages are described in the next section:
 
-**** Shortcuts for creating mapping functions
+*** Shortcuts for creating mapping functions
 
 - =map= :: Create a function that sends the listener the message set thus: =listener.set(parameter, mappedValue)=.  The parameter can be provided as argument.  The spec for mapping the input value is also created from data passed as argument.
 - =unmap= :: Like map, except that the spec is used to unmap instead of to map.
@@ -205,8 +151,93 @@ Seletive action constructors could be defined:
 : vselect(source).select()
 : vreject(source).reject()
 
+** PatternPlayer: Play a pattern, as stream, in time
 
-** Org-table as score?
+The timing of successive value requests from the stream is defined by another stream,
+that produces the dt (time intervals) to wait for the next call of "next".
+
+Patterns of both values and durations stream can be exchanged on-the-fly while the player is running.
+
+Used by Source as default source for all objects except OSCFunc, MIDIFunc and View.
+
+* Next plans:
+
+Add/remove widgets dynamically in a single gui window, for display and control of processes.  The window can be placed at one of the 4 sides of the screen.  Show just the widget with a label.  Default widget: Knob (for compactness).  More functionality accessible by typing keyboard commands at a selected window (possibly with ctl key):  Start/Stop the related process, input a new source-template for the process, etc.
+
+Each window stores the widgets in a dictionary under the names of the labels, for access.
+
+* Started, but currently on hold
+
+** MixBus class
+
+Subclass of Bus.
+
+MixBus(name, numChans, out); // create new instance if needed, and make it current.
+
+Alternative for above:
+\name.mixBus(numChans, out);
+
+Also creates its own Group.
+When created:
+
+- registers itself in MixBus.all class variable under its given name (symbol), for access.
+- sets the following current environemnt variables:
+  - ~out :: index of the bus. Synths can write to this bus.
+  - ~target :: its group
+- Creates synth called =gain= positioned after =~target=, providing:
+  - global level control (control name: =gain=)
+  - adsr envelope for fadeout with method =release(releaseTime)=
+- The =gain= synth directs its output to another channel, per default channel 0.
+- Different types of =gain= synths can be used, to provide effects and multichannel output
+- Other synths can be added before =gain= to provide additional effects.
+- Syn(...) reads ~out an ~target from the environment, and therefore by default uses the installed MixBus, if present.
+- Define keyboard shortcuts in SC for altering the level control of the current mixbus (the one belonging to the current environment).
+- Create GUI for MixBus.  The gui can show all mixbusses stored in MixBus.all.
+- The =gain= synth can be released to shut output of a mixbus.  A new gain synth can be created at any moment to restart output, or even to crossfade a different type of output.
+- To remove a mixBus entirely call mixBus.remove.  This releases the gain synth, removes the group when the gain synth is freed, removes the mixBus from the =all= variable, and frees the bus.
+
+** More convenient ways to map Synth parameters
+
+*** Synth:busctl : map parameter to a bus to which a synth outputs.
+
+(note: older name of method was =nmap=).
+
+: aSynth.busctl(busname[->parname], controlSynth)
+
+This method maps a bus stored under a name =busname= to a input parameter (control) of the synth being controlled. =parname= is the name of the parameter to which the bus is mapped.
+
+- =busname[->parname]= :: A symbol =busname= or an association =busname->parname=. If no =parname= is given, then =busname= is used as the name of the bus to which to map and the name of the parameter that this bus will be mapped to.  If an association =busname->parname= is given, then =busname= is the name of the bus and =parname= is the name of the parameter to which the parameter is mapped.
+- =controlSynth= :: A control-rate synth to be mapped.
+
+For example:
+
+: { SinOsc.ar(\freq.kr(400), 0, 0.1) }.play
+: .busctl(\freq, { LFNoise0.kr(5).range(400, 500).out }.play);
+
+Outline of actions done by this method:
+
+1. Access bus as value in a global dictionary of Synth-bus or symbol-bus associations.
+2. Create new bus if not already present, and set output of controlSynth to bus index.
+3. Map parameter to index of bus.
+
+Note: bus should/may be freed and removed from global dictionary when all of its synth inputs are freed.
+
+* Further Plans:
+
+- Org-table as score?
+- Add to sclang-snippets:
+  - Each snippet eval output is stored in list of objects, in emacs buffer,
+    for access, eg. to free or pause a synth, routine, group, pattern player etc.
+  - If return value is synth: store synth
+  - If return value is routine: create own group for putting synths in,
+    so that synths are also freed when routine is stopped?
+    Possible?  Only via currentEnvironment.  Use variant of Synth.new
+    to access currentEnvironment's target?
+    This could be method synth of string or symbol, called in similar manner as Synth.new:
+    Instead of Synth("test"), write synth("test").
+  - Similar to routine, also for Pbinds.
+    Check if Pbind accesses currentEnvironment to get \target value.
+    If so, then implementing private group per snippet should be easy.
 
 * Implementation notes
 
@@ -232,22 +263,3 @@ The eval id is stored as property in the org-section.
 ** Process trees?
 
 To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EventStreamPlayer) and notify the children when the thread stops.  Similarly for EventStreamPlayer.  Registering processes under a snippet/org-section id is a simpler alternative. However process-tree based stopping is a different thing, because one may want to kill a parent-process through the gui, independent fom the snippet grouping which may contain also other processes.
-
-* Older Plans:
-
-- Add to sclang-snippets:
-  - Each snippet eval output is stored in list of objects, in emacs buffer,
-    for access, eg. to free or pause a synth, routine, group, pattern player etc.
-  - If return value is synth: store synth
-  - If return value is routine: create own group for putting synths in,
-    so that synths are also freed when routine is stopped?
-    Possible?  Only via currentEnvironment.  Use variant of Synth.new
-    to access currentEnvironment's target?
-    This could be method synth of string or symbol, called in similar manner as Synth.new:
-    Instead of Synth("test"), write synth("test").
-  - Similar to routine, also for Pbinds.
-    Check if Pbind accesses currentEnvironment to get \target value.
-    If so, then implementing private group per snippet should be easy.
-
-
-IZ Tue, 25 Feb 2014 16:20:26ff

@@ -58,7 +58,7 @@ Source {
     reset {
         this.source = template;
     }
-
+    isPlaying { ^source.isPlaying }
     pollRate { ^pollRate }
 }
 
@@ -82,15 +82,16 @@ Source {
             the arguments passed from the source, maps them or otherwise
             processes them, and finally sends a message to the listener */
         source = source.asSource;
-        this.addNotifier(source, \value,
-            // { "src works?".postln; }
-                mapper.asMapper(source, this)
-        );
-
+        this.addNotifier(source, \value, mapper.asMapper(source, this));
+		^source;
     }
 
     asSource { ^Source(this); }
 
+    makeSourceAction { | source |
+        ^PatternPlayer(this).makeSourceAction(source);
+    }
+    /*
     makeSourceAction { | source |
         ^Task {
             loop {
@@ -99,19 +100,10 @@ Source {
             };
         }
     }
+    */
 }
 
-+ AbstractResponderFunc {
-    makeSourceAction { | source |
-        this.prFunc = { | ... args | source.changed(\value, *args) }; 
-        /* return self */
-    }
-
-    start { this.enable }
-    stop { this.disable }
-    isPlaying { ^this.enabled }
-}
-
+/*
 + SequenceableCollection {
     makeSourceAction { | source |
         var stream;
@@ -124,20 +116,15 @@ Source {
         }
     }
 }
-
-/* NEEDS RETHINKING?
-Shortcut for creating Source instances.
-OSCFunc and MIDIFunc instances are passed an function that broadcasts.
-Arrays are treated as Pseqs with infinite repeat and polled at pollRate.
-Functions create Pfunc instances polled at pollRate.
-Associations create a stream of values and a stream of d-times and polled at d-times. 
-
-The result is always a function that, upon computing or receiving a value,
-broadcasts this value with: source.changed(message, value, source);
-
 */
-+ Symbol {
-    source { | generator, message = \value |
-        
+
++ AbstractResponderFunc {
+    makeSourceAction { | source |
+        this.prFunc = { | ... args | source.changed(\value, *args) }; 
+        /* return self */
     }
+
+    start { this.enable }
+    stop { this.disable }
+    isPlaying { ^this.enabled }
 }
