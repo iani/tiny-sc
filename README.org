@@ -1,15 +1,67 @@
 * Done
-- UGen shortcuts: Env, out
-- ProcessRegistry:  Register Nodes, Routines, EventStreamPlayers and stop them from a GUI
-- Emacs: Eval / select code blocks between comments
-- Emacs/org-mode:
+
+- Adsr, Sine, Perc :: Env shortcuts
+- out :: Out.ar/kr shortcut.
+- Notification :: Filter "changed" notifications, add and remove notifiers.
+- ProcessRegistry :: Keep track of running Nodes, Routines, Patterns.
+- ProcessRegistryGui :: Display list of running processes, delete key stops selected process.
+- sclang-snippets :: Shortcuts to navigate, select and run code blocks separated by =//:=.
+- org-sc :: Evaluate SC code in org-mode sections and babel blocks.
   - Eval code in sections, replace/stop processes belonging to a section
   - Wrap code in Routine to permit using =wait=, and play loops.
   - Load all sections whose AUTOLOAD property is non-nil.
-- MixBus alpha
-  - also shortcut: synth => \mixBusName
+  - Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
+  - Load org-mode sections marked with AUTOLOAD property.
 
 * Underway
+
+** Object:src : Make any object receive messages from a data source.  Set or replace the origin of the data source at any time (Pattern/Stream, View, OSCFunc, MIDIFunc, constant).
+
+: anObject.src(source, mapper);
+
+Get or create a Source instance, and connect its output to anObject.  Return the Source instance.  The way in which the output is connected to the receiving object is set by the mapper, which encapsulates both any processing of the value received such as mapping it with a spec, and the message to be sent to the receiver, such as =.set(\freq, mappedValue)=.  For example:
+
+: anObject.src(source, [500, 600].mapSet(\freq));
+
+The above makes the object =source= send to =anObject= (usually a Synth instance), the message =set= for setting parameter =freq= with a value mapped from an input in the range of 0-1 to the range of 500-600.  The source can be any object that generates values in time, for example a Task (Routine not supported yet), an OSCFunc, a MIDIFunc, a gui Slider, etc.  The object given to method =src= as its =source= parameter can be either a symbol for accessing an already existing Source instance from a global dictionary, or a template that is used by Source to create a Source instance which will broadcast the generated values.
+
+Here are the steps of this mechanism:
+
+1. Find or create the source instance.
+   - If =source= is a symbol, then get the source instance from the dictionary in Source.all.  If no instance is found under the given symbol, then create one.
+   - If =source= is an instance of Source, proceed to the next step, connecting =source= to =anObject=.
+   - Otherwise create an instance of source using the object as source of values.  The object given in =source= is treated differently according to its kind:
+     - pattern: create a Stream from pattern.
+     - view: set the action of the view to do source.changed(... view.value).
+     - OSCFunc: set func of OSCFunc to do source.changed(...).
+     - MIDIFunc: set func of MIDIFunc to do source.changed(...).
+     - SequenceableCollection: Pseq(collection, inf).asStream, polled at intervals given by Source.pollRate.
+     - Any other object: return routine polling the object with object.value(source)
+       and broadcasting the resulting value to the listeners of the source.  This also works for Functions.  Use classvar pollRate of Source as polling rate.
+
+*** Shortcut: set parameter of Node from values (NOT YET IMPLEMENTED)
+ A special case/shortcut method for setting the parameter of a Node (Synth or Group):
+: aNode.rset(routname[->parname], valueStream, timeStream);
+
+- =parameter/controller= :: A symbol or an association parameter->controller. =parameter= is the name of the parameter of the synth to be set by the routine. =controller= is the symbol under which the routine is stored. If no controller name is given, then the controller name defaults to the parameter name.
+- =valueStream= :: Any object.  Values are obtained from the stream by sending it the message next.  Patterns are converted to streams with asStream before being used.
+- =timeStream= :: Any object that returns a stream of positive integers (duration values) when sent the message next. (Similar to valueStream).
+
+*** first prototype - polling streams with a routine and timing
+The routine is created rougly like this:
+
+{
+	var val, dur;
+	while { (val = valStream.next).notNil and: { (dur = durStream.next).notNil } }
+	{
+		thisThread.changed(\value, val, dur);
+		dur.wait;
+	};
+	this.changed(\p_end);
+}
+
+The controlled Synth may choose to =free= or =release= itself when receiving =\p_end= at the end of the routine process.
+
 ** MixBus class
 
 Subclass of Bus.
@@ -37,53 +89,6 @@ When created:
 - Create GUI for MixBus.  The gui can show all mixbusses stored in MixBus.all.
 - The =gain= synth can be released to shut output of a mixbus.  A new gain synth can be created at any moment to restart output, or even to crossfade a different type of output.
 - To remove a mixBus entirely call mixBus.remove.  This releases the gain synth, removes the group when the gain synth is freed, removes the mixBus from the =all= variable, and frees the bus.
-
-** Object:src : Make any object receive messages from a data source
-
-: anObject.src(source, mapper);
-
-Get or create a Source instance, and connect its output to anObject.  Return the Source instance.  The way in which the output is connected to the receiving object is set by the mapper, which encapsulates both any processing of the value received such as mapping it with a spec, and the message to be sent to the receiver, such as =.set(\freq, mappedValue)=.  For example:
-
-: anObject.src(source, [500, 600].mapSet(\freq));
-
-The above makes the object =source= send to =anObject= (usually a Synth instance), the message =set= for setting parameter =freq= with a value mapped from an input in the range of 0-1 to the range of 500-600.  The source can be any object that generates values in time, for example a Task (Routine not supported yet), an OSCFunc, a MIDIFunc, a gui Slider, etc.  The object given to method =src= as its =source= parameter can be either a symbol for accessing an already existing Source instance from a global dictionary, or a template that is used by Source to create a Source instance which will broadcast the generated values.
-
-Here are the steps of this mechanism:
-
-1. Find or create the source instance.
-   - If =source= is a symbol, then get the source instance from the dictionary in Source.all.  If no instance is found under the given symbol, then create one.
-   - If =source= is an instance of Source, proceed to the next step, connecting =source= to =anObject=.
-   - Otherwise create an instance of source using the object as source of values.  The object given in =source= is treated differently according to its kind:
-     - pattern: create a Stream from pattern.
-     - view: set the action of the view to do source.changed(... view.value).
-     - OSCFunc: set func of OSCFunc to do source.changed(...).
-     - MIDIFunc: set func of MIDIFunc to do source.changed(...).
-     - SequenceableCollection: Pseq(collection, inf).asStream, polled at intervals given by Source.pollRate.
-     - Any other object: return routine polling the object with object.value(source)
-       and broadcasting the resulting value to the listeners of the source.  This also works for Functions.  Use classvar pollRate of Source as polling rate.
-
-*** Shortcut: set parameter of Node from values
- A special case/shortcut method for setting the parameter of a Node (Synth or Group):
-: aNode.rset(routname[->parname], valueStream, timeStream);
-
-- =parameter/controller= :: A symbol or an association parameter->controller. =parameter= is the name of the parameter of the synth to be set by the routine. =controller= is the symbol under which the routine is stored. If no controller name is given, then the controller name defaults to the parameter name.
-- =valueStream= :: Any object.  Values are obtained from the stream by sending it the message next.  Patterns are converted to streams with asStream before being used.
-- =timeStream= :: Any object that returns a stream of positive integers (duration values) when sent the message next. (Similar to valueStream).
-
-*** first prototype - polling streams with a routine and timing
-The routine is created rougly like this:
-
-{
-	var val, dur;
-	while { (val = valStream.next).notNil and: { (dur = durStream.next).notNil } }
-	{
-		thisThread.changed(\value, val, dur);
-		dur.wait;
-	};
-	this.changed(\p_end);
-}
-
-The controlled Synth may choose to =free= or =release= itself when receiving =\p_end= at the end of the routine process.
 
 * Next plans:
 
@@ -201,20 +206,6 @@ Seletive action constructors could be defined:
 
 ** Org-table as score?
 
-* Done:
-
-- Adsr, Sine, Perc :: Env shortcuts
-- out :: Out.ar/kr shortcut.
-- Notification :: Filter "changed" notifications, add and remove notifiers.
-- ProcessRegistry :: Keep track of running Nodes, Routines, Patterns.
-- ProcessRegistryGui :: Display list of running processes, delete key stops selected process.
-- sclang-snippets :: Shortcuts to navigate and run code blocks separated by =//:=.
-- org-sc :: Evaluate SC code in org-mode sections and babel blocks.
-- Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
-
-** More features
-- org-sc :: Load org-mode sections marked with AUTOLOAD property.
-- sclang-snippets :: select current snippet region.
 * Implementation notes
 
 ** Stopping processes started from code contained in an org-mode section
