@@ -4,7 +4,7 @@
 - out :: Out.ar/kr shortcut.
 - Notification :: Filter "changed" notifications, add and remove notifiers.
 - ProcessRegistry :: Keep track of running Nodes, Routines, Patterns.
-- ProcessRegistryGui :: Display list of running processes, delete key stops selected process.
+- ProcessRegistryGui :: Display list of running processes, =delete= key stops selected process.
 - sclang-snippets :: Shortcuts to navigate, select and run code blocks separated by =//:=.
 - org-sc :: Evaluate SC code in org-mode sections and babel blocks.
   - Eval code in sections, replace/stop processes belonging to a section
@@ -15,7 +15,9 @@
 
 * Underway
 
-** Object:src : Make any object receive messages from a data source.  Set or replace the origin of the data source at any time (Pattern/Stream, View, OSCFunc, MIDIFunc, constant).
+** Object:src
+
+Make any object receive messages from a data source.  Set or replace the origin of the data source at any time (Pattern/Stream, View, OSCFunc, MIDIFunc, constant).
 
 : anObject.src(source, mapper);
 
