@@ -55,3 +55,8 @@ QSli().src(~player2, \nil.mapSet);
 \monitor.addNotifier(~sourcex, \value, { | ... args | args.postln });
 //:
 \monitor.objectClosed;
+//:
+
+~sourcey = QSli().src(Prand((0..10)/10, inf));
+~sourcey.start;
+

@@ -1,0 +1,33 @@
+* Goal
+
+Give names to sources (pubs) and connect them to a panel (window with knobs).
+
+Note: Here I start using the name Pub instead of Source, which makes the things clearer, since the Source/Pub class has an instance variable =source= which is the actual data source.  So the broadcaster (previously class =Source=)  is called Pub, and source from now on refers to the source inside it.
+
+IZ Wed, Mar  5 2014, 17:04 EET
+
+* Idea
+
+: \name @= object;
+
+Make object the source of a Pub.  If a pub exists under that =name=, then set the source of that pub, else create a new pub, store it under that name, and set its source.
+
+Broacast this change (Pub.changed(\source, <name>, source).  CBoard listens to this.  If any CBoard window is open, it looks for a knob widget that is associated with this source, and makes it visible, if it is invisible.  Otherwise, it allocates the first found knob element that is still free to that Pub and shows it.
+
+CBoard sets itself to display updates from the Pub as follows:
+
+- If the value received is a number
+  -
+
+- Else, post the object in a text field underneath the knob.
+
+** Display elements
+
+An element showing a
+
+
+** Interleaving gui input with input from other sources
+
+Possible idea:
+
+When a
