@@ -112,22 +112,6 @@ Source {
     isPlaying { ^this.enabled }
 }
 
-/* Note: Cannot define this in View, because it is a redirect class, and returns
-platform specific classes instead.  Therefore, doing it for QT.  Other GUI
-    classes can be added in a similar way */
-
-+ QView {
-    makeSourceAction { | source | 
-        this.action = { source.changed(\value, this.value) };
-        /* return self */
-    }
-    start { | source |
-        this.makeSourceAction(source);
-    }
-    stop { this.action = nil }
-    isPlaying { ^this.action.notNil }
-}
-
 + SequenceableCollection {
     makeSourceAction { | source |
         var stream;

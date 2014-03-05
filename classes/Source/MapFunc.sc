@@ -61,7 +61,7 @@ MapSet : MapFunc {
 UnmapSet : MapSet {
 
     valueArray { | val |
-        listener.set(parameter, mapper.unmap(val));
+        listener.set(parameter, mapper.unmap(*val));
     }
 }
 
