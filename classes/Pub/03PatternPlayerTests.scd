@@ -6,7 +6,7 @@ Tested: Wed, Mar  5 2014, 13:09 EET
 
 ~player = PatternPlayer((1..10) / 10, 1);
 
-QSli().src(~player, \nil.mapSet);
+QSli().pub(~player, \nil.mapSet);
 
 ~player.start;
 
@@ -23,13 +23,13 @@ QSli().src(~player, \nil.mapSet);
 //:
 ~player2 = PatternPlayer((1..10) / 10);
 
-QSli().src(~player2, \nil.mapSet);
+QSli().pub(~player2, \nil.mapSet);
 
 ~player2.start;
 
 //: ------------- Testing PatternPlayer created by default: 
 
-~source = Source((1..10) / 10);
+~source = Pub((1..10) / 10);
 
 ~source.start;
 
@@ -43,7 +43,7 @@ QSli().src(~player2, \nil.mapSet);
 \monitor.addNotifier(~source, \value, { | ... args | args.postln; });
 
 //:
-~sourcex = QSli().src([0.1, 0.2]);
+~sourcex = QSli().pub([0.1, 0.2]);
 ~sourcex.start;
 
 ~sourcex.isPlaying;
@@ -57,6 +57,6 @@ QSli().src(~player2, \nil.mapSet);
 \monitor.objectClosed;
 //:
 
-~sourcey = QSli().src(Prand((0..10)/10, inf));
+~sourcey = QSli().pub(Prand((0..10)/10, inf));
 ~sourcey.start;
 

@@ -21,21 +21,24 @@
 
 * Undergoing first tests
 
-** =Pub= (currently still defined as =Source=) Flexibly connect objects to data sources
+** =Pub= (previously defined as =Source=) Flexibly connect objects to data sources
 
-Make any object receive messages from a data source.  Set or replace the origin of the data source at any time. Work interchangeably with Patterns/Streams, Views, OSCFuncs, MIDIFuncs, constant values.  Customize, map and/or filter the messages and values sent to listening objects.
+Publish data received from a source (PatternPlayer, OSCFunc, MIDIFunc, GUI) to any object that is concerned. Able to:
+- Replace the origin of the data source at any time.
+- Work interchangeably with Patterns/Streams, Views, OSCFuncs, MIDIFuncs, constant values.
+- Customize, map and/or filter the messages and values sent to listening objects.
 
-Note: Currently (Wed, Mar  5 2014, 17:08 EET) this class is called =Source=.  But this creates confusion, because the Source actually publishes to many objects the results of polling another object, which is the stream *source*.  So it would be better to call this class "Publisher", or for short: "Pub".
+Note: Previously (Wed, Mar  5 2014, 17:08 EET) this class was called =Source=.  But this created confusion, because the Source actually publishes to many objects the results of polling another object, which is the stream *source*.  So it would be better to call this class "Publisher", or for short: "Pub".
 
-*** Basic method: =src= (or =pub= ?)
+*** Basic method: =pub= (previously =src= ?)
 
-: anObject.src(source, mapper);
+: anObject.pub(source, mapper);
 
 Get or create a Source instance, and connect its output to anObject.  Return the Source instance.  The way in which the output is connected to the receiving object is set by the mapper, which encapsulates both any processing of the value received such as mapping it with a spec, and the message to be sent to the receiver, such as =.set(\freq, mappedValue)=.  For example:
 
-: anObject.src(source, [500, 600].mapSet(\freq));
+: anObject.pub(source, [500, 600].mapSet(\freq));
 
-The above makes the object =source= send to =anObject= (usually a Synth instance), the message =set= for setting parameter =freq= with a value mapped from an input in the range of 0-1 to the range of 500-600.  The source can be any object that generates values in time, for example a Task (Routine not supported yet), an OSCFunc, a MIDIFunc, a gui Slider, etc.  The object given to method =src= as its =source= parameter can be either a symbol for accessing an already existing Source instance from a global dictionary, or a template that is used by Source to create a Source instance which will broadcast the generated values.
+The above makes the object =source= send to =anObject= (usually a Synth instance), the message =set= for setting parameter =freq= with a value mapped from an input in the range of 0-1 to the range of 500-600.  The source can be any object that generates values in time, for example a Task (Routine not supported yet), an OSCFunc, a MIDIFunc, a gui Slider, etc.  The object given to method =pub= as its =source= parameter can be either a symbol for accessing an already existing Source instance from a global dictionary, or a template that is used by Source to create a Source instance which will broadcast the generated values.
 
 Here are the steps of this mechanism:
 
@@ -92,9 +95,9 @@ The three items above can be useful to the =MapFunc= as sources of further infor
 
 - action :: function that maps or otherwise acts on the value received from the update.  Note: A spec does not need to be stored separately, because it can be made available to the function through a closure created by another function that creates the action function.  The action returns an array whose first element is the message to be performed by the listener and the rest of the elements are arguments to that message.
 
-*** Connecting an object to an updater (Source)
+*** Connecting an object to an updater (Pub)
 NO LONGER VALID!:
-Message for connecting an object to an updater (Source) - yet see next subsection below!
+Message for connecting an object to an updater (Pub) - yet see next subsection below!
 
 : specF(action)
 
@@ -104,7 +107,7 @@ For example =\freq.asSpec.setter(\freq)= would return a function that returns an
 
 Here is maybe a better version:
 
-*** Shortcuts for connecting an object to a Source:
+*** Shortcuts for connecting an object to a Pub:
 
 Use standard prefix v (variable) or s (source) for the method names.  For example:
 
@@ -145,22 +148,22 @@ Most general case: collect the result of evaluating each of the args with the va
 
 For example:
 
-: aSynth.vset(aStreamSource).spec(\freq);
-: aSynth.vset(aStreamSource).spec([10, 100],
+: aSynth.vset(aStreamPub).spec(\freq);
+: aSynth.vset(aStreamPub).spec([10, 100],
 
 Seletive action constructors could be defined:
 
 : vselect(source).select()
 : vreject(source).reject()
 
-** PatternPlayer: Play a pattern, as stream, in time
+** PatternPlayer: Play a pattern, as stream, in Wed Mar  5 19:43:12 2014
 
 The timing of successive value requests from the stream is defined by another stream,
 that produces the dt (time intervals) to wait for the next call of "next".
 
 Patterns of both values and durations stream can be exchanged on-the-fly while the player is running.
 
-Used by Source as default source for all objects except OSCFunc, MIDIFunc and View.
+Used by Pub as default source for all objects except OSCFunc, MIDIFunc and View.
 
 * Next plans:
 

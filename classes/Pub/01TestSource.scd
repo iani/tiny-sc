@@ -1,6 +1,6 @@
 /*
 First tests with:
-    Source
+    Pub
     MapFunc (MapSet, UnmapSet, BimapSet)
 
 IZ Tue, Mar  4 2014, 16:16 EET
@@ -9,7 +9,7 @@ Tests passed: Tue, Mar  4 2014, 22:23 EET
 */
 
 //:
-~source = Source();
+~source = Pub();
 w = Window("test", Rect(1250, 0, 150, 200));
 v = Slider();
 w.view.layout = HLayout(v);
@@ -49,4 +49,3 @@ a.addNotifier(~source, \value, { | val | a.set(\freq, val * 100 + 400) });
 
 //: New adapter
 a.addNotifier(~source, \value, { | val | a.set(\freq,(val * 2 + 50).midicps.postln) });
-

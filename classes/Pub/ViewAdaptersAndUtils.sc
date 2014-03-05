@@ -24,9 +24,9 @@ MappingView {
         ^this.newCopyArgs(view, spec.asSpec);
     }
 
-    makeSourceAction { | source |
+    makePubAction { | pub |
         view.action = {
-            source.changed(\value, spec map: view.value);
+            pub.changed(\value, spec map: view.value);
         };
 		view.onClose = {
 			// this notifies "objectClosed" and then disconnects:
@@ -34,13 +34,13 @@ MappingView {
 		}
         /* return self */
     }
-    start { | source |
-        this.makeSourceAction(source);
+    start { | pub |
+        this.makePubAction(pub);
     }
     stop { view.action = nil }
     isPlaying { ^view.action.notNil }
     set { | param, val |
-        // make views work as listeners of a source
+        // make views work as listeners of a pub
         { view.value = val; }.defer;
     }
 }
@@ -62,8 +62,8 @@ platform specific classes instead.  Therefore, doing it for QT.  Other GUI
     classes can be added in a similar way */
 
 + QView {
-    makeSourceAction { | source |
-        ^MappingView(this).makeSourceAction(source);
+    makePubAction { | pub |
+        ^MappingView(this).makePubAction(pub);
     }
 
     map { | spec |
@@ -71,16 +71,16 @@ platform specific classes instead.  Therefore, doing it for QT.  Other GUI
     }
 
     set { | param, val |
-        // make views work as listeners of a source
+        // make views work as listeners of a pub
         { this.value = val; }.defer;
     }
     /*
-    makeSourceAction { | source | 
-        this.action = { source.changed(\value, this.value) };
+    makePubAction { | pub | 
+        this.action = { pub.changed(\value, this.value) };
         /* return self */
     }
-    start { | source |
-        this.makeSourceAction(source);
+    start { | pub |
+        this.makePubAction(pub);
     }
     stop { this.action = nil }
     isPlaying { ^this.action.notNil }

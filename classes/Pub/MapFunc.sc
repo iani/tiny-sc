@@ -3,8 +3,8 @@ An algorithm, optionally with some state, which responds to the value message by
 processing the arguments sent together with that argument and optionally sending 
 the results to a listener objects as a message array (=listener.perform(*message)=). 
 
-This is used in place of a function as a Notification's action by Source.  
-It serves for example to map the value sent by a Source to the range 
+This is used in place of a function as a Notification's action by Pub.  
+It serves for example to map the value sent by a Pub to the range 
 appropriate for the listener. 
 
 IZ Tue, Mar  4 2014, 14:09 EET
@@ -12,12 +12,12 @@ IZ Tue, Mar  4 2014, 14:09 EET
 
 MapFunc {
 
-    var <>source;
+    var <>pub;
     var <>listener;
     var <>mapper;
 
-    *new { | source, listener, mapper |
-        ^this.newCopyArgs(source, listener, mapper);
+    *new { | pub, listener, mapper |
+        ^this.newCopyArgs(pub, listener, mapper);
     }
 
     valueArray { | ... args |
@@ -27,21 +27,21 @@ MapFunc {
         encapsulated in the func, it may be simpler and more efficient
         to define subclasses that specialize in behaviours such as setting 
         the parameter of a Node: 
-        value ... source.set(message, mapper.map(args[0]))
+        value ... pub.set(message, mapper.map(args[0]))
         See examples started below.
     */
 
-    asMapFunc { | argSource, argListener |
-        /* Store source and listener.
-            Called by Object:src.  See Source class.
+    asMapFunc { | argPub, argListener |
+        /* Store pub and listener.
+            Called by Object:pub.  See Pub class.
         */
-        source = argSource;
+        pub = argPub;
         listener = argListener;
     }
 
-    asMapper { | argSource, argListener |
-        // sent by Object.src, to create mapper and install source and listener 
-        source = argSource;
+    asMapper { | argPub, argListener |
+        // sent by Object.pub, to create mapper and install pub and listener 
+        pub = argPub;
         listener = argListener;
     }
 }

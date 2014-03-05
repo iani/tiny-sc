@@ -6,7 +6,7 @@ no longer needed to get the Stream here.
 
 Maybe add another set of shortcuts with prefix sp : 
 
-array.sprandi becomes: Source(Prand(array, inf)) etc. 
+array.sprandi becomes: Pub(Prand(array, inf)) etc. 
 
 */
 

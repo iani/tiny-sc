@@ -1,15 +1,15 @@
-/* Debugging MapFunc, src method.
+/* Debugging MapFunc, pub method.
 IZ Tue, Mar  4 2014, 22:25 EET.
 
 */
 
-~source = Source();
+~source = Pub();
 ~source.source = (1..10);
 ~source.start;
 
 //:
 ~synth = { SinOsc.ar(\freq.kr(400), 0, 0.1) }.play;
-~synth.src(~source, [400, 800].bimapSet(\freq, [1, 10]));
+~synth.pub(~source, [400, 800].bimapSet(\freq, [1, 10]));
 //:
 // ~source.source = MappingView(QSli(), [1, 10]);
 ~source.source = QSli().map([1, 10]);
@@ -17,30 +17,30 @@ IZ Tue, Mar  4 2014, 22:25 EET.
 ~source.source.spec = [1, 10].asSpec;
 //:
 ~source.source = QSli();
-~synth.src(~source, \freq.mapSet(\freq));
+~synth.pub(~source, \freq.mapSet(\freq));
 //:
-\monitor.src(~source, \freq);
+\monitor.pub(~source, \freq);
 //:
-\monitor.setSource(~source);
+\monitor.setPub(~source);
 //:
 ~source.stop;
 //:
 ~mapFunc = MapFunc(~source, \monitor, { \set });
 //:
-\monitor.setSource(~source, ~mapFunc);
+\monitor.setPub(~source, ~mapFunc);
 //:
-\monitor.setSource(~source, \freq); 
+\monitor.setPub(~source, \freq); 
 
 //////////////////////////////////////////////////////////
 //:
 ~source.source = (1..10) / 10;
 ~source.start;
 //:
-\monitor.setSource(~source);
+\monitor.setPub(~source);
 //:
 
 ~unmapper = UnmapSet(\x, [1, 10]);
-~slider = QSli().src(~source, [1, 10].unmapSet);
+~slider = QSli().pub(~source, [1, 10].unmapSet);
 
 [1, 10].mapSet.inspect;
 [1, 10].unmapSet.inspect;

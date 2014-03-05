@@ -1,9 +1,13 @@
 /* 
-Encapsulate any source that emits values upon to which many different objects can be interested.
+Pub = Publisher.
+
+Encapsulate any source that emits values upon to which many different objects can be 
+interested.  "Publish" the incoming value to any listening object, using 
+this.changed(\value, val).
 
 Such can be: 
 - A Task that computes values or otherwise gets values from a stream.
-    Note: Source is not coded for using Routines safely: Restarting it while
+    Note: Pub is not coded for using Routines safely: Restarting it while
     its previous routine is playing, will add a second copy of the schedule task
     and cause the timing to break.
 - An OSCFunc or a MIDIFunc
@@ -15,7 +19,7 @@ Such can be:
 IZ Tue, Mar  4 2014, 01:01 EET
 */
 
-Source {
+Pub {
     classvar registered; // do not necessarily register all sources
     classvar <>pollRate = 0.1;
 
@@ -28,24 +32,24 @@ Source {
         ^super.new.source_(source);
     }
 
-    source_ { | argSource |
+    source_ { | argPub |
         var isPlaying = false;
         if (source.isPlaying) {
             source.stop;
             isPlaying = true;
         };
-        template = argSource;
-        source = argSource.makeSourceAction(this);
+        template = argPub;
+        source = argPub.makePubAction(this);
         if (isPlaying) { this.start };
     }
 
-    asSource { /* just return yourself... */ }
+    asPub { /* just return yourself... */ }
 
     /* Either redefine start, stop, reset for all relevant objects,
         or store the custom messages in a dictionary and translate 
         each time.  The second solution seems unnecessarily complex.
         If start, stop, reset cause conflicts, 
-        then use startSource, stopSource, resetSource.
+        then use startPub, stopPub, resetPub.
     */
     start {
         source.start(this);
@@ -71,28 +75,28 @@ Source {
 
 
 + Object {
-    setSource { | source, action |
+    setPub { | source, action |
         // simple version, for debugging.
         this.addNotifier(source, \value, action ?? {{ | ... args | args.postln }}); 
     }
 
-    src { | source, mapper |
-        // convert source to Source instance and connect it to self
+    pub { | source, mapper |
+        // convert source to Pub instance and connect it to self
         /* mapper becomes an object that responds to .value by taking
             the arguments passed from the source, maps them or otherwise
             processes them, and finally sends a message to the listener */
-        source = source.asSource;
+        source = source.asPub;
         this.addNotifier(source, \value, mapper.asMapper(source, this));
 		^source;
     }
 
-    asSource { ^Source(this); }
+    asPub { ^Pub(this); }
 
-    makeSourceAction { | source |
-        ^PatternPlayer(this).makeSourceAction(source);
+    makePubAction { | source |
+        ^PatternPlayer(this).makePubAction(source);
     }
     /*
-    makeSourceAction { | source |
+    makePubAction { | source |
         ^Task {
             loop {
                 source.changed(\value, this.(source));
@@ -105,7 +109,7 @@ Source {
 
 /*
 + SequenceableCollection {
-    makeSourceAction { | source |
+    makePubAction { | source |
         var stream;
         stream = Pseq(this, inf).asStream;
         ^Task {
@@ -119,7 +123,7 @@ Source {
 */
 
 + AbstractResponderFunc {
-    makeSourceAction { | source |
+    makePubAction { | source |
         this.prFunc = { | ... args | source.changed(\value, *args) }; 
         /* return self */
     }

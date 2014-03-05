@@ -14,7 +14,7 @@ PatternPlayer {
 	var <durationPattern;
 	var <>initialDelay = 0;
 	var <>clock;
-	var <source;
+	var <pub;
 	var <valueStream;
 	var <durationStream;
 	var <task;
@@ -30,27 +30,27 @@ PatternPlayer {
 	}
 
 	durations_ { | durations |
-		durationPattern = (durations ?? {{ source.pollRate }}).asPattern;
+		durationPattern = (durations ?? {{ pub.pollRate }}).asPattern;
 		durationStream = durationPattern.asStream;
 	}
 	
-	makeSourceAction { | argSource |
-		source = argSource;
+	makePubAction { | argPub |
+		pub = argPub;
 		this.values = valuePattern;
 		this.durations = durationPattern;
 		task = Task {
-			source.changed(\taskStarted);
+			pub.changed(\taskStarted);
 			initialDelay.wait;
-			source.changed(\taskLoopStarted);
+			pub.changed(\taskLoopStarted);
 			while {
 				(currentValue = valueStream.next).notNil 
 				and:
 				{ (currentDuration = durationStream.next).notNil }
 			}{
-				source.changed(\value, currentValue);
+				pub.changed(\value, currentValue);
 				currentDuration.wait;
 			};
-			source.changed(\taskStopped);
+			pub.changed(\taskStopped);
 		}
 	}
     start { task.play(clock); }
