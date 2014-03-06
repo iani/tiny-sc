@@ -60,3 +60,5 @@ QSli().pub(~player2, \nil.mapSet);
 ~sourcey = QSli().pub(Prand((0..10)/10, inf));
 ~sourcey.start;
 
+
+

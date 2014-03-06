@@ -187,6 +187,9 @@ Adapted from org-toggle-ordered-property."
 '(progn
    (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
    (define-key org-mode-map (kbd "C-M-x") 'org-sc-eval)
+   (define-key org-mode-map (kbd "C-c C-,") 'sclang-eval-line)
+   ;; 9 because in the us keyboard it is below open paren:
+   (define-key org-mode-map (kbd "C-c C-9") 'sclang-eval-dwim)
    (define-key org-mode-map (kbd "C-M-z") 'org-sc-stop-section-processes)
    (define-key org-mode-map (kbd "H-C-x") 'org-sc-eval-in-routine)
    ;; convenient parallel to H-C-x:

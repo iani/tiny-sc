@@ -1,0 +1,109 @@
+A simple language for composing event sources and synth sources into trees.
+
+* Preliminary notes about composing patterns and streams
+One can compose patterns into a binary operator stream, but once that stream is created,
+can one substitute part of the stream with something else?
+
+Apparently yes:
+
+#+BEGIN_EXAMPLE
+BinaryOpStream : Stream {
+	var >operator, >a, >b;
+..
+}
+#+END_EXAMPLE
+
+(note: Function list will not do.  It does not compose the functions, merely executes them, but separately.
+
+The BinaryOpStream creates a binary tree, so it will be a bit complex to edit it as a sequence, but possible.
+
+one way might be to record the location of each stream added to the tream as a sequence of characters.  Eg
+
+top stream left: l
+top stream right: r
+
+If r is a binary operator,
+then its two elements would be:
+rl and rr
+etc.
+
+* Rough outline for Pattern/Stream composing language
+
+So we would have a way of coding how to edit the tree:
+
+Operations coded as binary operators:
+- =+ :: location operator element: Add subtree element as subnode at location with operator
+	The operator to be used for creating the new binary tree can be part of the operator:
+	- =++ :: Create new tree with + operator
+	- =+- :: Create new tree with - operator
+	etc.
+
+- =- :: location...  remove element from subtree.  Note: The other element of the tree takes the place of the binop.
+        Note: This operator does not require element argument, so the location is given as first argument (as string or symbol), instead of as adverb.
+- =@ :: location newelement: replace element at location
+
+Where the locations are given by a symbol, which is added as adverb to the operator.  Nil (no adverb) denotes the top of the tree.
+
+- nil :: The top of the tree.
+- "l" :: the top left branch
+- "r" :: the top right branch
+- "ll" :: the left branch of the top left branch
+- "lr" :: the right branch of the top left branch
+- "lrl" :: the left branch of the right branch of the top left branch
+etc.
+
+One can use binary operators with adverbs for the language.
+For example:
+
+: \pub1 =@ pattern1 // put pattern1 at root of source, replacing previous source
+
+: \pub1 =++.l pattern2 // add pattern2 as left subnode of tree, composing with +
+:                      // pattern1 becomes: pattern2 + pattern1
+
+: \pub1 =@.r pattern3 // put pattern3 as right subnode of tree, replacing previous
+:      // pattern2 + pattern1 becomes: pattern2 + pattern3
+
+: \pub1 =- \l          // remove left subnode
+:                      // pattern2 + pattern3 becomes: pattern3
+
+** tests
+
+"" respondsTo: '=+'
+"" respondsTo: '=-'
+"" respondsTo: '=@'
+
+(
+a = Pn(1) + Pn(2);
+b = a.asStream;
+)
+
+* Rough outline for Node (Group/Synth) composing language
+
+The same principle can be applied to node trees.  However node trees are not binary, and do not have operators.  They have one or more nodes at each level of the tree.  So addressing an element can be done with a MultiLevelIdentityDictionary.  The address should better be an array of symbols rather than a string.   A single symbol would indicate that the node is to be added at the root level of the dictionary.  Nodes at the root level of the dictionary send their output to the =RootNode= of the Server.
+
+Although it would be possible to use the same operator symbols for the Node language, it is better to use different symbols, so that the meaning of the code becomes immediately apparent.  Inspired by ChucK, the operator chosen is ==>=
+
+: synth => symbol // Add synth as input to node identified by symbol, at the root level
+
+: synth => array // add synth as input to node identified by symbol array.
+
+Nodes added in this way become siblings of any previously existing nodes at the same level.
+
+To replace a node, we'll use another ChucK-inspired operator: ==^=
+
+We need to define several other operators as well:
+
+- Move a node behind another target node
+- Move a node before another target node
+- Move all subnodes of a node to become subnodes of another target node
+- Access a node,
+  When accessed, optionally and perform an operation on it (send it a message etc.)
+  The optional operation could be specified by adverb.
+
+Candidate symbols for these would be:
+
+=!
+=%
+=#
+=&
+=$
