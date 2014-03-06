@@ -30,7 +30,7 @@ Publish data received from a source (PatternPlayer, OSCFunc, MIDIFunc, GUI) to a
 
 Note: Previously (Wed, Mar  5 2014, 17:08 EET) this class was called =Source=.  But this created confusion, because the Source actually publishes to many objects the results of polling another object, which is the stream *source*.  So it would be better to call this class "Publisher", or for short: "Pub".
 
-*** Basic method: =pub= (previously =src= ?)
+*** Basic method: =pub= (previously =src=)
 
 : anObject.pub(source, mapper);
 
@@ -167,18 +167,29 @@ Used by Pub as default source for all objects except OSCFunc, MIDIFunc and View.
 
 * Next plans:
 
-** Dynamic windows
+** CBoard
+
 Add/remove widgets dynamically in a single gui window, for display and control of processes.  The window can be placed at one of the 4 sides of the screen.  Show just the widget with a label.  Default widget: Knob (for compactness).  More functionality accessible by typing keyboard commands at a selected window (possibly with ctl key):  Start/Stop the related process, input a new source-template for the process, etc.
 
 Each window stores the widgets in a dictionary under the names of the labels, for access.
 
-** Interleaved control from multiple sources on one Pub
+*** Interleaved control from multiple sources on one Pub
 
+** SourceTree, NodeTree: Edit trees of sclang and scsynth processes
 
+Note: see separate file under file::./classes/ProcessComposition/ProcessCompositionNotes.org
+
+SourceTree: Language and representation of trees of event sources (Patterns/Streams, OSCFuncs, MIDIFuncs etc) composed with operators to Pbinop and BinaryOpStream.
+
+Add, remove, replace any element of the tree by giving its address as a symbol composed of =l= and =r= for specifying the movement down the branches of the binary tree.
+
+NodeTree: As SourceTree, but for Nodes.  Uses Arrays of Symbols as addresses.
 
 * Started, but currently on hold
 
 ** MixBus class
+
+This idea may be implemented better as an extension of the NodeTree idea.
 
 Subclass of Bus.
 
