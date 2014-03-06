@@ -77,21 +77,177 @@ a = Pn(1) + Pn(2);
 b = a.asStream;
 )
 
-* Rough outline for Node (Group/Synth) composing language
+* SynthTree: Rough outline for Node (Group/Synth) composing language
 
-The same principle can be applied to node trees.  However node trees are not binary, and do not have operators.  They have one or more nodes at each level of the tree.  So addressing an element can be done with a MultiLevelIdentityDictionary.  The address should better be an array of symbols rather than a string.   A single symbol would indicate that the node is to be added at the root level of the dictionary.  Nodes at the root level of the dictionary send their output to the =RootNode= of the Server.
+The same principle can be applied to node trees.  However node trees are not binary, and do not have operators.  They have one or more nodes at each level of the tree.  So addressing an element can be done with a variant of MultiLevelIdentityDictionary.  The address should better be an array of symbols rather than a string.   A single symbol would indicate that the node is to be added at the root level of the dictionary.  Nodes at the root level of the dictionary send their output to the =RootNode= of the Server.
 
-Although it would be possible to use the same operator symbols for the Node language, it is better to use different symbols, so that the meaning of the code becomes immediately apparent.  Inspired by ChucK, the operator chosen is ==>=
+** Note: SynthTree as subclass of MultiLevelIdentityDictionary
 
-: synth => symbol // Add synth as input to node identified by symbol, at the root level
+SynthTree can be defined as subclass of MultiLevelIdentityDictionary, or on a separate class of similar principle. in order to:
+
+1. Add the synth, group, bus, and the input info at each level
+2. Permit the addition of variable length branches
+
+For point 2 perhaps an entirely separate class will be necessary - need to examine this more...
+
+#+BEGIN_EXAMPLE
+a = MultiLevelIdentityDictionary();
+a.put(\a, 1);
+a.put(\b, 2);
+a.put(\b, MultiLevelIdentityDictionary().put(\c, 3));
+
+a.at(\a);
+a.at(\b);
+a.at(\b, \c);
+#+END_EXAMPLE
+
+** ChucK-inspired operators for adding Synths: =>, =<>, =@>, =<@>, =^, =@^, =<@^
+
+Inspired by the ChucK operator "=>" several variants are designed to distinguish the following cases:
+
+- => :: add after the synth indicated by the path, with input bus(ses) specified by message to path. If no message to path is passed, then no input(s) are created.
+- =<> :: (shortcut:) add after the synth indicated by the path, with default input at "in"
+- =^ ::
+
+The following variants add the sign @ in the middle of the operator to indicate that the synth added should be enclosed in its own group. (This makes it possible o
+
+- =@> :: ...
+- =<@> :: ...
+- =@^ :: ...
+- =<@^ :: ...
+
+The operator => adds the synth after the last synth (leaf) in the tree indicated by the path and sets its output(s) to the input(s) of the leaf-synth.
+
+We have actually several cases of paths:
+
+#+BEGIN_EXAMPLE
+synth => nil; // add after root node (at first level of branches of tree)
+synth => [\a, \path, \leaf]; // go down the tree, add after \leaf
+synth => \symbol; // shorter form of synth => [\symbol]
+#+END_EXAMPLE
+
+
+A different operator, =<> can be used as a shortcut to indicate that a bus should be allocated and the input named in of the synth should be set to the index of that bus. A numeric adverb can be used to indicate the number of channels of the bus:
+
+: synth =<> nil; // Add single channel bus at root node level
+: synth =<>.2 nil; // Add stereo bus at root node level
+: synth =<>.6 nil; // add 6 channel bus at root note level
+
+Add =synth= after the node identified by =symbol=,
+: synth => symbol;
+
+
+
 
 : synth => array // add synth as input to node identified by symbol array.
+: // if intermediate levels do not exist, create them?? Or, issue an error???
 
-Nodes added in this way become siblings of any previously existing nodes at the same level.
+Nodes added in this way are added exactly *after* the synth identified by the path (symbol or array), and become siblings of any previously existing nodes at the same level.
+
+** Synth creation vs. synth moving: Preventing glitches
+
+If one creates the synth first and afterwards
+
+Move previously existing synth to location at path:
+
+: synth => path;
+
+Create synth with SynthDef =\test= at location at path, and set its outputs as needed (see below):
+
+: \test => path;
+
+Create synth at location at path, using extra arguments, and set its outputs as needed (see below):
+
+: [\test, freq: 440, amp: 0.1] => path;
+
+Play
+
+: { WhiteNoise.ar(0.1) } => path;
+
+** Bus allocation
+
+If a synth that is being added to the tree needs to have a private bus for input, then that should be indicated by sending the message =withInput= to the path (shorter version of the message for the same method is: =in=?).  The arguments to =withInput= or =in= optionally indicate the number of busses of the
+
+Examples:
+
+Allocate new audio bus with 1 channel, and set the input named =in= of aSynth to the index of the bus:
+
+: aSynth =<> path;
+
+: aSynth => path.in;
+
+or:
+
+: aSynth => path.withInput;
+
+Allocate new audio bus with 2 channels, and set the input named =in= of aSynth to the index of the bus:
+
+: aSynth => path.in(2);
+
+Allocate new audio bus with 1 channel, and set the input named =myInput= of aSynth to the index of the bus:
+
+: aSynth => path.withInput(\myInput);
+
+Allocate new audio bus with 2 channels, and set the input named =myInput= of aSynth to the index of the bus:
+
+: aSynth => path.withInput(\myInput, 2);
+
+Allocate following buses:
+
+- 4 channel input, set to input =quadIn=
+- 1 channel input, set to input =monoIn=
+- 2 channel input, set to input =stereoIn==
+- a previously allocated bus contained in =otherBus=, set to input =other=
+
+: aSynth => path.in(\quadIn, 4, \monoIn, \stereoIn, 2, otherBus);
+
+** Output specification
+
+Conversely, the outputs to which a synth should write can be specified by message =withOutput= (short form: =out=). Per default, SynthTree
+
+
+
+
+
+** Allocating a group for part of the subtree
+
+Additionally, one may enclose a single synth into a separate group, so that one may control the entire subbranch after that synth with single commands.  For this, use the operator =@>, or the adverb 'g' (=>.g)
+
+: aSynth =@> path // add aSynth after node at path, enclosing it in a Group
+
 
 To replace a node, we'll use another ChucK-inspired operator: ==^=
 
-We need to define several other operators as well:
+What to do with replaced nodes?
+- free?
+- pause?
+- release?
+- redirect to "sink bus"?
+
+The default is =release=.
+
+The other options can be indicated by adverbs:
+
+- =^.f :: free
+- =^.p :: pause (=.run(0)=)
+- =^.r :: run (=.run(1)=)
+- =^.s :: silence (redirect to sink group/bus)
+
+** The sink group / bus
+
+** Number of channels in bus allocation
+
+
+
+** Additional commands/operators
+
+- =>! :: make the node that was added the default target, so that new synths use it as default target at creation time.
+
+In order to make this work, it is needed to redefine Server:asTarget thus:
+
+: + Server {
+: 	asTarget { ^~target ?? { Group.basicNew(this, 1) } }
+: }
 
 - Move a node behind another target node
 - Move a node before another target node
