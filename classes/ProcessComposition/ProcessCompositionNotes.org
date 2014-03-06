@@ -77,72 +77,94 @@ a = Pn(1) + Pn(2);
 b = a.asStream;
 )
 
-* SynthTree: Rough outline for Node (Group/Synth) composing language
+* SynthTree: access, interconnect, reorder named synths on all servers
 
-The same principle can be applied to node trees.  However node trees are not binary, and do not have operators.  They have one or more nodes at each level of the tree.  So addressing an element can be done with a variant of MultiLevelIdentityDictionary.  The address should better be an array of symbols rather than a string.   A single symbol would indicate that the node is to be added at the root level of the dictionary.  Nodes at the root level of the dictionary send their output to the =RootNode= of the Server.
+The purpose of SynthTree is to provide access and modification facilities for the structure of a tree of synths, with their busses and groups.
 
-** Note: SynthTree as subclass of MultiLevelIdentityDictionary
+Each node of the tree holds a synth, and if present, the group, and input-output control names and busses.
 
-SynthTree can be defined as subclass of MultiLevelIdentityDictionary, or on a separate class of similar principle. in order to:
+Each server has one root SynthTree, whose root branch contains the RootNode.  There is one global root tree, that holds the root trees of all servers.
 
-1. Add the synth, group, bus, and the input info at each level
-2. Permit the addition of variable length branches
+** Access to nodes in the tree
 
-For point 2 perhaps an entirely separate class will be necessary - need to examine this more...
+*** Basic access: Full path
+Access to a node in the tree is done by a path that is an array of symbols. To access a node of the tree, one sends a path the message .st (SynthTree). The path can be nil (the root node of the default server), a symbol, or an array of symbols. For example:
 
-#+BEGIN_EXAMPLE
-a = MultiLevelIdentityDictionary();
-a.put(\a, 1);
-a.put(\b, 2);
-a.put(\b, MultiLevelIdentityDictionary().put(\c, 3));
+The root nodes of all servers that are booted is accessed at =\global=.  This holds no synth, but its dictionary has all servers that are booted:
+: \global.st
 
-a.at(\a);
-a.at(\b);
-a.at(\b, \c);
-#+END_EXAMPLE
+The root node of the default server:
+: [\global, \default].st
 
-** ChucK-inspired operators for adding Synths: =>, =<>, =@>, =<@>, =^, =@^, =<@^
+Node named \fx in the default server:
+: [\global, \default, \fx]
+
+For brevity, [\global, \default] is added to any path that does not start with =\global=, including =nil=, or a symbol (not an array).
+
+Thus:
+
+Access the root node of the default server:
+: nil
+
+Access node named =fx= on the default server:
+
+: \fx
+
+Access node named =fx2= on the internal server:
+
+: [\global, \internal, \fx2]
+
+*** Adding synths to the tree: The chuck operator (=>)
+
+To add a synth to a tree at the end of one of its branches, chuck it to the path, using the ChucK-style operator "=>".
+
+Add the panSynth at the root node of the default server, and name the new branch in the tree containing the reverbSynth 'pan':
+: panSynth => \pan;
+
+Add panSynth after pan in the tree (i.e. before pan in the execution order!), naming the new node 'reverb'.
+: reverbSynth => [\pan, \reverb]
+
+*** More convenient access: single global name
+
+It is inconvenient to always have to give the full path to a node to access it.  It would be more convenient if one could access any node just by its name, regardless of the position of the node in the tree.  This feature will require registering all named nodes of each server in a single flat dictionary (one separate dictionary for each server), while also at the same time maintaining the tree structure. So it will add some extra code, but it should be possible to implement.  So =\synth1.st= should work, even if =\synth1= is not placed just behind the root node of the server.  If that is implemented, one would also be able to chuck any synth to any other without giving the full path.
+
+*** Chaining chucks (reverse order required!)
+
+Because evaluation order in SuperCollider is left to right, and the ...
+
+\pan->panSynth <- \reverb->reverbSynth <- \granulate->granularSynth
+
+** Note: SynthTree implementation
+
+- New class: =IdentityTree= implements a tree with variable length branches, and two methods: =get= for accessing a node and =set= for setting a node.
+- Subclass =SynthTree= implements the SynthTree. Details:
+  1. Add the synth, group, bus, and the input info at each level
+  2. Create global SynthTree, to which all Server root trees are added.
+  3. Store one global 2 level MultiLevelIdentityDictionary, possibly in the default Library, with all nodes of all servers, stored under path [nameOfServer, nameOfNode].
+
+At StartUp: create global SynthTree, and add to it nodes for all known Servers.
+
+At Server boot: store the RootNode of the server under key "default" (maybe not - this is superfluous!?)
+
+** ChucK-inspired operators for adding Synths: =>, =^ etc.
 
 Inspired by the ChucK operator "=>" several variants are designed to distinguish the following cases:
 
-- => :: add after the synth indicated by the path, with input bus(ses) specified by message to path. If no message to path is passed, then no input(s) are created.
-- =<> :: (shortcut:) add after the synth indicated by the path, with default input at "in"
-- =^ ::
+- => :: add synth at location indicated by the path, with input bus(ses) specified by message to path. If no message to path is passed, then no input(s) are created.  If another synth is already placed at that location, replace it, and inherit its busses.  The previous synth is released (to ensure smooth fadeout).  Alternatively, adverbs may specify one of the following ways to treat the previous synth:
+  - =>.f :: free
+  - =>.p :: pause (run(0))
+  - =>.m :: (set its output to the sink bus)
+  - =>.<integer> :: If adverb is an integer, the integer specifes the number of channels to be allocated for an input bus that is sent to input named "in".
+- =<> :: (shortcut:) like =>, except that a default input is created for control named "in".
+- =^ :: insert the new synth between the synth indicated by the path and the synth before it in the tree.  Always create default input 'in' since input is required. Adverb may indicate different name or different number of channels for input.  If both different name and number of channels are required, or if additional inputs are needed, these are specified by sending a message to the symbol naming the new synth.
+
+Note: since =^> inserts between two synths, it will always inherit the busses of the previous synth.  See =^ above.
 
 The following variants add the sign @ in the middle of the operator to indicate that the synth added should be enclosed in its own group. (This makes it possible o
 
-- =@> :: ...
+- =@> :: Enclose synth in group, and append it after last synth in path.
 - =<@> :: ...
 - =@^ :: ...
-- =<@^ :: ...
-
-The operator => adds the synth after the last synth (leaf) in the tree indicated by the path and sets its output(s) to the input(s) of the leaf-synth.
-
-We have actually several cases of paths:
-
-#+BEGIN_EXAMPLE
-synth => nil; // add after root node (at first level of branches of tree)
-synth => [\a, \path, \leaf]; // go down the tree, add after \leaf
-synth => \symbol; // shorter form of synth => [\symbol]
-#+END_EXAMPLE
-
-
-A different operator, =<> can be used as a shortcut to indicate that a bus should be allocated and the input named in of the synth should be set to the index of that bus. A numeric adverb can be used to indicate the number of channels of the bus:
-
-: synth =<> nil; // Add single channel bus at root node level
-: synth =<>.2 nil; // Add stereo bus at root node level
-: synth =<>.6 nil; // add 6 channel bus at root note level
-
-Add =synth= after the node identified by =symbol=,
-: synth => symbol;
-
-
-
-
-: synth => array // add synth as input to node identified by symbol array.
-: // if intermediate levels do not exist, create them?? Or, issue an error???
-
-Nodes added in this way are added exactly *after* the synth identified by the path (symbol or array), and become siblings of any previously existing nodes at the same level.
 
 ** Synth creation vs. synth moving: Preventing glitches
 
@@ -166,7 +188,9 @@ Play
 
 ** Bus allocation
 
-If a synth that is being added to the tree needs to have a private bus for input, then that should be indicated by sending the message =withInput= to the path (shorter version of the message for the same method is: =in=?).  The arguments to =withInput= or =in= optionally indicate the number of busses of the
+If a synth that is being added to the tree needs to have one or more private busses for input, and these busses have at least one name different than 'in', then that should be indicated by sending the message =withInput= to the path (shorter version of the message for the same method is: =in=?).  The arguments to =withInput= or =in= optionally indicate the names of the inputs for the busses and the number of channels for each bus.  If the number of channels is 1 it can be omitted.
+
+Implementation note: =path.withInput= returns an object that holds the target synth together with the action for creating the bus and new synth.  (Technically, this is a kind of Behavior pattern).
 
 Examples:
 
