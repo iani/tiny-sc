@@ -87,34 +87,41 @@ Each server has one root SynthTree, whose root branch contains the RootNode.  Th
 
 ** Access to nodes in the tree
 
-*** Basic access: Full path
+*** Basic access principle: Full path
+
+NOTE: This section is an early version.  Writing the full path of a node in the tree every time is not practical. It is described here to explain the basic principles of node access.  The better alternative is described in the next section, ("Practical access"). The implementation of the second solution is described in section "SynthTree implementation".
+
 Access to a node in the tree is done by a path that is an array of symbols. To access a node of the tree, one sends a path the message .st (SynthTree). The path can be nil (the root node of the default server), a symbol, or an array of symbols. For example:
 
 The root nodes of all servers that are booted is accessed at =\global=.  This holds no synth, but its dictionary has all servers that are booted:
-: \global.st
+: \global.ts
 
 The root node of the default server:
-: [\global, \default].st
+: [\global, \default].ts
 
 Node named \fx in the default server:
-: [\global, \default, \fx]
+: [\global, \default, \fx].ts
 
 For brevity, [\global, \default] is added to any path that does not start with =\global=, including =nil=, or a symbol (not an array).
 
 Thus:
 
 Access the root node of the default server:
-: nil
+: nil.ts
 
 Access node named =fx= on the default server:
 
-: \fx
+: \fx.ts
 
 Access node named =fx2= on the internal server:
 
-: [\global, \internal, \fx2]
+: [\global, \internal, \fx2].ts
 
-*** Adding synths to the tree: The chuck operator (=>)
+*** Practical access: unique global name for each synth per server
+
+It is inconvenient to always have to give the full path to a node to access it.  It would be more convenient if one could access any node just by its name, regardless of the position of the node in the tree.  This feature will require registering all named nodes of each server in a single flat dictionary (one separate dictionary for each server), while also at the same time maintaining the tree structure. So it will add some extra code, but it should be possible to implement.  So =\synth1.st= should work, even if =\synth1= is not placed just behind the root node of the server.  If that is implemented, one would also be able to chuck any synth to any other without giving the full path.
+
+** Adding synths to the tree: The chuck operator (=>)
 
 To add a synth to a tree at the end of one of its branches, chuck it to the path, using the ChucK-style operator "=>".
 
@@ -124,30 +131,9 @@ Add the panSynth at the root node of the default server, and name the new branch
 Add panSynth after pan in the tree (i.e. before pan in the execution order!), naming the new node 'reverb'.
 : reverbSynth => [\pan, \reverb]
 
-*** More convenient access: single global name
+** Variants of the ChucK operator: Inserting synths, creating busses and groups
 
-It is inconvenient to always have to give the full path to a node to access it.  It would be more convenient if one could access any node just by its name, regardless of the position of the node in the tree.  This feature will require registering all named nodes of each server in a single flat dictionary (one separate dictionary for each server), while also at the same time maintaining the tree structure. So it will add some extra code, but it should be possible to implement.  So =\synth1.st= should work, even if =\synth1= is not placed just behind the root node of the server.  If that is implemented, one would also be able to chuck any synth to any other without giving the full path.
-
-*** Chaining chucks (reverse order required!)
-
-Because evaluation order in SuperCollider is left to right, and the ...
-
-\pan->panSynth <- \reverb->reverbSynth <- \granulate->granularSynth
-
-** Note: SynthTree implementation
-
-- New class: =IdentityTree= implements a tree with variable length branches, and two methods: =get= for accessing a node and =set= for setting a node.
-- Subclass =SynthTree= implements the SynthTree. Details:
-  1. Add the synth, group, bus, and the input info at each level
-  2. Create global SynthTree, to which all Server root trees are added.
-  3. Store one global 2 level MultiLevelIdentityDictionary, possibly in the default Library, with all nodes of all servers, stored under path [nameOfServer, nameOfNode].
-
-At StartUp: create global SynthTree, and add to it nodes for all known Servers.
-
-At Server boot: store the RootNode of the server under key "default" (maybe not - this is superfluous!?)
-
-** ChucK-inspired operators for adding Synths: =>, =^ etc.
-
+*** Replacing and inserting synths in the node tree
 Inspired by the ChucK operator "=>" several variants are designed to distinguish the following cases:
 
 - => :: add synth at location indicated by the path, with input bus(ses) specified by message to path. If no message to path is passed, then no input(s) are created.  If another synth is already placed at that location, replace it, and inherit its busses.  The previous synth is released (to ensure smooth fadeout).  Alternatively, adverbs may specify one of the following ways to treat the previous synth:
@@ -160,11 +146,53 @@ Inspired by the ChucK operator "=>" several variants are designed to distinguish
 
 Note: since =^> inserts between two synths, it will always inherit the busses of the previous synth.  See =^ above.
 
+*** Enclosing synths in groups
+
 The following variants add the sign @ in the middle of the operator to indicate that the synth added should be enclosed in its own group. (This makes it possible o
 
 - =@> :: Enclose synth in group, and append it after last synth in path.
 - =<@> :: ...
 - =@^ :: ...
+
+** Interconnecting ("Chaining") synths: The reverse chuck (=<)
+
+Left-to-right evaluation in SuperCollider requires that the synths receiving an input be created or accessed before those synths which send an output to them.  This is because the synths which send an output need to know which bus they should send that output to.  Switching their output after their creation would result in a glitch in the sound because of the delay involved in sending the =set= message to set their outputs to the input bus of the receiving synth.  Therefore, when chaining such synths, it is better to create the receiving synth first and the sending synth after it.  This requires two things:
+
+1. Define an operator for chaining, which places the receiving synth to the left and the sending synth to the right.  This operator is the "reverse chuck": =<.
+2. Devise a way to store the specs for creating a synth, pass them to the linking method together with the reveiving synth, and then have that method create the synth with the appropriate arguments.  This is done by overloading the chuck operator for strings, arrays and functions, so that strings are interpreted as SynthDef names, arrays as arguments to Synth.new, and functions as receivers of the message "play".
+
+Note: It is possible to reverse the order of execution of a chaine of binary operations or a nested argument call, but that is (a) complicated, (b) also, in the case of operators, would require that the end of the chain be indicated in the code.  This is not a practical solution.
+
+Following examples illustrate the wrong order and the correct order for creating and interconecting synths:
+
+Wrong order:
+#+BEGIN_EXAMPLE
+"granularSynth" => \granulate;
+"reverbSynth" =<> \reverb;
+\granulate ==> \reverb; // hypothetical operator sending source to effect
+#+END_EXAMPLE
+
+Correct order:
+#+BEGIN_EXAMPLE
+"reverbSynth" =<> \reverb;
+\reverb =< ("granularSynth" => \granulate);
+#+END_EXAMPLE
+
+The above correct example, in one line:
+: "reverbSynth" =<> \reverb =< ("granularSynth => \granulate);
+
+Example of interconnecting a chain of 3 synths in one line:
+: "panSynth" =<> \pan =< ("reverbSynth" =<> \reverb) =< ("granularSynth" => granulate);
+
+** SynthTree implementation
+
+- New class: =IdentityTree= implements a tree with variable length branches, and two methods: =get= for accessing a node and =set= for setting a node of the tree.
+- Subclass =SynthTree= implements the SynthTree. Details:
+  1. Add the synth, group, bus, and the input info at each level
+  2. Create global SynthTree, to which all Server root trees are added.
+  3. Store one global 2 level MultiLevelIdentityDictionary, possibly in the default Library, with all nodes of all servers, stored under path [nameOfServer, nameOfNode].
+
+At StartUp: create global SynthTree, and add to it nodes for all known Servers.
 
 ** Synth creation vs. synth moving: Preventing glitches
 
