@@ -13,12 +13,21 @@ IZ Thu, Mar  6 2014, 21:51 EET
 
 SynthTree : IdentityTree {
 	
-	var <synth;
-	var <busses;
-	var <group;
+	classvar servers;
 
-	*add {
+	var <synth;  // the synth of this node
+	var <inputs; // dictionary of input names and bus specs or busses
+	var <outputName; // name of output
+	var <outputBus;
+	var <outputSynth;
+	var <group;  // optional group enclosing synth as well as synths of input subtree [!??!?]
+	var <template; // optional template for re-creating synth
+
+	*add { | name, template, target, replaceMethod = \fadeOut |
 		
+\\		if (synth.notNil) { synth.perform(replaceMethod); } 
+		var synthNode;
+		synthNode = servers.at(target.asTarget.server, name);
 	}
 
 }

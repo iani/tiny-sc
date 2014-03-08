@@ -1,4 +1,4 @@
-A simple language for composing event sources and synth sources into trees.
+A simple :language: for composing event sources and synth sources into trees.
 
 * Preliminary notes about composing patterns and streams
 One can compose patterns into a binary operator stream, but once that stream is created,
@@ -34,15 +34,16 @@ So we would have a way of coding how to edit the tree:
 Operations coded as binary operators:
 - =+ :: location operator element: Add subtree element as subnode at location with operator
 	The operator to be used for creating the new binary tree can be part of the operator:
-	- =++ :: Create new tree with + operator
-	- =+- :: Create new tree with - operator
-	etc.
+  - =++ :: Create new tree with + operator
+  - =+- :: Create new tree with - operator
+  etc.
+  (Note: We cannot
 
 - =- :: location...  remove element from subtree.  Note: The other element of the tree takes the place of the binop.
         Note: This operator does not require element argument, so the location is given as first argument (as string or symbol), instead of as adverb.
 - =@ :: location newelement: replace element at location
 
-Where the locations are given by a symbol, which is added as adverb to the operator.  Nil (no adverb) denotes the top of the tree.
+Where the locations are given by an adverb added to the the operator (see http://danielnouri.org/docs/SuperColliderHelp/Language/Adverbs.html or https://github.com/supercollider/supercollider/blob/master/HelpSource/Reference/Adverbs.schelp ).  Nil (no adverb) denotes the top of the tree.
 
 - nil :: The top of the tree.
 - "l" :: the top left branch
@@ -65,8 +66,6 @@ For example:
 
 : \pub1 =- \l          // remove left subnode
 :                      // pattern2 + pattern3 becomes: pattern3
-
-** tests
 
 "" respondsTo: '=+'
 "" respondsTo: '=-'
@@ -187,16 +186,11 @@ Example of interconnecting a chain of 3 synths in one line:
 ** SynthTree implementation
 
 - New class: =IdentityTree= implements a tree with variable length branches, and two methods: =get= for accessing a node and =set= for setting a node of the tree.
-- Subclass =SynthTree= implements the SynthTree. Details:
-  1. Add the synth, group, bus, and the input info at each level
-  2. Create global SynthTree, to which all Server root trees are added.
-  3. Store one global 2 level MultiLevelIdentityDictionary, possibly in the default Library, with all nodes of all servers, stored under path [nameOfServer, nameOfNode].
+- Subclass =SynthTree= implements the SynthTree
 
-At StartUp: create global SynthTree, and add to it nodes for all known Servers.
+*** Initializing a new synth with the right output bus index
 
-** Synth creation vs. synth moving: Preventing glitches
-
-If one creates the synth first and afterwards
+If one creates a synth first and afterwards changes its output, to set it to the bus of a different input, then the synth will output for a short initial interval audibly to the default output bus 0.  This ...
 
 Move previously existing synth to location at path:
 
@@ -213,6 +207,8 @@ Create synth at location at path, using extra arguments, and set its outputs as 
 Play
 
 : { WhiteNoise.ar(0.1) } => path;
+
+
 
 ** Bus allocation
 
@@ -251,7 +247,7 @@ Allocate following buses:
 - 2 channel input, set to input =stereoIn==
 - a previously allocated bus contained in =otherBus=, set to input =other=
 
-: aSynth => path.in(\quadIn, 4, \monoIn, \stereoIn, 2, otherBus);
+: aSynth => path.in(\quadIn, 4, \monoIn, \stereoIn, 2, \other, otherBus);
 
 ** Output specification
 

@@ -18,7 +18,7 @@ Adsr {
 			gate: gateName.perform(\kr, gateValue),
 			levelScale: 1,
 			levelBias: 0,
-			timeScale: 1,
+			timeScale: \timeScale.kr(1),
 			doneAction: doneAction;
 		)
 	}
@@ -34,7 +34,7 @@ Perc {
 			gate: gateName.perform(\kr, gateValue),
 			levelScale: ampName.perform(\kr, ampValue),
 			levelBias: 0,
-			timeScale: 1,
+			timeScale: \timeScale.kr(1),
 			doneAction: doneAction;
 		)
 	}
@@ -50,8 +50,14 @@ Sine {
 			gate: gateName.perform(\kr, gateValue),
 			levelScale: ampName.perform(\kr, ampValue),
 			levelBias: 0,
-			timeScale: 1,
+			timeScale: \timeScale.kr(1),
 			doneAction: doneAction;
 		)
+	}
+}
+
++ Node {
+	fadeOut { | fadeOut = 0.2 |
+		this.set(\timeScale, fadeOut, \gate, 0)
 	}
 }
