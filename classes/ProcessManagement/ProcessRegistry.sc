@@ -150,6 +150,7 @@ NamedProcess {
 
 	onEnd { | listener, action |
 		NodeWatcher.register(this);
+		this.isPlaying = true;
 		listener.addNotifierOneShot(this, \n_end, action);
 	}
 }

@@ -1,4 +1,4 @@
-A simple :language: for composing event sources and synth sources into trees.
+A simple language for composing event sources and synth sources into trees.
 
 * Preliminary notes about composing patterns and streams
 One can compose patterns into a binary operator stream, but once that stream is created,
@@ -17,7 +17,7 @@ BinaryOpStream : Stream {
 
 The BinaryOpStream creates a binary tree, so it will be a bit complex to edit it as a sequence, but possible.
 
-one way might be to record the location of each stream added to the tream as a sequence of characters.  Eg
+one way might be to record the location of each stream added to the tream as a sequence of characters.  E.g.
 
 top stream left: l
 top stream right: r
@@ -37,7 +37,7 @@ Operations coded as binary operators:
   - =++ :: Create new tree with + operator
   - =+- :: Create new tree with - operator
   etc.
-  (Note: We cannot
+  (Note: Operators are not added as adverbs because adverbs are used here to specify the address of the branch to operate on.)
 
 - =- :: location...  remove element from subtree.  Note: The other element of the tree takes the place of the binop.
         Note: This operator does not require element argument, so the location is given as first argument (as string or symbol), instead of as adverb.
@@ -188,7 +188,34 @@ Example of interconnecting a chain of 3 synths in one line:
 - New class: =IdentityTree= implements a tree with variable length branches, and two methods: =get= for accessing a node and =set= for setting a node of the tree.
 - Subclass =SynthTree= implements the SynthTree
 
-*** Initializing a new synth with the right output bus index
+** Implementation of =>
+
+method *add;
+
+: aSynthOrSpec => \symbol
+
+Basic components:
+
+Note: st-node means SythTree-node.
+
+1. The st-node to which the synth will chucked.  Obtained from servers[\symbol].  Created if not present.
+2. The target st-node, to which the new st-node synth will send its output.  Obtained from ~root.  Note: If ~root is nil, initialize it to an SynthTree instance, with synth the root group of the default server, and bus a bus with index 0.
+3. The bus to which the new synth should send its output.  Obtained from the target st-node.
+4. The target group in which the synth will be created.
+
+*** Initializing the root node.
+
+*** Auto-restart the entire tree when the server boots?
+
+*** other notes
+1. If node is nil, add a new one at level 1 of the tree (just below the root node)
+2. Get SynthTree node at \symbol from dictionary at ~target.asTarget.server (defaults to Server.default).
+3. Get the
+4. if aSynthOrSpec is a Synth, then move it to after the node of the
+5.
+
+
+** Initializing a new synth with the right output bus index
 
 If one creates a synth first and afterwards changes its output, to set it to the bus of a different input, then the synth will output for a short initial interval audibly to the default output bus 0.  This ...
 

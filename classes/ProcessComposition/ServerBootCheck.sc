@@ -1,0 +1,65 @@
+/*
+Use a bus as a check to 
+
+This is a prototype that works with the default server.
+
+ServerBootCheck.add({ "test server boot".postln });
+ Server.default.quit;
+Server.default.boot;
+
+ServerBootCheck.default;
+
+ServerBootCheck.default.makeBuffer;
+*/
+
+ServerBootCheck {
+
+	var server;
+	var bus;
+	var funcs;
+
+	classvar default;
+
+	*default {
+		^default ?? { this.new(Server.default) }
+	}
+
+	*new { | server |
+		^this.newCopyArgs(server).init;
+	}
+
+	init {
+		if (server.serverRunning) {
+			this.makeBus;
+		};
+		ServerBoot.add({ this.checkIfReallyBootedAndDoActions }, server);
+	}
+
+	makeBus {
+		bus = Bus.control(server);
+		bus.set(12345);
+	}
+
+	checkIfReallyBootedAndDoActions {
+		if (bus.isNil) {
+			this.serverReallyBootedSoPleaseDoThoseActions;
+		}{
+		bus.get({ | val | 
+				if (val == 12345) {
+					this.serverDidNotReallyBootSoJustBeFunny;
+				}{
+					this.serverReallyBootedSoPleaseDoThoseActions;
+				 }
+			 });
+		 };
+	 }
+
+	 serverReallyBootedSoPleaseDoThoseActions {
+		 funcs do: _.value;
+		 this.makeBus;
+	 }
+
+	 serverDidNotReallyBootSoJustBeFunny { "Server did not really boot".postln; }
+	 *add { | func | this.default.add(func); }
+	 add { | func | funcs = funcs add: func; }
+}
