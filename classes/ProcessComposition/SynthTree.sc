@@ -10,10 +10,23 @@ For more, see separate doc.
 
 IZ Thu, Mar  6 2014, 21:51 EET
 
+SynthDef("test", { WhiteNoise.ar().adsrOut }).add;
+"test" => \test;
+\test.fadeOut(5);
+
+{ WhiteNoise.ar() } => \noise;
+{ SinOsc.ar(440) } =>.5 \noise;
+{ PinkNoise.ar } =>.3 \noise;
+{ GrayNoise.ar } => \noise;
+\noise.fadeOut;
+\noise.start;
+{ SinOsc.ar(440) } =>.free \noise;
+
 */
 
 SynthTree : IdentityTree {
 	
+
 	classvar <default;
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
     
@@ -63,14 +76,26 @@ SynthTree : IdentityTree {
 
 	asSourceTree { /* ^this */ }
 
-	chuck { | synthOrTemplate, replaceAction = \fadeOut, fadeOut |
-		if (synth.isPlaying) { synth.perform(replaceAction, fadeOut ? fadeTime) };
-		if (synth.isKindOf(Node)) {
+	chuck { | synthOrTemplate, replaceAction = \fadeOut, argFadeTime, alwaysStart = true |
+		if (synth.isPlaying) { this.endSynth(replaceAction, argFadeTime ? fadeTime) };
+		if (synthOrTemplate.isKindOf(Node)) {
+			synth = synthOrTemplate;
 			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
 		}{
 			template = synthOrTemplate;
-			if (notStopped) { this.makeSynth };
+			if (alwaysStart or: notStopped) { this.makeSynth };
 		};
+	}
+
+	endSynth { | replaceAction = \fadeOut, argFadeTime |
+		if (replaceAction isKindOf: SimpleNumber) {
+			synth.fadeOut(replaceAction);
+		}{
+			switch (replaceAction,
+				\fadeOut, { synth.fadeOut(argFadeTime ? fadeTime) },
+				\free, { synth.free }
+			)
+		}
 	}
 
     makeSynth {

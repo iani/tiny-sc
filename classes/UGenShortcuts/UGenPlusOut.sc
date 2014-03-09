@@ -28,13 +28,13 @@ x.set(\out, 1);
 
 IZ Wed, 26 Feb 2014 08:22:41
 
-*/
+{ WhiteNoise.ar }.xplay;
 
-+ Function {
-	xplay { | ... args |
-		^{ this.value.adsrOut }.play(*args);
-	}
-}
+{ WhiteNoise.ar } => \test;
+
+
+
+*/
 
 + UGen {
 	out { | outName = \out, outValue = 0 |
