@@ -19,7 +19,10 @@
   - Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
   - Load org-mode sections marked with AUTOLOAD property.
 
+
 * Undergoing first tests
+
+** =SynthTree=: ChucK-style operators for storing/interconnecting synths
 
 ** =Pub= (previously defined as =Source=) Flexibly connect objects to data sources
 
@@ -77,7 +80,7 @@ The routine is created rougly like this:
 
 The controlled Synth may choose to =free= or =release= itself when receiving =\p_end= at the end of the routine process.
 
-*** Details: encapsuling routines and other data sources
+*** Details: encapsulating routines and other data sources
 
 Source Encapsulates the routine in another object that sends the notifications, so that one may substitute a new routine in that object and still keep the connections to all listeners controlled by the object.  It can hold any object that wants to broadcast a stream of values, such as a poller of audio or control stream values, a tcp poller, an osc or midi event listener, a gui widget event listerer etc.  Finally, the listening objects receiving notifications from the Source instance can use adapters to react differently to the data received.
 
@@ -156,7 +159,7 @@ Seletive action constructors could be defined:
 : vselect(source).select()
 : vreject(source).reject()
 
-** PatternPlayer: Play a pattern, as stream, in Wed Mar  5 19:43:12 2014
+** PatternPlayer: Play a pattern, as stream, getting durations from another pattern
 
 The timing of successive value requests from the stream is defined by another stream,
 that produces the dt (time intervals) to wait for the next call of "next".
@@ -164,6 +167,10 @@ that produces the dt (time intervals) to wait for the next call of "next".
 Patterns of both values and durations stream can be exchanged on-the-fly while the player is running.
 
 Used by Pub as default source for all objects except OSCFunc, MIDIFunc and View.
+
+* Immediate TODOs
+
+- SynthTree: Add name variable and implement linking synths.
 
 * Next plans:
 
@@ -175,15 +182,13 @@ Each window stores the widgets in a dictionary under the names of the labels, fo
 
 *** Interleaved control from multiple sources on one Pub
 
-** SourceTree, NodeTree: Edit trees of sclang and scsynth processes
-
-Note: see separate file under file::./classes/ProcessComposition/ProcessCompositionNotes.org
+** SourceTree Edit trees of sclang processes
+See:
+file::./classes/ProcessComposition/ProcessCompositionNotes.org
 
 SourceTree: Language and representation of trees of event sources (Patterns/Streams, OSCFuncs, MIDIFuncs etc) composed with operators to Pbinop and BinaryOpStream.
 
 Add, remove, replace any element of the tree by giving its address as a symbol composed of =l= and =r= for specifying the movement down the branches of the binary tree.
-
-NodeTree: As SourceTree, but for Nodes.  Uses Arrays of Symbols as addresses.
 
 * Started, but currently on hold
 

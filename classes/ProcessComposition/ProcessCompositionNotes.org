@@ -239,6 +239,8 @@ Play
 
 ** Bus allocation
 
+(currently .in, .withInput not implemented.  Only =<> is implemented)
+
 If a synth that is being added to the tree needs to have one or more private busses for input, and these busses have at least one name different than 'in', then that should be indicated by sending the message =withInput= to the path (shorter version of the message for the same method is: =in=?).  The arguments to =withInput= or =in= optionally indicate the names of the inputs for the busses and the number of channels for each bus.  If the number of channels is 1 it can be omitted.
 
 Implementation note: =path.withInput= returns an object that holds the target synth together with the action for creating the bus and new synth.  (Technically, this is a kind of Behavior pattern).

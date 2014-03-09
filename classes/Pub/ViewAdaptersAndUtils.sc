@@ -53,10 +53,6 @@ NullSpec {
     *asSpec { ^this }
 }
 
-+ Nil {
-    asSpec { ^NullSpec }
-}
-
 /* Note: Cannot define this in View, because it is a redirect class, and returns
 platform specific classes instead.  Therefore, doing it for QT.  Other GUI
     classes can be added in a similar way */

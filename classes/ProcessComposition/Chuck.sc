@@ -2,62 +2,29 @@
 Chuck operator and variants.
 
 IZ Sat, Mar  8 2014, 23:40 EET
-
-SynthDef("test", { WhiteNoise.ar().adsrOut }).add;
-"test" => \test;
-\test.fadeOut(5);
-
-\test.asSynthTree.start;
-
-{ WhiteNoise.ar } => \test;
-
-\test.asSynthTree.synth.set(\gate, 0);
-
-\test.asSynthTree.synth.isPlaying;
-
-
-\test.asSynthTree;
-
-\asdf.asSynthTree;
-
-SynthTree.nameSpaces;
-
-a = Synth("test");
-a = { SinOsc.ar(440, 0, Adsr()).out }.play; 
-
-a = { WhiteNoise.ar(Adsr()).out }.play; 
-a = { WhiteNoise.ar().adsrOut }.play;
-
-a = { WhiteNoise.ar }.xplay;
-a.fadeOut;
-a.set(\out, 1);
-
-
-a.release(30);
-
-NodeWatcher.register(a);
-a.isRunning;
-a.isPlaying = true;
-a.isPlaying;
-
-a.free;
-
-a = { WhiteNoise.ar }.xplay;
-a.free(123);
-
-
-nil !? { 1234 };
-
-{ WhiteNoise.ar } =>.free \x;
-{ SinOsc.ar(440) } => \x;
-\x.fadeOut(5);
-\x.start;
 */
 
 + Object {
 	=> { | synthTree, replaceAction = \fadeOut |
 		^synthTree.asSynthTree.chuck(this, replaceAction);
 	}
+
+	=<> { | synthTree, replaceAction = \fadeOut |
+		^synthTree.asSynthTree.chuckMakingInput(this, replaceAction);
+	}
+
+	// TODO:
+	=< { | synthTree, inputName = \in |
+		// add synthTree to the input synths of the receiver
+		this.asSynthTree.addInputSynth(synthTree.asSynthTree, inputName)
+	}
+
+	==> { | synthTree, replaceActio = \fadeOut |
+		// as => but do not start the synth now: 
+		// synth gets started when the synthTree is added as input with =<
+		
+	}
+
 }
 
 + Nil {
@@ -75,7 +42,7 @@ nil !? { 1234 };
             outbus: outputBus, 
             fadeTime: synthTree.fadeTime,
             addAction: \addToHead,
-            args: [out: outputBus]
+            args: synthTree.synthArgs
         );
     }
 	xplay { | target, outbus = 0, fadeTime = 0.02, addAction = 'addToHead', args |
@@ -109,7 +76,7 @@ nil !? { 1234 };
 + Array {
     asSynth { | synthTree |
 		var args;
-		args = this[1..] ++ [out: synthTree.getOutputBusIndex];
+		args = this[1..] ++ synthTree.synthArgs;
 		// Synth.new(defName, args, target, addAction: 'addToHead');
         ^Synth.new(this[0], args, synthTree.group, \addToHead);
     }

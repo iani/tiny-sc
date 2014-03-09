@@ -1,0 +1,4 @@
+
++ Nil {
+    asSpec { ^NullSpec }
+}
