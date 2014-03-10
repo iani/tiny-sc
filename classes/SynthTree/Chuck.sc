@@ -22,7 +22,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	==> { | synthTree, replaceAction = \fadeOut |
 		// as => but do not start the synth now: 
 		// synth gets started when the synthTree is added as input with =<
-		
+		^synthTree.asSynthTree.setSynth(this, replaceAction = \fadeOut);
 	}
 
 }

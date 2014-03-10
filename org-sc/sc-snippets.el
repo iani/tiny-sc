@@ -76,7 +76,8 @@
   ;; But I do not want to modify the source code of sc-extensions
   ;; So instead: 
   (local-set-key (kbd "C-c C-,") 'sclang-eval-line)
-  
+  ;; sclang-switch-to-post does not work as expected:
+  ;; (local-set-key (kbd "C-c C-M-p") 'sclang-switch-to-post)
   (local-set-key (kbd "C-c C-.") 'sclang-select-snippet)
   (local-set-key (kbd "C-M-x") 'sclang-execute-current-snippet) ;; alternative
   (local-set-key (kbd "C-M-f") 'sclang-goto-next-snippet)

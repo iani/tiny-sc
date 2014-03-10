@@ -17,11 +17,12 @@ SynthDef("test", { WhiteNoise.ar().adsrOut }).add;
 { WhiteNoise.ar() } => \noise;
 { SinOsc.ar(440) } =>.5 \noise;
 { PinkNoise.ar } =>.3 \noise;
-{ GrayNoise.ar } => \noise;
+{ GrayNoise.ar } => \gnoise;
 \noise.fadeOut;
 \noise.start;
 { SinOsc.ar(440) } =>.free \noise;
 
+SynthTree.initTree;
 */
 
 SynthTree : IdentityTree {
@@ -41,6 +42,7 @@ SynthTree : IdentityTree {
     var <>fadeTime = 0.1;
 	var <>name;
 	var <>args; // TODO: args sent to synth at creation time
+	var <>replaceAction = \fadeOut; // only used by addInputSynth
 
 	*initClass {
 		StartUp add: {
@@ -63,13 +65,18 @@ SynthTree : IdentityTree {
 		var synthTree;
 		synthTree = this.nameSpaces[this.server, symbol];
 		if (synthTree.isNil and: createIfMissing) {
-			postf("Making new Synthtree for server %, name %\n", 
+			postf("Making new SynthTree for server %, name %\n", 
 				this.server, symbol);
-			synthTree = this.new.name_(symbol);
+			synthTree = this.new.init(symbol);
 			this.nameSpaces[this.server, symbol] = synthTree;
 			this.root[synthTree.name] = synthTree;
 		};
 		^synthTree;
+	}
+
+	init { | argName |
+		name = argName;
+		args = ();
 	}
 
 	*nameSpaces {
@@ -81,12 +88,7 @@ SynthTree : IdentityTree {
 	*server { ^ this.root.group.server }
 	*root { ^ ~root ? default }
 
-	*initTree {
-		// TODO: Make this work.
-		// Store all root-level SynthTrees as children (inputs) of 
-		// a default SynthTree named \root.
-		default.initTree;
-	}
+	*initTree { default.initTree; }
 
     initTree {
 		this.remakeInputs;
@@ -125,7 +127,7 @@ SynthTree : IdentityTree {
 			Integer, { specs = [in: specs] },
 			Symbol, { specs = [specs, 1] }
 		);
-		inputs = IdentityDictionary();
+		inputs = inputs ?? { IdentityDictionary(); };
 		specs keysValuesDo: { | key, numChans |
 			bus = inputs[key];
 			if (bus.isNil) {
@@ -139,14 +141,18 @@ SynthTree : IdentityTree {
 		};
 	}
 
-	chuck { | synthOrTemplate, replaceAction = \fadeOut, 
+	chuck { | synthOrTemplate, argReplaceAction = \fadeOut, 
 		argFadeTime, startWhen = \now |
+		/*  Set my synth.  Start depending on startWhen.
+			
+		*/
 		if (synth.isPlaying) { 
-			this.endSynth(replaceAction, argFadeTime ? fadeTime)
+			this.endSynth(argReplaceAction, argFadeTime ? fadeTime)
 		};
 		if (synthOrTemplate.isKindOf(Node)) {
 			synth = synthOrTemplate;
 			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
+			inputs do: _.moveBeforeOutput;
 		}{
 			template = synthOrTemplate;
 			switch (startWhen,
@@ -157,22 +163,62 @@ SynthTree : IdentityTree {
 		};
 	}
 
+	moveBeforeOutput {
+		// TODO: move my synth before the output synth
+		// and then call moveBeforeOutput on all my inputs sunthTrees
+		
+	}
+
+	setSynth { | argTemplate, argReplaceAction = \fadeOut |
+		replaceAction = argReplaceAction;
+		template = argTemplate;
+	}
+
 	addInputSynth{ | synthTree, inputName = \in, startWhen = \now |
 		// TODO! TEST THIS
-		/*  Add synthTree to your dictionary under its name, 
+		/*  Add synthTree to my inputs and make it output its signal to my input.
+			Add synthTree to your dictionary under its name, 
 			THEN create the synth, using your group as target,
 			addToHead as add method, and setting the output \out
 			to one of your inputs, through args at synth creation time. 
 		*/
+		if (inputs.isNil) {
+			postf("% has no inputs. Cannot add input.\n", name);
+			^this;
+		};
+		if (this outputsTo: synthTree) {
+			postf("% outputs to % and therefore cannot add it as input. Cycle!\n", 
+			name, synthTree.name);
+			^this
+		};
 		this[synthTree.name] = synthTree;
-		if (startWhen === \now) { synthTree.start }
+		synthTree.setOutput(this, inputName);
+		if (startWhen === \now) { synthTree.start };
 	}
 
-	endSynth { | replaceAction = \fadeOut, argFadeTime |
-		if (replaceAction isKindOf: SimpleNumber) {
-			synth.fadeOut(replaceAction);
+	outputsTo { | synthTree |
+		if (output.isNil) { ^false };
+		if (output === synthTree) { ^true } { ^output outputsTo: synthTree };
+	}
+
+	setOutput { | synthTree, inputName = \in |
+		var outputBus;
+		outputBus = synthTree.getInputBus(inputName);
+		if (outputBus.isNil) {
+			postf("% has no input named %. Cannot output to it\n",
+				synthTree.name, inputName);
+			^this;
+		};
+		output = synthTree;
+		outputName = inputName;
+		if (synth.isPlaying) { synth.set(\out, outputBus.index) }
+	}
+
+	endSynth { | argReplaceAction = \fadeOut, argFadeTime |
+		if (argReplaceAction isKindOf: SimpleNumber) {
+			synth.fadeOut(argReplaceAction);
 		}{
-			switch (replaceAction,
+			switch (argReplaceAction,
 				\fadeOut, { synth.fadeOut(argFadeTime ? fadeTime) },
 				\free, { synth.free }
 			)

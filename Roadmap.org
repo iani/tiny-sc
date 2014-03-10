@@ -4,6 +4,7 @@
 
 - SynthTree:
   - Test linking synths.
+  - Add cycle check to method addInputSynth
   - Implement fade-in by setting Adsr's attackTime value at synth creation time.
 
 * Done
