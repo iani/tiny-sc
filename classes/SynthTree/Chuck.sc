@@ -19,7 +19,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		this.asSynthTree.addInputSynth(synthTree.asSynthTree, inputName)
 	}
 
-	==> { | synthTree, replaceActio = \fadeOut |
+	==> { | synthTree, replaceAction = \fadeOut |
 		// as => but do not start the synth now: 
 		// synth gets started when the synthTree is added as input with =<
 		
@@ -57,6 +57,20 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	fadeOut { | fadeTime |
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.fadeOut(fadeTime) };
+	}
+
+	fadeTime_ { | fadeTime = 0.2 |
+		^this.asSynthTree.fadeTime = fadeTime;
+	}
+	set { | ... args |
+		/* Note: possibly store args and use them when later 
+			starting the synth, in which case it makes
+			sense to send set to newly created SynthTree instances
+		*/
+		var synthTree;
+		^(synthTree = this.asSynthTree(false)) !? { 
+			synthTree.set(*args)
+		}
 	}
 	asSynthTree { | createIfMissing = true |
 		^SynthTree.at(this, createIfMissing);

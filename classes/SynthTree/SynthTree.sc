@@ -30,7 +30,7 @@ SynthTree : IdentityTree {
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
     
 	var <synth;  // the synth of this node
-	var <inputs; // dictionary of input names and bus specs or busses
+	var <>inputs; // dictionary of input names and bus specs or busses
 	var <outputName; // name of input where this synth sends it output
 	var <output; // SynthTree instance where this synth sends its output
 	var >group;  // optional group enclosing synth as well as 
@@ -38,12 +38,20 @@ SynthTree : IdentityTree {
 	var <template; // optional template for re-creating synth
     var <notStopped = true; // if false, do not restart on initTree or 
 	// on chuck/replace
-    var <fadeTime = 0.1;
+    var <>fadeTime = 0.1;
 	var <>name;
+	var <>args; // TODO: args sent to synth at creation time
 
 	*initClass {
 		StartUp add: {
-			default = this.new;
+			var server;
+			server = Server.default;
+			default = this.new.name_(\root);
+			nameSpaces = MultiLevelIdentityDictionary();
+			nameSpaces[server, \root] = default;
+			default.inputs = IdentityDictionary();
+			default.inputs[\in] = Bus('audio', 0, 
+				server.options.numOutputBusChannels, server);
 			ServerBootCheck add: {
 				default.group = RootNode();
 				default.initTree;
@@ -59,6 +67,7 @@ SynthTree : IdentityTree {
 				this.server, symbol);
 			synthTree = this.new.name_(symbol);
 			this.nameSpaces[this.server, symbol] = synthTree;
+			this.root[synthTree.name] = synthTree;
 		};
 		^synthTree;
 	}
@@ -71,6 +80,13 @@ SynthTree : IdentityTree {
 
 	*server { ^ this.root.group.server }
 	*root { ^ ~root ? default }
+
+	*initTree {
+		// TODO: Make this work.
+		// Store all root-level SynthTrees as children (inputs) of 
+		// a default SynthTree named \root.
+		default.initTree;
+	}
 
     initTree {
 		this.remakeInputs;
@@ -93,7 +109,7 @@ SynthTree : IdentityTree {
 		};
 	}
 
-	asSourceTree { /* ^this */ }
+	asSynthTree { /* ^this */ }
 
 	chuckMakingInput { | synthOrTemplate, replaceAction = \fadeOut, 
 		argFadeTime, alwaysStart = true |
@@ -226,4 +242,8 @@ SynthTree : IdentityTree {
             if (output.isNil) { default.group } { output.group }
         }
     }
+
+	set { | ... args |
+		if (synth.isPlaying) { synth.set(*args) };
+	}
 }

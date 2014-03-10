@@ -56,6 +56,15 @@ Sine {
 	}
 }
 
+Inp { 
+	*ar { | inputName = \in, channelNum |
+		^In.ar(inputName.kr(channelNum ?? { Server.default.options.numInputBusChannels }));
+	}
+	*kr { | inputName = \in, channelNum = 0 |
+		^In.kr(inputName.kr(channelNum));
+	}
+}
+ 
 + Node {
 	fadeOut { | fadeOut = 0.2 |
 		this.set(\timeScale, fadeOut, \gate, 0)

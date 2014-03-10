@@ -15,7 +15,6 @@ SynthDef("test", { WhiteNoise.ar().adsrOut }).add;
 
 { CombN.ar(In.ar(\in.kr(0))) } =<> \x;
 
-
-
+{ LFTri.ar(700) } ==> \tri =< \x;
 
 \x.asSynthTree.inputs

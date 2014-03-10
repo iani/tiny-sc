@@ -1,0 +1,11 @@
+#+STARTUP: contents
+
+
+** TODO linking synth inputs-outputs
+
+#+BEGIN_EXAMPLE
+// Start an "effect" synth with an input
+{ LPF.ar(In.kr(\in.kr(0))) } =<> \comb;
+// Send another synth to the input of the effect synth
+\comb =< ({ WhiteNoise.ar } ==> \source);
+#+END_EXAMPLE

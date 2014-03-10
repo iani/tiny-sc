@@ -1,0 +1,314 @@
+(Copied here on: Sun, Mar  9 2014, 20:37 EET)
+
+* Immediate TODOs
+
+- SynthTree:
+  - Test linking synths.
+  - Implement fade-in by setting Adsr's attackTime value at synth creation time.
+
+* Done
+
+- Adsr, Sine, Perc :: Env shortcuts
+- out, adsrOut, Inp :: =Out.ar=/=kr= + =adsr=, =In= shortcuts.
+- Notification :: Filter "changed" notifications, add and remove notifiers.
+- ProcessRegistry :: Keep track of running Nodes, Routines, Patterns.
+- ProcessRegistryGui :: Display list of running processes, =delete= key stops selected process.
+- sclang-snippets :: Shortcuts to navigate, select and run code blocks separated by =//:=.
+- org-sc :: Evaluate SC code in org-mode sections and babel blocks.
+  - Eval code in sections, replace/stop processes belonging to a section
+  - Wrap code in Routine to permit using =wait=, and play loops.
+  - Load all sections whose AUTOLOAD property is non-nil.
+  - Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
+  - Load org-mode sections marked with AUTOLOAD property.
+- Replace old README with another one, that is less technical and more hand on.  The README should consist of examples, where each example is brief and can be executed immediately with audible results to show what the library does.  For each example there should be a brief description, accompanied by pointers to the related parts of the library, where more information can be found.
+- SynthTree:
+  - Store all root-level SynthTrees as inputs of a \root SynthTree, for each server.  Use the =root= SynthTree to iniTree the entire tree of a server.
+
+* Undergoing tests
+
+** =SynthTree=: Storing/interconnecting Synths
+
+ChucK-style operators: =>, variants: =<>, ==>, =<, =^.
+
+** =Pub= (previously defined as =Source=) Flexibly connect objects to data sources
+
+Publish data received from a source (PatternPlayer, OSCFunc, MIDIFunc, GUI) to any object that is concerned. Able to:
+- Replace the origin of the data source at any time.
+- Work interchangeably with Patterns/Streams, Views, OSCFuncs, MIDIFuncs, constant values.
+- Customize, map and/or filter the messages and values sent to listening objects.
+
+Note: Previously (Wed, Mar  5 2014, 17:08 EET) this class was called =Source=.  But this created confusion, because the Source actually publishes to many objects the results of polling another object, which is the stream *source*.  So it would be better to call this class "Publisher", or for short: "Pub".
+
+*** Basic method: =pub= (previously =src=)
+
+: anObject.pub(source, mapper);
+
+Get or create a Source instance, and connect its output to anObject.  Return the Source instance.  The way in which the output is connected to the receiving object is set by the mapper, which encapsulates both any processing of the value received such as mapping it with a spec, and the message to be sent to the receiver, such as =.set(\freq, mappedValue)=.  For example:
+
+: anObject.pub(source, [500, 600].mapSet(\freq));
+
+The above makes the object =source= send to =anObject= (usually a Synth instance), the message =set= for setting parameter =freq= with a value mapped from an input in the range of 0-1 to the range of 500-600.  The source can be any object that generates values in time, for example a Task (Routine not supported yet), an OSCFunc, a MIDIFunc, a gui Slider, etc.  The object given to method =pub= as its =source= parameter can be either a symbol for accessing an already existing Source instance from a global dictionary, or a template that is used by Source to create a Source instance which will broadcast the generated values.
+
+Here are the steps of this mechanism:
+
+1. Find or create the source instance.
+   - If =source= is a symbol, then get the source instance from the dictionary in Source.all.  If no instance is found under the given symbol, then create one.
+   - If =source= is an instance of Source, proceed to the next step, connecting =source= to =anObject=.
+   - Otherwise create an instance of source using the object as source of values.  The object given in =source= is treated differently according to its kind:
+     - pattern: create a Stream from pattern.
+     - view: set the action of the view to do source.changed(... view.value).
+     - OSCFunc: set func of OSCFunc to do source.changed(...).
+     - MIDIFunc: set func of MIDIFunc to do source.changed(...).
+     - SequenceableCollection: Pseq(collection, inf).asStream, polled at intervals given by Source.pollRate.
+     - Any other object: return routine polling the object with object.value(source)
+       and broadcasting the resulting value to the listeners of the source.  This also works for Functions.  Use classvar pollRate of Source as polling rate.
+
+*** Shortcut: set parameter of Node from values (NOT YET IMPLEMENTED)
+ A special case/shortcut method for setting the parameter of a Node (Synth or Group):
+: aNode.rset(routname[->parname], valueStream, timeStream);
+
+- =parameter/controller= :: A symbol or an association parameter->controller. =parameter= is the name of the parameter of the synth to be set by the routine. =controller= is the symbol under which the routine is stored. If no controller name is given, then the controller name defaults to the parameter name.
+- =valueStream= :: Any object.  Values are obtained from the stream by sending it the message next.  Patterns are converted to streams with asStream before being used.
+- =timeStream= :: Any object that returns a stream of positive integers (duration values) when sent the message next. (Similar to valueStream).
+
+*** first prototype - polling streams with a routine and timing
+The routine is created rougly like this:
+
+{
+	var val, dur;
+	while { (val = valStream.next).notNil and: { (dur = durStream.next).notNil } }
+	{
+		thisThread.changed(\value, val, dur);
+		dur.wait;
+	};
+	this.changed(\p_end);
+}
+
+The controlled Synth may choose to =free= or =release= itself when receiving =\p_end= at the end of the routine process.
+
+*** Details: encapsulating routines and other data sources
+
+Source Encapsulates the routine in another object that sends the notifications, so that one may substitute a new routine in that object and still keep the connections to all listeners controlled by the object.  It can hold any object that wants to broadcast a stream of values, such as a poller of audio or control stream values, a tcp poller, an osc or midi event listener, a gui widget event listerer etc.  Finally, the listening objects receiving notifications from the Source instance can use adapters to react differently to the data received.
+
+** =MapFunc= Encapsulate mapping action and sending message to listener
+
+Encapsulate the spec in the mapping function, thereby saving the trouble to store specs in an extra variable.  Also exchange mapping or other type of response functions at any moment, without having to store these actions anywhere.  Use =Object:removeNotifier(notifier, message)= to remove the previous instance of the notification and replace it with the new one.
+
+Variables of MapFunc:
+
+- source :: object that sends the values
+- listener :: object that receives the message and converted value from the update.
+- mapper :: function or other object that processes the values received from the source and sends them to the listener as a message (=listener.perform(*args)=). Other types of responses to =value= are implemented by specialized subclasses of =MapFunc=.
+
+The three items above can be useful to the =MapFunc= as sources of further information or targets of further actions when performing its action.  Therefore the action is passed the MapFunc instance along with the value, so that it may retrieve further info from the listener or notifier, or perform other actions on them or remove itself etc.
+
+- action :: function that maps or otherwise acts on the value received from the update.  Note: A spec does not need to be stored separately, because it can be made available to the function through a closure created by another function that creates the action function.  The action returns an array whose first element is the message to be performed by the listener and the rest of the elements are arguments to that message.
+
+*** Connecting an object to an updater (Pub)
+NO LONGER VALID!:
+Message for connecting an object to an updater (Pub) - yet see next subsection below!
+
+: specF(action)
+
+Action can be constructed by messages to Arrays, Functions, or other types of objects.
+For example =\freq.asSpec.setter(\freq)= would return a function that returns an array:
+=[\set, \freq, mappedValue]=.  Or this could be further abridged to: =\freq.mapper= where the name of the parameter to be set defaults to the receiver.
+
+Here is maybe a better version:
+
+*** Shortcuts for connecting an object to a Pub:
+
+Use standard prefix v (variable) or s (source) for the method names.  For example:
+
+=vmap= is for variable map, where map is from the map operation in Lisp, which operates on each value of a collection (in this case, the stream of incoming values).
+
+=vmap= is sent to a Symbol.  It creates a MapFunc instance, named after the symbol, without an action.  The action can then be set by sending the instance messages. Such messages are described in the next section:
+
+*** Shortcuts for creating mapping functions
+
+- =map= :: Create a function that sends the listener the message set thus: =listener.set(parameter, mappedValue)=.  The parameter can be provided as argument.  The spec for mapping the input value is also created from data passed as argument.
+- =unmap= :: Like map, except that the spec is used to unmap instead of to map.
+- =bimap= :: Like above, except it uses a custom class =BiMap= (see Lilt2 library) to map from aaaaany custom range to any other custom range.
+- =args= :: evaluate each of the args passed to this function each time with the value received, collect the resulting array, and send it as message to the listener thus: =listener.perform(*args);
+- =select= :: only send message with (mapped?) value when the value satisfies a condition.
+- =reject= :: only send message with (mapped?) value when the value does not satisfy a condition.
+
+Here some earlier drafts with details - not entirely consistent with the above.
+
+Examples:
+
+=set= creates a function that sends the set message with the value mapped through a spec produced from a specPrototype, guesses the parameter name from the prototype, or gets it from paramName, and optionally inserts restargs between the parameter name and the mapped value.
+
+: listener.vmap(source).2qset(specPrototype, (optional:) paramName ... restargs)
+
+#+BEGIN_EXAMPLE
+// listener.vmap(source) does the following:
+var mapFunc;
+mapFunc = MapFunc(listener, source);
+listener.addNotifier(source, \value, mapFunc);
+^mapFunc;
+#+END_EXAMPLE
+
+The returned mapFunc is used to construct the action by sending it
+
+Most general case: collect the result of evaluating each of the args with the value as argument, and send it to the listener with listener.perform(*args). Thus, even the message sent can vary according to the input.  We may use a special message =null= defined for Object, to send any object messages that should be ignored (null method).
+
+: vmap(source).send(... args);
+
+For example:
+
+: aSynth.vset(aStreamPub).spec(\freq);
+: aSynth.vset(aStreamPub).spec([10, 100],
+
+Seletive action constructors could be defined:
+
+: vselect(source).select()
+: vreject(source).reject()
+
+** PatternPlayer: Play a pattern, as stream, getting durations from another pattern
+
+The timing of successive value requests from the stream is defined by another stream,
+that produces the dt (time intervals) to wait for the next call of "next".
+
+Patterns of both values and durations stream can be exchanged on-the-fly while the player is running.
+
+Used by Pub as default source for all objects except OSCFunc, MIDIFunc and View.
+
+* Next plans:
+
+** Playing patterns in a SynthTree
+
+*** Idea 1: args envir w. StreamPatterns
+
+Store args for synth in an Event, in args variable.  These can be used to start synth.
+
+But they could also store streams.  In this case, each time the synth starts, it starts with the next set of values from the arg event's streams.  Then the template could also be a stream possibly returning different instruments at each call of next.
+
+In order to be able to reset the streams from the patterns, store each stream together with its pattern in a new Class: StreamPattern.
+
+Each StreamPattern can play with its own Task (see PatternPlayer).  The latest value produced by =next= on the stream is stored in var =next=, so that it can be accessed each time that a synth is created, without asking the stream itself to produce a next value.  When asked next, the StreamPattern decides whether to use the already produced next (if its Task is running), or to return the next value in the stream (if no Task is running).
+
+Or they could be busses instead - in which case they map the synths arguments.
+
+They could also be substituted by or combined (BinOp) with controllers (GUI, MIDI, OSC, other), received via =Pub= updates.  Similarly, they could be linked to updates issued by streams in other synths or global shared Pub updates.
+
+*** Idea 2: =SynthStream=: Alternative to Pbind
+ Pluggable inside a SynthTree instead of a Synth.
+
+ Allows exchange of data-streams for parameters on-the fly (JitLib style, but without the busses and possibly simpler). SynthStream should be visible to the SynthTree like a Synth (interface-wise).  It could be a subclass or variant of PatternPlayer.  Its valueStream would be an environment (or even event) from which the arguments of the next synth are collected.  Fade-in and -out can be implemented by hijacking the ~amp stream, and setting it to poll a control-rate env or line synth on bus private to the stream.  Optionally, additionally, at the same time mapping the amp of each synth, after creating it, to the same amp bus.
+
+** CBoard
+
+Add/remove widgets dynamically in a single gui window, for display and control of processes.  The window can be placed at one of the 4 sides of the screen.  Show just the widget with a label.  Default widget: Knob (for compactness).  More functionality accessible by typing keyboard commands at a selected window (possibly with ctl key):  Start/Stop the related process, input a new source-template for the process, etc.
+
+Each window stores the widgets in a dictionary under the names of the labels, for access.
+
+*** Interleaved control from multiple sources on one Pub
+
+** SourceTree: Edit trees of sclang processes
+See:
+file::./classes/ProcessComposition/ProcessCompositionNotes.org
+
+SourceTree: Language and representation of trees of event sources (Patterns/Streams, OSCFuncs, MIDIFuncs etc) composed with operators to Pbinop and BinaryOpStream.
+
+Add, remove, replace any element of the tree by giving its address as a symbol composed of =l= and =r= for specifying the movement down the branches of the binary tree.
+
+* Started, but currently on hold
+
+** MixBus class
+
+This idea may be implemented better as an extension of the NodeTree idea.
+
+Subclass of Bus.
+
+MixBus(name, numChans, out); // create new instance if needed, and make it current.
+
+Alternative for above:
+\name.mixBus(numChans, out);
+
+Also creates its own Group.
+When created:
+
+- registers itself in MixBus.all class variable under its given name (symbol), for access.
+- sets the following current environemnt variables:
+  - ~out :: index of the bus. Synths can write to this bus.
+  - ~target :: its group
+- Creates synth called =gain= positioned after =~target=, providing:
+  - global level control (control name: =gain=)
+  - adsr envelope for fadeout with method =release(releaseTime)=
+- The =gain= synth directs its output to another channel, per default channel 0.
+- Different types of =gain= synths can be used, to provide effects and multichannel output
+- Other synths can be added before =gain= to provide additional effects.
+- Syn(...) reads ~out an ~target from the environment, and therefore by default uses the installed MixBus, if present.
+- Define keyboard shortcuts in SC for altering the level control of the current mixbus (the one belonging to the current environment).
+- Create GUI for MixBus.  The gui can show all mixbusses stored in MixBus.all.
+- The =gain= synth can be released to shut output of a mixbus.  A new gain synth can be created at any moment to restart output, or even to crossfade a different type of output.
+- To remove a mixBus entirely call mixBus.remove.  This releases the gain synth, removes the group when the gain synth is freed, removes the mixBus from the =all= variable, and frees the bus.
+
+** More convenient ways to map Synth parameters
+
+*** Synth:busctl : map parameter to a bus to which a synth outputs.
+
+(note: older name of method was =nmap=).
+
+: aSynth.busctl(busname[->parname], controlSynth)
+
+This method maps a bus stored under a name =busname= to a input parameter (control) of the synth being controlled. =parname= is the name of the parameter to which the bus is mapped.
+
+- =busname[->parname]= :: A symbol =busname= or an association =busname->parname=. If no =parname= is given, then =busname= is used as the name of the bus to which to map and the name of the parameter that this bus will be mapped to.  If an association =busname->parname= is given, then =busname= is the name of the bus and =parname= is the name of the parameter to which the parameter is mapped.
+- =controlSynth= :: A control-rate synth to be mapped.
+
+For example:
+
+: { SinOsc.ar(\freq.kr(400), 0, 0.1) }.play
+: .busctl(\freq, { LFNoise0.kr(5).range(400, 500).out }.play);
+
+Outline of actions done by this method:
+
+1. Access bus as value in a global dictionary of Synth-bus or symbol-bus associations.
+2. Create new bus if not already present, and set output of controlSynth to bus index.
+3. Map parameter to index of bus.
+
+Note: bus should/may be freed and removed from global dictionary when all of its synth inputs are freed.
+
+* Further Plans:
+
+- Org-table as score?
+- Add to sclang-snippets:
+  - Each snippet eval output is stored in list of objects, in emacs buffer,
+    for access, eg. to free or pause a synth, routine, group, pattern player etc.
+  - If return value is synth: store synth
+  - If return value is routine: create own group for putting synths in,
+    so that synths are also freed when routine is stopped?
+    Possible?  Only via currentEnvironment.  Use variant of Synth.new
+    to access currentEnvironment's target?
+    This could be method synth of string or symbol, called in similar manner as Synth.new:
+    Instead of Synth("test"), write synth("test").
+  - Similar to routine, also for Pbinds.
+    Check if Pbind accesses currentEnvironment to get \target value.
+    If so, then implementing private group per snippet should be easy.
+
+* Implementation notes
+
+** Stopping processes started from code contained in an org-mode section
+
+Pass the id of the current snippet/section as environment variable by enclosing the code to be evaluated with =sc-lang-eval-string= in a function evaluated within a new environment.
+
+#+BEGIN_SRC elisp
+  (sclang-eval-string
+     (concat
+      "(source_id: '"
+      (org-id-get-create)
+      "', eval_id: UniqueID.next) use: {\n"
+      string
+      "\n}"
+  ))
+#+END_SRC
+
+Storing the ID-process correspondences in SC: Store each process in an instance of NamedProcess, with its org-section (source) ID and eval ID (the number of times that this snippet is currently running).
+
+The eval id is stored as property in the org-section.
+
+** Process trees?
+
+To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EventStreamPlayer) and notify the children when the thread stops.  Similarly for EventStreamPlayer.  Registering processes under a snippet/org-section id is a simpler alternative. However process-tree based stopping is a different thing, because one may want to kill a parent-process through the gui, independent fom the snippet grouping which may contain also other processes.
