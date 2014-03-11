@@ -89,7 +89,7 @@ Server.default.asTarget;
 		^this.asSynthTree.fadeTime = fadeTime;
 	}
 	set { | ... args |
-		/* Note: possibly store args and use them when later 
+		/* Note: TODO: SynthTree stores args and use them when later 
 			starting the synth, in which case it makes
 			sense to send set to newly created SynthTree instances
 		*/
@@ -104,6 +104,27 @@ Server.default.asTarget;
 	start {
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.start };		
+	}
+	synth {
+		var synthTree;
+		^(synthTree = this.asSynthTree(false)) !? { synthTree.synth };		
+	}
+	isPlaying {
+		var synthTree;
+		synthTree = this.asSynthTree(false);
+		^if (synthTree.isNil) { false } { synthTree.synth.isPlaying };
+	}
+	inputs {
+		var synthTree;
+		^(synthTree = this.asSynthTree(false)) !? { synthTree.inputs };
+	}
+	output {
+		var synthTree;
+		^(synthTree = this.asSynthTree(false)) !? { synthTree.output };
+	}
+	args {
+		var synthTree;
+		^(synthTree = this.asSynthTree(false)) !? { synthTree.args };
 	}
 }
 

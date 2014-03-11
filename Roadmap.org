@@ -5,7 +5,6 @@
 ** SynthTree:
 - Test linking synths: What happens when chucking a new synth to the reader?  To the writer?
 - Test added cycle check to method addInputSynth
-- Add methods =synth=, =isPlaying=, =inputs=, =output=, =args= to Symbol.
 - Implement fade-in by setting Adsr's attackTime value at synth creation time.
 
 * Done
@@ -22,10 +21,11 @@
   - Load all sections whose AUTOLOAD property is non-nil.
   - Store processes under a key representing the snippet or org-mode section from which they were started.  Thus make it possible to stop or replace the processes that belong to the current snippet or org-mode section.  For sections: Use the org-id ID as id and the name of the section for display.  For snippets: Generate name if not present in =//:= header, add number if not unique.
   - Load org-mode sections marked with AUTOLOAD property.
-- Replace old README with another one, that is less technical and more hand on.  The README should consist of examples, where each example is brief and can be executed immediately with audible results to show what the library does.  For each example there should be a brief description, accompanied by pointers to the related parts of the library, where more information can be found.
+- Replaced old README with another one, that is less technical and more hand on.  The README consists of examples, where each example is brief and can be executed immediately with audible results to show what the library does.  For each example there should be a brief description, accompanied by pointers to the related parts of the library, where more information can be found.
 - SynthTree:
   - Store all root-level SynthTrees as inputs of a \root SynthTree, for each server.  Use the =root= SynthTree to iniTree the entire tree of a server.
   - Tested connecting synths.  But changing sources of connected synths is still broken.
+  - Added methods =synth=, =isPlaying=, =inputs=, =output=, =args= to Symbol.
 
 * Undergoing tests
 
