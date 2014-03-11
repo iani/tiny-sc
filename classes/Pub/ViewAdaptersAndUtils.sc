@@ -51,6 +51,7 @@ NullSpec {
     *map { | val | ^val }
     *unmap { | val | ^val }
     *asSpec { ^this }
+	*default { ^0 }
 }
 
 /* Note: Cannot define this in View, because it is a redirect class, and returns

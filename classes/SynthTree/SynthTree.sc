@@ -312,6 +312,12 @@ SynthTree : IdentityTree {
     }
 
 	set { | ... args |
+		// TODO: Modify to also store parameters in args
 		if (synth.isPlaying) { synth.set(*args) };
+	}
+
+	setSynthParameter { | parameter, value |
+		// used by StreamPattern in args
+		if (synth.isPlaying) { synth.set(parameter, value); };
 	}
 }
