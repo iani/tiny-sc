@@ -22,7 +22,13 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	==> { | synthTree, replaceAction = \fadeOut |
 		// as => but do not start the synth now: 
 		// synth gets started when the synthTree is added as input with =<
-		^synthTree.asSynthTree.setTemplate(this, replaceAction = \fadeOut);
+		synthTree = synthTree.asSynthTree;
+		if (synthTree.isPlaying) {
+			^synthTree.chuck(this, replaceAction);
+		}{
+			^synthTree.setTemplate(this);
+		};
+
 	}
 
 }
@@ -125,6 +131,18 @@ Server.default.asTarget;
 	args {
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.args };
+	}
+
+	template {
+		var synthTree;
+		^(synthTree = this.asSynthTree(false)) !? { synthTree.template };		
+	}
+
+	template_ { | template |
+		var synthTree;
+		synthTree = this.asSynthTree(false);
+		if (synthTree.notNil) { synthTree.template = template };
+		^synthTree;
 	}
 }
 

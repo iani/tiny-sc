@@ -1,10 +1,24 @@
 #+STARTUP: showall
 
 
-\comb =< ({ LFTri.ar(550) } => \tri);
+//:
+{ LPF.ar(In.ar(\in.kr(0)), LFNoise0.kr(10).range(2000, 4000)) } =<> \lpf;
 
-\comb.asSynthTree.synth;
-\source.asSynthTree.synth;
+\lpf =< ({ WhiteNoise.ar } ==> \source);
+\lpf =< ({ LFPulse.ar(LFNoise2.kr(0.5).range(300, 3000)) } ==> \source2);
+
+{ Resonz.ar(In.ar(\in.kr(0)), LFNoise0.kr(10).range(200, 12000)) } =<> \lpf;
+
+\source.fadeOut(2);
+\source.start;
+
+\lpf.set(\amp, 1);
+
+\source.template = { GrayNoise.ar };
+\source.template = { LFPulse.ar(LFNoise0.kr(0.5).range(200, 800)) };
+
+SynthTree.initTree;
+
 
 ** TODO linking synth inputs-outputs
 

@@ -36,7 +36,7 @@ SynthTree : IdentityTree {
 	var <output; // SynthTree instance where this synth sends its output
 	var >group;  // optional group enclosing synth as well as 
 	// synths of input subtree [!??!?]
-	var <template; // optional template for re-creating synth
+	var <>template; // optional template for re-creating synth
     var <notStopped = true; // if false, do not restart on initTree or 
 	// on chuck/replace
     var <>fadeTime = 0.1;
@@ -109,6 +109,8 @@ SynthTree : IdentityTree {
         }
     }
 
+	isPlaying { ^synth.isPlaying }
+
 	remakeInputs {
 		/* Remake input busses when a server reboots. Called by initTree */
 		var server, bus;
@@ -176,6 +178,7 @@ SynthTree : IdentityTree {
 	moveBefore { | argSynth |
 		// TODO: move my synth before the output synth
 		// and then call moveBeforeOutput on all my inputs sunthTrees
+		[this, thisMethod.name, synth, synth.isPlaying].postln;
 		if (synth.isPlaying) {
 			synth.moveBefore(argSynth); 
 			this do: _.moveBefore(synth);
@@ -248,8 +251,14 @@ SynthTree : IdentityTree {
 
     makeSynth {
 		synth = template.asSynth(this);
-		synth !? { this do: _.moveBefore(synth); };
-		synth.onEnd(\this, {}); // just keep track of isPlaying state
+		// guarantee that moveBefore happens AFTER the synth has really started!
+		synth !? {
+			synth.onEnd(\this, {}); // This also registers on NodeWatcher
+			this.addNotifierOneShot(synth, 'n_go', {
+				this do: _.moveBefore(synth);
+			});
+			NodeWatcher register: synth;
+		};
 		notStopped = true;
 	}
 
