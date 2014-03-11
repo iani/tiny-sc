@@ -12,7 +12,7 @@
 
 - Adsr, Sine, Perc :: Env shortcuts
 - out, adsrOut, Inp :: =Out.ar=/=kr= + =adsr=, =In= shortcuts.
-- Notification :: Filter "changed" notifications, add and remove notifiers.
+- Notification :: Filter "changed" notifications, add and remove notifiers.bb
 - ProcessRegistry :: Keep track of running Nodes, Routines, Patterns.
 - ProcessRegistryGui :: Display list of running processes, =delete= key stops selected process.
 - sclang-snippets :: Shortcuts to navigate, select and run code blocks separated by =//:=.

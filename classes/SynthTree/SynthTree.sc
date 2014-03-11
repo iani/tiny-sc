@@ -48,7 +48,7 @@ SynthTree : IdentityTree {
 		StartUp add: {
 			var server;
 			server = Server.default;
-			default = this.new.name_(\root);
+			default = this.new(\root);
 			nameSpaces = MultiLevelIdentityDictionary();
 			nameSpaces[server, \root] = default;
 			default.inputs = IdentityDictionary();
@@ -58,7 +58,7 @@ SynthTree : IdentityTree {
 				server);
 			ServerBootCheck add: {
 				default.group = server.asTarget;
-				default.initTree;
+				default.initTree(true);
             };
 		}
 	}
@@ -69,12 +69,14 @@ SynthTree : IdentityTree {
 		if (synthTree.isNil and: createIfMissing) {
 			postf("Making new SynthTree for server %, name %\n", 
 				this.server, symbol);
-			synthTree = this.new.init(symbol);
+			synthTree = this.new(symbol);
 			this.nameSpaces[this.server, symbol] = synthTree;
 			this.root[synthTree.name] = synthTree;
 		};
 		^synthTree;
 	}
+
+	*new { | name | ^super.new.init(name); }
 
 	init { | argName |
 		name = argName;
@@ -90,13 +92,20 @@ SynthTree : IdentityTree {
 	*server { ^ this.root.group.server }
 	*root { ^ ~root ? default }
 
-	*initTree { default.initTree; }
+	*initTree { | remakeInputs = false | default.initTree(remakeInputs); }
 
-    initTree {
-		this.remakeInputs;
-        if (notStopped) {
+    initTree { | remakeInputs = false |
+		/*  Restart all synths.
+			If the server just booted, then also allocate busses.
+			This is run by default whenever the server boots.
+			Otherwise it can be used to restart the entire tree's synths.
+			Only nodes that have "notStopped" set to true will be restarted.
+			Safety: If a synth is already running, do not restart.
+		*/
+		if (remakeInputs) { this.remakeInputs; };
+        if (notStopped and: { synth.isPlaying.not }) {
             this.makeSynth;
-            this do: _.initTree;
+            this do: _.initTree(remakeInputs);
         }
     }
 
@@ -239,7 +248,7 @@ SynthTree : IdentityTree {
 
     makeSynth {
 		synth = template.asSynth(this);
-		this do: _.moveBefore(synth);
+		synth !? { this do: _.moveBefore(synth); };
 		synth.onEnd(\this, {}); // just keep track of isPlaying state
 		notStopped = true;
 	}
