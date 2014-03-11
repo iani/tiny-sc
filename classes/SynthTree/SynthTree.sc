@@ -178,7 +178,6 @@ SynthTree : IdentityTree {
 	moveBefore { | argSynth |
 		// TODO: move my synth before the output synth
 		// and then call moveBeforeOutput on all my inputs sunthTrees
-		[this, thisMethod.name, synth, synth.isPlaying].postln;
 		if (synth.isPlaying) {
 			synth.moveBefore(argSynth); 
 			this do: _.moveBefore(synth);
