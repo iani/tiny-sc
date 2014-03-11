@@ -22,7 +22,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	==> { | synthTree, replaceAction = \fadeOut |
 		// as => but do not start the synth now: 
 		// synth gets started when the synthTree is added as input with =<
-		^synthTree.asSynthTree.setSynth(this, replaceAction = \fadeOut);
+		^synthTree.asSynthTree.setTemplate(this, replaceAction = \fadeOut);
 	}
 
 }
@@ -35,6 +35,31 @@ IZ Sat, Mar  8 2014, 23:40 EET
 
 + Function {
     asSynth { | synthTree |
+		//		^{ Out.ar(0, LPF.ar(In.ar(16), 2000)) }.play;
+		// ^{ LPF.ar(In.ar(16), 2000) }.xplay;
+		/*	[this, thisMethod.postln, "stg", synthTree.group,
+			"rg", RootNode()].postln;
+		^{ LPF.ar(In.ar(16), 2000) }.play(
+								synthTree.group
+
+		);
+		*/
+		/*
+{ LPF.ar(In.ar(\in.kr(0)), 2000) } =<> \comb;
+\comb.asSynthTree.inputs;
+b = { Out.ar(\out.kr(0), WhiteNoise.ar(0.1)) }.play;
+b.set(\out, 16);
+b.set(\out, 24);
+a.set(\in, 24);
+
+RootNode();
+RootNode().asTarget;
+Server.default.asTarget;
+
+	\comb.asSynthTree.synth.inspect;
+			default_group;
+		*/
+		
 		var outputBus;
 		outputBus = synthTree.getOutputBusIndex;
         ^this.xplay(
@@ -44,6 +69,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
             addAction: \addToHead,
             args: synthTree.synthArgs
         );
+		
     }
 	xplay { | target, outbus = 0, fadeTime = 0.02, addAction = 'addToHead', args |
 		^{ this.value.adsrOut }.play(target, outbus, fadeTime, addAction, args);

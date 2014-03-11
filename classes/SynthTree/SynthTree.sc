@@ -53,9 +53,11 @@ SynthTree : IdentityTree {
 			nameSpaces[server, \root] = default;
 			default.inputs = IdentityDictionary();
 			default.inputs[\in] = Bus('audio', 0, 
-				server.options.numOutputBusChannels, server);
+				// server.options.numOutputBusChannels, 
+				0, // trick the allocator: reserve 0 channels
+				server);
 			ServerBootCheck add: {
-				default.group = RootNode();
+				default.group = server.asTarget;
 				default.initTree;
             };
 		}
@@ -114,9 +116,9 @@ SynthTree : IdentityTree {
 	asSynthTree { /* ^this */ }
 
 	chuckMakingInput { | synthOrTemplate, replaceAction = \fadeOut, 
-		argFadeTime, alwaysStart = true |
+		argFadeTime, startWhen = \now |
 		this.makeInputs();
-		this.chuck(synthOrTemplate, replaceAction, argFadeTime, alwaysStart)
+		this.chuck(synthOrTemplate, replaceAction, argFadeTime, startWhen);
 	}
 
 	makeInputs { | specs |
@@ -144,7 +146,6 @@ SynthTree : IdentityTree {
 	chuck { | synthOrTemplate, argReplaceAction = \fadeOut, 
 		argFadeTime, startWhen = \now |
 		/*  Set my synth.  Start depending on startWhen.
-			
 		*/
 		if (synth.isPlaying) { 
 			this.endSynth(argReplaceAction, argFadeTime ? fadeTime)
@@ -152,7 +153,7 @@ SynthTree : IdentityTree {
 		if (synthOrTemplate.isKindOf(Node)) {
 			synth = synthOrTemplate;
 			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
-			inputs do: _.moveBeforeOutput;
+			inputs do: _.moveBefore(synth);
 		}{
 			template = synthOrTemplate;
 			switch (startWhen,
@@ -163,13 +164,20 @@ SynthTree : IdentityTree {
 		};
 	}
 
-	moveBeforeOutput {
+	moveBefore { | argSynth |
 		// TODO: move my synth before the output synth
 		// and then call moveBeforeOutput on all my inputs sunthTrees
-		
+		if (synth.isPlaying) {
+			synth.moveBefore(argSynth); 
+			this do: _.moveBefore(synth);
+		};
 	}
 
-	setSynth { | argTemplate, argReplaceAction = \fadeOut |
+	setTemplate { | argTemplate, argReplaceAction = \fadeOut |
+		/* set template without starting. Called by ==> operator
+			Starting is deferred to after connecting 
+			self as input to another SynthTree (=<). 
+			Manner of replacing previous synth is stored in replaceAction */
 		replaceAction = argReplaceAction;
 		template = argTemplate;
 	}
@@ -214,6 +222,10 @@ SynthTree : IdentityTree {
 		if (synth.isPlaying) { synth.set(\out, outputBus.index) }
 	}
 
+	getInputBus { | inputName = \in |
+		^inputs !? { inputs[inputName] };
+	}
+
 	endSynth { | argReplaceAction = \fadeOut, argFadeTime |
 		if (argReplaceAction isKindOf: SimpleNumber) {
 			synth.fadeOut(argReplaceAction);
@@ -227,6 +239,7 @@ SynthTree : IdentityTree {
 
     makeSynth {
 		synth = template.asSynth(this);
+		this do: _.moveBefore(synth);
 		synth.onEnd(\this, {}); // just keep track of isPlaying state
 		notStopped = true;
 	}

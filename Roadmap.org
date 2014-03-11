@@ -2,10 +2,11 @@
 
 * Immediate TODOs
 
-- SynthTree:
-  - Test linking synths.
-  - Add cycle check to method addInputSynth
-  - Implement fade-in by setting Adsr's attackTime value at synth creation time.
+** SynthTree:
+- Test linking synths: What happens when chucking a new synth to the reader?  To the writer?
+- Test added cycle check to method addInputSynth
+- Add methods =synth=, =isPlaying=, =inputs=, =output=, =args= to Symbol.
+- Implement fade-in by setting Adsr's attackTime value at synth creation time.
 
 * Done
 
@@ -24,6 +25,7 @@
 - Replace old README with another one, that is less technical and more hand on.  The README should consist of examples, where each example is brief and can be executed immediately with audible results to show what the library does.  For each example there should be a brief description, accompanied by pointers to the related parts of the library, where more information can be found.
 - SynthTree:
   - Store all root-level SynthTrees as inputs of a \root SynthTree, for each server.  Use the =root= SynthTree to iniTree the entire tree of a server.
+  - Tested connecting synths.  But changing sources of connected synths is still broken.
 
 * Undergoing tests
 
