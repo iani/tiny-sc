@@ -3,9 +3,22 @@
 * Immediate TODOs
 
 ** SynthTree:
-- Test linking synths: What happens when chucking a new synth to the reader?  To the writer?
+- Test linking synths: What happens when chucking a new synth to the reader?  To the writer?  Subtests are:
+  - Debug  node not found when linking more than 1 synth or at initTree.
+  - Test initTree when the tree contains linked synths
 - Test added cycle check to method addInputSynth
+- =<> should set the amp of the SynthTree to 1.
 - Implement fade-in by setting Adsr's attackTime value at synth creation time.
+- Set operator: *>
+  - =\synth *>.freq 440;= // set freq of synth to 440.
+  - The *> may work also with busses, synths, patterns, MIDIFuncs, OSCFuncs, Views, or pubs:
+    - Bus: map to the bus
+    - Synth: create bus and map to it (?) (such buses should be registered in server-global dict like SynthTrees?)
+    - Patterns, etc.: make pattern or other object set the named parameter whenever it produces a new value.
+    - Use messages =map=, =unmap=, =bimap= to create mappers for updating objects.  The mappers are stored in the args var of the SynthTree, so that different SynthTrees depending on the same updating object (pub) may use different mappers/specs.
+- StreamPattern methods / operators?
+  - Pattern.play(durationPattern);
+  - SequenceableCollection.play(durationPattern);
 
 * Done
 

@@ -37,6 +37,37 @@ Try the following, one line at a time:
 \sound.fadeOut(5);
 #+END_EXAMPLE
 
+** Restart synths after Command-.
+
+Add some more synths to the tree:
+
+#+BEGIN_EXAMPLE
+{ SinOsc.ar(440) } => \la;
+{ SinOsc.ar(550) } => \doDiese;
+{ SinOsc.ar(660) } => \mi;
+#+END_EXAMPLE
+
+Stop all synths with Command-.
+
+Then run this to restart the synths:
+
+#+BEGIN_EXAMPLE
+SynthTree.initTree;
+#+END_EXAMPLE
+
+** Synth I/O linking
+
+#+BEGIN_EXAMPLE
+// Start an effects synth with a low-pass filter
+{ LPF.ar(In.ar(\in.kr(0)), \freq.kr(2000)) } =<> \lpf;
+// Start a WhiteNoise synth
+{ WhiteNoise.ar } => \source;
+// Send the noise synth to the filter
+\lpf =< \source;
+// Change the frequency of the low pass filter
+\lpf.set(\freq, 1000);
+#+END_EXAMPLE
+
 * UGen shortcuts
 
 ...

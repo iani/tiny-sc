@@ -1,15 +1,7 @@
 #+STARTUP: showall
 
-{ LPF.ar(In.ar(\in.kr(0)), \freq.kr(2000)) } =<> \comb;
-{ WhiteNoise.ar } => \source;
-\comb =< \source;
 
 \comb =< ({ LFTri.ar(550) } => \tri);
-
-\comb.set(\freq, 1000);
-
-SynthTree.initTree;
-
 
 \comb.asSynthTree.synth;
 \source.asSynthTree.synth;
