@@ -15,9 +15,6 @@ Knobs {
 	classvar default;
 	var <window;
 	var <knobs;
-
-// for testing only: 
-	*initClass { StartUp add: { this.default } }
 	
 	*connect { | object, label |
 		var knob;

@@ -267,15 +267,15 @@ SynthTree : IdentityTree {
 	synthArgs {
 		/* return argument array for Synth.new / Function.play, containing
 			the setters for the output and the input busses */
-		var out;
-		out = [out: this.getOutputBusIndex];
+		var argsArray;
+		argsArray = [out: this.getOutputBusIndex];
 		inputs !? { 
 			inputs keysValuesDo: { | key, bus |
-				out = out add: key;
-				out = out add: bus.index;
+				argsArray = argsArray add: key;
+				argsArray = argsArray add: bus.index;
 			};
 		}
-		^out;
+		^args collect: _.synthArgs ++ argsArray;
 	}
 
 	getOutputBusIndex {
@@ -338,6 +338,9 @@ SynthTree : IdentityTree {
 
 	set { | ... args |
 		// TODO: Modify to also store parameters in args
+		args keysValuesDo: { | key, value |
+			[this, thisMethod.name, key, value].postln;
+		};
 		if (synth.isPlaying) { synth.set(*args) };
 	}
 

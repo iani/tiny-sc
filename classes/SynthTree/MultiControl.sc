@@ -26,22 +26,36 @@ MultiControl {
 		nextValue = nextValue ?? { spec.default };
 	}
 
-	set { | value |
-		nextValue = value;
-		synthTree.setSynthParameter(name, value);
-	}
-
-	map { | bus |
+	synthArgs {
+		/* Return name + next value, for constructing Synth args. */
+		^[name, this.next];
 	}
 
 	next { 
-		// called when starting the synth do get the parameters
+		/*  Called when starting the synth to get arg parameters.
+			If there is a stream, get the value from the stream.
+			Otherwise get the stored value.
+		*/
 		if (stream.notNil) {
 			nextValue = stream.next;
 			^nextValue;
 		}{
 			^nextValue;
 		}
+	}
+
+	mapSet { | value |
+		// map the value received from MIDI or view etc. from 0-1 range 
+		// to desired range
+		this.set(spec map: value);
+	}
+
+	set { | value |
+		nextValue = value;
+		synthTree.setSynthParameter(name, value);
+	}
+
+	map { | bus |
 	}
 
 	add { | controlName, control |
@@ -94,12 +108,22 @@ MultiControl {
 	}
 
 	addView { | name, view, func, onClose, enabled = true |
+		/*
+			this.controls[name] = view ?? { Knobs.connect(this, name) };
+		*/
+		/*
 		this.controls[name] = ViewFunc(
 			view,
 			func ?? {{ | value | this.set(spec.map(value)) }},
 			onClose ?? {{ this.remove(name) }},
 			enabled
 		)
+		*/
+	}
+
+	senderClosed { | sender |
+		// find sender from values of dict and remove it
+
 	}
 
 	addSynth { | name, template |

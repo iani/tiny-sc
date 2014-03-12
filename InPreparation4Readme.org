@@ -1,30 +1,9 @@
 #+STARTUP: showall
 
 
-c = \source.asSynthTree.synth;
-c.set(\out, 16);
-
-\comb.asSynthTree.isPlaying;
-\comb.asSynthTree.synth;
-\source.asSynthTree.isPlaying;
-\source.asSynthTree.synth;
-\comb.asSynthTree.start;
-#+End_example
-
-and again
-
-#+BEGIN_EXAMPLE
 
 // Start an "effect" synth with an input
 { LPF.ar(In.ar(\in.kr(0)), \freq.kr(2000)) } =<> \comb;
-
-
-a = \comb.asSynthTree.synth;
-c = \comb.asSynthTree;
-c.inputs;
-a.set(\out, 0);
-
-b.moveToHead;
 
 // Send another synth to the input of the effect synth
 \comb =< ({ WhiteNoise.ar } ==> \source);
