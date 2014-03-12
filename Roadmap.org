@@ -37,12 +37,49 @@
 - Implement fade-in by setting Adsr's attackTime value at synth creation time.
 - Set operator: *>
   - =440 *>.freq \mySynth;= // set freq of mySynth to 440.
-  - The *> operator may work also with busses, synths, patterns, MIDIFuncs, OSCFuncs, Views, or pubs:
+  - The *> operator may work also with busses, synths, patterns, MIDIFuncs, OSCFuncs, Views, or pubs.  However see criticism and alternative formulation in next section.
     - Bus: map to the bus
     - Synth: create bus and map to it (?) (such buses should be registered in server-global dict like SynthTrees?)
     - Patterns, etc.: make pattern or other object set the named parameter whenever it produces a new value.
     - Use messages =map=, =unmap=, =bimap= to create mappers for updating objects.  The mappers are stored in the args var of the SynthTree, so that different SynthTrees depending on the same updating object (pub) may use different mappers/specs.
-- StreamPattern methods / operators?
+**** Alternative formulation thoughts for the set operator above:
+
+The above will only work well for setting params maybe we don't want it at all.  mySynth.set will do?  We only save the parens, I think.  S
+
+Need to specify 3 things:
+
+1. parameter operated on
+2. operation
+3. position in binop tree where the operation will take place
+
+Also need to accommodate both busses and buffers, with name access.
+
+\mySynth @ param <operation>.<position> <right operand/new element>
+
+{ } => \mySynth @ param ...
+
+Finally, better use message style, because clearer, and also chainable:
+#+BEGIN_EXAMPLE
+\mySynth
+   .set(param, val)
+   .out(param, chans)
+   .in(param, chans)
+   .map(name, param, chans)
+   .buf(name, param, chans)
+   .add(element, param, path);
+   .sub(element, param, path);
+   .mul(element, param, path);
+   .div(element, param, path);
+   .mod(element, param, path);
+   .pow(element, param, path);
+   .sel(element, param, path);
+   .rej(element, param, path);
+   .fun(element, param, path);
+   .choose(element, param, path);
+   .wchoose(element, param, path);
+#+END_EXAMPLE
+
+**** StreamPattern methods / operators?
   - Pattern.play(durationPattern);
   - SequenceableCollection.play(durationPattern);
 
