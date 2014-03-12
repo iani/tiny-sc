@@ -69,6 +69,11 @@
   (interactive)
   (sclang-eval-string "ProcessRegistryGui.gui"))
 
+(defun sclang-init-synth-tree ()
+  "Restart all non-disabled synths in SynthTree."
+  (interactive)
+  (sclang-eval-string "SynthTree.initTree;"))
+
 (defun sc-snippets ()
   "Define sclang mode keys for snippets."
   (local-set-key (kbd "C-c .") 'sclang-execute-current-snippet)
@@ -93,7 +98,8 @@
   ;; C-c C-l is overrriden by sc-extensions. Therefore substitute:
   (local-set-key (kbd "C-c l") 'sclang-recompile)
   ;; additional key for convenience: provide SC-IDE shortcut for clearing buffer:
-  (local-set-key (kbd "M-C") 'sclang-clear-post-buffer))
+  (local-set-key (kbd "M-C") 'sclang-clear-post-buffer)
+  (global-set-key (kbd "C-c C-x C-/") 'sclang-init-synth-tree))
 
 ;; add to sclang-mode-hook
 (add-hook 'sclang-mode-hook 'sc-snippets)
