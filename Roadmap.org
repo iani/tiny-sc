@@ -62,21 +62,25 @@ Finally, better use message style, because clearer, and also chainable:
 #+BEGIN_EXAMPLE
 \mySynth
    .set(param, val)
-   .out(param, chans)
-   .in(param, chans)
-   .map(name, param, chans)
-   .buf(name, param, chans)
-   .add(element, param, path);
-   .sub(element, param, path);
-   .mul(element, param, path);
-   .div(element, param, path);
-   .mod(element, param, path);
-   .pow(element, param, path);
-   .sel(element, param, path);
-   .rej(element, param, path);
-   .fun(element, param, path);
-   .choose(element, param, path);
-   .wchoose(element, param, path);
+   .out(param = \out, chans = 1) // creates bus ref
+   .in(param = \in, chans = 1) // creates bus ref
+   .view(param, nameOrView = param, storeName = \view)
+   .osc(param, specs = param, storeName = \osc)
+   .buf(name, param, chans) // creates buf ref
+   .midi(param, specs, storeName = \midi)
+   .map(name, param, chans) // creates bus ref
+   // following compose patterns / streams. for later? ... ?
+   .add(param, element, storeName, path);
+   .sub(param, element, storeName, path);
+   .mul(param, element, storeName, path);
+   .div(param, element, storeName, path);
+   .mod(param, element, storeName, path);
+   .pow(param, element, storeName, path);
+   .sel(param, element, storeName, path);
+   .rej(param, element, storeName, path);
+   .fun(param, element, storeName, path);
+   .choose(param, element, path);
+   .wchoose(param, element, path);
 #+END_EXAMPLE
 
 **** StreamPattern methods / operators?

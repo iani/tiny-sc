@@ -324,6 +324,18 @@ SynthTree : IdentityTree {
         }
     }
 
+	mapSet { | parameter, value |
+		// args connect themselves directly to controllers
+		// this saves having to access the parameter each time. 
+		// therefore this method may not be used.
+		/* var param;
+		param = args[parameter];
+		param !? param.mapSet(value);
+		*/
+		
+		[this, thisMethod.name, parameter, value].postln;
+	}
+
 	set { | ... args |
 		// TODO: Modify to also store parameters in args
 		if (synth.isPlaying) { synth.set(*args) };
