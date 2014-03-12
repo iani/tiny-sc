@@ -28,11 +28,11 @@ Try the following, one line at a time:
 // Replace again, fading-out the previous sound in 5 seconds
 { PinkNoise.ar } =>.5 \sound;
 // Floating point durations must be given through a message
-{ PinkNoise.ar } => \sound.fadeTime = 0.5;
+{ GrayNoise.ar(Decay.kr(Dust.kr(5))) } => \sound.fadeOut(0.5);
 // Output channel can be set
 \sound.set(\out, 1);
 // So can the amplitude
-\sound.set(\amp, 0.3);
+\sound.set(\amp, 0.01);
 // Fadeout with custom duration
 \sound.fadeOut(5);
 #+END_EXAMPLE
@@ -85,7 +85,7 @@ Example 3: Changing the synths of the source and of the effect:
 \lpf =< ({ LFTri.ar(LFNoise2.kr(7.15).range(400, 4000)) } ==> \source2);
 #+END_EXAMPLE
 
-Confirm that the tree can be restarted after Command-. also when it contains linked synths: 
+Confirm that the tree can be restarted after Command-. also when it contains linked synths:
 
 #+BEGIN_EXAMPLE
 SynthTree.initTree;

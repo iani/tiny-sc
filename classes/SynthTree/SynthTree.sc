@@ -103,7 +103,8 @@ SynthTree : IdentityTree {
 			Safety: If a synth is already running, do not restart.
 		*/
 		if (remakeInputs) { this.remakeInputs; };
-        if (notStopped /* and: { synth.isPlaying.not } */ ) {
+		if (synth.isPlaying) { synth.free };
+        if (notStopped) {
             this.makeSynth;
             this do: _.initTree(remakeInputs);
         }
@@ -168,7 +169,7 @@ SynthTree : IdentityTree {
 		}{
 			template = synthOrTemplate;
 			switch (startWhen,
-				\now, { this.makeSynth },
+				\now, { notStopped = true; this.makeSynth },
 				\ifNotStopped, { if (notStopped) { this.makeSynth } },
 				\later, {} // any other symbol will also do
 			)
@@ -297,8 +298,10 @@ SynthTree : IdentityTree {
 	}
 
 	fadeOut { | argFadeTime |
-		synth.set(\timeScale, argFadeTime ? fadeTime, \gate, 0);
-		synth.isPlaying = false;
+		if (synth.isPlaying) {
+			synth.set(\timeScale, argFadeTime ? fadeTime, \gate, 0);
+			synth.isPlaying = false;
+		};
 		notStopped = false;
 	}
 
