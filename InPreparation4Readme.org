@@ -20,6 +20,8 @@
 SynthTree.initTree;
 
 
+\lpf.isPlaying;
+
 ** TODO linking synth inputs-outputs
 
 #+BEGIN_EXAMPLE

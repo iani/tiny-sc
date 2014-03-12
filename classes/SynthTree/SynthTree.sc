@@ -103,7 +103,7 @@ SynthTree : IdentityTree {
 			Safety: If a synth is already running, do not restart.
 		*/
 		if (remakeInputs) { this.remakeInputs; };
-        if (notStopped and: { synth.isPlaying.not }) {
+        if (notStopped /* and: { synth.isPlaying.not } */ ) {
             this.makeSynth;
             this do: _.initTree(remakeInputs);
         }

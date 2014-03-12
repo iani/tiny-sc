@@ -3,15 +3,12 @@
 * Immediate TODOs
 
 ** SynthTree:
-- Test linking synths: What happens when chucking a new synth to the reader?  To the writer?  Subtests are:
-  - Debug  node not found when linking more than 1 synth or at initTree.
-  - Test initTree when the tree contains linked synths
 - Test added cycle check to method addInputSynth
 - =<> should set the amp of the SynthTree to 1.
 - Implement fade-in by setting Adsr's attackTime value at synth creation time.
 - Set operator: *>
-  - =\synth *>.freq 440;= // set freq of synth to 440.
-  - The *> may work also with busses, synths, patterns, MIDIFuncs, OSCFuncs, Views, or pubs:
+  - =440 *>.freq \mySynth;= // set freq of mySynth to 440.
+  - The *> operator may work also with busses, synths, patterns, MIDIFuncs, OSCFuncs, Views, or pubs:
     - Bus: map to the bus
     - Synth: create bus and map to it (?) (such buses should be registered in server-global dict like SynthTrees?)
     - Patterns, etc.: make pattern or other object set the named parameter whenever it produces a new value.
@@ -22,6 +19,7 @@
 
 * Done
 
+** Before [2014-03-12 Wed]
 - Adsr, Sine, Perc :: Env shortcuts
 - out, adsrOut, Inp :: =Out.ar=/=kr= + =adsr=, =In= shortcuts.
 - Notification :: Filter "changed" notifications, add and remove notifiers.bb
@@ -39,6 +37,13 @@
   - Store all root-level SynthTrees as inputs of a \root SynthTree, for each server.  Use the =root= SynthTree to iniTree the entire tree of a server.
   - Tested connecting synths.  But changing sources of connected synths is still broken.
   - Added methods =synth=, =isPlaying=, =inputs=, =output=, =args= to Symbol.
+- Test linking synths: What happens when chucking a new synth to the reader?  To the writer?  Subtests are:
+  - Debug  node not found when linking more than 1 synth or at initTree.
+  - Test initTree when the tree contains linked synths
+** SynthTree.initTree: Do not check for playing synths
+:PROPERTIES:
+:DATE:     <2014-03-12 Wed 07:28>
+:END:
 
 * Undergoing tests
 
