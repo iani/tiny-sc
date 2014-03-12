@@ -93,9 +93,6 @@ SynthTree.initTree;
 
 * Setting fadeTime
 
-
-Setting fadeTime
-
 #+BEGIN_EXAMPLE
 // Start an "effect" synth with an input
 { LPF.ar(In.ar(\in.kr(0)), \freq.kr(4000)) } =<> \lpf;
@@ -109,7 +106,7 @@ Setting fadeTime
 { Inp.ar * Decay2.kr(Dust.kr(3)) } =<> \lpf;
 // change source, with fadeTime stored previously
 { SinOsc.ar(2000 rrand: 3000) } ==> \source;
-// change source again, with fadeTime stored previously
+// change source again, With fadeTime stored previously
 { LFTri.ar(400 rrand: 800) } ==> \source;
 #+END_EXAMPLE
 
