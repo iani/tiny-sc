@@ -67,23 +67,23 @@ Example 1:  Simple patching of one source to one effect:
 // Send the noise synth to the filter
 \lpf =< \source;
 // Change the frequency of the low pass filter
-\lpf.set(\freq, 1000);
+\lpf.set(\freq, 5000);
 #+END_EXAMPLE
 
 Example 2: Several synths sending to one effect.
 
 #+BEGIN_EXAMPLE
-{ LPF.ar(In.ar(\in.kr(0)), LFNoise0.kr(10).range(2000, 4000)) } =<> \lpf;
+{ LPF.ar(In.ar(\in.kr(0)), LFNoise0.kr(10 ! 2).range(2000, 4000)) } =<> \lpf;
 \lpf =< ({ WhiteNoise.ar } ==> \source);
-\lpf =< ({ LFPulse.ar(LFNoise2.kr(0.5).range(300, 3000)) } ==> \source2);
+\lpf =< ({ LFPulse.ar(LFNoise2.kr(0.2).range(300, 400)) } ==> \source2);
 #+END_EXAMPLE
 
 Example 3: Changing the synths of the source and of the effect:
 
 #+BEGIN_EXAMPLE
-{ In.ar(\in.kr(0)) * Decay.kr(Dust.kr(4)) } =<> \lpf;
-\lpf =< ({ LFTri.ar(LFNoise2.kr(7.15).range(400, 4000)) } ==> \source2);
-#+END_EXAMPLE
+{ Inp.ar * CombN.ar(Decay.kr({ Dust.kr(1) } ! 2), 0.15, 0.15, 2) } =<>.5 \lpf;
+\lpf =< ({ LFTri.ar(LFNoise2.kr(12).range(400, 4000)) } ==> \source2);
+#+End_example
 
 Confirm that the tree can be restarted after Command-. also when it contains linked synths:
 
