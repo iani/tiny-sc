@@ -10,6 +10,11 @@ Server.default.boot;
 ServerBootCheck.default;
 
 ServerBootCheck.default.makeBuffer;
+
+Server.default.hasShmInterface;
+Server.default.quit;
+
+Server.default.isLocal;
 */
 
 ServerBootCheck {
@@ -42,24 +47,42 @@ ServerBootCheck {
 
 	checkIfReallyBootedAndDoActions {
 		if (bus.isNil) {
-			this.serverReallyBootedSoPleaseDoThoseActions;
+			this.serverReallyBooted;
 		}{
 		bus.get({ | val | 
 				if (val == 12345) {
-					this.serverDidNotReallyBootSoJustBeFunny;
+					this.serverDidNotReallyBoot;
 				}{
-					this.serverReallyBootedSoPleaseDoThoseActions;
+					this.serverReallyBooted;
 				 }
 			 });
 		 };
 	 }
 
-	 serverReallyBootedSoPleaseDoThoseActions {
-		 funcs do: _.value;
-		 this.makeBus;
+	 serverReallyBooted {
+		 var time;
+		 if (server.isLocal) {
+			 {
+				 time = Process.elapsedTime;
+				 "Waiting for server shared memory interface".postln;
+				 while { server.hasShmInterface.not }
+				 { 
+					 postf("% - ", (Process.elapsedTime - time).round(0.5));
+					 0.5.wait; 
+				 };
+				 this.doActionsAndMakeBus;
+			 }.fork;
+		 }{
+			 this.doActionsAndMakeBus;
+		 }
 	 }
 
-	 serverDidNotReallyBootSoJustBeFunny { "Server did not really boot".postln; }
+	doActionsAndMakeBus {
+		funcs do: _.value;
+		this.makeBus;
+	}
+
+	 serverDidNotReallyBoot { "Server did not really boot".postln; }
 	 *add { | func | this.default.add(func); }
 	 add { | func | funcs = funcs add: func; }
 }

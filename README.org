@@ -100,8 +100,6 @@ SynthTree.initTree;
 \smooth =< ({ GrayNoise.ar(3) } ==> \gray);
 #+END_EXAMPLE
 
-
-
 * Handier Function:play method
 
 ...
