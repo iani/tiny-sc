@@ -1,42 +1,6 @@
 #+STARTUP: showall
 
 
-//:
-{ LPF.ar(In.ar(\in.kr(0)), LFNoise0.kr(10).range(2000, 4000)) } =<> \lpf;
-
-\lpf =< ({ WhiteNoise.ar } ==> \source);
-\lpf =< ({ LFPulse.ar(LFNoise2.kr(0.5).range(300, 3000)) } ==> \source2);
-
-{ Resonz.ar(In.ar(\in.kr(0)), LFNoise0.kr(10).range(200, 12000)) } =<> \lpf;
-
-\source.fadeOut(2);
-\source.start;
-
-\lpf.set(\amp, 1);
-
-\source.template = { GrayNoise.ar };
-\source.template = { LFPulse.ar(LFNoise0.kr(0.5).range(200, 800)) };
-
-SynthTree.initTree;
-
-
-\lpf.isPlaying;
-
-** TODO linking synth inputs-outputs
-
-#+BEGIN_EXAMPLE
-// Start an "effect" synth with an input
-{ LPF.ar(In.ar(\in.kr(0)), \freq.kr(4000)) } =<> \lpf;
-// Send another synth to the input of the effect synth
-\lpf =< ({ WhiteNoise.ar } ==> \source);
-\lpf.set(\freq, 10000);
-
-{ CombN.ar(In.ar(\in.kr(0)), 0.5, 0.5) } =<> \comb;
-\comb =< ({ WhiteNoise.ar(Decay.kr(Impulse.kr(1))) } ==> \noise);
-{ WhiteNoise.ar(Decay.kr(Impulse.kr(1))) } ==> \noise;
-
-{ CombN.ar(In.ar(\in.kr(0)), 0.1, 0.1) } =<> \comb;
-
 c = \source.asSynthTree.synth;
 c.set(\out, 16);
 

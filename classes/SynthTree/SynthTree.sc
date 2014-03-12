@@ -160,25 +160,17 @@ SynthTree : IdentityTree {
 		/*  Set my synth.  Start depending on startWhen. */
 		{
 		if (synth.isPlaying) { 
-			// [this, thisMethod.name, "endingSynth"].postln;
-			// 0.5.wait;  // these are OK
 			this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
-			// 0.5.wait;  // these are OK
 		};
 		if (synthOrTemplate.isKindOf(Node)) {
 			synth = synthOrTemplate;
-			//			[this, thisMethod.name, "setting synth out bus"].postln;
 			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
-			// [this, thisMethod.name, "moving all input synths before"].postln;
 			inputs do: _.moveBefore(synth);
 		}{
 			template = synthOrTemplate;
 			switch (startWhen,
 				\now, { notStopped = true; 
-					// [this, thisMethod.name, "making chucked synth"].postln;
-					// 0.5.wait; // this is probably DEBUG!
 					this.makeSynth;
-					// 0.5.wait;
 				},
 				\ifNotStopped, { if (notStopped) { this.makeSynth } },
 				\later, {} // any other symbol will also do
@@ -261,9 +253,7 @@ SynthTree : IdentityTree {
 	}
 
     makeSynth {
-		// [this, thisMethod.name, "calling template as Synth"].postln;
 		synth = template.asSynth(this);
-		// [this, thisMethod.name, "called---- template as Synth"].postln;
 		// guarantee that moveBefore happens AFTER the synth has really started!
 		synth !? {
 			synth.onEnd(\this, {}); // This also registers on NodeWatcher

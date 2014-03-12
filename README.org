@@ -73,22 +73,44 @@ Example 1:  Simple patching of one source to one effect:
 Example 2: Several synths sending to one effect.
 
 #+BEGIN_EXAMPLE
-{ LPF.ar(In.ar(\in.kr(0)), LFNoise0.kr(10 ! 2).range(2000, 4000)) } =<> \lpf;
+{ LPF.ar(In.ar(\in.kr(0)), LFNoise0.kr(10 ! 2).range(200, 4000)) } =<> \lpf;
 \lpf =< ({ WhiteNoise.ar } ==> \source);
-\lpf =< ({ LFPulse.ar(LFNoise2.kr(0.2).range(300, 400)) } ==> \source2);
+\lpf =< ({ LFPulse.ar(LFNoise0.kr(15).range(300, 400)) } ==> \source2);
 #+END_EXAMPLE
 
 Example 3: Changing the synths of the source and of the effect:
 
 #+BEGIN_EXAMPLE
-{ Inp.ar * CombN.ar(Decay.kr({ Dust.kr(1) } ! 2), 0.15, 0.15, 2) } =<>.5 \lpf;
+{ Inp.ar * Decay.kr({ Dust.kr(1) } ! 2) } =<>.5 \lpf;
 \lpf =< ({ LFTri.ar(LFNoise2.kr(12).range(400, 4000)) } ==> \source2);
-#+End_example
+#+END_EXAMPLE
 
 Confirm that the tree can be restarted after Command-. also when it contains linked synths:
 
 #+BEGIN_EXAMPLE
 SynthTree.initTree;
+#+END_EXAMPLE
+
+* Setting fadeTime
+
+
+Setting fadeTime
+
+#+BEGIN_EXAMPLE
+// Start an "effect" synth with an input
+{ LPF.ar(In.ar(\in.kr(0)), \freq.kr(4000)) } =<> \lpf;
+// Set fadeTime of effect:
+\lpf.fadeTime = 10;
+// Send a synth to the input of the effect synth
+\lpf =< ({ WhiteNoise.ar } ==> \source);
+// Set fadeTime of source;
+\source.fadeTime = 5;
+// change effect, with fadeTime stored previously
+{ Inp.ar * Decay2.kr(Dust.kr(3)) } =<> \lpf;
+// change source, with fadeTime stored previously
+{ SinOsc.ar(2000 rrand: 3000) } ==> \source;
+// change source again, with fadeTime stored previously
+{ LFTri.ar(400 rrand: 800) } ==> \source;
 #+END_EXAMPLE
 
 * UGen shortcuts
