@@ -279,7 +279,7 @@ SynthTree : IdentityTree {
 	}
 
 	getOutputBusIndex {
-		^output.inputBusIndex(outputName);
+		^output.inputBusIndex(outputName) ? 0;
 	}
 
 	inputBusIndex { | inputName = \in |
@@ -310,11 +310,12 @@ SynthTree : IdentityTree {
 	stop { this.free }
 
     free {
-		synth.free;
+		if (synth.isPlaying) { synth.free; };
 		notStopped = false;
 	}
 
 	mute {
+		// possibly divert output to a "sink" bus
 		[this, thisMethod.name, "not implemented"].postln;
 	}
 
@@ -358,6 +359,7 @@ SynthTree : IdentityTree {
    .buf(name, param, chans) // creates buf ref
    .midi(param, specs, storeName = \midi)
    .map(name, param, chans) // creates bus ref
+		.view(para, name, view ...) // name etc. optional. creates knob per default
    // following compose patterns / streams. for later? ... ?
    .add(param, element, storeName, path);
    .sub(param, element, storeName, path);

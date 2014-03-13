@@ -40,7 +40,8 @@ Finally, better use message style, because clearer, and also chainable:
    .set(param, val)
    .out(param = \out, chans = 1) // creates bus ref
    .in(param = \in, chans = 1) // creates bus ref
-   .view(param, nameOrView = param, storeName = \view)
+.view(param, name, view ...) // name etc. optional. creates knob per default
+// NOT:   .view(param, nameOrView = param, storeName = \view)
    .osc(param, specs = param, storeName = \osc)
    .buf(name, param, chans) // creates buf ref
    .midi(param, specs, storeName = \midi)

@@ -5,13 +5,11 @@ IZ Thu, Mar 13 2014, 06:51 EET
 
 ~knob1 = Knobs.knob("test");
 
-~knob1.action;
-
-~knob1.action = { "asdfasdfasdf".postln; };
+~sound = { SinOsc.ar(\freq.kr(440)) }.xplay;
 
 //:
 ~viewFunc1 = ViewFunc(~knob1,
-	{ | ... args | [\action, args].postln; },
+	{ | val | ~sound.set(\freq, val * 400 + 400) },
 	{ | ... args | [\closed, args].postln; }
 );
 //:

@@ -19,35 +19,48 @@ It is possible to extend the class to provide more panels.
 
 IZ Wed, Mar 12 2014, 15:02 EET
 
-
-
 */
 
 Knobs {
 	
-	classvar default;
+	classvar all;
+	var <name;
 	var <window;
 	var <knobs;
 	
-	*knob { | label |
-		var knob;
-		knob = this.default.knobLabeled(label);
-		^knob !? { knob.knob };
+	*initClass { all = IdentityDictionary() }
+
+	*knob { | label, panelName = \Knobs |
+		^this.getKnob(panelName, label);
 	}
 
-	*default { ^default ?? { default = this.new }; }
+	*getKnob { | panelName, label |
+		var panel;
+		panelName = panelName.asSymbol;
+		panel = all[panelName];
+		if (panel.isNil) {
+			panel = this.new(panelName);
+			all[panelName] = panel;
+		};
+		^panel.knobLabeled(label);
+	}
 
-	*new { ^super.new.init; }
+	*new { | panelName |
+		^this.newCopyArgs(panelName).init;
+	}
 
 	init {
 		var width;
 		width = Window.screenBounds.width;
-		window = Window("Knobs", Rect(0, 0, width, 100));
+		window = Window(name.asString, Rect(0, 0, width, 100));
 		knobs = { KnobWithLabel() } ! (width - 50 / 70);
 		window.view.layout = HLayout(
 			*knobs.collect(_.layout)
 		);
-		//	window.onClose = { | w | w.objectClosed };
+		window.onClose = { | w |
+			all[name.asSymbol] = nil;
+			w.objectClosed;
+		};
 		window.front;
 	}
 
@@ -55,7 +68,7 @@ Knobs {
 		var knob, message;
 		knob = knobs detect: { | k | k.label.string == message };
 		knob ?? { knob = this.allocateKnob(string); };
-		^knob;
+		^knob !? { knob.knob };
 	}
 		
 	allocateKnob { | string |

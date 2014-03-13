@@ -30,12 +30,15 @@ MultiControl : IdentityDictionary {
 	//	MIDIFuncs, OSCFuncs, Busses, Views etc.)
 	
 	*new { | synthTree, name, spec, stream, initialValue |
-		^this.newCopyArgs(synthTree, name, spec, stream, initialValue).init;
+		^super.new.init(synthTree, name, spec, stream, initialValue);
 	}
 
-	init {
-		spec = spec.asSpec ? NullSpec;
-		nextValue = nextValue ?? { spec.default };
+	init { | argSynthTree, argName, argSpec, argStream, initialValue |
+		synthTree = argSynthTree;
+		name = argName;
+		spec = (argSpec ? name).asSpec ? NullSpec;
+		stream = argStream.asStream;
+		nextValue = initialValue ?? { stream.next ?? { spec.default } };
 	}
 
 	synthArgs {
@@ -80,7 +83,12 @@ MultiControl : IdentityDictionary {
 
 	remove { | controlName |
 		// remove a control.  Disable it first
-
+		var ctl;
+		ctl = this[controlName];
+		if (ctl.notNil) {
+			ctl.disable;
+			ctl[controlName] = nil;
+		};
 	}
 
 	enable { | controlName, start = false |
@@ -120,17 +128,14 @@ MultiControl : IdentityDictionary {
 	}
 
 	addView { | argName, view, func, onClose, enabled = true |
-		argName = argName ?? { format("%:%", synthTree.name, name).asSymbol };
-			this[argName] = view ?? { Knobs.connect(this, argName) };
-		
-		/*
-		this.controls[argName] = ViewFunc(
+		argName = argName ? name;
+		view = view ?? { Knobs.knob(argName, synthTree.name) };
+		this[argName] = ViewFunc(
 			view,
 			func ?? {{ | value | this.set(spec.map(value)) }},
 			onClose ?? {{ this.remove(argName) }},
 			enabled
 		)
-		*/
 	}
 
 	senderClosed { | sender |

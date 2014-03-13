@@ -86,6 +86,14 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.start };		
 	}
+	stop {
+		var synthTree;
+		^(synthTree = this.asSynthTree(false)) !? { synthTree.stop };		
+	}
+	free {
+		var synthTree;
+		^(synthTree = this.asSynthTree(false)) !? { synthTree.free };		
+	}
 	synth {
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.synth };		

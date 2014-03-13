@@ -1,5 +1,19 @@
 #+STARTUP: showall
 
+{ SinOsc.ar(\freq.kr(440)) } => \test;
+
+\test.set(\freq, 550);
+\test.fadeOut;
+\test.start;
+
+//: Preparing SynthTree:view();
+//:
+~viewFunc1 = ViewFunc(Knobs.knob(\freq, \test),
+	{ | val | \test.set(\freq, val * 400 + 400) },
+	{ | ... args | [\closed, args].postln; }
+);
+
+//:
 Server.killAll;
 Server.default.boot;
 // Start an "effect" synth with an input
