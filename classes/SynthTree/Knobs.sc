@@ -1,12 +1,25 @@
 /*
 Full width window at bottom of screen, filled with labeled knobs. 
-The knobs are allocated dynamically to receiving elements, 
-and labeled accordingly.
+
+Usage: 
+
+An object that wants to use a knob can request it by Knobs.knob(myLabel). 
+If a free (unlabeled) knob is available, its label is set to myLabel, 
+and the knob view is returned. 
+
+The object that wants to be controlled by the knob, can then do so by creating 
+a ViewFunc on it: 
+
+ViewFunc(aKnob, { value-action }, { onClose-action });
+
+See ViewFunc for more. 
+
+For the moment only one knob panel is used, stored in variable defaults. 
+It is possible to extend the class to provide more panels. 
 
 IZ Wed, Mar 12 2014, 15:02 EET
 
-Knobs.default.knobs.first.knob.parent.window;
-Knobs.connect(\test.asSynthTree);
+
 
 */
 
@@ -16,12 +29,10 @@ Knobs {
 	var <window;
 	var <knobs;
 	
-	*connect { | object, label |
+	*knob { | label |
 		var knob;
-		label = label ?? { object.asString };
 		knob = this.default.knobLabeled(label);
-		knob !? { knob connect: object; };
-		^knob;
+		^knob !? { knob.knob };
 	}
 
 	*default { ^default ?? { default = this.new }; }
@@ -42,8 +53,7 @@ Knobs {
 
 	knobLabeled { | string |
 		var knob, message;
-		message = string.asSymbol;
-		knob = knobs detect: { | k | k.message === message };
+		knob = knobs detect: { | k | k.label.string == message };
 		knob ?? { knob = this.allocateKnob(string); };
 		^knob;
 	}
@@ -61,38 +71,18 @@ Knobs {
 }
 
 KnobWithLabel {
-	
-	// var <window; 
-	/* receiving onClosed from the window is more economical: only one onClosed is sent.
-		But it makes the code a little more complicated.  Therefore avoided for now */
+
 	var <layout;
 	var <knob;
 	var <label;
-	var <message;
 
 	*new { ^super.new.init; }
 
 	init {
 		knob = Knob();
-		knob.action = { | me | this.changed(message, me.value); };
-		knob.onClose = { this.objectClosed; };
 		label = StaticText().string_("").align_(\center);
 		layout = VLayout([knob, s: 3], label);
 	}
 
-	setLabel { | string |
-		label.string = string;
-		message = string.asSymbol;
-	}
-
-	connect { | object, action, onClose |
-		action = action ?? {{ | value |
-			object.mapSet(message, value);
-		}};
-		object.addNotifier(this, message, action);
-		onClose = onClose ?? {{ | sender |
-			object.senderClosed(sender);
-		}};
-		object.addNotifier(this, \objectClosed, onClose);
-	}
+	setLabel { | string | label.string = string; }
 }

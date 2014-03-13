@@ -18,11 +18,9 @@ ViewFunc {
 	init { | enabled = true |
 		var notifier = this.class;
 		view.action = { | value |
-			[this, thisMethod.name, "action", value].postln;
 			notifier.changed(\value, value); 
 		};
 		view.onClose = { | value |
-			[this, thisMethod.name, "closed", value].postln;
 			notifier.changed(\closed);
 		};
 		if (enabled) { this.enable };
