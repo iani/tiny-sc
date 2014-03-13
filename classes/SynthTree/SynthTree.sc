@@ -80,7 +80,7 @@ SynthTree : IdentityTree {
 
 	init { | argName |
 		name = argName;
-		args = ();
+		args = SynthTreeArgs();
 	}
 
 	*nameSpaces {
@@ -275,7 +275,7 @@ SynthTree : IdentityTree {
 				argsArray = argsArray add: bus.index;
 			};
 		}
-		^args collect: _.synthArgs ++ argsArray;
+		^(args.asArray collect: _.synthArgs ++ argsArray).flat;
 	}
 
 	getOutputBusIndex {
@@ -336,16 +336,42 @@ SynthTree : IdentityTree {
 		[this, thisMethod.name, parameter, value].postln;
 	}
 
-	set { | ... args |
-		// TODO: Modify to also store parameters in args
-		args keysValuesDo: { | key, value |
-			[this, thisMethod.name, key, value].postln;
+	set { | ... argArgs |
+		// Also store parameters in args
+		argArgs keysValuesDo: { | key, value |
+			args.storeArgValue(key, value);
 		};
-		if (synth.isPlaying) { synth.set(*args) };
+		if (synth.isPlaying) { synth.set(*argArgs) };
 	}
 
 	setSynthParameter { | parameter, value |
 		// used by StreamPattern in args
 		if (synth.isPlaying) { synth.set(parameter, value); };
+	}
+
+	// Controls
+	/*
+   .out(param = \out, chans = 1) // creates bus ref
+   .in(param = \in, chans = 1) // creates bus ref
+		.view(param, nameOrView = param) // , storeName = \view
+   .osc(param, specs = param, storeName = \osc)
+   .buf(name, param, chans) // creates buf ref
+   .midi(param, specs, storeName = \midi)
+   .map(name, param, chans) // creates bus ref
+   // following compose patterns / streams. for later? ... ?
+   .add(param, element, storeName, path);
+   .sub(param, element, storeName, path);
+   .mul(param, element, storeName, path);
+   .div(param, element, storeName, path);
+   .mod(param, element, storeName, path);
+   .pow(param, element, storeName, path);
+   .sel(param, element, storeName, path);
+   .rej(param, element, storeName, path);
+   .fun(param, element, storeName, path);
+   .choose(param, element, path);
+   .wchoose(param, element, path);
+	*/
+	view { | param, nameOrView |
+		
 	}
 }

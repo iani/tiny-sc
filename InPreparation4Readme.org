@@ -1,12 +1,21 @@
 #+STARTUP: showall
 
-
-
+Server.killAll;
+Server.default.boot;
 // Start an "effect" synth with an input
 { LPF.ar(In.ar(\in.kr(0)), \freq.kr(2000)) } =<> \comb;
 
 // Send another synth to the input of the effect synth
 \comb =< ({ WhiteNoise.ar } ==> \source);
+
+\comb.set(\freq, 9500);
+
+\comb.synth.set(\freq, 5000);
+
+\comb.fadeOut;
+
+\comb.start;
+
 \comb.asSynthTree.isPlaying;
 \comb.asSynthTree.synth;
 \source.asSynthTree.isPlaying;

@@ -8,13 +8,25 @@ It can be individually enabled/disabled, changed or removed.
 IZ Tue, Mar 11 2014, 18:10 EET
 */
 
-MultiControl {
+SynthTreeArgs : Event {
+	storeArgValue { | key, value |
+		var argCtl;
+		argCtl = this[key];
+		if (argCtl.isNil) {
+			this[key] = argCtl = MultiControl(this, key);
+		};
+		argCtl.nextValue = value;
+	}
+}
+
+MultiControl : IdentityDictionary {
 	var <synthTree; // SynthTree to which I belong
 	var <name;     // name of synth parameter to control
 	var <>spec;    // spec to map incoming values from controls
 	var <>stream;  // if not nil, provides next value instead of nextValue var.
 	var <>nextValue; // next value to use for that parameter. Can be a stream
-	var <>controls; // dictionary holding any control objects (StreamPatterns, 
+	// control objects are stored in self as subclass of IdentityDictionary
+	// var <>controls; // dictionary holding any control objects (StreamPatterns, 
 	//	MIDIFuncs, OSCFuncs, Busses, Views etc.)
 	
 	*new { | synthTree, name, spec, stream, initialValue |
@@ -107,15 +119,15 @@ MultiControl {
 		
 	}
 
-	addView { | name, view, func, onClose, enabled = true |
+	addView { | argName, view, func, onClose, enabled = true |
+		argName = argName ?? { format("%:%", synthTree.name, name).asSymbol };
+			this[argName] = view ?? { Knobs.connect(this, argName) };
+		
 		/*
-			this.controls[name] = view ?? { Knobs.connect(this, name) };
-		*/
-		/*
-		this.controls[name] = ViewFunc(
+		this.controls[argName] = ViewFunc(
 			view,
 			func ?? {{ | value | this.set(spec.map(value)) }},
-			onClose ?? {{ this.remove(name) }},
+			onClose ?? {{ this.remove(argName) }},
 			enabled
 		)
 		*/

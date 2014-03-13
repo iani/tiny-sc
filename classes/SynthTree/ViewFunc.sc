@@ -17,15 +17,25 @@ ViewFunc {
 
 	init { | enabled = true |
 		var notifier = this.class;
-		view.action = { | value | notifier.changed(\value, value) };
-		view.onClose = { notifier.changed(\closed) };
+		view.action = { | value |
+			[this, thisMethod.name, "action", value].postln;
+			notifier.changed(\value, value); 
+		};
+		view.onClose = { | value |
+			[this, thisMethod.name, "closed", value].postln;
+			notifier.changed(\closed);
+		};
+		if (enabled) { this.enable };
 	}
 
 	enable {
 		var notifier;
 		notifier = this.class;
-		this.addNotifier(notifier, \value, { | value | action.(value, this) });
-		this.addNotifier(notifier, \closed, { onClose.(this) });
+		this.addNotifier(notifier, \value, { | me | action.(me.value, this) });
+		this.addNotifier(notifier, \closed, {
+			onClose.(this);
+			this.disable;
+		});
 	}
 
 	disable {

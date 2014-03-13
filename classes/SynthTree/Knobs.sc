@@ -20,7 +20,8 @@ Knobs {
 		var knob;
 		label = label ?? { object.asString };
 		knob = this.default.knobLabeled(label);
-		knob !? { knob connect: object; }
+		knob !? { knob connect: object; };
+		^knob;
 	}
 
 	*default { ^default ?? { default = this.new }; }

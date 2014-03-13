@@ -4,31 +4,7 @@
 
 ** SynthTree:
 
-*** Debug this:
-{ LPF.ar(In.ar(\in.kr(0)), LFNoise0.kr(10).range(2000, 4000)) } =<> \lpf;
-\lpf =< ({ GrayNoise.ar } ==> \source);
-
-// No problem changing source like this:
-{ WhiteNoise.ar } ==> \source;
-// But re-inputtig issues /n_set Node not found (but sound is ok):
-\lpf =< ({ SinOsc.ar(400) } ==> \source);
-
-/// More stuff ...
-
-{ In.ar(\in.kr(0)) * Decay.kr(Dust.kr(4)) } =<> \lpf;
-\lpf =< ({ LFTri.ar(LFNoise2.kr(7.15).range(400, 4000)) } ==> \source2);
-
-
-{ LFPulse.ar(LFNoise0.kr(10.1).range(300, 400)) } ==> \source2;
-{ LFTri.ar(LFNoise2.kr(7.15).range(400, 4000)) } ==> \source2;
-
-\lpf =< \source2;
-
-\source2.synth;
-
-\source2.fadeOut;
-
-\lpf =< \source;
+Add kbd command to free the entire SynthTree and set all nodes isStopped to true.  This is good instead of Command-. to make sure that no unwanted SynthTree nodes will be restarted.  Proposed key binding: =C-c C-x C-=.
 
 *** Further:
 
