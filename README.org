@@ -93,10 +93,10 @@ SynthTree.initTree;
 
 * Knob-palette for control of synth parameters
 
+#+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(440)) } => \viewtest;
 \viewtest.asSynthTree.view(\freq);
-
-view(\freq);
+#+END_EXAMPLE
 
 * Setting fadeTime
 
