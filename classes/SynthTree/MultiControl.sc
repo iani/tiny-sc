@@ -8,14 +8,25 @@ It can be individually enabled/disabled, changed or removed.
 IZ Tue, Mar 11 2014, 18:10 EET
 */
 
-SynthTreeArgs : Event {
+SynthTreeArgs : IdentityDictionary {
+	var <synthTree;
+	
+	*new { | synthTree | ^super.new.init(synthTree); }
+
+	init { | argSynthTree | synthTree = argSynthTree }
+
 	storeArgValue { | key, value |
-		var argCtl;
-		argCtl = this[key];
-		if (argCtl.isNil) {
-			this[key] = argCtl = MultiControl(this, key);
+		this.getParam(key).nextValue = value;
+	}
+
+	getParam { | key |
+		var param;
+		param = this[key];
+		param ?? {
+			param = MultiControl(synthTree, key);
+			this[key] = param;
 		};
-		argCtl.nextValue = value;
+		^param;
 	}
 }
 
@@ -131,7 +142,7 @@ MultiControl : IdentityDictionary {
 		argName = argName ? name;
 		view = view ?? { Knobs.knob(argName, synthTree.name) };
 		this[argName] = ViewFunc(
-			view,
+			view ?? { Knobs.knob(argName, synthTree.name) },
 			func ?? {{ | value | this.set(spec.map(value)) }},
 			onClose ?? {{ this.remove(argName) }},
 			enabled

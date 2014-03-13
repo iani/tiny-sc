@@ -6,13 +6,8 @@
 \test.fadeOut;
 \test.start;
 
-//: Preparing SynthTree:view();
-//:
-~viewFunc1 = ViewFunc(Knobs.knob(\freq, \test),
-	{ | val | \test.set(\freq, val * 400 + 400) },
-	{ | ... args | [\closed, args].postln; }
-);
-
+//: Testing SynthTree:view(param);
+\test.asSynthTree.view(\freq);
 //:
 Server.killAll;
 Server.default.boot;

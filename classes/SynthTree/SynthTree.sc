@@ -44,6 +44,7 @@ SynthTree : IdentityTree {
 	var <>args; // TODO: args sent to synth at creation time
 	var <>replaceAction = \fadeOut; // only used by addInputSynth
 
+
 	*initClass {
 		StartUp add: {
 			var server;
@@ -80,7 +81,7 @@ SynthTree : IdentityTree {
 
 	init { | argName |
 		name = argName;
-		args = SynthTreeArgs();
+		 args = SynthTreeArgs(this);
 	}
 
 	*nameSpaces {
@@ -359,7 +360,7 @@ SynthTree : IdentityTree {
    .buf(name, param, chans) // creates buf ref
    .midi(param, specs, storeName = \midi)
    .map(name, param, chans) // creates bus ref
-		.view(para, name, view ...) // name etc. optional. creates knob per default
+		.view(param, name, view ...) // name etc. optional. creates knob per default
    // following compose patterns / streams. for later? ... ?
    .add(param, element, storeName, path);
    .sub(param, element, storeName, path);
@@ -373,7 +374,8 @@ SynthTree : IdentityTree {
    .choose(param, element, path);
    .wchoose(param, element, path);
 	*/
-	view { | param, nameOrView |
-		
+	view { | param, viewName, view, func, onClose, enabled = true |
+		// only param is obligatory. All others are provided by MultiControl
+		args.[param].addView(viewName, view, func, onClose, enabled);
 	}
 }

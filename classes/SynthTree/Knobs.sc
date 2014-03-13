@@ -66,6 +66,7 @@ Knobs {
 
 	knobLabeled { | string |
 		var knob, message;
+		message = string.asString;
 		knob = knobs detect: { | k | k.label.string == message };
 		knob ?? { knob = this.allocateKnob(string); };
 		^knob !? { knob.knob };

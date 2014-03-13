@@ -64,12 +64,14 @@ ServerBootCheck {
 		 if (server.isLocal) {
 			 {
 				 time = Process.elapsedTime;
-				 "Waiting for server shared memory interface".postln;
+				 "\n=== Waiting for server shared memory interface ===\n ".postln;
+				 "Seconds elapsed: ".post;
 				 while { server.hasShmInterface.not }
 				 { 
 					 postf("% - ", (Process.elapsedTime - time).round(0.5));
-					 0.5.wait; 
+					 0.5.wait;
 				 };
+	
 				 this.doActionsAndMakeBus;
 			 }.fork;
 		 }{

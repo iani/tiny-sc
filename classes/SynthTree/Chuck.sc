@@ -30,7 +30,11 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		};
 
 	}
-
+	// test only: chuck control synth
+	// TODO ...
+	// May not be necessary: adsrOut / xplay recognizes ar/kr
+	// but bus allocation?
+	// =@> { | synthTree | synthTree.postln; }
 }
 
 + Nil {
@@ -75,9 +79,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 			sense to send set to newly created SynthTree instances
 		*/
 		var synthTree;
-		^(synthTree = this.asSynthTree(false)) !? { 
-			synthTree.set(*args)
-		}
+		^(synthTree = this.asSynthTree(false)) !? { synthTree.set(*args) }
 	}
 	asSynthTree { | createIfMissing = true |
 		^SynthTree.at(this, createIfMissing);
@@ -125,6 +127,14 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		var synthTree;
 		synthTree = this.asSynthTree(false);
 		if (synthTree.notNil) { synthTree.template = template };
+		^synthTree;
+	}
+	
+	view { | param, viewName, view, func, onClose, enabled = true |
+		var synthTree;
+		synthTree = this.asSynthTree(false);
+		if (synthTree.notNil) {
+			synthTree.view(param, viewName, view, func, onClose, enabled) };
 		^synthTree;
 	}
 }
