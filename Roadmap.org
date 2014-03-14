@@ -6,6 +6,24 @@
 
 Test new version UniqueViewFunc and substitute UniqueViewFunc in MultiController: view instead of ViewFunc.
 
+** Global Streams, StreamPatterns, Patterns, PatternPlayers
+
+Patterns, Streams, StreamPatterns and PatternPlayers should be stored globally each in its own dict, and added to any number of SynthTrees.  One SynthTree might want to compose the stream source used by another SynthTree with a second stream source!
+
+They could be stored in / accessed from the global Library.
+
+How many categories should exist?
+
+- Patterns :: Used to spawn streams that go directly in a MultiControl stream, privately
+- Streams :: Used to store streams for global access.  Cannot respawn
+- StreamPatterns :: Like streams, but can respawn their stream when ended.
+- PatternPlayers :: Play patterns in time.
+
+*** PatternPlayers vs SynthPlayers
+PatternPlayers play a single stream
+
+SynthPlayers play a SynthTree in Pbind-like manner.  They enclose the created synth events in a single group private to the SynthTree, divert the synths to a private bus, which is then processed by a synth that provides amplitude and fadein/out control.
+
 ** SynthTree:
 
 *** stop+clear tree command

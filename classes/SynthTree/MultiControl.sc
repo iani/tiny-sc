@@ -41,8 +41,14 @@ MultiControl : IdentityDictionary {
 	var <>stream;  // if not nil, provides next value instead of nextValue var.
 	var <>nextValue; // next value to use for that parameter. Can be a stream
 	// control objects are stored in self as subclass of IdentityDictionary
-	// var <>controls; // dictionary holding any control objects (StreamPatterns, 
-	//	MIDIFuncs, OSCFuncs, Busses, Views etc.)
+	// var <>controls; // dictionary holding any control objects 
+	//	(MIDIFuncs, OSCFuncs, ViewFuncs, Busses etc.)
+	/* Note: Other sources, such as: 
+		Patterns, StreamPatterns and PatternPlayers should be stored globally
+		each in its own dict, and added to any number of SynthTrees.
+		One SynthTree might want to compose the stream source
+		used by another SynthTree with a second stream source!
+	*/
 	
 	*new { | synthTree, name, spec, stream, initialValue |
 		^super.new.init(synthTree, name, spec, stream, initialValue);
