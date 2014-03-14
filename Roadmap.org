@@ -2,6 +2,10 @@
 
 * Immediate TODOs
 
+** ViewFunc, MultiController:
+
+Test new version UniqueViewFunc and substitute UniqueViewFunc in MultiController: view instead of ViewFunc.
+
 ** SynthTree:
 
 *** stop+clear tree command

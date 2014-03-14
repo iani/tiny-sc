@@ -28,6 +28,10 @@ SynthTreeArgs : IdentityDictionary {
 		};
 		^param;
 	}
+
+	makeParam { | key, spec |
+		[this, thisMethod.name, "not yet implemented"].postln;
+	}
 }
 
 MultiControl : IdentityDictionary {

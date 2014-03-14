@@ -1,16 +1,12 @@
 #+STARTUP: showall
 
-{ SinOsc.ar(\freq.kr(440)) } => \test;
+{ SinOsc.ar(400) }.chuck(\test)
+.view(\freq)
+.midi(...)
+.osc(...)
+.map(...)
 
-\test.set(\freq, 550);
-\test.fadeOut;
-\test.start;
 
-//: Testing SynthTree:view(param);
-\test.asSynthTree.view(\freq);
-//:
-Server.killAll;
-Server.default.boot;
 // Start an "effect" synth with an input
 { LPF.ar(In.ar(\in.kr(0)), \freq.kr(2000)) } =<> \comb;
 

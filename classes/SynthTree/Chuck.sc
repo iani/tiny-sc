@@ -56,6 +56,11 @@ IZ Sat, Mar  8 2014, 23:40 EET
         );
 		
     }
+	/*
+	chuck { | symbol |
+		^symbol.asSynthTree...
+	}
+	*/
 	xplay { | target, outbus = 0, fadeTime = 0.02, addAction = 'addToHead', args |
 		^{ this.value.adsrOut }.play(target, outbus, fadeTime, addAction, args);
 	}

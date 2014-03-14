@@ -6,7 +6,7 @@
 
 * Abstract
 
-The purpose of this library is to provide simple and short solutions for some complex and arduous tasks in SuperCollider.  It is hoped that it will make working with SuperCollider easier, at any level.  The following sections introduce features of the library through examples.
+The purpose of this library is to provide simple and short solutions for some relatively complex or arduous recurring tasks in SuperCollider.  It is hoped that it will make working with SuperCollider easier, at any level.  The following sections introduce features of the library through examples.
 
 Examples are added here after being tested.  More details about what tiny-sc sets out to do are found in file =Roadmap.org=.
 
@@ -55,7 +55,7 @@ Then run this to restart the synths:
 SynthTree.initTree;
 #+END_EXAMPLE
 
-* Linking Synth I/O
+* Synth I/O
 
 Example 1:  Simple patching of one source to one effect:
 
@@ -95,7 +95,7 @@ SynthTree.initTree;
 
 #+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(440)) } => \viewtest;
-\viewtest.asSynthTree.view(\freq);
+\viewtest.view(\freq);
 #+END_EXAMPLE
 
 * Setting fadeTime

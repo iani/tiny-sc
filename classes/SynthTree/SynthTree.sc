@@ -351,6 +351,13 @@ SynthTree : IdentityTree {
 		if (synth.isPlaying) { synth.set(parameter, value); };
 	}
 
+	specs { | eventOrArrayOfSpecs |
+		// Create argument parameters with their specs
+		eventOrArrayOfSpecs keysValuesDo: { | param, spec |
+			args.makeParam(param, spec);
+		}
+	}
+
 	// Controls
 	/*
    .out(param = \out, chans = 1) // creates bus ref
