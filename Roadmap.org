@@ -15,9 +15,12 @@ They could be stored in / accessed from the global Library.
 How many categories should exist?
 
 - Patterns :: Used to spawn streams that go directly in a MultiControl stream, privately
-- Streams :: Used to store streams for global access.  Cannot respawn
-- StreamPatterns :: Like streams, but can respawn their stream when ended.
-- PatternPlayers :: Play patterns in time.
+- Streams :: Used to store streams for global access.  Cannot respawn. Note: sharing streams as sources of values in different SynthTrees problematic (cannot call next twice - who calls first? See note below: "Important:").
+- StreamPatterns :: Like streams, but can respawn their stream when ended.  Multiple access problem of Streams also apply here.
+- PatternPlayers :: Play patterns in time.  Can be distributed to multiple patterns via Notification.  Play independently of Synth start, therefore no synchronization problem.
+
+Important:
+- Calling "next" on demand at synth start: Cannot ask the same stream to share with multiple events.  How to synchronize/distribute?  Common pattern player for many synth-trees?
 
 *** PatternPlayers vs SynthPlayers
 PatternPlayers play a single stream
