@@ -18,32 +18,23 @@ ViewFunc {
 	}
 
 	init { | enabled = true |
-		var notifier = this.class;
 		view.action = { | value |
-			notifier.changed(\value, value); 
+			view.changed(\value, value); 
 		};
-		view.onClose = { | value |
-			notifier.changed(\closed);
-		};
+		view.onClose = { view.objectClosed };
 		if (enabled) { this.enable };
 	}
 
 	enable {
-		var notifier;
-		notifier = this.class;
-		receiver.addNotifier(notifier, \value, { | me | action.(me.value, this) });
-		receiver.addNotifier(notifier, \closed, {
+		receiver.addNotifier(view, \value, { | me | action.(me.value, this) });
+		receiver.addNotifier(view, \objectClosed, {
 			onClose.(this);
-			// todo: substitute single statement: "this.remove;" instead of the 
-			// following three statements below:
-			this.disable; // Necessary: remove receiver/class notification!
-			receiver.removeNotifier(this.class, \closed);
-			this.objectClosed; // Not needed? No notifications are added to self!
+			// Nothing else is necessary: objectClosed disconnects view from ViewFunc
 		});
 	}
 
 	disable {
-		receiver.removeNotifier(this.class, \value);
+		receiver.removeNotifier(this, \value);
 		// this.objectClosed;
 	}
 
@@ -55,6 +46,10 @@ ViewFunc {
 	}
 }
 
+
+/* TODO: 
+Replace notifier from this.class to view. 
+*/
 SimpleViewFunc {
 	/* This version of ViewFunc does not require a receiver.  It allows to
 		add multiple actions for the same receiver-view pair.  

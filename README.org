@@ -91,11 +91,11 @@ Confirm that the tree can be restarted after Command-. also when it contains lin
 SynthTree.initTree;
 #+END_EXAMPLE
 
-* Knob-palette for control of synth parameters                      :ARCHIVE:
+* GUI Views
 
 #+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(440)) } => \viewtest;
-\viewtest.view(\freq);
+\viewtest.view(\freq).view(\amp);
 #+END_EXAMPLE
 
 * Setting fadeTime

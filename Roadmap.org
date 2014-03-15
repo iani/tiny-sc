@@ -12,6 +12,8 @@ Following only controls freq.  View does not control amp.
 { LFTri.ar(\freq.kr(400)) } => \asdf;
 \asdf.set(\amp, 0.02);
 #+END_EXAMPLE
+** symbol.buf(...)
+
 ** Global Streams, StreamPatterns, Patterns, PatternPlayers
 
 Patterns, Streams, StreamPatterns and PatternPlayers should be stored globally each in its own dict, and added to any number of SynthTrees.  One SynthTree might want to compose the stream source used by another SynthTree with a second stream source!

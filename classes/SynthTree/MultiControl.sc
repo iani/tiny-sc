@@ -19,11 +19,11 @@ SynthTreeArgs : IdentityDictionary {
 		this.getParam(key).nextValue = value;
 	}
 
-	getParam { | key |
+	getParam { | key, spec, initialValue, stream |
 		var param;
 		param = this[key];
 		param ?? {
-			param = MultiControl(synthTree, key);
+			param = MultiControl(synthTree, key, spec, initialValue, stream);
 			this[key] = param;
 		};
 		^param;
@@ -50,11 +50,11 @@ MultiControl : IdentityDictionary {
 		used by another SynthTree with a second stream source!
 	*/
 	
-	*new { | synthTree, name, spec, stream, initialValue |
-		^super.new.init(synthTree, name, spec, stream, initialValue);
+	*new { | synthTree, name, spec, initialValue, stream |
+		^super.new.init(synthTree, name, spec, initialValue, stream);
 	}
 
-	init { | argSynthTree, argName, argSpec, argStream, initialValue |
+	init { | argSynthTree, argName, argSpec, initialValue, argStream |
 		synthTree = argSynthTree;
 		name = argName;
 		spec = (argSpec ? name).asSpec ? NullSpec;

@@ -347,7 +347,7 @@ SynthTree : IdentityTree {
 	}
 
 	setSynthParameter { | parameter, value |
-		// used by StreamPattern in args
+		// used by MultiControl etc.
 		if (synth.isPlaying) { synth.set(parameter, value); };
 	}
 
@@ -384,6 +384,6 @@ SynthTree : IdentityTree {
 	view { | param, viewName, view, func, onClose, enabled = true |
 		// only param is obligatory. All others are provided by MultiControl
 		args.getParam(param)
-		.addView(viewName, view, func, onClose, enabled);
+	.addView(viewName, view, func, onClose, enabled);
 	}
 }
