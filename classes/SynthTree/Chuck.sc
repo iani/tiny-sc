@@ -136,11 +136,13 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	}
 	
 	view { | param, viewName, view, func, onClose, enabled = true |
-		var synthTree;
+		^this.asSynthTree.view(param, viewName, view, func, onClose, enabled);
+		/*		var synthTree;
 		synthTree = this.asSynthTree(false);
 		if (synthTree.notNil) {
 			synthTree.view(param, viewName, view, func, onClose, enabled) };
 		^synthTree;
+		*/
 	}
 }
 

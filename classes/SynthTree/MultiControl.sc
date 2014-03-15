@@ -152,6 +152,7 @@ MultiControl : IdentityDictionary {
 		argName = argName ? name;
 		view = view ?? { Knobs.knob(argName, synthTree.name) };
 		this[argName] = ViewFunc(
+			this, // only one ViewFunc is added per argName
 			view ?? { Knobs.knob(argName, synthTree.name) },
 			func ?? {{ | value | this.set(spec.map(value)) }},
 			onClose ?? {{ this.remove(argName) }},

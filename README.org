@@ -91,7 +91,7 @@ Confirm that the tree can be restarted after Command-. also when it contains lin
 SynthTree.initTree;
 #+END_EXAMPLE
 
-* Knob-palette for control of synth parameters
+* Knob-palette for control of synth parameters                      :ARCHIVE:
 
 #+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(440)) } => \viewtest;
