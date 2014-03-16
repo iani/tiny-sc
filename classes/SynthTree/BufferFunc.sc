@@ -33,22 +33,24 @@ BufferFunc {
 		bufferDict = Library.at(server);
 		bufferDict.keys.asArray do: { | name |
 			oldBuffer = bufferDict[name];
-			if (oldBuffer.path.notNil) {
-				Library.put(server, name, 
-					newBuffer = Buffer.read(server, oldBuffer.path, action: { 
-						oldBuffer.changed(\buffer, newBuffer);
-						postf("Loaded: %s\n", newBuffer);
-					});
-				)
-			}
+			if (oldBuffer.path.notNil) { this.loadBuffer(server, name, oldBuffer) };
 		};
 	}
 
-	*loadBuffer {
+	*loadBuffer { | oldBuffer, path |
 		/* TODO: uniform function to load buffer from path. 
 			notifies both with buffer.changed and server.changed
 			server.changed used by BufferList
 		*/
+		var newBuffer, server;
+		path = path ?? { oldBuffer.path };
+		if (oldBuffer.isNil) { server = SynthTree.server } { server = oldBuffer.server };
+		Library.put(server, name, 
+					newBuffer = Buffer.read(server, oldBuffer.path, action: { 
+						oldBuffer.changed(\buffer, newBuffer);
+						postf("Loaded: s\n", newBuffer);
+					});
+		)
 	}
 
 	*nullBuffer { | server |
