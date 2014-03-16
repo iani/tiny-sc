@@ -13,8 +13,8 @@ IZ Sat, Mar 15 2014, 18:38 EET
 */
 
 BufferFunc {
-	
-	var <bufferName, <action;
+
+	var <server, <bufferName, <action;
 	var <buffer;
 
 	// FIXME!
@@ -23,53 +23,73 @@ BufferFunc {
 	// they are finished reading/allocating and when they are freed
 	*initBuffers { | server |
 		// Called by ServerTree.initClass at Server boot time.
-		this.changeBuffer(server, '*null-buffer*', 
-			Library.at(server,  '*null-buffer*'),
+		var bufferDict, oldBuffer, newBuffer;
+		this.addBuffer(server, '*null-buffer*',
 			Buffer.alloc(server, server.sampleRate * 0.1, 1)
 		);
-		Library.at(server) keysValuesDo: { | name, buffer |
-			if (buffer.path.notNil) {
-				this.changeBuffer(server, name, buffer, 
-					Buffer.read(server, buffer.path)
-				);
+		// making sure that modifying the library while accessing it
+		// will not cause any insconsistencies:
+		bufferDict = Library.at(server);
+		bufferDict.keys.asArray do: { | name |
+			oldBuffer = bufferDict[name];
+			if (oldBuffer.path.notNil) {
+				Library.put(server, name, 
+					newBuffer = Buffer.read(server, oldBuffer.path, action: { 
+						oldBuffer.changed(\buffer, newBuffer);
+					});
+				)
 			}
 		};
-	}
-
-	// FIXME!
-	*changeBuffer { | server, name, oldBuffer, newBuffer |
-		Library.put(server, name, newBuffer);
-		oldBuffer.changed(\buffer, newBuffer);
 	}
 
 	*nullBuffer { | server |
 		^Library.at(server ?? { SynthTree.server }, '*null-buffer*');
 	}
 
-	*new { | bufferName, action |
-		^this.newCopyArgs(bufferName, action).init;
+	*new { | server, bufferName, action |
+		^this.newCopyArgs(server, bufferName, action).init;
 	}
 
 	//: FIXME!
 	init {
-
+		this.setBuffer(this.getBuffer); 
 	}
 
-	bufferChanged { | newBuffer |
+	getBuffer {
+		var newBuffer;
+		newBuffer = Library.at(server, bufferName);
+		if (newBuffer.isNil) {
+			newBuffer = this.nullBuffer;
+			this.loadBufferDialog;
+		};
+		^newBuffer;
+	}
+
+	nullBuffer { ^Library.at(server, '*null-buffer*') }
+
+	loadBufferDialog {
+		var newBuffer;
+		Dialog.openPanel({ | path |
+			newBuffer = Buffer.read(server, path, action: {
+				this.setBuffer(newBuffer);
+			})
+		})
+	}
+
+	setBuffer { | newBuffer |
 		if (buffer != newBuffer) {
 			this.removeNotifier(buffer, \buffer);
 			buffer = newBuffer;
-			this.addNotifier(buffer, \buffer, { | newBuffer |
-				this.bufferChanged(newBuffer)
+			this.addNotifier(newBuffer, \buffer, { | veryNewBuffer |
+				this.setBuffer(veryNewBuffer)
 			});
 		};
 		action.(this);
 	}
 
 	bufnum {
-		if (this.numFrames > 0) { ^buffer.bufnum } { ^this.nullBuffer.bufnum };
+		// the notNil no longer needed?   just ^buffer.bufnum ok?
+		if (buffer.numFrames.notNil) { ^buffer.bufnum } { ^this.nullBuffer.bufnum };
 	}
 
-	numFrames { ^buffer.numFrames ? 0 }
-	nullBuffer { ^this.class.nullBuffer }
 }

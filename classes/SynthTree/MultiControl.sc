@@ -173,15 +173,7 @@ MultiControl : IdentityDictionary {
 		if (bufferFunc.notNil) { bufferFunc.objectClosed };
 		bufferFunc = BufferFunc(this,
 			bufName,
-			action ?? {{ | buffer |
-				this.set(
-					if (buffer.numFrames > 0) {
-						buffer.bufnum
-					}{
-						BufferFunc.nullBuffer.bufnum
-					}
-				)
-			}},
+			action ?? {{ | buffer | this.set(buffer.bufnum); }},
 		);
 		this[\buffer] = bufferFunc;
 		this.set(bufferFunc.bufnum);
@@ -200,5 +192,4 @@ MultiControl : IdentityDictionary {
 		// find sender from values of dict and remove it
 
 	}
-
 }
