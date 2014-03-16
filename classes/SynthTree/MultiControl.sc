@@ -178,7 +178,7 @@ MultiControl : IdentityDictionary {
 					if (buffer.numFrames > 0) {
 						buffer.bufnum
 					}{
-						this.nullBuffer.bufnum
+						BufferFunc.nullBuffer.bufnum
 					}
 				)
 			}},

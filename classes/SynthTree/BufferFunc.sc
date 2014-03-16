@@ -9,51 +9,67 @@ As soon as the buffer has completed loading, notify using object that the buffer
 When the server has finished booting, reload all registered buffers.  
 
 IZ Sat, Mar 15 2014, 18:38 EET
+
 */
 
 BufferFunc {
 	
-	var <receiver, <bufferName, onAlloc, onFree;
+	var <bufferName, <action;
 	var <buffer;
 
+	// FIXME!
+	// TODO: check how and when to create buffers
+	// TODO: on making buffers, ensure that they notify when 
+	// they are finished reading/allocating and when they are freed
 	*initBuffers { | server |
 		// Called by ServerTree.initClass at Server boot time.
-		this.exchangeBuffer(server, '*null-buffer*', 
+		this.changeBuffer(server, '*null-buffer*', 
 			Library.at(server,  '*null-buffer*'),
 			Buffer.alloc(server, server.sampleRate * 0.1, 1)
 		);
 		Library.at(server) keysValuesDo: { | name, buffer |
 			if (buffer.path.notNil) {
-				this.exchangeBuffer(server, name, buffer, 
+				this.changeBuffer(server, name, buffer, 
 					Buffer.read(server, buffer.path)
 				);
 			}
 		};
 	}
 
-	*exchangeBuffer { | server, name, oldBuffer, newBuffer |
+	// FIXME!
+	*changeBuffer { | server, name, oldBuffer, newBuffer |
 		Library.put(server, name, newBuffer);
-		oldBuffer.changed(\replace, newBuffer);
+		oldBuffer.changed(\buffer, newBuffer);
 	}
 
 	*nullBuffer { | server |
 		^Library.at(server ?? { SynthTree.server }, '*null-buffer*');
 	}
 
-	*new { | receiver, bufferName, onAlloc, onFree |
-		^this.newCopyArgs(receiver, bufferName, onAlloc, onFree).init;
+	*new { | bufferName, action |
+		^this.newCopyArgs(bufferName, action).init;
 	}
 
+	//: FIXME!
 	init {
-		this.addNotifier(buffer, \replace, { this.changed(\buffer, buffer) });
 
+	}
+
+	bufferChanged { | newBuffer |
+		if (buffer != newBuffer) {
+			this.removeNotifier(buffer, \buffer);
+			buffer = newBuffer;
+			this.addNotifier(buffer, \buffer, { | newBuffer |
+				this.bufferChanged(newBuffer)
+			});
+		};
+		action.(this);
 	}
 
 	bufnum {
-		if (buffer.numFrames > 0) { ^buffer.bufnum } { ^this.nullBuffer.bufnum };
+		if (this.numFrames > 0) { ^buffer.bufnum } { ^this.nullBuffer.bufnum };
 	}
 
-	nullBuffer { ^BufferFunc.nullBuffer }
-
-
+	numFrames { ^buffer.numFrames ? 0 }
+	nullBuffer { ^this.class.nullBuffer }
 }
