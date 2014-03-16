@@ -59,8 +59,10 @@ SynthTree : IdentityTree {
 				server);
 			ServerBootCheck add: {
 				default.group = server.asTarget;
+				BufferFunc.initBuffers(server);
 				default.initTree(true);
             };
+			Spec.specs.at(\amp).default = 0.1;
 		}
 	}
 

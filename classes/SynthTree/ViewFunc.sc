@@ -44,6 +44,10 @@ ViewFunc {
 		// this.disable;
 		// receiver.removeNotifier(this.class, \closed);
 	}
+
+	value_ { | value |
+		view.value = value;
+	}
 }
 
 

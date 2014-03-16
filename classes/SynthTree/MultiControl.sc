@@ -39,7 +39,7 @@ MultiControl : IdentityDictionary {
 	var <name;     // name of synth parameter to control
 	var <>spec;    // spec to map incoming values from controls
 	var <>stream;  // if not nil, provides next value instead of nextValue var.
-	var <>nextValue; // next value to use for that parameter. Can be a stream
+	var <>nextValue; // next value to use for that parameter.
 	// control objects are stored in self as subclass of IdentityDictionary
 	// var <>controls; // dictionary holding any control objects 
 	//	(MIDIFuncs, OSCFuncs, ViewFuncs, Busses etc.)
@@ -157,12 +157,34 @@ MultiControl : IdentityDictionary {
 			func ?? {{ | value | this.set(spec.map(value)) }},
 			onClose ?? {{ this.remove(argName) }},
 			enabled
-		)
+		).value_(spec unmap: nextValue);
 	}
 
-	senderClosed { | sender |
-		// find sender from values of dict and remove it
-
+	// NOT YET TESTED!
+	setBuf { | bufName, action |		
+		/* Different handling:
+			buffer multicontrol instances only have a single item in their dict,
+			which is a BufferFunc. 
+			Setting a new buffer disconnects the previous one. 
+		*/
+		var bufferFunc;
+		bufName = bufName ? name;
+		bufferFunc = this[\buffer];
+		if (bufferFunc.notNil) { bufferFunc.objectClosed };
+		bufferFunc = BufferFunc(this,
+			bufName,
+			action ?? {{ | buffer |
+				this.set(
+					if (buffer.numFrames > 0) {
+						buffer.bufnum
+					}{
+						this.nullBuffer.bufnum
+					}
+				)
+			}},
+		);
+		this[\buffer] = bufferFunc;
+		this.set(bufferFunc.bufnum);
 	}
 
 	addSynth { | name, template |
@@ -170,6 +192,13 @@ MultiControl : IdentityDictionary {
 	}
 
 	addBus { | name, bus |
+		
+	}
+
+	// ?????????????????????: 
+	senderClosed { | sender |
+		// find sender from values of dict and remove it
 
 	}
+
 }
