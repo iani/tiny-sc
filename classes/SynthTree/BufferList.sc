@@ -6,8 +6,19 @@ IZ Sun, Mar 16 2014, 17:45 EET
 
 BufferList {
 	
+	classvar <>autoload = false;
+	
 	var <server;
 	var <namesPaths;
+
+	*initClass {
+		StartUp add: {
+			this.addNotifier(SynthTree, \serverBooted, {
+				[this, thisMethod.name, autoload].postln;
+				if (autoload) { this.loadFolder };
+			});
+		}
+	}
 
 	*new { | server |
 		^this.newCopyArgs(server ? Server.default).init;
@@ -34,8 +45,20 @@ BufferList {
 		^Platform.userAppSupportDir +/+ "BufferList.sctxar";
 	}
 
-	*load {
-		^Object.readArchive(this.defaultPath);
+	*loadFolder { | path |
+		var extension;
+		[this, thisMethod.name].postln;
+		path ?? { path = Platform.userAppSupportDir +/+ "sounds/*" };
+		path.pathMatch.postln;
+		path.pathMatch do: { | p |
+			extension = PathName(p).extension.asSymbol;
+			if ([\aiff, \aif, \wav] includes: extension) {
+				postf("will load: %\n", p);
+				
+			}
+		}
+		
+		//		^Object.readArchive(this.defaultPath);
 	}
 	
 

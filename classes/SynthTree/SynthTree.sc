@@ -62,6 +62,9 @@ SynthTree : IdentityTree {
 					default.group = server.asTarget;
 					BufferFunc.initBuffers(server);
 					default.initTree(true);
+					this.changed(\serverBooted);
+				}{  // reset for next time:
+					cmdPeriod = false;
 				}
             };
 			Spec.specs.at(\amp).default = 0.1;
