@@ -161,7 +161,7 @@ MultiControl : IdentityDictionary {
 	}
 
 	// NOT YET TESTED!
-	setBuf { | bufName, action |		
+	setBuffer { | bufName, action |		
 		/* Different handling:
 			buffer multicontrol instances only have a single item in their dict,
 			which is a BufferFunc. 
@@ -171,9 +171,9 @@ MultiControl : IdentityDictionary {
 		bufName = bufName ? name;
 		bufferFunc = this[\buffer];
 		if (bufferFunc.notNil) { bufferFunc.objectClosed };
-		bufferFunc = BufferFunc(this,
+		bufferFunc = BufferFunc(synthTree.server,
 			bufName,
-			action ?? {{ | buffer | this.set(buffer.bufnum); }},
+			action ?? {{ | argBufferFunc | this.set(argBufferFunc.bufnum); }},
 		);
 		this[\buffer] = bufferFunc;
 		this.set(bufferFunc.bufnum);

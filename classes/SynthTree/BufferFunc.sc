@@ -23,10 +23,11 @@ BufferFunc {
 	// they are finished reading/allocating and when they are freed
 	*initBuffers { | server |
 		// Called by ServerTree.initClass at Server boot time.
-		var bufferDict, oldBuffer, newBuffer;
-		this.addBuffer(server, '*null-buffer*',
-			Buffer.alloc(server, server.sampleRate * 0.1, 1)
-		);
+		var bufferDict, oldBuffer, newBuffer, oldNullBuffer, newNullBuffer;
+		oldNullBuffer = Library.at(server, '*null-buffer*');
+		newNullBuffer = Buffer.alloc(server, server.sampleRate * 0.1, 1);
+		Library.put(server, '*null-buffer*', newNullBuffer);
+		oldNullBuffer.changed(\buffer, newNullBuffer);
 		// making sure that modifying the library while accessing it
 		// will not cause any insconsistencies:
 		bufferDict = Library.at(server);
@@ -36,6 +37,7 @@ BufferFunc {
 				Library.put(server, name, 
 					newBuffer = Buffer.read(server, oldBuffer.path, action: { 
 						oldBuffer.changed(\buffer, newBuffer);
+						postf("Loaded: %s\n", newBuffer);
 					});
 				)
 			}
@@ -69,9 +71,12 @@ BufferFunc {
 
 	loadBufferDialog {
 		var newBuffer;
+		"Opening buffer load dialog".postln;
 		Dialog.openPanel({ | path |
 			newBuffer = Buffer.read(server, path, action: {
+				Library.put(server, bufferName, newBuffer);
 				this.setBuffer(newBuffer);
+				postf("Loaded: %s\n", newBuffer);
 			})
 		})
 	}

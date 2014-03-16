@@ -386,6 +386,9 @@ SynthTree : IdentityTree {
 	view { | param, viewName, view, func, onClose, enabled = true |
 		// only param is obligatory. All others are provided by MultiControl
 		args.getParam(param)
-	.addView(viewName, view, func, onClose, enabled);
+		.addView(viewName, view, func, onClose, enabled);
+	}
+	buf { | bufName, param = \buf |
+		args.getParam(param) .setBuffer(bufName ? param)
 	}
 }

@@ -117,6 +117,21 @@ SynthTree.initTree;
 { LFTri.ar(400 rrand: 800) } ==> \source;
 #+END_EXAMPLE
 
+
+* Buffers and samples
+
+Play a sample laoded from disk with PlayBuf:
+
+#+BEGIN_EXAMPLE
+{ \buf.playBuf } => \chimes.buf;
+#+END_EXAMPLE
+
+Play the same sample in a different synth, with different rate
+
+#+BEGIN_EXAMPLE
+{ \buf.playBuf(rate: 1.2) } => \different.buf(\chimes);
+#+END_EXAMPLE
+
 * UGen shortcuts
 
 ** =Inp.ar=

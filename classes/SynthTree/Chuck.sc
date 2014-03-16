@@ -144,6 +144,11 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		^synthTree;
 		*/
 	}
+
+	buf { | bufName, paramName = \buf |
+		bufName = bufName ? this;
+		^this.asSynthTree.buf(bufName, paramName);
+	}
 }
 
 + String {
