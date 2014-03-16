@@ -29,6 +29,7 @@ SynthTree : IdentityTree {
 	
 	classvar <default;
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
+	classvar <cmdPeriod = false; // Avoid initing at Cmd-.
     
 	var <synth;  // the synth of this node
 	var <>inputs; // dictionary of input names and bus specs or busses
@@ -44,7 +45,6 @@ SynthTree : IdentityTree {
 	var <>args; // TODO: args sent to synth at creation time
 	var <>replaceAction = \fadeOut; // only used by addInputSynth
 
-
 	*initClass {
 		StartUp add: {
 			var server;
@@ -57,12 +57,15 @@ SynthTree : IdentityTree {
 				// server.options.numOutputBusChannels, 
 				0, // trick the allocator: reserve 0 channels
 				server);
-			ServerBootCheck add: {
-				default.group = server.asTarget;
-				BufferFunc.initBuffers(server);
-				default.initTree(true);
+			ServerTree add: {
+				if (cmdPeriod.not) {
+					default.group = server.asTarget;
+					BufferFunc.initBuffers(server);
+					default.initTree(true);
+				}
             };
 			Spec.specs.at(\amp).default = 0.1;
+			CmdPeriod add: { cmdPeriod = true; };
 		}
 	}
 

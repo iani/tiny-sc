@@ -38,6 +38,7 @@ ServerBootCheck {
 			this.makeBus;
 		};
 		ServerBoot.add({ this.checkIfReallyBootedAndDoActions }, server);
+		ServerTree.add({ "IF THIS WORKS, then all was in vain".postln; });
 	}
 
 	makeBus {

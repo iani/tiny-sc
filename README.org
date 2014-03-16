@@ -123,13 +123,13 @@ SynthTree.initTree;
 Play a sample laoded from disk with PlayBuf:
 
 #+BEGIN_EXAMPLE
-{ \buf.playBuf } => \chimes.buf;
+{ \buf.playBuf } => \chimes.buf.set(\amp, 1);
 #+END_EXAMPLE
 
 Play the same sample in a different synth, with different rate
 
 #+BEGIN_EXAMPLE
-{ \buf.playBuf(rate: 1.2) } => \different.buf(\chimes);
+{ \buf.playBuf(rate: 1.2) } => \different.buf(\chimes).set(\amp, 1);
 #+END_EXAMPLE
 
 * UGen shortcuts

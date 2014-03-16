@@ -44,6 +44,13 @@ BufferFunc {
 		};
 	}
 
+	*loadBuffer {
+		/* TODO: uniform function to load buffer from path. 
+			notifies both with buffer.changed and server.changed
+			server.changed used by BufferList
+		*/
+	}
+
 	*nullBuffer { | server |
 		^Library.at(server ?? { SynthTree.server }, '*null-buffer*');
 	}
@@ -77,6 +84,7 @@ BufferFunc {
 				Library.put(server, bufferName, newBuffer);
 				this.setBuffer(newBuffer);
 				postf("Loaded: %s\n", newBuffer);
+				this.class.changed(\newBuffer, server);
 			})
 		})
 	}

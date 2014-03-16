@@ -29,6 +29,8 @@ BufRd  *ar { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
 		)
 	}
 
+
+	/// TODO: Complete the following ////////////
 	playBufKr { 
 		| numChannels = 1, bufnum=0, rate=1.0, trigger=1.0, 
 		startPos=0.0, loop = 0.0, doneAction=0,

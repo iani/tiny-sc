@@ -1,19 +1,6 @@
 (Copied here on: Sun, Mar  9 2014, 20:37 EET)
 
 * Immediate TODOs
-** Debug MultiControl:view
-
-Following only controls freq.  View does not control amp.
-
-#+BEGIN_EXAMPLE
-\asdf.view(\freq);
-\asdf.view(\amp);
-
-{ LFTri.ar(\freq.kr(400)) } => \asdf;
-\asdf.set(\amp, 0.02);
-#+END_EXAMPLE
-** symbol.buf(...)
-
 ** Global Streams, StreamPatterns, Patterns, PatternPlayers
 
 Patterns, Streams, StreamPatterns and PatternPlayers should be stored globally each in its own dict, and added to any number of SynthTrees.  One SynthTree might want to compose the stream source used by another SynthTree with a second stream source!
@@ -174,6 +161,19 @@ Finally, better use message style, because clearer, and also chainable:
 
 Test new version UniqueViewFunc and substitute UniqueViewFunc in MultiController: view instead of ViewFunc.
 
+
+** Debug MultiControl:view
+
+Following only controls freq.  View does not control amp.
+
+#+BEGIN_EXAMPLE
+\asdf.view(\freq);
+\asdf.view(\amp);
+
+{ LFTri.ar(\freq.kr(400)) } => \asdf;
+\asdf.set(\amp, 0.02);
+#+END_EXAMPLE
+** symbol.buf(...)
 
 * Undergoing tests
 
