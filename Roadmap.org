@@ -7,7 +7,7 @@
 Restarting this leaves the old synth hanging:
 #+BEGIN_EXAMPLE
 {
-	var synth;
+	var Synth;
 	synth = { SinOsc.ar(\freq.kr(400)) } ==> \test;
 	10 do: {
 		synth.trig(\freq, 400 rrand: 1200);
@@ -15,7 +15,6 @@ Restarting this leaves the old synth hanging:
 	}
 
 }.fork;
-
 #+END_EXAMPLE
 
 ** Global Streams, StreamPatterns, Patterns, PatternPlayers

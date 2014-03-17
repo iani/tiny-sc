@@ -164,30 +164,34 @@ SynthTree : IdentityTree {
 		};
 	}
 
-	chuck { | synthOrTemplate, argReplaceAction = \fadeOut, 
-		argFadeTime, startWhen = \now |
-		/*  Set my synth.  Start depending on startWhen. */
+	trig { | ... someArgs |
+		// restart, ending previous synth if running
+		someArgs.keysValuesDo({ | key, value |
+			args.storeArgValue(key, value);
+		});
+		this.chuck;
+	}
+	chuck { | synthOrTemplate, argReplaceAction = \fadeOut, argFadeTime |
+		/*  Set my template.  Start synth. Replace previous one. */
 		//		{
 		if (synthOrTemplate.isKindOf(Node)) {
 			synth = synthOrTemplate;
 			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
 			inputs do: _.moveBefore(synth);
 		}{
-			template = synthOrTemplate;
-			switch (startWhen,
-				\now, {
-					notStopped = true;
-					if (synth.isPlaying) { 
-						this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
-					};
-					this.makeSynth;
-				},
-				\ifNotStopped, { if (notStopped) { this.makeSynth } },
-				\later, {} // any other symbol will also do
-			)
+			template = synthOrTemplate ? template;
+			notStopped = true;
+			if (synth.isPlaying) { 
+				this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
+			};
+			this.makeSynth;
 		};
 		// }.fork;
 	}
+
+	/*
+
+	*/
 
 	moveBefore { | argSynth |
 		// TODO: move my synth before the output synth
@@ -301,20 +305,6 @@ SynthTree : IdentityTree {
 		}
 	}
 
-	trig { | ... someArgs |
-		// restart, ending previous synth if running
-		[this, thisMethod.name, synth, synth.isPlaying].postln;
-		if (synth.isPlaying) { 
-			//	synth.fadeOut(fadeTime); 
-			//			synth.free;
-			synth.release;
-		};
-		//		if (synth.notNil) { synth.fadeOut(fadeTime); };
-		someArgs.keysValuesDo({ | key, value |
-			args.storeArgValue(key, value);
-		});
-		this.makeSynth;
-	}
 
     start {
 		// start, but only if synth is not playing

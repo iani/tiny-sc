@@ -28,12 +28,15 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		}{
 			^synthTree.setTemplate(this);
 		};
-
 	}
-	// test only: chuck control synth
-	// TODO ...
-	// May not be necessary: adsrOut / xplay recognizes ar/kr
-	// but bus allocation?
+
+	=|> { | synthTree, replaceAction = \fadeOut |
+		// as => but do not start the synth now: 
+		// synth gets started when the synthTree is added as input with =<
+		synthTree = synthTree.asSynthTree;
+		^synthTree.setTemplate(this);
+	}
+
 	// =@> { | synthTree | synthTree.postln; }
 }
 

@@ -19,7 +19,7 @@ Try the following, one line at a time:
 #+BEGIN_EXAMPLE
 // Start a synth and store it in a name
 { WhiteNoise.ar } => \sound;
-// Stop the sound with the default fade-out duration
+// Stop The sound with the default fade-out duration
 \sound.fadeOut;
 // Restart the stored sound - remake the synth.
 \sound.start;
@@ -73,9 +73,9 @@ Example 1:  Simple patching of one source to one effect:
 Example 2: Several synths sending to one effect.
 
 #+BEGIN_EXAMPLE
-{ LPF.ar(In.ar(\in.kr(0)), LFNoise0.kr(10 ! 2).range(200, 4000)) } =<> \lpf;
+{ LPF.ar(In.ar(\in.kr(0)), LFNoise0.kr(40 ! 2).range(500, 4000)) } =<> \lpf;
 \lpf =< ({ WhiteNoise.ar } ==> \source);
-\lpf =< ({ LFPulse.ar(LFNoise0.kr(15).range(300, 400)) } ==> \source2);
+\lpf =< ({ LFPulse.ar(LFNoise0.kr(30).range(3000, 4000)) } ==> \source2);
 #+END_EXAMPLE
 
 Example 3: Changing the synths of the source and of the effect:
@@ -131,6 +131,24 @@ Play the same sample in a different synth, with different rate
 #+BEGIN_EXAMPLE
 { \buf.playBuf(rate: 1.2) } => \different.buf(\chimes).set(\amp, 1);
 #+END_EXAMPLE
+
+* Triggering synths in routines
+:PROPERTIES:
+:DATE:     <2014-03-17 Mon 17:58>
+:ID:       BD7795E1-1FAD-418D-8CF8-6A48925DA909
+:eval-id:  5
+:END:
+
+#+BEGIN_SRC
+{
+	var synth;
+	synth = { SinOsc.ar(\freq.kr(400)) } ==> \test;
+	10 do: {
+		synth.trig(\freq, 400 rrand: 1200);
+		0.25.wait;
+	}
+}.fork
+#+END_SRC
 
 * UGen shortcuts
 
