@@ -139,7 +139,7 @@ Play the same sample in a different synth, with different rate
 :eval-id:  5
 :END:
 
-#+BEGIN_SRC
+#+BEGIN_SRC sclang
 {
 	var synth;
 	synth = { SinOsc.ar(\freq.kr(400)) } ==> \test;
