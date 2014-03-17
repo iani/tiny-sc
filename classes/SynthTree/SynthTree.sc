@@ -168,9 +168,6 @@ SynthTree : IdentityTree {
 		argFadeTime, startWhen = \now |
 		/*  Set my synth.  Start depending on startWhen. */
 		//		{
-		if (synth.isPlaying) { 
-			this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
-		};
 		if (synthOrTemplate.isKindOf(Node)) {
 			synth = synthOrTemplate;
 			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
@@ -178,7 +175,11 @@ SynthTree : IdentityTree {
 		}{
 			template = synthOrTemplate;
 			switch (startWhen,
-				\now, { notStopped = true; 
+				\now, {
+					notStopped = true;
+					if (synth.isPlaying) { 
+						this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
+					};
 					this.makeSynth;
 				},
 				\ifNotStopped, { if (notStopped) { this.makeSynth } },
@@ -302,7 +303,13 @@ SynthTree : IdentityTree {
 
 	trig { | ... someArgs |
 		// restart, ending previous synth if running
-		if (synth.isPlaying) { synth.fadeOut(fadeTime); };
+		[this, thisMethod.name, synth, synth.isPlaying].postln;
+		if (synth.isPlaying) { 
+			//	synth.fadeOut(fadeTime); 
+			//			synth.free;
+			synth.release;
+		};
+		//		if (synth.notNil) { synth.fadeOut(fadeTime); };
 		someArgs.keysValuesDo({ | key, value |
 			args.storeArgValue(key, value);
 		});

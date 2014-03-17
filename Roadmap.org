@@ -1,6 +1,23 @@
 (Copied here on: Sun, Mar  9 2014, 20:37 EET)
 
 * Immediate TODOs
+
+** Debug SynthTree:trig:
+
+Restarting this leaves the old synth hanging:
+#+BEGIN_EXAMPLE
+{
+	var synth;
+	synth = { SinOsc.ar(\freq.kr(400)) } ==> \test;
+	10 do: {
+		synth.trig(\freq, 400 rrand: 1200);
+		0.25.wait;
+	}
+
+}.fork;
+
+#+END_EXAMPLE
+
 ** Global Streams, StreamPatterns, Patterns, PatternPlayers
 
 Patterns, Streams, StreamPatterns and PatternPlayers should be stored globally each in its own dict, and added to any number of SynthTrees.  One SynthTree might want to compose the stream source used by another SynthTree with a second stream source!
@@ -24,41 +41,6 @@ see above.  (more to come)
 PatternPlayers play a single stream
 
 SynthPlayers play a SynthTree in Pbind-like manner.  They enclose the created synth events in a single group private to the SynthTree, divert the synths to a private bus, which is then processed by a synth that provides amplitude and fadein/out control.
-
-** BufferFunc
-
-How to get buffers:
-
-- BufferFunc(listener, buffername, server) :: make buffer named buffername available to object listener for use as synth parameter.  The parameter is the listener.   Lookup buffer at the global Library, under path [buffers, server, buffername], ask for path and load if needed.
-
-Algorithm draft:
-
-
-- Lookup buffer in library under [\buffers, server, name].
-
-- if not found,
-  - notify [return?] index of default empty buffer (preallocated).
-  - open dialog box for selecting file to load
-  - read buffer and immediately also:
-  - register it in the library so that others can find it
-  - set its numframes to -1 indicating that it is being loaded still, therefore do not reload
-  - register info action of buffer read to notify self when done
-  - upon receipt of info from server, notify index of new buffer, so that synths may set it.
-  - register buffer in library.
-- if found
-  - if info of buffer has numframes > 0 (i.e. it is loaded), then return/notify index of buffer.
-  - else if info is -1 then
-    - register self for notification when buffer has been loaded
-    - use empty buffer in the meanwhile
-
-Upon server real boot:
-- allocate default empty buffer with 256 frames mono, for use while buffers are being loaded.
-- for all buffers registered in library for that server:
-  - read the buffer and immediately also:
-  - set its numframes to -1 indicating that it is being read.
-  - get info and notify all dependants when the buffer is loaded, so that it may be used.
-
-[possibly register all buffers in a sort of queue and notify when the queue is empty, and do SynthTree:initTree after that!!!]
 
 ** SynthTree:
 
@@ -174,6 +156,41 @@ Following only controls freq.  View does not control amp.
 \asdf.set(\amp, 0.02);
 #+END_EXAMPLE
 ** symbol.buf(...)
+
+** BufferFunc
+
+How to get buffers:
+
+- BufferFunc(listener, buffername, server) :: make buffer named buffername available to object listener for use as synth parameter.  The parameter is the listener.   Lookup buffer at the global Library, under path [buffers, server, buffername], ask for path and load if needed.
+
+Algorithm draft:
+
+
+- Lookup buffer in library under [\buffers, server, name].
+
+- if not found,
+  - notify [return?] index of default empty buffer (preallocated).
+  - open dialog box for selecting file to load
+  - read buffer and immediately also:
+  - register it in the library so that others can find it
+  - set its numframes to -1 indicating that it is being loaded still, therefore do not reload
+  - register info action of buffer read to notify self when done
+  - upon receipt of info from server, notify index of new buffer, so that synths may set it.
+  - register buffer in library.
+- if found
+  - if info of buffer has numframes > 0 (i.e. it is loaded), then return/notify index of buffer.
+  - else if info is -1 then
+    - register self for notification when buffer has been loaded
+    - use empty buffer in the meanwhile
+
+Upon server real boot:
+- allocate default empty buffer with 256 frames mono, for use while buffers are being loaded.
+- for all buffers registered in library for that server:
+  - read the buffer and immediately also:
+  - set its numframes to -1 indicating that it is being read.
+  - get info and notify all dependants when the buffer is loaded, so that it may be used.
+
+[possibly register all buffers in a sort of queue and notify when the queue is empty, and do SynthTree:initTree after that!!!]
 
 * Undergoing tests
 
