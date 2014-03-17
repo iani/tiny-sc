@@ -37,18 +37,17 @@ BufferFunc {
 		};
 	}
 
-	*loadBuffer { | oldBuffer, path |
+	*loadBuffer { | server, name, oldBuffer |
 		/* TODO: uniform function to load buffer from path. 
 			notifies both with buffer.changed and server.changed
 			server.changed used by BufferList
 		*/
-		var newBuffer, server;
-		path = path ?? { oldBuffer.path };
-		if (oldBuffer.isNil) { server = SynthTree.server } { server = oldBuffer.server };
+		var newBuffer, path;
+		path = oldBuffer.path;
 		Library.put(server, name, 
 					newBuffer = Buffer.read(server, oldBuffer.path, action: { 
 						oldBuffer.changed(\buffer, newBuffer);
-						postf("Loaded: s\n", newBuffer);
+						postf("Loaded: %\n", newBuffer);
 					});
 		)
 	}

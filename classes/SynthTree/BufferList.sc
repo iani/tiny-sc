@@ -13,10 +13,7 @@ BufferList {
 
 	*initClass {
 		StartUp add: {
-			this.addNotifier(SynthTree, \serverBooted, {
-				[this, thisMethod.name, autoload].postln;
-				if (autoload) { this.loadFolder };
-			});
+			if (autoload) { this.loadFolder };
 		}
 	}
 
@@ -46,20 +43,28 @@ BufferList {
 	}
 
 	*loadFolder { | path |
-		var extension;
-		[this, thisMethod.name].postln;
+		var pathname, extension, server;
+		//		[this, thisMethod.name].postln;
+		server = Server.default;
 		path ?? { path = Platform.userAppSupportDir +/+ "sounds/*" };
-		path.pathMatch.postln;
-		path.pathMatch do: { | p |
-			extension = PathName(p).extension.asSymbol;
+		//	path.pathMatch.postln;
+		path.pathMatch do: { | filePath |
+			pathname = PathName(filePath);
+			extension = pathname.extension.asSymbol;
 			if ([\aiff, \aif, \wav] includes: extension) {
-				postf("will load: %\n", p);
-				
+				postf("Pre-loading: %\n", filePath);
+				Library.put(server, pathname.fileNameWithoutExtension.asSymbol, 
+					BufferDummy(filePath);
+				);
 			}
 		}
 		
 		//		^Object.readArchive(this.defaultPath);
 	}
-	
+}
 
+BufferDummy {
+	var <path;
+	*new { | path | ^this.newCopyArgs(path) }
+	server { ^SynthTree.server }
 }

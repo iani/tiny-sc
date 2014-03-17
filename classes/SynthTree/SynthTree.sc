@@ -167,7 +167,7 @@ SynthTree : IdentityTree {
 	chuck { | synthOrTemplate, argReplaceAction = \fadeOut, 
 		argFadeTime, startWhen = \now |
 		/*  Set my synth.  Start depending on startWhen. */
-		{
+		//		{
 		if (synth.isPlaying) { 
 			this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
 		};
@@ -185,7 +185,7 @@ SynthTree : IdentityTree {
 				\later, {} // any other symbol will also do
 			)
 		};
-		}.fork;
+		// }.fork;
 	}
 
 	moveBefore { | argSynth |
@@ -300,7 +300,19 @@ SynthTree : IdentityTree {
 		}
 	}
 
-    start { if (synth.isPlaying) { } { this.makeSynth }; }
+	trig { | ... someArgs |
+		// restart, ending previous synth if running
+		if (synth.isPlaying) { synth.fadeOut(fadeTime); };
+		someArgs.keysValuesDo({ | key, value |
+			args.storeArgValue(key, value);
+		});
+		this.makeSynth;
+	}
+
+    start {
+		// start, but only if synth is not playing
+		if (synth.isPlaying) { } { this.makeSynth }; 
+	}
 
 	release { | argFadeTime | 
 		synth release: argFadeTime ? fadeTime;
