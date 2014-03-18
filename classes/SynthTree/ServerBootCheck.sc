@@ -1,5 +1,9 @@
 /*
-Use a bus as a check to 
+Use a bus as a check to see if the Server has really booted.  Also wait until Shared Memory is initialized. 
+Can be essential in 3 situations: 
+1. Waking up after the mac has gone to sleep.
+2. Make sure that the shared memory is initialized (normally the 
+3. On a fast new generation MacBook (late 2013, 16Gb, 2.3 Ghz i7), The ServerTree does not catch the actual boot of the server.
 
 This is a prototype that works with the default server.
 
