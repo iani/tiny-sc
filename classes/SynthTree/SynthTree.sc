@@ -1,10 +1,10 @@
 /*
-Access and modify the structure of a tree of synths, with their busses and groups.  
+Access and modify the structure of a tree of synths, with their busses and groups.
 Each node of the tree holds a synth, and if present, the group, and input-output
 control names and busses.
 
 Each server has one root SynthTree, whose root branch contains the RootNode.
-There is one global root tree, that holds the root trees of all servers. 
+There is one global root tree, that holds the root trees of all servers.
 
 For more, see separate doc.
 
@@ -26,19 +26,19 @@ SynthTree.initTree;
 */
 
 SynthTree : IdentityTree {
-	
+
 	classvar <default;
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
 	classvar <cmdPeriod = false; // Avoid initing at Cmd-.
-    
+
 	var <synth;  // the synth of this node
 	var <>inputs; // dictionary of input names and bus specs or busses
 	var <outputName; // name of input where this synth sends it output
 	var <output; // SynthTree instance where this synth sends its output
-	var >group;  // optional group enclosing synth as well as 
+	var >group;  // optional group enclosing synth as well as
 	// synths of input subtree [!??!?]
 	var <>template; // optional template for re-creating synth
-    var <notStopped = true; // if false, do not restart on initTree or 
+    var <notStopped = true; // if false, do not restart on initTree or
 	// on chuck/replace
     var <>fadeTime = 0.1;
 	var <>name;
@@ -49,15 +49,20 @@ SynthTree : IdentityTree {
 		StartUp add: {
 			var server;
 			server = Server.default;
+			// On latest generation MacBook pro,
+			// the boot is so fast that it does not register?
+			// Check here:
+			ServerBoot add: { | ... args | [args, "BOOTED!"].postln; };
 			default = this.new(\root);
 			nameSpaces = MultiLevelIdentityDictionary();
 			nameSpaces[server, \root] = default;
 			default.inputs = IdentityDictionary();
-			default.inputs[\in] = Bus('audio', 0, 
-				// server.options.numOutputBusChannels, 
+			default.inputs[\in] = Bus('audio', 0,
+				// server.options.numOutputBusChannels,
 				0, // trick the allocator: reserve 0 channels
 				server);
-			ServerTree add: {
+			ServerTree add: { | ... args |
+				[args, "ServerTree actions also triggered!"].postln;
 				if (cmdPeriod.not) {
 					default.group = server.asTarget;
 					BufferFunc.initBuffers(server);
@@ -76,7 +81,7 @@ SynthTree : IdentityTree {
 		var synthTree;
 		synthTree = this.nameSpaces[this.server, symbol];
 		if (synthTree.isNil and: createIfMissing) {
-			postf("Making new SynthTree for server %, name %\n", 
+			postf("Making new SynthTree for server %, name %\n",
 				this.server, symbol);
 			synthTree = this.new(symbol);
 			this.nameSpaces[this.server, symbol] = synthTree;
@@ -126,7 +131,7 @@ SynthTree : IdentityTree {
 		var server, bus;
 		if (inputs.isNil) { ^this };
 		server = this.server;
-		// keysValuesDo could produce errors because of operating 
+		// keysValuesDo could produce errors because of operating
 		// on array being modified
 		inputs.keys do: { | key |
 			bus = inputs[key];
@@ -136,7 +141,7 @@ SynthTree : IdentityTree {
 
 	asSynthTree { /* ^this */ }
 
-	chuckMakingInput { | synthOrTemplate, replaceAction = \fadeOut, 
+	chuckMakingInput { | synthOrTemplate, replaceAction = \fadeOut,
 		argFadeTime, startWhen = \now |
 		this.makeInputs();
 		this.chuck(synthOrTemplate, replaceAction, argFadeTime, startWhen);
@@ -181,7 +186,7 @@ SynthTree : IdentityTree {
 		}{
 			template = synthOrTemplate ? template;
 			notStopped = true;
-			if (synth.isPlaying) { 
+			if (synth.isPlaying) {
 				this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
 			};
 			this.makeSynth;
@@ -197,15 +202,15 @@ SynthTree : IdentityTree {
 		// TODO: move my synth before the output synth
 		// and then call moveBeforeOutput on all my inputs sunthTrees
 		if (synth.isPlaying) {
-			synth.moveBefore(argSynth); 
+			synth.moveBefore(argSynth);
 			this do: _.moveBefore(synth);
 		};
 	}
 
 	setTemplate { | argTemplate, argReplaceAction = \fadeOut |
 		/* set template without starting. Called by ==> operator
-			Starting is deferred to after connecting 
-			self as input to another SynthTree (=<). 
+			Starting is deferred to after connecting
+			self as input to another SynthTree (=<).
 			Manner of replacing previous synth is stored in replaceAction */
 		replaceAction = argReplaceAction;
 		template = argTemplate;
@@ -214,17 +219,17 @@ SynthTree : IdentityTree {
 	addInputSynth{ | synthTree, inputName = \in, startWhen = \now |
 		// TODO! TEST THIS
 		/*  Add synthTree to my inputs and make it output its signal to my input.
-			Add synthTree to your dictionary under its name, 
+			Add synthTree to your dictionary under its name,
 			THEN create the synth, using your group as target,
 			addToHead as add method, and setting the output \out
-			to one of your inputs, through args at synth creation time. 
+			to one of your inputs, through args at synth creation time.
 		*/
 		if (inputs.isNil) {
 			postf("% has no inputs. Cannot add input.\n", name);
 			^this;
 		};
 		if (this outputsTo: synthTree) {
-			postf("% outputs to % and therefore cannot add it as input. Cycle!\n", 
+			postf("% outputs to % and therefore cannot add it as input. Cycle!\n",
 			name, synthTree.name);
 			^this
 		};
@@ -283,7 +288,7 @@ SynthTree : IdentityTree {
 			the setters for the output and the input busses */
 		var argsArray;
 		argsArray = [out: this.getOutputBusIndex];
-		inputs !? { 
+		inputs !? {
 			inputs keysValuesDo: { | key, bus |
 				argsArray = argsArray add: key;
 				argsArray = argsArray add: bus.index;
@@ -308,10 +313,10 @@ SynthTree : IdentityTree {
 
     start {
 		// start, but only if synth is not playing
-		if (synth.isPlaying) { } { this.makeSynth }; 
+		if (synth.isPlaying) { } { this.makeSynth };
 	}
 
-	release { | argFadeTime | 
+	release { | argFadeTime |
 		synth release: argFadeTime ? fadeTime;
 		synth.isPlaying = false;
 		notStopped = false;
@@ -339,19 +344,19 @@ SynthTree : IdentityTree {
 
     group {
         ^group ?? {
-            if (output.isNil) { default.group } { output.group }
+            if (output.isNil) { Server.default.defaultGroup } { output.group }
         }
     }
 
 	mapSet { | parameter, value |
 		// args connect themselves directly to controllers
-		// this saves having to access the parameter each time. 
+		// this saves having to access the parameter each time.
 		// therefore this method may not be used.
 		/* var param;
 		param = args[parameter];
 		param !? param.mapSet(value);
 		*/
-		
+
 		[this, thisMethod.name, parameter, value].postln;
 	}
 

@@ -136,7 +136,7 @@ Play the same sample in a different synth, with different rate
 :PROPERTIES:
 :DATE:     <2014-03-17 Mon 17:58>
 :ID:       BD7795E1-1FAD-418D-8CF8-6A48925DA909
-:eval-id:  5
+:eval-id:  6
 :END:
 
 #+BEGIN_SRC sclang

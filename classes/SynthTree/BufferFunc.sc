@@ -1,12 +1,12 @@
-/* 
-Provide buffer stored in Library.global under a path [server, name].  
+/*
+Provide buffer stored in Library.global under a path [server, name].
 
-If buffer not present, then load it from file using file path select dialog. 
+If buffer not present, then load it from file using file path select dialog.
 
 While buffer is loading, provide a default empty buffer ("*null-buffer*").
 As soon as the buffer has completed loading, notify using object that the buffer is ready.
 
-When the server has finished booting, reload all registered buffers.  
+When the server has finished booting, reload all registered buffers.
 
 IZ Sat, Mar 15 2014, 18:38 EET
 
@@ -19,11 +19,12 @@ BufferFunc {
 
 	// FIXME!
 	// TODO: check how and when to create buffers
-	// TODO: on making buffers, ensure that they notify when 
+	// TODO: on making buffers, ensure that they notify when
 	// they are finished reading/allocating and when they are freed
 	*initBuffers { | server |
 		// Called by ServerTree.initClass at Server boot time.
 		var bufferDict, oldBuffer, newBuffer, oldNullBuffer, newNullBuffer;
+		server = server ?? { SynthTree.server };
 		oldNullBuffer = Library.at(server, '*null-buffer*');
 		newNullBuffer = Buffer.alloc(server, server.sampleRate * 0.1, 1);
 		Library.put(server, '*null-buffer*', newNullBuffer);
@@ -37,15 +38,20 @@ BufferFunc {
 		};
 	}
 
+	*postBufNames {
+		// fast utility func
+		Library.at(SynthTree.server).keys.asArray.sort do: _.postln;
+	}
+
 	*loadBuffer { | server, name, oldBuffer |
-		/* TODO: uniform function to load buffer from path. 
+		/* TODO: uniform function to load buffer from path.
 			notifies both with buffer.changed and server.changed
 			server.changed used by BufferList
 		*/
 		var newBuffer, path;
 		path = oldBuffer.path;
-		Library.put(server, name, 
-					newBuffer = Buffer.read(server, oldBuffer.path, action: { 
+		Library.put(server, name,
+					newBuffer = Buffer.read(server, oldBuffer.path, action: {
 						oldBuffer.changed(\buffer, newBuffer);
 						postf("Loaded: %\n", newBuffer);
 					});
@@ -62,7 +68,7 @@ BufferFunc {
 
 	//: FIXME!
 	init {
-		this.setBuffer(this.getBuffer); 
+		this.setBuffer(this.getBuffer);
 	}
 
 	getBuffer {
