@@ -5,6 +5,8 @@ Can be essential in 3 situations:
 2. Make sure that the shared memory is initialized (normally the 
 3. On a fast new generation MacBook (late 2013, 16Gb, 2.3 Ghz i7), The ServerTree does not catch the actual boot of the server.
 
+Note: ServerTree add: { ... } will not work reliably.
+
 This is a prototype that works with the default server.
 
 ServerBootCheck.add({ "test server boot".postln });
