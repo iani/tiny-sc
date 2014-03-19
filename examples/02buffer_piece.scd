@@ -16,8 +16,8 @@ boat_attach_back
 
 (
 { | i |
-	{ Pan2.ar(\buf.playBuf(loop: 1)); } => format("bell%", i).asSymbol.buf(\bell).set(\amp, 0.005)
-	.set(\rate, 0.1);
+	{ Pan2.ar(\buf.playBuf(loop: 1)); } => format("bell%", i).asSymbol.buf(\bell).set(\amp, 0.01)
+	.set(\rate, 0.5);
 } ! 10;
 )
 
@@ -25,7 +25,7 @@ boat_attach_back
 
 (
 { | i |
-	format("bell%", i).asSymbol.set(\rate, i / 39.3 + 0.0);
+	format("bell%", i).asSymbol.set(\rate, i / 10 + 1.0);
 } ! 10;
 )
 
@@ -35,7 +35,7 @@ boat_attach_back
 
 ~all = { | i | format("bell%", i).asSymbol } ! 10;
 
-~all do: _.set(\amp, 0.01);
+~all do: _.set(\amp, 0.3);
 
 ~all do: _.set(\pan, 0.5);
 

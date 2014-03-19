@@ -49,10 +49,29 @@ SynthTree : IdentityTree {
 		StartUp add: {
 			var server;
 			server = Server.default;
-			// On latest generation MacBook pro,
-			// the boot is so fast that it does not register?
-			// Check here:
-			ServerBoot add: { | ... args | [args, "BOOTED!"].postln; };
+			/* Sometimes the Shared Memory Interface of a server can take some
+			seconds to initialize.  One should wait until that happens, otherwise
+			synths may not be created in the default group.
+			Here Count 1/2 seconds while waiting, thus notifying user to wait. */
+			ServerBoot add: { | bootingServer |
+				if (bootingServer.isLocal) {
+					{
+						var time, waitingSecs;
+						time = Process.elapsedTime;
+						"\n=== Waiting for server shared memory interface ===\n "
+						.postln;
+						"Seconds elapsed: ".post;
+						while { bootingServer.hasShmInterface.not }
+						{
+							waitingSecs = (Process.elapsedTime - time).round(0.5);
+							postf("% - ", waitingSecs);
+							if (waitingSecs - 4 % 5 == 0) { "".postln; };
+							0.5.wait;
+
+						};
+					}.fork;
+				}
+			};
 			default = this.new(\root);
 			nameSpaces = MultiLevelIdentityDictionary();
 			nameSpaces[server, \root] = default;
@@ -62,7 +81,7 @@ SynthTree : IdentityTree {
 				0, // trick the allocator: reserve 0 channels
 				server);
 			ServerTree add: { | ... args |
-				[args, "ServerTree actions also triggered!"].postln;
+				// [args, "ServerTree actions also triggered!"].postln;
 				if (cmdPeriod.not) {
 					default.group = server.asTarget;
 					BufferFunc.initBuffers(server);

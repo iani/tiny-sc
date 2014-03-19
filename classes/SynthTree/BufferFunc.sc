@@ -17,10 +17,6 @@ BufferFunc {
 	var <server, <bufferName, <action;
 	var <buffer;
 
-	// FIXME!
-	// TODO: check how and when to create buffers
-	// TODO: on making buffers, ensure that they notify when
-	// they are finished reading/allocating and when they are freed
 	*initBuffers { | server |
 		// Called by ServerTree.initClass at Server boot time.
 		var bufferDict, oldBuffer, newBuffer, oldNullBuffer, newNullBuffer;
@@ -51,10 +47,10 @@ BufferFunc {
 		var newBuffer, path;
 		path = oldBuffer.path;
 		Library.put(server, name,
-					newBuffer = Buffer.read(server, oldBuffer.path, action: {
-						oldBuffer.changed(\buffer, newBuffer);
-						postf("Loaded: %\n", newBuffer);
-					});
+			newBuffer = Buffer.read(server, oldBuffer.path, action: {
+				oldBuffer.changed(\buffer, newBuffer);
+				postf("Loaded: %\n", newBuffer);
+			});
 		)
 	}
 
