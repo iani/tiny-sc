@@ -65,7 +65,7 @@ SynthTree : IdentityTree {
 						{
 							waitingSecs = (Process.elapsedTime - time).round(0.5);
 							postf("% - ", waitingSecs);
-							if (waitingSecs - 4 % 5 == 0) { "".postln; };
+							if (waitingSecs - 4 % 6 == 0) { "".postln; };
 							0.5.wait;
 
 						};

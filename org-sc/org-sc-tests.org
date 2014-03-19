@@ -2,7 +2,7 @@
 * test organising and running sc-code in sections|
 :PROPERTIES:
 :ID:       485215FB-C773-4785-8503-D70AA06EC85D
-:eval-id:  121
+:eval-id:  127
 :END:
 
 loop {
@@ -15,7 +15,7 @@ loop {
 * test removing
 :PROPERTIES:
 :ID:       2E4A1F5A-136F-4618-9A08-E22054E48853
-:eval-id:  15
+:eval-id:  16
 :END:
 
 a.release(3);
