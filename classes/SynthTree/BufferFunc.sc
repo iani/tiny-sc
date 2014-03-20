@@ -36,7 +36,9 @@ BufferFunc {
 
 	*postBufNames {
 		// fast utility func
+		"================ Buffer names are: ================".postln;
 		Library.at(SynthTree.server).keys.asArray.sort do: _.postln;
+		"===================================================".postln;
 	}
 
 	*loadBuffer { | server, name, oldBuffer |

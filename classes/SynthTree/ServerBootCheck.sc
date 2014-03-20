@@ -1,8 +1,8 @@
 /*
-Use a bus as a check to see if the Server has really booted.  Also wait until Shared Memory is initialized. 
-Can be essential in 3 situations: 
+Use a bus as a check to see if the Server has really booted.  Also wait until Shared Memory is initialized.
+Can be essential in 3 situations:
 1. Waking up after the mac has gone to sleep.
-2. Make sure that the shared memory is initialized (normally the 
+2. Make sure that the shared memory is initialized (normally the
 3. On a fast new generation MacBook (late 2013, 16Gb, 2.3 Ghz i7), The ServerTree does not catch the actual boot of the server.
 
 Note: ServerTree add: { ... } will not work reliably.
@@ -44,7 +44,6 @@ ServerBootCheck {
 			this.makeBus;
 		};
 		ServerBoot.add({ this.checkIfReallyBootedAndDoActions }, server);
-		ServerTree.add({ "IF THIS WORKS, then all was in vain".postln; });
 	}
 
 	makeBus {
@@ -56,7 +55,7 @@ ServerBootCheck {
 		if (bus.isNil) {
 			this.serverReallyBooted;
 		}{
-		bus.get({ | val | 
+		bus.get({ | val |
 				if (val == 12345) {
 					this.serverDidNotReallyBoot;
 				}{
@@ -67,18 +66,19 @@ ServerBootCheck {
 	 }
 
 	 serverReallyBooted {
-		 var time;
 		 if (server.isLocal) {
 			 {
+				 var time, waitingSecs;
 				 time = Process.elapsedTime;
 				 "\n=== Waiting for server shared memory interface ===\n ".postln;
 				 "Seconds elapsed: ".post;
 				 while { server.hasShmInterface.not }
-				 { 
-					 postf("% - ", (Process.elapsedTime - time).round(0.5));
+				 {
+					 waitingSecs = (Process.elapsedTime - time).round(0.5);
+					 postf("% - ", waitingSecs);
+					 if (waitingSecs - 4 % 6 == 0) { "".postln; };
 					 0.5.wait;
 				 };
-	
 				 this.doActionsAndMakeBus;
 			 }.fork;
 		 }{

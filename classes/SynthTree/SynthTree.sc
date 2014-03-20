@@ -29,7 +29,6 @@ SynthTree : IdentityTree {
 
 	classvar <default;
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
-	classvar <cmdPeriod = false; // Avoid initing at Cmd-.
 
 	var <synth;  // the synth of this node
 	var <>inputs; // dictionary of input names and bus specs or busses
@@ -52,26 +51,9 @@ SynthTree : IdentityTree {
 			/* Sometimes the Shared Memory Interface of a server can take some
 			seconds to initialize.  One should wait until that happens, otherwise
 			synths may not be created in the default group.
-			Here Count 1/2 seconds while waiting, thus notifying user to wait. */
-			ServerBoot add: { | bootingServer |
-				if (bootingServer.isLocal) {
-					{
-						var time, waitingSecs;
-						time = Process.elapsedTime;
-						"\n=== Waiting for server shared memory interface ===\n "
-						.postln;
-						"Seconds elapsed: ".post;
-						while { bootingServer.hasShmInterface.not }
-						{
-							waitingSecs = (Process.elapsedTime - time).round(0.5);
-							postf("% - ", waitingSecs);
-							if (waitingSecs - 4 % 6 == 0) { "".postln; };
-							0.5.wait;
-
-						};
-					}.fork;
-				}
-			};
+			Here Count 1/2 seconds while waiting, thus notifying user to wait. 
+			Using own ServerBootCheck because ServerTree does not catch
+			false boots on system wake-up after sleep. */
 			default = this.new(\root);
 			nameSpaces = MultiLevelIdentityDictionary();
 			nameSpaces[server, \root] = default;
@@ -80,19 +62,14 @@ SynthTree : IdentityTree {
 				// server.options.numOutputBusChannels,
 				0, // trick the allocator: reserve 0 channels
 				server);
-			ServerTree add: { | ... args |
-				// [args, "ServerTree actions also triggered!"].postln;
-				if (cmdPeriod.not) {
-					default.group = server.asTarget;
-					BufferFunc.initBuffers(server);
-					default.initTree(true);
-					this.changed(\serverBooted);
-				}{  // reset for next time:
-					cmdPeriod = false;
-				}
+			ServerBootCheck add: {
+				default.group = server.asTarget;
+				BufferFunc.initBuffers(server);
+				{ BufferFunc.postBufNames }.defer(3);
+				default.initTree(true);
+				this.changed(\serverBooted);
             };
 			Spec.specs.at(\amp).default = 0.1;
-			CmdPeriod add: { cmdPeriod = true; };
 		}
 	}
 
