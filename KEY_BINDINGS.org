@@ -1,0 +1,43 @@
+#+TITLE: Keyboard Bindings
+
+* Global key bindings
+
+- C-c C-x C-/ :: sclang-init-synth-tree
+
+* Org-mode bindings
+
+  - C-c C-s :: sclang-main-stop
+  - H-C-o :: org-sc-toggle-mode
+  - C-M-x :: org-sc-eval
+  - H-C-x :: org-sc-eval-in-routine
+  - H-C-r :: sclang-process-registry-gui
+  - C-M-z :: org-sc-stop-section-processes
+  - H-C-z :: org-sc-stop-section-processes
+  - C-c C-M-. :: org-sc-stop-section-processes
+  - H-C-n :: org-sc-next-section
+  - C-M-n :: org-sc-eval-next
+  - H-C-p :: org-sc-previous-section
+  - C-M-p :: org-sc-eval-previous
+  - C-c C-, :: sclang-eval-line
+  - C-c C-9 :: sclang-eval-dwim
+  - C-c C-x l :: org-sc-toggle-autoload
+  - C-c C-x C-l :: org-sc-load-marked
+
+* Sclang-mode bindings
+
+- H-C-o :: org-sc-toggle-mode
+- C-c .  :: sclang-execute-current-snippet)
+- C-c C-, :: sclang-eval-line)
+- C-c C-. :: sclang-select-snippet)
+- C-M-x :: sclang-execute-current-snippet) ;; alternative
+- C-M-f :: sclang-goto-next-snippet)
+- C-M-b :: sclang-goto-previous-snippet)
+- C-M-n :: sclang-execute-next-snippet)
+- C-M-p :: sclang-execute-previous-snippet)
+- C-H-f :: sclang-goto-next-snippet)
+- C-H-b :: sclang-goto-previous-snippet)
+- C-H-n :: sclang-execute-next-snippet)
+- C-H-p :: sclang-execute-previous-snippet)
+- C-H-r :: sclang-process-registry-gui)
+- C-c l :: sclang-recompile)
+- M-C :: sclang-clear-post-buffer)
