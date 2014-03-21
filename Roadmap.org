@@ -1,21 +1,12 @@
 (Copied here on: Sun, Mar  9 2014, 20:37 EET)
 
+* Currently working on
+** SynthTree mixer: panel of SynthTrees with amp faders.
+:PROPERTIES:
+:DATE:     <2014-03-20 Thu 11:34>
+:END:
+
 * Immediate TODOs
-
-** Debug SynthTree:trig:
-
-Restarting this leaves the old synth hanging:
-#+BEGIN_EXAMPLE
-{
-	var Synth;
-	synth = { SinOsc.ar(\freq.kr(400)) } ==> \test;
-	10 do: {
-		synth.trig(\freq, 400 rrand: 1200);
-		0.25.wait;
-	}
-
-}.fork;
-#+END_EXAMPLE
 
 ** Global Streams, StreamPatterns, Patterns, PatternPlayers
 
@@ -190,6 +181,23 @@ Upon server real boot:
   - get info and notify all dependants when the buffer is loaded, so that it may be used.
 
 [possibly register all buffers in a sort of queue and notify when the queue is empty, and do SynthTree:initTree after that!!!]
+
+** Debug SynthTree:trig:
+
+Restarting this with ==> leaves the old synth hanging
+Solution implemented: Use =|> instead of ==>
+
+#+BEGIN_EXAMPLE
+{
+	var synth;
+	synth = { SinOsc.ar(\freq.kr(400)) } =|> \test;
+	10 do: {
+		synth.trig(\freq, 400 rrand: 1200);
+		0.25.wait;
+	}
+
+}.fork;
+#+END_EXAMPLE
 
 * Undergoing tests
 

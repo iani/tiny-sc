@@ -82,15 +82,24 @@ SynthTree : IdentityTree {
 			synthTree = this.new(symbol);
 			this.nameSpaces[this.server, symbol] = synthTree;
 			this.root[synthTree.name] = synthTree;
+			this.changed(\newSynthTree, synthTree);
 		};
 		^synthTree;
 	}
 
-	*new { | name | ^super.new.init(name); }
+	*onServer { | argServer |
+		// Return synthtrees created on a given server
+		argServer = argServer ?? { this.server };
+		^this.nameSpaces.at(argServer);
+	}
+
+	*new { | name |
+		^super.new.init(name);
+	}
 
 	init { | argName |
 		name = argName;
-		 args = SynthTreeArgs(this);
+		args = SynthTreeArgs(this);
 	}
 
 	*nameSpaces {
@@ -406,5 +415,37 @@ SynthTree : IdentityTree {
 	}
 	buf { | bufName, param = \buf |
 		args.getParam(param) .setBuffer(bufName ? param)
+	}
+
+	*faders { | argServer |
+		var all, sliders;
+		argServer ?? { argServer = SynthTree.server };
+		all = SynthTree.onServer(argServer);
+		Sliders.getPanel(argServer);
+		all.keys.asArray.select({ | name | name != \root }).sort
+		do: { | name | all[name].prFader };
+		Sliders.at(argServer.asSymbol).addNotifier(
+				this, \newSynthTree, { | synthTree | this.faders }
+		);
+	}
+
+	prFader {
+		/* Make a fader for amp on a Sliders panel. 
+			Note: This is a private class.  It is called via notification
+			whenever a new SynthTree is created and an amp faders panel is open.
+		*/
+		var server;
+		server = this.server;
+		args.getParam(\amp).addView(\fader, 
+			Sliders.slider(name, server.asSymbol);
+		);
+	}
+
+	// under development
+	fade {
+		/*  Fade any parameter to any value(s) using a line or envelope ugen
+           on a control bus, mapped to the parameter.
+		The control bus is allocated on the fly and released when the 
+		fade synth is freed. */
 	}
 }

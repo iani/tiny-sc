@@ -108,7 +108,7 @@ MultiControl : IdentityDictionary {
 		ctl = this[controlName];
 		if (ctl.notNil) {
 			ctl.disable;
-			ctl[controlName] = nil;
+			this[controlName] = nil;
 		};
 	}
 

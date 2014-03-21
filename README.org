@@ -93,9 +93,16 @@ SynthTree.initTree;
 
 * GUI Views
 
+** Views for any parameter
 #+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(440)) } => \viewtest;
 \viewtest.view(\freq).view(\amp);
+#+END_EXAMPLE
+
+** Faders for all SynthTrees
+
+#+BEGIN_EXAMPLE
+SynthTree.faders;
 #+END_EXAMPLE
 
 * Setting fadeTime
@@ -136,19 +143,21 @@ Play the same sample in a different synth, with different rate
 :PROPERTIES:
 :DATE:     <2014-03-17 Mon 17:58>
 :ID:       BD7795E1-1FAD-418D-8CF8-6A48925DA909
-:eval-id:  6
+:eval-id:  16
 :END:
 
-#+BEGIN_SRC sclang
+Use =|> to set the source of a SynthTree without starting it.  This is necessary in cases like the following, where the starting of the synth is done explicitly by trig in a routine:
+
+#+BEGIN_EXAMPLE
 {
 	var synth;
-	synth = { SinOsc.ar(\freq.kr(400)) } ==> \test;
-	10 do: {
+	synth = { [SinOsc, LFPulse, LFTri, LFSaw].choose.ar(\freq.kr(400)) } =|> \test;
+	50 do: {
 		synth.trig(\freq, 400 rrand: 1200);
-		0.25.wait;
+		0.1.wait;
 	}
 }.fork
-#+END_SRC
+#+END_EXAMPLE
 
 * UGen shortcuts
 
