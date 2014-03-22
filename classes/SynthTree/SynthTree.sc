@@ -451,10 +451,16 @@ SynthTree : IdentityTree {
 	}
 
 	// under development
-	fade {
+	fade { | target = 0, duration = 1 |
+		
+	}
+
+	map { | param, curve | 
 		/*  Fade any parameter to any value(s) using a line or envelope ugen
            on a control bus, mapped to the parameter.
 		The control bus is allocated on the fly and released when the 
 		fade synth is freed. */
+
+		
 	}
 }

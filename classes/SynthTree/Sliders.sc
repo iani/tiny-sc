@@ -74,14 +74,14 @@ Sliders {
 	sliderLabeled { | string |
 		var slider, message;
 		message = string.asString;
-		slider = sliders detect: { | k | k.label.string == message };
+		slider = sliders detect: { | k | k.label.object == message };
 		slider ?? { slider = this.allocateSlider(string); };
 		^slider !? { slider.slider };
 	}
 		
 	allocateSlider { | string |
 		var slider;
-		slider = sliders detect: { | k | k.label.string == "" };
+		slider = sliders detect: { | k | k.label.object == "" };
 		if (slider.isNil) {
 			postf("Could not allocate new slider for %\n", string);
 		}{
@@ -100,10 +100,13 @@ SliderWithLabel {
 	*new { ^super.new.init; }
 
 	init {
-		slider = Slider().orientation_(\horizontal);
-		label = StaticText().string_("").align_(\left);
-		layout = HLayout(label, [slider, s: 1]);
+		slider = Slider().orientation_(\horizontal).fixedWidth_(100);
+		label = DragBoth().object_(""); // .fixedWidth_(60);
+		layout = HLayout(label, slider);
+		label.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
+			slider.keyDownAction.(slider, char, modifiers, unicode, keycode, key)
+		};
 	}
 
-	setLabel { | string | label.string = string; }
+	setLabel { | string | label.object = string.asString; }
 }

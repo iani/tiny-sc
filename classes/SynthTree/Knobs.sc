@@ -100,7 +100,7 @@ KnobWithLabel {
 
 	init {
 		knob = Knob();
-		label = StaticText().string_("").align_(\center);
+		label = StaticText().string_("").align_(\center).canFocus_(true);
 		layout = VLayout([knob, s: 3], label);
 	}
 

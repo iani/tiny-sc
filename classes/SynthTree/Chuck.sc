@@ -6,10 +6,12 @@ IZ Sat, Mar  8 2014, 23:40 EET
 
 + Object {
 	=> { | synthTree, replaceAction = \fadeOut |
+		// chuck a source to a synthTree and play
 		^synthTree.asSynthTree.chuck(this, replaceAction);
 	}
 
 	=<> { | synthTree, replaceAction = \fadeOut |
+		// chuck, and create default input bus
 		^synthTree.asSynthTree.chuckMakingInput(this, replaceAction);
 	}
 
@@ -31,13 +33,14 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	}
 
 	=|> { | synthTree, replaceAction = \fadeOut |
-		// as => but do not start the synth now: 
-		// synth gets started when the synthTree is added as input with =<
+		// Just set the synthTree's template.
 		synthTree = synthTree.asSynthTree;
 		^synthTree.setTemplate(this);
 	}
 
-	// =@> { | synthTree | synthTree.postln; }
+	=@> { | synthTree, param |
+		// map a source to a parameter of the synthtree
+	}
 }
 
 + Nil {
