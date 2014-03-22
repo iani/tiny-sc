@@ -49,6 +49,7 @@ MultiControl : IdentityDictionary {
 		One SynthTree might want to compose the stream source
 		used by another SynthTree with a second stream source!
 	*/
+	var unmappedValue; // cache of unmappedValue for views
 	
 	*new { | synthTree, name, spec, initialValue, stream |
 		^super.new.init(synthTree, name, spec, initialValue, stream);
@@ -83,12 +84,16 @@ MultiControl : IdentityDictionary {
 	mapSet { | value |
 		// map the value received from MIDI or view etc. from 0-1 range 
 		// to desired range
-		this.set(spec map: value);
+		this.set(spec map: value, value);
 	}
 
-	set { | value |
+	set { | value, argUnmappedValue |
 		nextValue = value;
 		synthTree.setSynthParameter(name, value);
+		unmappedValue = argUnmappedValue ?? {
+			spec unmap: value;
+		};
+		this.changed(\value, value, unmappedValue);
 	}
 
 	map { | bus |
@@ -150,16 +155,47 @@ MultiControl : IdentityDictionary {
 
 	addView { | argName, view, func, onClose, enabled = true |
 		argName = argName ? name;
-		view = view ?? { Knobs.knob(argName, synthTree.name) };
+		// view = view ?? { Knobs.knob(argName, synthTree.name) };
 		this[argName] = ViewFunc(
 			this, // only one ViewFunc is added per argName
-			view ?? { Knobs.knob(argName, synthTree.name) },
+			view ?? {
+				this.connectParamView(
+					Knobs.knob(argName, synthTree.name)
+				)
+			},
 			func ?? {{ | value | this.set(spec.map(value)) }},
 			onClose ?? {{ this.remove(argName) }},
 			enabled
 		).value_(spec unmap: nextValue);
 	}
 
+	connectParamView { | view |
+		view.addNotifier(synthTree, \started, { | ... args |
+			view.setPlaying;
+		});
+		view.addNotifier(synthTree, \stopped, { | ... args |
+			view.setStopped;
+		});
+		if (synthTree.isPlaying) { 
+			view.setPlaying;
+		};
+		view.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
+			switch (char,
+				$g, { synthTree.start },
+				$G, { synthTree.trig },
+				$s, { synthTree.fadeOut },
+				$S, { synthTree.free },
+				$k, { synthTree.knobs },
+				{ view.defaultKeyDownAction(
+					char, modifiers, unicode, keycode, key) 
+				}
+			)
+		};
+		view.addNotifier(this, \value, { | value, unmappedValue |
+			{ view.value = unmappedValue; }.defer;
+		});
+		^view;
+	}
 	// NOT YET TESTED!
 	setBuffer { | bufName, action |		
 		/* Different handling:
@@ -187,7 +223,7 @@ MultiControl : IdentityDictionary {
 		
 	}
 
-	// ?????????????????????: 
+	//
 	senderClosed { | sender |
 		// find sender from values of dict and remove it
 

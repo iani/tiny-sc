@@ -35,6 +35,10 @@ Knobs {
 	}
 
 	*getKnob { | panelName, label |
+		^this.getPanel(panelName).knobLabeled(label);
+	}
+
+	*getPanel { | panelName |
 		var panel;
 		panelName = panelName.asSymbol;
 		panel = all[panelName];
@@ -42,7 +46,7 @@ Knobs {
 			panel = this.new(panelName);
 			all[panelName] = panel;
 		};
-		^panel.knobLabeled(label);
+		^panel;
 	}
 
 	*new { | panelName |

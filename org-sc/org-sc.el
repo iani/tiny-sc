@@ -176,7 +176,7 @@ Adapted from org-toggle-ordered-property."
      (run-hook-with-args 'org-pre-cycle-hook 'all)
      (show-all)
      (run-hook-with-args 'org-cycle-hook 'all)
-     (org-map-entries 
+     (org-map-entries
      (lambda ()
        (sclang-eval-string
         (org-get-section-contents)
@@ -207,7 +207,8 @@ Adapted from org-toggle-ordered-property."
 
 (eval-after-load "sclang"
   '(progn
-     (define-key sclang-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)))
+     (define-key sclang-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+     (define-key sclang-mode-map (kbd "C-c C-9") 'sclang-eval-dwim)))
 
 
 (provide 'org-sc)

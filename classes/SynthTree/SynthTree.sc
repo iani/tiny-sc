@@ -280,9 +280,10 @@ SynthTree : IdentityTree {
 		synth = template.asSynth(this);
 		// guarantee that moveBefore happens AFTER the synth has really started!
 		synth !? {
-			synth.onEnd(\this, {}); // This also registers on NodeWatcher
+			synth.onEnd(\this, { this.changed(\stopped) }); // This also registers on NodeWatcher
 			this.addNotifierOneShot(synth, 'n_go', {
 				this do: _.moveBefore(synth);
+				this.changed(\started);
 			});
 		};
 		notStopped = true;
@@ -408,6 +409,13 @@ SynthTree : IdentityTree {
    .choose(param, element, path);
    .wchoose(param, element, path);
 	*/
+
+	knobs {
+		Knobs.getPanel(name);
+		args do: { | multicontrol |
+			multicontrol.postln.addView;
+		}
+	}
 	view { | param, viewName, view, func, onClose, enabled = true |
 		// only param is obligatory. All others are provided by MultiControl
 		args.getParam(param)
@@ -434,10 +442,10 @@ SynthTree : IdentityTree {
 			Note: This is a private class.  It is called via notification
 			whenever a new SynthTree is created and an amp faders panel is open.
 		*/
-		var server;
-		server = this.server;
-		args.getParam(\amp).addView(\fader, 
-			Sliders.slider(name, server.asSymbol);
+		var param;
+		param = args.getParam(\amp);
+		param.addView(\fader, 
+			param.connectParamView(Sliders.slider(name, this.server.asSymbol))
 		);
 	}
 
