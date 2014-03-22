@@ -38,8 +38,16 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		^synthTree.setTemplate(this);
 	}
 
-	=@> { | synthTree, param |
+	=@> { | synthTree, param = \amp |
 		// map a source to a parameter of the synthtree
+		^this doIfSynthTree: { | st | st.map(param, this) }
+	}
+	
+	doIfSynthTree { | action |
+		var synthTree;
+		^(synthTree = this.asSynthTree(false)) !? {
+			action.(synthTree, this);
+		};
 	}
 }
 
@@ -101,12 +109,18 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		^SynthTree.at(this, createIfMissing);
 	}
 	start {
+		/*
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.start };		
+		*/
+		^this doIfSynthTree: { | st | st.start };
 	}
 	stop {
+		/*
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.stop };		
+		*/
+		^this doIfSynthTree: { | st | st.stop };
 	}
 	free {
 		var synthTree;

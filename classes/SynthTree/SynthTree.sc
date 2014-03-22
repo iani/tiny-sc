@@ -451,15 +451,23 @@ SynthTree : IdentityTree {
 	}
 
 	// under development
-	fade { | target = 0, duration = 1 |
-		
+	fade { | duration = 1, target = 0 |
+		// fade amplitude with a line ugen from current value to 
+		// target value in duration seconds
+		this.map(\amp, target@duration);
 	}
 
 	map { | param, curve | 
 		/*  Fade any parameter to any value(s) using a line or envelope ugen
            on a control bus, mapped to the parameter.
 		The control bus is allocated on the fly and released when the 
-		fade synth is freed. */
+		fade synth is freed.  Specification of curves: 
+			target@dur point: line to x in dur seconds.
+			function: make control rate output synth to the bus.
+			Env: Play it with control rate synth to the bus.
+			
+			
+		*/
 
 		
 	}
