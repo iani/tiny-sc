@@ -86,6 +86,8 @@ Knobs {
 		};
 		^knob;
 	}
+
+	front { window.front }
 }
 
 KnobWithLabel {

@@ -183,8 +183,7 @@ SynthTree : IdentityTree {
 	}
 	chuck { | synthOrTemplate, argReplaceAction = \fadeOut, argFadeTime |
 		/*  Set my template.  Start synth. Replace previous one. */
-		//		{
-		if (synthOrTemplate.isKindOf(Node)) {
+			if (synthOrTemplate.isKindOf(Node)) {
 			synth = synthOrTemplate;
 			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
 			inputs do: _.moveBefore(synth);
@@ -196,12 +195,7 @@ SynthTree : IdentityTree {
 			};
 			this.makeSynth;
 		};
-		// }.fork;
 	}
-
-	/*
-
-	*/
 
 	moveBefore { | argSynth |
 		// TODO: move my synth before the output synth
@@ -409,20 +403,27 @@ SynthTree : IdentityTree {
    .choose(param, element, path);
    .wchoose(param, element, path);
 	*/
-
+	
 	knobs {
-		Knobs.getPanel(name);
-		args do: { | multicontrol |
-			multicontrol.postln.addView;
-		}
+		Knobs.getPanel(name).front;
+		this.getArgsFromTemplate do: _.addView;
 	}
+
+	getArgsFromTemplate {
+		^template.templateArgs.reject({ | cName |
+			cName.rate === \scalar or: { [\gate, \out] includes: cName.name }
+		}) collect: { | cName |
+			args.getParam(cName.name, nil, cName.defaultValue);
+		};
+	}
+
 	view { | param, viewName, view, func, onClose, enabled = true |
 		// only param is obligatory. All others are provided by MultiControl
 		args.getParam(param)
 		.addView(viewName, view, func, onClose, enabled);
 	}
 	buf { | bufName, param = \buf |
-		args.getParam(param) .setBuffer(bufName ? param)
+		args.getParam(param).setBuffer(bufName ? param)
 	}
 
 	*faders { | argServer |

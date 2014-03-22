@@ -91,7 +91,9 @@ ServerBootCheck {
 		this.makeBus;
 	}
 
-	 serverDidNotReallyBoot { "Server did not really boot".postln; }
+	 serverDidNotReallyBoot {
+		postf("Server % resuming after system wakeup\n", server); 
+	 }
 	 *add { | func | this.default.add(func); }
 	 add { | func | funcs = funcs add: func; }
 }

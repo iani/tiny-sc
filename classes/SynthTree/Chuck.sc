@@ -68,6 +68,9 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		^{ this.value.adsrOut }.play(target, outbus, fadeTime, addAction, args);
 	}
 
+	templateArgs {
+		^{ this.value.adsrOut }.asSynthDef.allControlNames;
+	}
 	
 }
 
