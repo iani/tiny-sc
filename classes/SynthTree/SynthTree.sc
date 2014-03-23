@@ -469,11 +469,14 @@ SynthTree : IdentityTree {
            on a control bus, mapped to the parameter.
 		The control bus is allocated on the fly and released when the 
 		fade synth is freed.  Specification of curves: 
-			target@dur point: line to x in dur seconds.
+			target@dur point: line from current value to x in dur seconds.
 			function: make control rate output synth to the bus.
 			Env: Play it with control rate synth to the bus.
 			
-			
+			Enhancements: Add value of param at start as offset to control signal.
+			Control shape funcs/envs etc. can be stored in separate lists/symbols and
+			mapped to params by \curve =@>.param \synth
+			Or by drag-and-drop from curve list GUI to knobs of synth gui.
 		*/
 
 	}

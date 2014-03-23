@@ -1,12 +1,23 @@
 (Copied here on: Sun, Mar  9 2014, 20:37 EET)
 
 * Currently working on
-** SynthTree mixer: panel of SynthTrees with amp faders.
-:PROPERTIES:
-:DATE:     <2014-03-20 Thu 11:34>
-:END:
+
+** Map synths to params via busses
+
+Map synths playing envelopes, any function, lines to input controls of other synths.  See SynthTree:map, SynthTree:fade.
 
 * Immediate TODOs
+
+** Add key commands to SynthTree faders
+
+- , :: Stop running processes
+- . :: Stop running processes and clear SynthTree (set all to stopped)
+- i or / :: init tree = restart processes
+- space :: toggle selected synthtree: start/stop
+
+** org-files with lists of SynthDefs, Functions etc.
+
+To be stored in dicts with symbols, from which guis are created to use these with drag-and-drop onto the SynthTree fader gui or onto the Knobs gui.
 
 ** Global Streams, StreamPatterns, Patterns, PatternPlayers
 
@@ -198,6 +209,11 @@ Solution implemented: Use =|> instead of ==>
 
 }.fork;
 #+END_EXAMPLE
+
+** SynthTree mixer: panel of SynthTrees with amp faders.
+:PROPERTIES:
+:DATE:     <2014-03-20 Thu 11:34>
+:END:
 
 * Undergoing tests
 
