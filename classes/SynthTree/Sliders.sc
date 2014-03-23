@@ -100,8 +100,8 @@ SliderWithLabel {
 	*new { ^super.new.init; }
 
 	init {
-		slider = Slider().orientation_(\horizontal).fixedWidth_(100);
-		label = DragBoth().object_(""); // .fixedWidth_(60);
+		slider = Slider().orientation_(\horizontal).fixedWidth_(70);
+		label = DragBoth().object_("").font_(Font.default.size_(9));
 		layout = HLayout(label, slider);
 		label.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
 			slider.keyDownAction.(slider, char, modifiers, unicode, keycode, key)

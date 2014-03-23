@@ -427,26 +427,33 @@ SynthTree : IdentityTree {
 	}
 
 	*faders { | argServer |
-		var all, sliders;
+		var all, panel;
 		argServer ?? { argServer = SynthTree.server };
 		all = SynthTree.onServer(argServer);
-		Sliders.getPanel(argServer);
+		panel = Sliders.getPanel(argServer.asSymbol);
+		panel.sliders do: { | s | 
+			s.slider.keyDownAction = { | view, char |
+				switch (char,
+					$b, { BufferList.showList('Create Buffer Player', argServer); },
+				)
+			};
+		};
 		all.keys.asArray.select({ | name | name != \root }).sort
-		do: { | name | all[name].prFader };
-		Sliders.at(argServer.asSymbol).addNotifier(
-				this, \newSynthTree, { | synthTree | this.faders }
-		);
+		do: { | name | all[name].prFader(panel) };
+		panel.addNotifier(this, \newSynthTree, { | synthTree | this.faders });
+		^panel;
 	}
 
-	prFader {
+	prFader { | panel |
 		/* Make a fader for amp on a Sliders panel. 
 			Note: This is a private class.  It is called via notification
 			whenever a new SynthTree is created and an amp faders panel is open.
 		*/
 		var param;
+		panel = panel ?? { Sliders.getPanel(this.server.asSymbol) };
 		param = args.getParam(\amp);
 		param.addView(\fader, 
-			param.connectParamView(Sliders.slider(name, this.server.asSymbol))
+			param.connectParamView(panel.sliderLabeled(name))
 		);
 	}
 
@@ -469,6 +476,37 @@ SynthTree : IdentityTree {
 			
 		*/
 
-		
+	}
+
+	bufferList {
+		// From BufferList. Select buffer from list and play it
+		var buffers, keys;
+		buffers = Library.at(this.server);
+		keys = buffers.keys.asArray.select({ | b | buffers[b].path.notNil }).sort;
+		Windows.for(this, \bufferList, { | window |
+			var list;
+			window.view.layout = VLayout(
+				list = ListView().items_(keys);
+			);
+			list.action = { | me | window.changed(\buffer, me.item); };
+			list.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
+				switch (char,
+					13.asAscii, {
+						if (this.isPlaying) {
+							this.stop;
+						}{
+							{ \buf.playBuf } => this.buf(view.item)
+							.set(\amp, 1)
+							.set(\loop, if (modifiers == 0) { 0 } { 1 });
+						}
+					},
+					Char.space, { Library.at(this.server, view.item).play; },
+					$l, { SynthTree.faders; },
+					{ view.defaultKeyDownAction(
+						char, modifiers, unicode, keycode, key) 
+					}
+				)
+			};
+		});
 	}
 }

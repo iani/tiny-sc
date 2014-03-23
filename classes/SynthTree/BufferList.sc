@@ -20,18 +20,18 @@ BufferList {
 	}
 
 	*new { | server |
-		var instance;
-		server = server ?? { SynthTree.server };
-		instance = all[server];
-		if (instance.isNil) {
+				var instance;
+				server = server ?? { SynthTree.server };
+		 instance = all[server];
+		 if (instance.isNil) {
 			instance = this.newCopyArgs(server).init;
-			all[server] = instance;
-		};
+					all[server] = instance;
+		 };
 		^instance;
 	}
-
+	
 	init {
-		var bufferDict, buffer;
+			var bufferDict, buffer;
 		bufferDict = Library.at(server);
 		namesPaths = bufferDict.keys.asArray.select({ | key |
 			bufferDict[key].path.notNil;
@@ -39,7 +39,7 @@ BufferList {
 			buffer = bufferDict[key];
 			[key, buffer.path]
 		});
-	}
+		}
 
 	save {
 		namesPaths.writeArchive(this.defaultPath);
@@ -104,7 +104,7 @@ BufferList {
 		});
 	}
 	asString {
-		
+		^format("BufferList(%)", server);
 	}
 }
 

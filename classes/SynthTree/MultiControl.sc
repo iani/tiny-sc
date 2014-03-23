@@ -190,6 +190,7 @@ MultiControl : IdentityDictionary {
 				$s, { synthTree.fadeOut },
 				$S, { synthTree.free },
 				$k, { synthTree.knobs },
+				$b, { synthTree.bufferList },
 				{ view.defaultKeyDownAction(
 					char, modifiers, unicode, keycode, key) 
 				}
