@@ -141,7 +141,7 @@ SynthTree.faders;
 Play a sample laoded from disk with PlayBuf (If no name is specified, the name of the receiver of =.buf= is used to find a buffer of the same name.  If no such buffer exists, then a Dialog window is opened for choosing a file to load into a buffer):
 
 #+BEGIN_EXAMPLE
-{ \buf.playBuf } => \bell.buf.set(\amp, 1);
+{ \buf.playBuf } => \chimes.buf.set(\amp, 1);
 #+END_EXAMPLE
 
 Play the same sample in a different synth, with different rate
