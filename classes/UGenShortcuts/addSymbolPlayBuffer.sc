@@ -15,7 +15,7 @@ BufRd  *ar { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
 + Symbol {
 	playBuf { 
 		| numChannels = 1, bufnum=0, rate=1.0, trigger=1.0, 
-		startPos=0.0, loop = 0.0, doneAction=0,
+		startPos = 0.0, loop = 0.0, doneAction = 2,
 		rateName = \rate, triggerName = \trigger, startPosName = \startPos,
 		loopName = \loop |
 
@@ -23,7 +23,7 @@ BufRd  *ar { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
 		buf = this.kr(bufnum);
 		^PlayBuf.ar(numChannels, buf, rateName.kr(rate) * BufRateScale.kr(bufnum),
 			triggerName.kr(trigger), 
-			startPosName.kr(startPos),
+			startPosName.kr(startPos) * BufFrames.kr(bufnum),
 			loopName.kr(loop),
 			doneAction
 		)

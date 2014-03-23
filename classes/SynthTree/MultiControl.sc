@@ -16,7 +16,7 @@ SynthTreeArgs : IdentityDictionary {
 	init { | argSynthTree | synthTree = argSynthTree }
 
 	storeArgValue { | key, value |
-		this.getParam(key).nextValue = value;
+		this.getParam(key).storeValue(value);
 	}
 
 	getParam { | key, spec, initialValue, stream |
@@ -88,8 +88,12 @@ MultiControl : IdentityDictionary {
 	}
 
 	set { | value, argUnmappedValue |
-		nextValue = value;
 		synthTree.setSynthParameter(name, value);
+		this.storeValue(value, argUnmappedValue);
+	}
+
+	storeValue { | value, argUnmappedValue |
+		nextValue = value;
 		unmappedValue = argUnmappedValue ?? {
 			spec unmap: value;
 		};
@@ -194,6 +198,7 @@ MultiControl : IdentityDictionary {
 		view.addNotifier(this, \value, { | value, unmappedValue |
 			{ view.value = unmappedValue; }.defer;
 		});
+		view.value = unmappedValue ?? { spec unmap: nextValue };
 		^view;
 	}
 	// NOT YET TESTED!

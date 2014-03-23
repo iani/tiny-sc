@@ -130,7 +130,7 @@ SynthTree.faders;
 Play a sample laoded from disk with PlayBuf:
 
 #+BEGIN_EXAMPLE
-{ \buf.playBuf } => \chimes.buf.set(\amp, 1);
+{ \buf.playBuf } => \bell.buf.set(\amp, 1);
 #+END_EXAMPLE
 
 Play the same sample in a different synth, with different rate
