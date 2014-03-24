@@ -115,22 +115,27 @@ SynthTree.faders;
 
 *** Keyboard commands on SynthTree.faders
 
-|-------+-----------------------------------------------------------------------|
-| Key   | Action                                                                |
-|-------+-----------------------------------------------------------------------|
-| b     | On an empty slot: Open Buffer List for creating buffer-playback synth |
-|-------+-----------------------------------------------------------------------|
-|       | On slots that contain a SynthTree:                                    |
-|-------+-----------------------------------------------------------------------|
-| k     | Open knobs window for controlling all parameters of synth             |
-| g     | start synth                                                           |
-| s     | stop synth                                                            |
-| ,     | Stop synths and routines (=thisProcess.stop=)                         |
-| .     | Stop synths and remove from SynthTree.initTree                        |
-| i     | SynthTree.initTree.  Restart non-removed synths                       |
-| \/    | SynthTree.initTree.  Restart non-removed synths                       |
-| space | Toggle play status of selected SynthTree.                             |
-|-------+-----------------------------------------------------------------------|
+|-------+-----------------------------------------------------------+---|
+| Key   | Action                                                    |   |
+|-------+-----------------------------------------------------------+---|
+|       | *On an empty slot:*                                       |   |
+| b     | Open Buffer List for creating buffer-playback synth       |   |
+| ,     | Stop synths and routines (=thisProcess.stop=)             |   |
+| .     | Stop synths and remove from SynthTree.initTree            |   |
+| i     | SynthTree.initTree.  Restart non-removed synths           |   |
+| /     | SynthTree.initTree.  Restart non-removed synths           |   |
+|-------+-----------------------------------------------------------+---|
+|       | On slots that contain a SynthTree:                        |   |
+|-------+-----------------------------------------------------------+---|
+| k     | Open knobs window for controlling all parameters of synth |   |
+| g     | start synth                                               |   |
+| s     | stop synth                                                |   |
+| space | Toggle play status of selected SynthTree.                 |   |
+| ,     | Stop synths and routines (=thisProcess.stop=)             |   |
+| .     | Stop synths and remove from SynthTree.initTree            |   |
+| i     | SynthTree.initTree.  Restart non-removed synths           |   |
+| /     | SynthTree.initTree.  Restart non-removed synths           |   |
+|-------+-----------------------------------------------------------+---|
 
 ** Views for any parameter
 #+BEGIN_EXAMPLE

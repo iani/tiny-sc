@@ -43,9 +43,6 @@ SynthPlayers play a SynthTree in Pbind-like manner.  They enclose the created sy
 
 ** SynthTree:
 
-*** stop+clear tree command
-Add kbd command to free the entire SynthTree and set all nodes isStopped to true.  This is good instead of Command-. to make sure that no unwanted SynthTree nodes will be restarted.  Proposed key binding: =C-c C-x C-=.
-
 *** operators for: insert synth between, replace input
 
 =^ replace previous input by this one (for example to switch input between audio in and a buffer playback, or between different buffer playback synths etc.
@@ -222,6 +219,9 @@ Solution implemented: Use =|> instead of ==>
 - . :: Stop running processes and clear SynthTree (set all to stopped)
 - i or / :: init tree = restart processes
 - space :: toggle selected synthtree: start/stop
+
+** stop+clear tree command
+Add kbd command to free the entire SynthTree and set all nodes isStopped to true.  This is good instead of Command-. to make sure that no unwanted SynthTree nodes will be restarted.  Proposed key binding: =C-c C-x C-=.
 
 * Undergoing tests
 
