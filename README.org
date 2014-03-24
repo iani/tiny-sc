@@ -125,7 +125,7 @@ SynthTree.faders;
 | i     | SynthTree.initTree.  Restart non-removed synths           |   |
 | /     | SynthTree.initTree.  Restart non-removed synths           |   |
 |-------+-----------------------------------------------------------+---|
-|       | On slots that contain a SynthTree:                        |   |
+|       | *On slots that contain a SynthTree:*                      |   |
 |-------+-----------------------------------------------------------+---|
 | k     | Open knobs window for controlling all parameters of synth |   |
 | g     | start synth                                               |   |

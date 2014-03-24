@@ -13,7 +13,23 @@ Map synths playing envelopes, any function, lines to input controls of other syn
 
 
 ** Add fade-in and fade-out toggles for both selected node and entire SynthTree, with times from 0 to 9 seconds, bound to the corresponding keys from 0 to 9.
-** org-files with lists of SynthDefs, Functions etc.
+
+** Group of global keyboard commands based on H-c and H-c H-x.
+Also improve the keyboard command documentation, showing the rationale for the commands:
+
+- Basic combination 1: C-M key
+- Basic combination 2: H-c key or H-c H-key
+- Basic combiantion 3: H-c H-x key or H-c H-x H-key
+
+** Palettes of components for dragging onto fader gui
+
+: Palettes.show;
+
+Keyboard command on Emacs?
+
+Possibly: H-c H-p ?
+
+*** org-files with lists of SynthDefs, Functions etc.
 
 To be stored in dicts with symbols, from which guis are created to use these with drag-and-drop onto the SynthTree fader gui or onto the Knobs gui.
 
