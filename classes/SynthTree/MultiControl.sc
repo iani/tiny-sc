@@ -100,7 +100,35 @@ MultiControl : IdentityDictionary {
 		this.changed(\value, value, unmappedValue);
 	}
 
-	map { | bus |
+	// NOT YET DONE:
+	map { | curve |
+		/*  Fade any parameter to any value(s) using a line or envelope ugen
+			on a control bus, mapped to the parameter.
+			The control bus is allocated on the fly and released when the 
+			fade synth is freed.  Specification of curves: 
+			target@dur point: line from current value to x in dur seconds.
+			function: make control rate output synth to the bus.
+			Env: Play it with control rate synth to the bus.
+			
+			Enhancements: Add value of param at start as offset to control signal.
+			Control shape funcs/envs etc. can be stored in separate lists/symbols and
+			mapped to params by \curve =@>.param \synth
+			Or by drag-and-drop from curve list GUI to knobs of synth gui.
+			var synthFunc, bus, synth, startVal, endVal;
+
+			Implementation Note: 
+			This should be handled by a separate class encapsulating the bus
+			to be mapped and any number of synths that are writing to it.
+
+		*/
+		var bus, synthFunc, synth, startVal, endVal;
+		bus = Bus.control(this.server, 1);
+
+		synth = synthFunc.();
+		synth.onEnd({
+			
+			this.set()
+		})
 	}
 
 	add { | controlName, control |
@@ -191,6 +219,11 @@ MultiControl : IdentityDictionary {
 				$S, { synthTree.free },
 				$k, { synthTree.knobs },
 				$b, { synthTree.bufferList },
+				$,, { thisProcess.stop },
+				$., { SynthTree.stopAll },
+				$i, { SynthTree.initTree },
+				$/, { SynthTree.initTree },
+				Char.space, { synthTree.toggle },
 				{ view.defaultKeyDownAction(
 					char, modifiers, unicode, keycode, key) 
 				}

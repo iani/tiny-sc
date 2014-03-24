@@ -111,6 +111,15 @@ SynthTree : IdentityTree {
 	*server { ^ this.root.group.server }
 	*root { ^ ~root ? default }
 
+	*stopAll { | startNode, argFadeTime = 0.1 |
+		(startNode ? default).stopAll;
+	}
+
+	stopAll { | argFadeTime = 0.1 |
+		this.fadeOut(argFadeTime);
+		this do: _.stopAll(argFadeTime);
+	}
+
 	*initTree { | remakeInputs = false | default.initTree(remakeInputs); }
 
     initTree { | remakeInputs = false |
@@ -310,6 +319,7 @@ SynthTree : IdentityTree {
 		}
 	}
 
+	toggle { if (this.isPlaying) { this.stop } { this.start } }
 
     start {
 		// start, but only if synth is not playing
@@ -435,6 +445,10 @@ SynthTree : IdentityTree {
 			s.slider.keyDownAction = { | view, char |
 				switch (char,
 					$b, { BufferList.showList('Create Buffer Player', argServer); },
+					$,, { thisProcess.stop },
+					$., { SynthTree.stopAll },
+					$i, { SynthTree.initTree },
+					$/, { SynthTree.initTree }
 				)
 			};
 		};
@@ -466,19 +480,9 @@ SynthTree : IdentityTree {
 
 	map { | param, curve | 
 		/*  Fade any parameter to any value(s) using a line or envelope ugen
-           on a control bus, mapped to the parameter.
-		The control bus is allocated on the fly and released when the 
-		fade synth is freed.  Specification of curves: 
-			target@dur point: line from current value to x in dur seconds.
-			function: make control rate output synth to the bus.
-			Env: Play it with control rate synth to the bus.
-			
-			Enhancements: Add value of param at start as offset to control signal.
-			Control shape funcs/envs etc. can be stored in separate lists/symbols and
-			mapped to params by \curve =@>.param \synth
-			Or by drag-and-drop from curve list GUI to knobs of synth gui.
+           on a control bus, mapped to the parameter. See MultiControl:map for details.
 		*/
-
+		this.getParam(param).map(curve);
 	}
 
 	bufferList {

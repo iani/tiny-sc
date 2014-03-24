@@ -174,6 +174,13 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		bufName = bufName ? this;
 		^this.asSynthTree.buf(bufName, paramName);
 	}
+
+	fader {
+		var synthTree;
+		synthTree = this.asSynthTree;
+		SynthTree.faders(synthTree.server);
+		^synthTree;
+	}
 }
 
 + String {

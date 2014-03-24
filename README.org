@@ -47,13 +47,27 @@ Add some more synths to the tree:
 { SinOsc.ar(660) } => \mi;
 #+END_EXAMPLE
 
-Stop all synths with Command-.
+Stop all synths by typing Command-. (on SC IDE), or Control-c Control-s (on Emacs), or by evalyating this:
+
+#+BEGIN_EXAMPLE
+thisProcess.stop;
+#+END_EXAMPLE
 
 Then run this to restart the synths:
 
 #+BEGIN_EXAMPLE
 SynthTree.initTree;
 #+END_EXAMPLE
+
+* Clearing SynthTree status
+
+To stop all synths of the SynthTree from being restarted, evaluate this:
+
+#+BEGIN_EXAMPLE
+SynthTree.stopAll;
+#+END_EXAMPLE
+
+After this, no synths will be restarted with =SynthTree.initTree=.
 
 * Synth I/O
 
@@ -93,12 +107,6 @@ SynthTree.initTree;
 
 * GUI Views
 
-** Views for any parameter
-#+BEGIN_EXAMPLE
-{ SinOsc.ar(\freq.kr(440)) } => \viewtest;
-\viewtest.view(\freq).view(\amp);
-#+END_EXAMPLE
-
 ** Faders for all SynthTrees
 
 #+BEGIN_EXAMPLE
@@ -107,14 +115,28 @@ SynthTree.faders;
 
 *** Keyboard commands on SynthTree.faders
 
-|-----+-----------------------------------------------------------------------|
-| Key | Action                                                                |
-|-----+-----------------------------------------------------------------------|
-| b   | On an empty slot: Open Buffer List for creating buffer-playback synth |
-| k   | Open knobs window for controlling all parameters of synth             |
-| g   | start synth                                                           |
-| s   | stop synth                                                            |
-|-----+-----------------------------------------------------------------------|
+|-------+-----------------------------------------------------------------------|
+| Key   | Action                                                                |
+|-------+-----------------------------------------------------------------------|
+| b     | On an empty slot: Open Buffer List for creating buffer-playback synth |
+|-------+-----------------------------------------------------------------------|
+|       | On slots that contain a SynthTree:                                    |
+|-------+-----------------------------------------------------------------------|
+| k     | Open knobs window for controlling all parameters of synth             |
+| g     | start synth                                                           |
+| s     | stop synth                                                            |
+| ,     | Stop synths and routines (=thisProcess.stop=)                         |
+| .     | Stop synths and remove from SynthTree.initTree                        |
+| i     | SynthTree.initTree.  Restart non-removed synths                       |
+| \/    | SynthTree.initTree.  Restart non-removed synths                       |
+| space | Toggle play status of selected SynthTree.                             |
+|-------+-----------------------------------------------------------------------|
+
+** Views for any parameter
+#+BEGIN_EXAMPLE
+{ SinOsc.ar(\freq.kr(440)) } => \viewtest;
+\viewtest.view(\freq).view(\amp);
+#+END_EXAMPLE
 
 * Setting fadeTime
 

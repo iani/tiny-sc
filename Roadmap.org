@@ -3,18 +3,16 @@
 * Currently working on
 
 ** Map synths to params via busses
+:PROPERTIES:
+:DATE:     <2014-03-23 Sun 21:48>
+:END:
 
 Map synths playing envelopes, any function, lines to input controls of other synths.  See SynthTree:map, SynthTree:fade.
 
 * Immediate TODOs
 
-** Add key commands to SynthTree faders
 
-- , :: Stop running processes
-- . :: Stop running processes and clear SynthTree (set all to stopped)
-- i or / :: init tree = restart processes
-- space :: toggle selected synthtree: start/stop
-
+** Add fade-in and fade-out toggles for both selected node and entire SynthTree, with times from 0 to 9 seconds, bound to the corresponding keys from 0 to 9.
 ** org-files with lists of SynthDefs, Functions etc.
 
 To be stored in dicts with symbols, from which guis are created to use these with drag-and-drop onto the SynthTree fader gui or onto the Knobs gui.
@@ -214,6 +212,16 @@ Solution implemented: Use =|> instead of ==>
 :PROPERTIES:
 :DATE:     <2014-03-20 Thu 11:34>
 :END:
+
+** Add key commands to SynthTree faders
+:PROPERTIES:
+:DATE:     <2014-03-23 Sun 21:48>
+:END:
+
+- , :: Stop running processes
+- . :: Stop running processes and clear SynthTree (set all to stopped)
+- i or / :: init tree = restart processes
+- space :: toggle selected synthtree: start/stop
 
 * Undergoing tests
 
