@@ -213,6 +213,15 @@ into it.  This is the interactive function called by keyboard command."
   (interactive)
   (sclang-eval-string "SynthTree.chuckSelectingSynthTree;"))
 
+(defun org-sc-select-synthtree-then-knobs (select-last)
+  "Select or enter a synthree, then chuck current snippet or org-mode section
+into it.  This is the interactive function called by keyboard command."
+  (interactive "P")
+  (if select-last
+      (sclang-eval-string
+       (format "'%s'.knobs" org-sc-selected-synthtree))
+    (sclang-eval-string "SynthTree.knobsSelectingSynthTree;")))
+
 (defun org-sc-select-eval-snippet
   (selection-list format-string &optional prompt require-match)
   "Perform the current snippet or org-mode section in sclang formatted
@@ -251,9 +260,14 @@ sent by sclang."
       (sclang-eval-string (format "'%s'.toggle" org-sc-selected-synthtree))
       (sclang-eval-string "SynthTree.toggleSelectingSynthTree;")))
 
-(defun org-sc-toggle-last-synthtree ()
-  (interactive)
-  (sclang-eval-string (format "'%s'.toggle" org-sc-selected-synthtree)))
+(defun org-sc-toggle-last-synthtree (fadeTime)
+  (interactive "P")
+  (sclang-eval-string
+   (format "'%s'.toggle(%s)"
+           org-sc-selected-synthtree
+           (if fadeTime
+               (if (numberp fadeTime) fadeTime (/ (car fadeTime) 4))
+             ""))))
 
 (defun org-sc-start-synthtree (last-one)
   (interactive "P")
@@ -266,9 +280,7 @@ sent by sclang."
   (if fadeTime
       (sclang-eval-string (format
                 "SynthTree.fadeOutSelectingSynthTree(nil, %s);"
-                (if (numberp fadeTime)
-                    fadeTime
-                  (car fadeTime))))
+                (if (numberp fadeTime) fadeTime (/ (car fadeTime) 4))))
     (sclang-eval-string "SynthTree.fadeOutSelectingSynthTree;")))
 
 (defun org-sc-stop-last-synthtree (fadeTime)
@@ -280,25 +292,20 @@ sent by sclang."
             (if (numberp fadeTime) fadeTime (car fadeTime))
             ""))))
 
-(defun org-sc-play-buffer (from-file)
+(defun org-sc-play-buffer ()
   "Interactively select in emacs a buffer from the list of loaded buffers,
-and play it as a SynthTree.  If called with prefix argument,
-load the buffer from file."
-  (interactive "P")
-  (if from-file
-      ()
-    (sclang-eval-string (format "")))
-)
-
+and play it in a SynthTree with the same name."
+  (interactive)
+  (sclang-eval-string "BufferList.selectPlay;"))
 
 (global-set-key (kbd "H-c c") 'org-sc-select-synthtree-then-chuck)
 (global-set-key (kbd "H-c k") 'org-sc-select-synthtree-then-knobs)
 (global-set-key (kbd "H-c SPC") 'org-sc-toggle-synthtree)
+(global-set-key (kbd "H-c H-SPC") 'org-sc-toggle-last-synthtree)
 (global-set-key (kbd "H-c g") 'org-sc-start-synthtree)
 (global-set-key (kbd "H-c s") 'org-sc-stop-synthtree)
 (global-set-key (kbd "H-c H-s") 'org-sc-stop-last-synthtree)
 (global-set-key (kbd "H-b g") 'org-sc-play-buffer)
-(global-set-key (kbd "H-b s") 'org-sc-stop-buffer)
 (global-set-key (kbd "H-b l") 'org-sc-load-buffer)
 (global-set-key (kbd "H-b f") 'org-sc-free-buffer)
 

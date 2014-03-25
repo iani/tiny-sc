@@ -103,6 +103,29 @@ BufferList {
 		};
 		});
 	}
+
+	*selectPlay { | argServer, fadeTime |
+		/* Select a buffer from the buffer list on server, using ido menu in Emacs,
+			and play it in a SynthTree with the same name. */
+		Emacs.selectEval(
+			this.nameList(argServer),
+			"{ 'buf'.playBuf } => '%s'.buf",
+			"Play buffer in SynthTree (default: %s): "
+		)
+	}
+
+	*nameList { | server |
+		^this.new(server).nameList;
+	}
+	
+	nameList {
+		var buffers;
+		buffers = Library.at(server);
+		if (buffers.isNil) { ^[] };
+		^buffers.keys.asArray.select({ | b | buffers[b].path.notNil }).sort;
+	}
+
+
 	asString {
 		^format("BufferList(%)", server);
 	}

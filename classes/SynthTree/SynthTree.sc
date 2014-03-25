@@ -70,6 +70,7 @@ SynthTree : IdentityTree {
 				this.changed(\serverBooted);
             };
 			Spec.specs.at(\amp).default = 0.1;
+			Spec.specs.[\trigRate] = [0.1, 50, 'exp', 0, 1, ""].asSpec;
 		}
 	}
 
@@ -279,8 +280,8 @@ SynthTree : IdentityTree {
 		}
 	}
 
-    makeSynth {
-		synth = template.asSynth(this);
+    makeSynth { | attackTime |
+		synth = template.asSynth(this, attackTime);
 		// guarantee that moveBefore happens AFTER the synth has really started!
 		synth !? {
 			synth.onEnd(\this, { this.changed(\stopped) }); // This also registers on NodeWatcher
@@ -319,11 +320,12 @@ SynthTree : IdentityTree {
 		}
 	}
 
-	toggle { if (this.isPlaying) { this.stop } { this.start } }
+	toggle { | fadeTime | 
+		if (this.isPlaying) { this.fadeOut(fadeTime) } { this.start(fadeTime) } }
 
-    start {
+    start { | attackTime |
 		// start, but only if synth is not playing
-		if (synth.isPlaying) { } { this.makeSynth };
+		if (synth.isPlaying) { } { this.makeSynth(attackTime) };
 	}
 
 	release { | argFadeTime |
@@ -525,6 +527,15 @@ SynthTree : IdentityTree {
 		Emacs.selectEvalSnippet(
 			this.synthTreeNames(argServer),
 			"{ %s } => '%s'",
+			"Chuck snippet into SynthTree (default: %s): "
+		)
+	}
+
+	*knobsSelectingSynthTree { | argServer |
+		/* Select a synthtree in Emacs and show its knobs window. */
+		Emacs.selectEval(
+			this.synthTreeNames(argServer),
+			"'%s'.knobs",
 			"Chuck snippet into SynthTree (default: %s): "
 		)
 	}

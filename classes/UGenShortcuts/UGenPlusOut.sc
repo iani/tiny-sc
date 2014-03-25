@@ -45,7 +45,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 		)
 	}
 
-	// TODO: combine envelope and out in one message:
+
 	adsrOut { | outName = \out, outValue = 0,
 		attackTime = 0.02, decayTime = 0.3, sustainLevel = 1, releaseTime = 1, 
 		peakLevel = 1, curve = -4, bias = 0,
@@ -59,6 +59,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 		).out(outName, outValue);
 	}
 
+	// TODO: combine envelope and out in one message:
 	envOut {
 		// plain Env from values - times array
 		/* // draft:

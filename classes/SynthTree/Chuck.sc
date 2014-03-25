@@ -58,13 +58,13 @@ IZ Sat, Mar  8 2014, 23:40 EET
 }
 
 + Function {
-    asSynth { | synthTree |
+    asSynth { | synthTree, fadeTime |
 		var outputBus;
 		outputBus = synthTree.getOutputBusIndex;
         ^this.xplay(
             synthTree.group,
             outbus: outputBus, 
-            fadeTime: synthTree.fadeTime,
+            fadeTime: fadeTime ?? { synthTree.fadeTime },
             addAction: \addToHead,
             args: synthTree.synthArgs
         );
@@ -76,7 +76,8 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	}
 	*/
 	xplay { | target, outbus = 0, fadeTime = 0.02, addAction = 'addToHead', args |
-		^{ this.value.adsrOut }.play(target, outbus, fadeTime, addAction, args);
+		^{ this.value.adsrOut(attackTime: fadeTime) }
+		.play(target, outbus, fadeTime, addAction, args);
 	}
 
 	templateArgs {
@@ -105,11 +106,14 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.set(*args) }
 	}
+
 	asSynthTree { | createIfMissing = true |
 		^SynthTree.at(this, createIfMissing);
 	}
 
-	toggle { ^this doIfSynthTree: { | st | st.toggle }; }
+	toggle { | fadeTime |
+		^this doIfSynthTree: { | st | st.toggle(fadeTime) };
+	}
 
 	start {
 		/*
@@ -171,6 +175,10 @@ IZ Sat, Mar  8 2014, 23:40 EET
 			synthTree.view(param, viewName, view, func, onClose, enabled) };
 		^synthTree;
 		*/
+	}
+
+	knobs {
+		^this doIfSynthTree: { | st | st.knobs };		
 	}
 
 	buf { | bufName, paramName = \buf |
