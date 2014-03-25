@@ -20,18 +20,18 @@ BufferList {
 	}
 
 	*new { | server |
-				var instance;
-				server = server ?? { SynthTree.server };
-		 instance = all[server];
-		 if (instance.isNil) {
+		var instance;
+		server = server ?? { SynthTree.server };
+		instance = all[server];
+		if (instance.isNil) {
 			instance = this.newCopyArgs(server).init;
-					all[server] = instance;
-		 };
+			all[server] = instance;
+		};
 		^instance;
 	}
 	
 	init {
-			var bufferDict, buffer;
+		var bufferDict, buffer;
 		bufferDict = Library.at(server);
 		namesPaths = bufferDict.keys.asArray.select({ | key |
 			bufferDict[key].path.notNil;
@@ -82,10 +82,13 @@ BufferList {
 			window.view.layout = VLayout(
 				list = ListView().items_(keys);
 			);
+			window.addNotifier(this, \buffers, {
+				{ list.items = this.nameList; }.defer;
+			});
 			list.action = { | me | window.changed(\buffer, me.item); };
 			list.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
 				switch (char,
-					13.asAscii, {
+					13.asAscii, { // return key
 						if (view.item.asSynthTree.isPlaying) {
 							view.item.asSynthTree.stop;
 						}{
@@ -94,14 +97,50 @@ BufferList {
 							.set(\loop, if (modifiers == 0) { 0 } { 1 });
 						}
 					},
+					8.asAscii, { // backspace key
+						this.free(view.item);
+					},
 					Char.space, { Library.at(server, view.item).play; },
-					$l, { SynthTree.faders; },
+					$f, { SynthTree.faders; },
+					$l, { this.loadBufferDialog; },
+					$s, { this.saveListDialog; },
+					$o, { this.openListDialog; },
 					{ view.defaultKeyDownAction(
 						char, modifiers, unicode, keycode, key) 
 					}
 			)
 		};
 		});
+	}
+
+	saveListDialog {
+		Dialog.savePanel( { | path |
+			Library.at(server).asArray.collect(_.path).select(_.notNil)
+			.writeArchive(path);
+		} );
+	}
+
+	openListDialog {
+		var newPaths, alreadyLoadedPaths;
+		alreadyLoadedPaths = Library.at(server).asArray collect: _.path;
+		Dialog.openPanel( { | path |
+			newPaths = Object.readArchive(path);
+			newPaths do: { | newPath |
+				if (alreadyLoadedPaths.detect({ | oldPath | oldPath == newPath }).isNil) {
+					this.loadBuffer(newPath);
+				};
+			};
+		});
+	}
+
+	free { | bufferName |
+		var theBuffer;
+		theBuffer = Library.at(server, bufferName);
+		if (theBuffer.notNil) {
+			theBuffer.free;
+			Library.global.removeEmptyAt(server, bufferName);
+			this.changed(\buffers, theBuffer);
+		};
 	}
 
 	*selectPlay { | argServer, fadeTime |
@@ -125,6 +164,27 @@ BufferList {
 		^buffers.keys.asArray.select({ | b | buffers[b].path.notNil }).sort;
 	}
 
+	*loadBufferDialog { | server |
+		this.new(server ?? { SynthTree.server }).loadBufferDialog;
+	}
+
+	loadBufferDialog {
+		var newBuffer;
+		"Opening buffer load dialog".postln;
+		Dialog.openPanel({ | path | this loadBuffer: path })
+	}
+
+	loadBuffer { | path |
+		var newBuffer, bufName;
+		bufName = PathName(path).fileNameWithoutExtension.asSymbol;
+		if (Library.at(server, bufName).isNil) {
+			newBuffer = Buffer.read(server, path, action: {
+				Library.put(server, bufName, newBuffer);
+				postf("Loaded: %\n", newBuffer);
+				this.changed(\buffers, server);
+			})
+		}
+	}
 
 	asString {
 		^format("BufferList(%)", server);

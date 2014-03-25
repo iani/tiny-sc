@@ -206,7 +206,7 @@ MultiControl : IdentityDictionary {
 			view.setPlaying;
 		});
 		view.addNotifier(synthTree, \stopped, { | ... args |
-			view.setStopped;
+			if (synthTree.isPlaying) {} { view.setStopped; };
 		});
 		if (synthTree.isPlaying) { 
 			view.setPlaying;

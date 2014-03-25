@@ -192,6 +192,14 @@ Adapted from org-toggle-ordered-property."
 "Store name of last synthtree selected, to act as default for
 org-sc-chuck-selecting-into-synthtree.")
 
+(defun org-sc-chuck-into-last-synthtree ()
+  "Chuck current SC expression into latest selected SynthTree."
+  (interactive)
+  (sclang-eval-string
+   (format
+    "{ %s } => \\%s"
+    (sclang-get-current-snippet) org-sc-selected-synthtree)))
+
 (defun org-sc-chuck-selecting-into-synthtree (synthtree-list)
   "Select a synthtree returned from SC and chuck current SC expression
 into it.  This function is called by SC in response to
@@ -298,7 +306,27 @@ and play it in a SynthTree with the same name."
   (interactive)
   (sclang-eval-string "BufferList.selectPlay;"))
 
+(defun org-sc-load-buffer ()
+  "Load a buffer from file."
+  (interactive)
+  (sclang-eval-string "BufferList().loadBufferDialog;"))
+
+(defun org-sc-save-buffer-list ()
+  "Save list of paths of currently loaded buffers onto disk."
+  (interactive)
+  (sclang-eval-string "BufferList().saveListDialog;"))
+
+(defun org-sc-open-buffer-list ()
+  "Load all buffers from list stored onto disk."
+  (interactive)
+  (sclang-eval-string "BufferList().openListDialog;"))
+
+(defun org-sc-show-buffer-list ()
+  (interactive)
+  (sclang-eval-string "BufferList.showList;"))
+
 (global-set-key (kbd "H-c c") 'org-sc-select-synthtree-then-chuck)
+(global-set-key (kbd "H-c H-c") 'org-sc-chuck-into-last-synthtree)
 (global-set-key (kbd "H-c k") 'org-sc-select-synthtree-then-knobs)
 (global-set-key (kbd "H-c SPC") 'org-sc-toggle-synthtree)
 (global-set-key (kbd "H-c H-SPC") 'org-sc-toggle-last-synthtree)
@@ -307,6 +335,9 @@ and play it in a SynthTree with the same name."
 (global-set-key (kbd "H-c H-s") 'org-sc-stop-last-synthtree)
 (global-set-key (kbd "H-b g") 'org-sc-play-buffer)
 (global-set-key (kbd "H-b l") 'org-sc-load-buffer)
+(global-set-key (kbd "H-b L") 'org-sc-show-buffer-list)
+(global-set-key (kbd "H-b o") 'org-sc-open-buffer-list)
+(global-set-key (kbd "H-b s") 'org-sc-save-buffer-list)
 (global-set-key (kbd "H-b f") 'org-sc-free-buffer)
 
 (eval-after-load "org"
