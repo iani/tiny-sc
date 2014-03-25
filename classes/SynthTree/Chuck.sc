@@ -108,6 +108,9 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	asSynthTree { | createIfMissing = true |
 		^SynthTree.at(this, createIfMissing);
 	}
+
+	toggle { ^this doIfSynthTree: { | st | st.toggle }; }
+
 	start {
 		/*
 		var synthTree;

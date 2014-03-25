@@ -516,4 +516,57 @@ SynthTree : IdentityTree {
 			};
 		});
 	}
+
+	// Emacs interaction
+
+	*chuckSelectingSynthTree { | argServer |
+		/* Eval current snippet or org section as function and chuck into 
+		synthtree selected or input interactively in Emacs. */
+		Emacs.selectEvalSnippet(
+			this.synthTreeNames(argServer),
+			"{ %s } => '%s'",
+			"Chuck snippet into SynthTree (default: %s): "
+		)
+	}
+
+	*toggleSelectingSynthTree { | argServer |
+		/* Toggle run status (start/stop) of a synthtree interactively
+			selected in Emacs.  Selection defaults to last selected synthtree . */
+		Emacs.selectEval(
+			this.synthTreeNames(argServer),
+			"'%s'.toggle",
+			"Toggle SynthTree (default: %s): ",
+			true
+		)
+	}
+
+	*startSelectingSynthTree { | argServer |
+		/* Start a synthtree interactively
+			selected in Emacs.  Selection defaults to last selected synthtree . */
+		Emacs.selectEval(
+			this.synthTreeNames(argServer),
+			"'%s'.start",
+			"Start SynthTree (default: %s): ",
+			true
+		)
+	}
+
+	*fadeOutSelectingSynthTree { | argServer, fadeTime |
+		/* Fadeout a synthtree interactively
+			selected in Emacs.  Selection defaults to last selected synthtree . 
+		Universal (C-U) argument value specifies fadeout time in seconds. */
+		Emacs.selectEval(
+			this.synthTreeNames(argServer),
+			"'%s'" ++ format(".fadeOut(%)", if (fadeTime.isNil) { "" } { fadeTime }),
+			"Fadeout SynthTree (default: %s): ",
+			true
+		)
+	}
+
+	*synthTreeNames { | argServer, removeRoot = true |
+		var names;
+		names = SynthTree.onServer(argServer).asArray collect: _.name;
+		if (removeRoot) { names remove: \root };
+		^names;
+	}
 }

@@ -121,7 +121,7 @@ in a routine:
            (end (plist-get plist :end)))
       (goto-char (plist-get plist :contents-begin))
       ;; skip property drawer if it exists:
-      (setq element (org-element-at-point))
+      (setq element (org-element-at-pSoint))
       (if (equal 'property-drawer (car element))
           (goto-char (plist-get (cadr element) :end))))))
 
@@ -182,6 +182,125 @@ Adapted from org-toggle-ordered-property."
         (org-get-section-contents)
         t))
      "AUTOLOAD" 'file))))
+
+
+
+;; Select a SynthTree instance to chuck current expression into
+;; Proof of principle.
+
+(defvar org-sc-selected-synthtree "sound1"
+"Store name of last synthtree selected, to act as default for
+org-sc-chuck-selecting-into-synthtree.")
+
+(defun org-sc-chuck-selecting-into-synthtree (synthtree-list)
+  "Select a synthtree returned from SC and chuck current SC expression
+into it.  This function is called by SC in response to
+org-sc-select-synthtree-then-chuck"
+  (let (expression
+        (synthtree
+         (completing-read-ido "Select synthtree to chuck into: " synthtree-list
+                               nil nil nil nil org-sc-selected-synthtree
+                              )))
+    (setq org-sc-selected-synthtree synthtree)
+    (if (equal major-mode 'sclang-mode)
+        (setq expression (sclang-get-current-snippet))
+      (setq expression (org-get-section-contents)))
+    (sclang-eval-string (format "{ %s } => \\%s" expression synthtree))))
+
+(defun org-sc-select-synthtree-then-chuck ()
+  "Select or enter a synthree, then chuck current snippet or org-mode section
+into it.  This is the interactive function called by keyboard command."
+  (interactive)
+  (sclang-eval-string "SynthTree.chuckSelectingSynthTree;"))
+
+(defun org-sc-select-eval-snippet
+  (selection-list format-string &optional prompt require-match)
+  "Perform the current snippet or org-mode section in sclang formatted
+with format-string and with a string selected from selection-list,
+sent by sclang."
+  (setq prompt (or prompt "Select (default: %s): "))
+  (setq prompt (format prompt org-sc-selected-synthtree))
+  (let (expression
+        (selection
+         (ido-completing-read   ;; completing-read-ido
+          prompt selection-list
+          nil require-match nil nil org-sc-selected-synthtree)))
+    (setq org-sc-selected-synthtree selection)
+    (if (equal major-mode 'sclang-mode)
+        (setq expression (sclang-get-current-snippet))
+      (setq expression (org-get-section-contents)))
+    (sclang-eval-string (format format-string expression selection))))
+
+(defun org-sc-select-eval
+  (selection-list format-string &optional prompt require-match)
+  "Perform in sclang an expression created with
+format-string and with a string selected from selection-list,
+sent by sclang."
+  (setq prompt (or prompt "Select (default: %s): "))
+  (setq prompt (format prompt org-sc-selected-synthtree))
+  (let ((selection
+         (ido-completing-read   ;; completing-read-ido
+          prompt selection-list
+          nil require-match nil nil org-sc-selected-synthtree)))
+    (setq org-sc-selected-synthtree selection)
+    (sclang-eval-string (format format-string selection))))
+
+(defun org-sc-toggle-synthtree (last-one)
+  (interactive "P")
+  (if last-one
+      (sclang-eval-string (format "'%s'.toggle" org-sc-selected-synthtree))
+      (sclang-eval-string "SynthTree.toggleSelectingSynthTree;")))
+
+(defun org-sc-toggle-last-synthtree ()
+  (interactive)
+  (sclang-eval-string (format "'%s'.toggle" org-sc-selected-synthtree)))
+
+(defun org-sc-start-synthtree (last-one)
+  (interactive "P")
+  (if last-one
+      (sclang-eval-string (format "'%s'.start" org-sc-selected-synthtree))
+    (sclang-eval-string "SynthTree.startSelectingSynthTree;")))
+
+(defun org-sc-stop-synthtree (fadeTime)
+  (interactive "P")
+  (if fadeTime
+      (sclang-eval-string (format
+                "SynthTree.fadeOutSelectingSynthTree(nil, %s);"
+                (if (numberp fadeTime)
+                    fadeTime
+                  (car fadeTime))))
+    (sclang-eval-string "SynthTree.fadeOutSelectingSynthTree;")))
+
+(defun org-sc-stop-last-synthtree (fadeTime)
+  (interactive "P")
+  (sclang-eval-string
+   (format "'%s'.fadeOut(%s)"
+           org-sc-selected-synthtree
+           (if fadeTime
+            (if (numberp fadeTime) fadeTime (car fadeTime))
+            ""))))
+
+(defun org-sc-play-buffer (from-file)
+  "Interactively select in emacs a buffer from the list of loaded buffers,
+and play it as a SynthTree.  If called with prefix argument,
+load the buffer from file."
+  (interactive "P")
+  (if from-file
+      ()
+    (sclang-eval-string (format "")))
+)
+
+
+(global-set-key (kbd "H-c c") 'org-sc-select-synthtree-then-chuck)
+(global-set-key (kbd "H-c k") 'org-sc-select-synthtree-then-knobs)
+(global-set-key (kbd "H-c SPC") 'org-sc-toggle-synthtree)
+(global-set-key (kbd "H-c g") 'org-sc-start-synthtree)
+(global-set-key (kbd "H-c s") 'org-sc-stop-synthtree)
+(global-set-key (kbd "H-c H-s") 'org-sc-stop-last-synthtree)
+(global-set-key (kbd "H-b g") 'org-sc-play-buffer)
+(global-set-key (kbd "H-b s") 'org-sc-stop-buffer)
+(global-set-key (kbd "H-b l") 'org-sc-load-buffer)
+(global-set-key (kbd "H-b f") 'org-sc-free-buffer)
 
 (eval-after-load "org"
 '(progn

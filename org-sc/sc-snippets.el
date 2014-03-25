@@ -6,6 +6,25 @@
 
 ;;; CODE:
 
+(defun sclang-get-current-snippet ()
+  "Return region between //: comments in sclang, as string,
+for evaluation after processing in Emacs."
+  (save-excursion
+    (let (region
+          (here (point))
+          (blockstart (re-search-backward "^//:" nil t))
+          (blockend))
+      (if (not blockstart) (setq blockstart 0))
+      (set-mark blockstart)
+      (goto-char here)
+      (setq blockend (re-search-forward "^//:" nil t))
+      (if (not blockend) (setq blockend (point-max)))
+      (goto-char blockend)
+      (beginning-of-line)
+      (setq region (buffer-substring-no-properties (mark) (point)))
+      (set-mark nil)
+      region)))
+
 (defun sclang-execute-current-snippet ()
   "Evaluate region between //: comments in sclang."
   (interactive)
@@ -79,7 +98,7 @@
   (local-set-key (kbd "C-c .") 'sclang-execute-current-snippet)
   ;; For some aggravating reason, cannot un-bind C-c C-c from sclang-eval-dwim
   ;; But I do not want to modify the source code of sc-extensions
-  ;; So instead: 
+  ;; So instead:
   (local-set-key (kbd "C-c C-,") 'sclang-eval-line)
   ;; sclang-switch-to-post does not work as expected:
   ;; (local-set-key (kbd "C-c C-M-p") 'sclang-switch-to-post)

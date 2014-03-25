@@ -20,12 +20,29 @@ IZ Mon, Mar 24 2014, 15:34 EET
 */
 
 SynthBus : IdentityDictionary {
-	var <bus;
+	var <output; // parameter that gets mapped to my bus
+	var <bus;    // bus that the parameter maps to
 
+	*start { | ... keys |
+		var synths;
+		if (keys.size == 0) { synths = this } { synths = keys collect: this[_] };
+		synths.asArray do: { 
+			
+		}
+	}
+
+	*stop { | key |
+
+	}
 }
 
 
 SynthWithTemplate {
 	// holds the template so it can restart
+	var <template; // Function, synthdef, Env, etc. for creating the synth
+	var <synthBus; // synthbus that I send my output to
+	// var <name;
+	var <synth;    // synth that outputs to the synthBus
+
 }
 
