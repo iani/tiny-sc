@@ -8,13 +8,44 @@ Steps:
 
 1. Try getting values from stream in MultiControl
 2. Try timing the triggering of new synths in SynthTree with a routine
-3. Define class SynthTreePlayer that acts similarly to Pbind, but plays a SynthTree.
+3. Try PatternFunc for control of single parameters
+4. Define class SynthTreePlayer that acts similarly to Pbind, but plays a SynthTree.
+
+*** PatternFunc notes
+
+#+BEGIN_EXAMPLE
+<pfunc template> %> 'pfunc_name' *>.param_name synthtree_name;
+
+<pfunct template %> 'pfunc_name'; // creates PaternFunc and binds it to name
+
+Alternative:
+
+'pfunc_name'.patternFunc(<template>);
+'pfunc_name'.pf(<template>); // shorter form
+
+// also:
+
+<pfunc template or name> *>.param_name syntree_name;
+#+END_EXAMPLE
+
+The operator *> could be a multi-purpose operator for binding any type of func (osc-, view-, midi-, pattern-funcs) to a parameter.  It could also alternatively be coded with the messages already started:
+
+#+BEGIN_EXAMPLE
+<synthtree or name of synthtree>
+    .osc(param, <template or name>)
+    .midi(param, <template or name>)
+    .view(param, <template or name>)
+    .pattern(param, <template or name>)
+#+END_EXAMPLE
+
 
 *** SynthTreePlayer draft notes
 - Should work as a template and as a synth (same instance?) in SynthTree.
 - Should keep its synths in own variable, allowing for playing of multiple synths at the same time.
 
 See also PatternPlayer ...
+
+
 
 * Immediate TODOs
 
