@@ -10,6 +10,21 @@ IZ Wed, Mar  5 2014, 10:47 EET
 */
 
 PatternPlayer {
+	/*
+		// New draft: Wed, Mar 26 2014, 12:59 EET
+
+		var <name;
+		var <valueTemplate;
+		var <durationTemplate;
+		var <clock;
+		var <valueStream;
+		var <durationStream;
+		var <currentValue;
+		var <currentDuration;
+		var <task;
+
+	*/
+
 	var <valuePattern;
 	var <durationPattern;
 	var <>initialDelay = 0;
