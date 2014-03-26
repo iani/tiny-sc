@@ -2,12 +2,19 @@
 
 * Currently working on
 
-** Map synths to params via busses
-:PROPERTIES:
-:DATE:     <2014-03-23 Sun 21:48>
-:END:
+** Playing patterns in SynthTree
 
-Map synths playing envelopes, any function, lines to input controls of other synths.  See SynthTree:map, SynthTree:fade.
+Steps:
+
+1. Try getting values from stream in MultiControl
+2. Try timing the triggering of new synths in SynthTree with a routine
+3. Define class SynthTreePlayer that acts similarly to Pbind, but plays a SynthTree.
+
+*** SynthTreePlayer draft notes
+- Should work as a template and as a synth (same instance?) in SynthTree.
+- Should keep its synths in own variable, allowing for playing of multiple synths at the same time.
+
+See also PatternPlayer ...
 
 * Immediate TODOs
 
@@ -122,6 +129,16 @@ Finally, better use message style, because clearer, and also chainable:
 **** StreamPattern methods / operators?
   - Pattern.play(durationPattern);
   - SequenceableCollection.play(durationPattern);
+
+** Map synths to params via busses
+:PROPERTIES:
+:DATE:     <2014-03-23 Sun 21:48>
+:END:
+
+Map synths playing envelopes, any function, lines to input controls of other synths.  See SynthTree:map, SynthTree:fade.
+
+** Improve keyboard commands for setting fadeTime
+
 
 * Done
 

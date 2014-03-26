@@ -89,18 +89,12 @@ BufferList {
 			list.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
 				switch (char,
 					13.asAscii, { // return key
-						if (view.item.asSynthTree.isPlaying) {
-							view.item.asSynthTree.stop;
-						}{
-							{ \buf.playBuf } => view.item.buf
-							.set(\amp, 1)
-							.set(\loop, if (modifiers == 0) { 0 } { 1 });
-						}
+						this.toggleBuffer(view.item, modifiers != 0);
 					},
 					8.asAscii, { // backspace key
 						this.free(view.item);
 					},
-					Char.space, { Library.at(server, view.item).play; },
+					Char.space, { this.toggleBuffer(view.item, modifiers != 0) },
 					$f, { SynthTree.faders; },
 					$l, { this.loadBufferDialog; },
 					$s, { this.saveListDialog; },
@@ -111,6 +105,16 @@ BufferList {
 			)
 		};
 		});
+	}
+
+	toggleBuffer { | bufName, loop = true |
+		if (bufName.asSynthTree.isPlaying) {
+			bufName.asSynthTree.stop;
+		}{
+			{ \buf.playBuf } => bufName.buf
+			.set(\amp, 1)
+			.set(\loop, if (loop) { 1 } { 0 });
+		}
 	}
 
 	saveListDialog {
@@ -150,6 +154,16 @@ BufferList {
 			this.nameList(argServer),
 			"{ 'buf'.playBuf } => '%s'.buf",
 			"Play buffer in SynthTree (default: %s): "
+		)
+	}
+
+	*selectFree { | argServer |
+		/* Select a buffer from the buffer list on server, using ido menu in Emacs,
+			and free it.  Also free SynthTree of same name. */
+		Emacs.selectEval(
+			this.nameList(argServer),
+			"'%s'.freeBuffer;",
+			"Free buffer (default: %s): "
 		)
 	}
 

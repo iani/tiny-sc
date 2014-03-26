@@ -192,6 +192,11 @@ Adapted from org-toggle-ordered-property."
 "Store name of last synthtree selected, to act as default for
 org-sc-chuck-selecting-into-synthtree.")
 
+(defun org-sc-faders ()
+  "Open global faders window in SuperCollider."
+  (interactive)
+  (sclang-eval-string "SynthTree.faders;"))
+
 (defun org-sc-chuck-into-last-synthtree ()
   "Chuck current SC expression into latest selected SynthTree."
   (interactive)
@@ -306,6 +311,12 @@ and play it in a SynthTree with the same name."
   (interactive)
   (sclang-eval-string "BufferList.selectPlay;"))
 
+(defun org-sc-free-buffer ()
+  "Interactively select in emacs a buffer from the list of loaded buffers,
+free the SynthTree with the same name, and free the buffer"
+  (interactive)
+  (sclang-eval-string "BufferList.selectFree;"))
+
 (defun org-sc-load-buffer ()
   "Load a buffer from file."
   (interactive)
@@ -328,6 +339,9 @@ and play it in a SynthTree with the same name."
 (global-set-key (kbd "H-c c") 'org-sc-select-synthtree-then-chuck)
 (global-set-key (kbd "H-c H-c") 'org-sc-chuck-into-last-synthtree)
 (global-set-key (kbd "H-c k") 'org-sc-select-synthtree-then-knobs)
+(global-set-key (kbd "H-c f") 'org-sc-faders)
+;; (global-set-key (kbd "H-c H-f") 'org-sc-set-global-fade-time)
+;; (global-set-key (kbd "H-c H-C-f") 'org-sc-set-fade-time)
 (global-set-key (kbd "H-c SPC") 'org-sc-toggle-synthtree)
 (global-set-key (kbd "H-c H-SPC") 'org-sc-toggle-last-synthtree)
 (global-set-key (kbd "H-c g") 'org-sc-start-synthtree)

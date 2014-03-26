@@ -130,9 +130,14 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		^this doIfSynthTree: { | st | st.stop };
 	}
 	free {
-		var synthTree;
-		^(synthTree = this.asSynthTree(false)) !? { synthTree.free };		
+		^this doIfSynthTree: { | st | st.free };
 	}
+
+	freeBuffer {
+		this.free;
+		BufferList.free(this);
+	}
+
 	synth {
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.synth };		

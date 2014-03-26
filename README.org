@@ -191,24 +191,104 @@ BufferList.showList;
 
 Keyboard commands on the Buffer List list view:
 
-|--------------+---------------------------------------------------|
-| Key          | Action                                            |
-|--------------+---------------------------------------------------|
-| space        | play the selected buffer with Buffer.play         |
-| return       | play/stop selected buffer in a SynthTree instance |
-| shift-return | like return, but set loop to 1 (loop buffer)      |
-|--------------+---------------------------------------------------|
+|--------------------+---------------------------------------------------|
+| Key                | Action                                            |
+|--------------------+---------------------------------------------------|
+| return             | play/stop selected buffer in a SynthTree instance |
+| shift-return       | like return, but set loop to 1 (loop buffer)      |
+| space, shift-space | same as return, shift-return                      |
+| l                  | load a new buffer from file                       |
+| s                  | save list of loaded buffers to file               |
+| o                  | load list of buffers from file                    |
+|--------------------+---------------------------------------------------|
+
+
+
+* Keyboard Bindings
+** Global key bindings
+
+- C-c C-x C-/ :: sclang-init-synth-tree
+
+Following keyboard shortcuts allow one to choose a synthtree from the list of synthtrees currently loaded in SuperCollider, or operate on the last chosen synthtree in emacs:
+
+- H-c c :: org-sc-select-synthtree-then-chuck
+- H-c H-c :: org-sc-chuck-into-last-synthtree
+- H-c k :: org-sc-select-synthtree-then-knobs
+- H-c space :: org-sc-toggle-synthtree
+- H-c H-space :: org-sc-toggle-last-synthtree
+- H-c g :: org-sc-start-synthtree
+- H-c s :: org-sc-stop-synthtree
+- H-c H-s :: org-sc-stop-last-synthtree
+
+The chuck commands (=H-c c=, =H-c H-c=) enclose the snippet or section into a function before chucking.  Try for example =H-c c= placing the cursor in the following line of code in sclang-mode:
+
+#+BEGIN_EXAMPLE
+//:
+SinOsc.ar(\freq.kr(800) * LFNoise0.kr(12).range(0.8, 1.2));
+//:
+#+END_EXAMPLE
+
+Stop or restart the example above by typing =H-c H-space=.
+
+Following keyboard shortcuts select a buffer from the list of buffers currently loaded in SuperCollider, or operate on the buffer list:
+
+- H-b g :: org-sc-play-buffer
+- H-b l :: org-sc-load-buffer
+- H-b f :: org-sc-free-buffer
+- H-b L :: org-sc-show-buffer-list
+- H-b o :: org-sc-open-buffer-list
+- H-b s :: org-sc-save-buffer-list
+
+** Org-mode bindings
+
+  - C-c C-s :: sclang-main-stop
+  - H-C-o :: org-sc-toggle-mode
+  - C-M-x :: org-sc-eval
+  - H-C-x :: org-sc-eval-in-routine
+  - H-C-r :: sclang-process-registry-gui
+  - C-M-z :: org-sc-stop-section-processes
+  - H-C-z :: org-sc-stop-section-processes
+  - C-c C-M-. :: org-sc-stop-section-processes
+  - H-C-n :: org-sc-next-section
+  - C-M-n :: org-sc-eval-next
+  - H-C-p :: org-sc-previous-section
+  - C-M-p :: org-sc-eval-previous
+  - C-c C-, :: sclang-eval-line
+  - C-c C-9 :: sclang-eval-dwim
+  - C-c C-x l :: org-sc-toggle-autoload
+  - C-c C-x C-l :: org-sc-load-marked
+
+** Sclang-mode bindings
+
+- H-C-o :: org-sc-toggle-mode
+- C-c .  :: sclang-execute-current-snippet
+- C-c C-, :: sclang-eval-line
+- C-c C-. :: sclang-select-snippet
+- C-M-x :: sclang-execute-current-snippet
+- C-M-f :: sclang-goto-next-snippet
+- C-M-b :: sclang-goto-previous-snippet
+- C-M-n :: sclang-execute-next-snippet
+- C-M-p :: sclang-execute-previous-snippet
+- C-H-f :: sclang-goto-next-snippet
+- C-H-b :: sclang-goto-previous-snippet
+- C-H-n :: sclang-execute-next-snippet
+- C-H-p :: sclang-execute-previous-snippet
+- C-H-r :: sclang-process-registry-gui
+- C-c l :: sclang-recompile
+- M-C :: sclang-clear-post-buffer
+
 
 * Triggering synths in routines
 :PROPERTIES:
 :DATE:     <2014-03-17 Mon 17:58>
 :ID:       BD7795E1-1FAD-418D-8CF8-6A48925DA909
-:eval-id:  16
+:eval-id:  18
 :END:
 
 Use =|> to set the source of a SynthTree without starting it.  This is necessary in cases like the following, where the starting of the synth is done explicitly by trig in a routine:
 
 #+BEGIN_EXAMPLE
+//:
 {
 	var synth;
 	synth = { [SinOsc, LFPulse, LFTri, LFSaw].choose.ar(\freq.kr(400)) } =|> \test;
@@ -217,6 +297,7 @@ Use =|> to set the source of a SynthTree without starting it.  This is necessary
 		0.1.wait;
 	}
 }.fork
+//:
 #+END_EXAMPLE
 
 * UGen shortcuts
