@@ -1,0 +1,35 @@
+* Preamble
+
+This file/text could also be called: Rationale, Architecture, Paradigm, Narrative, BasicScenario, Fundamentals, Principles, WorkPrinciples, WorkingPrinciples.  Well, BasicIdeas will do, I hope.
+
+IZ Wed, Mar 26 2014, 13:10 EET
+
+* Objectives overview
+
+1. Track the state of the Server and of Synths.
+
+2. Simplify the definition of SynthDef Functions with UGen generation shortcuts
+
+3. Manage the loading of lists of buffers, and making these available to synths
+
+4. Simplify the linking of audio inputs and outputs between synths through busses.
+
+   - Automatically allocate and assign audio busses to inputs and outputs.
+
+   - Automatically maintain correct order of nodes in the scsynth graph.
+
+   - Restart entire synth graph on demand
+
+5. Simplify and unify the mechanism for listening to control events broadcasts, by extending the mechanism of AbstractResponderFunc (eg. OSCFunc, MIDIFunc) to Views and Patterns.
+
+* Tracking Server/Synth state
+
+* UGen shortcuts
+
+* Buffer handling
+
+* Audio I/O linking
+
+* Extending AbstractResponderFunc paradigm
+
+* Playing patterns
