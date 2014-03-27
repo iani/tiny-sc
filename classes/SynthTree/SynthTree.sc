@@ -29,7 +29,10 @@ SynthTree : IdentityTree {
 
 	classvar <default;
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
-
+	classvar <selected; /* Current synthtree to act on
+		Usually selected on Faders pane.  Used to chuck new 
+		templates into, either as template or as input. 
+	*/
 	var <synth;  // the synth of this node
 	var <>inputs; // dictionary of input names and bus specs or busses
 	var <outputName; // name of input where this synth sends it output
@@ -48,12 +51,6 @@ SynthTree : IdentityTree {
 		StartUp add: {
 			var server;
 			server = Server.default;
-			/* Sometimes the Shared Memory Interface of a server can take some
-			seconds to initialize.  One should wait until that happens, otherwise
-			synths may not be created in the default group.
-			Here Count 1/2 seconds while waiting, thus notifying user to wait. 
-			Using own ServerBootCheck because ServerTree does not catch
-			false boots on system wake-up after sleep. */
 			default = this.new(\root);
 			nameSpaces = MultiLevelIdentityDictionary();
 			nameSpaces[server, \root] = default;
@@ -62,7 +59,7 @@ SynthTree : IdentityTree {
 				// server.options.numOutputBusChannels,
 				0, // trick the allocator: reserve 0 channels
 				server);
-			ServerBootCheck add: {
+			ServerBootCheck add: { // most reliable way to check server boot
 				default.group = server.asTarget;
 				BufferFunc.initBuffers(server);
 				{ BufferFunc.postBufNames }.defer(3);
@@ -137,7 +134,6 @@ SynthTree : IdentityTree {
 
 		if (remakeInputs) { this.remakeInputs; };
 		if (synth.isPlaying) { synth.free };
-		[this, thisMethod.name, "notStopped", notStopped].postln;
         if (notStopped) {
             this.makeSynth;
             this do: _.initTree(remakeInputs);
@@ -198,13 +194,14 @@ SynthTree : IdentityTree {
 	}
 	chuck { | synthOrTemplate, argReplaceAction = \fadeOut, argFadeTime |
 		/*  Set my template.  Start synth. Replace previous one. */
+		notStopped = true;
 		if (synthOrTemplate.isKindOf(Node)) {
 			synth = synthOrTemplate;
 			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
 			inputs do: _.moveBefore(synth);
 		}{
-			template = synthOrTemplate ? template;
-			notStopped = true;
+			template = (synthOrTemplate ? template).asSynthTemplate(this);
+			this.makeInputs(template.inputSpecs);
 			if (synth.isPlaying) {
 				this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
 			};
@@ -219,6 +216,19 @@ SynthTree : IdentityTree {
 			synth.moveBefore(argSynth);
 			this do: _.moveBefore(synth);
 		};
+	}
+
+    makeSynth { | attackTime |
+		synth = template.asSynth(this, attackTime);
+		// guarantee that moveBefore happens AFTER the synth has really started!
+		synth !? {
+			synth.onEnd(\this, { this.changed(\stopped) }); // This also registers on NodeWatcher
+			this.addNotifierOneShot(synth, 'n_go', {
+				this do: _.moveBefore(synth);
+				this.changed(\started);
+			});
+		};
+		notStopped = true;
 	}
 
 	setTemplate { | argTemplate, argReplaceAction = \fadeOut |
@@ -283,19 +293,6 @@ SynthTree : IdentityTree {
 				\free, { synth.free }
 			)
 		}
-	}
-
-    makeSynth { | attackTime |
-		synth = template.asSynth(this, attackTime);
-		// guarantee that moveBefore happens AFTER the synth has really started!
-		synth !? {
-			synth.onEnd(\this, { this.changed(\stopped) }); // This also registers on NodeWatcher
-			this.addNotifierOneShot(synth, 'n_go', {
-				this do: _.moveBefore(synth);
-				this.changed(\started);
-			});
-		};
-		notStopped = true;
 	}
 
 	synthArgs {
@@ -453,10 +450,13 @@ SynthTree : IdentityTree {
 			s.label.receiveDragHandler = {
 				var name;
 				if (s.label.object isKindOf: String) {
-					name = View.currentDrag.makeSynthDefName;
+					name = View.currentDrag.makeSynthTreeName;
 					View.currentDrag.template => name;
 					s.label.string = name;
 				};
+			};
+			s.label.focusGainedAction = { | me |
+				selected = SynthTree.at(me.string.asSymbol, false);
 			};
 			s.slider.keyDownAction = { | view, char |
 				switch (char,

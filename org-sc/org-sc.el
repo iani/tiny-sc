@@ -349,9 +349,15 @@ free the SynthTree with the same name, and free the buffer"
   (org-sc-synthtemplate-gui)
   (org-sc-patterntemplate-gui))
 
+(defun org-sc-guis ()
+  (interactive)
+  (org-sc-templates-gui)
+  (org-sc-faders))
+
 (global-set-key (kbd "C-c C-y") 'sclang-open-help-gui)
 (global-set-key (kbd "H-c t") 'org-sc-synthtemplate-gui)
 (global-set-key (kbd "H-c H-t") 'org-sc-templates-gui)
+(global-set-key (kbd "H-c H-g") 'org-sc-guis)
 (global-set-key (kbd "H-c p") 'org-sc-patterntemplate-gui)
 (global-set-key (kbd "H-c c") 'org-sc-select-synthtree-then-chuck)
 (global-set-key (kbd "H-c H-c") 'org-sc-chuck-into-last-synthtree)

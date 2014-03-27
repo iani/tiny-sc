@@ -66,6 +66,12 @@ ServerBootCheck {
 	 }
 
 	 serverReallyBooted {
+		 /* Sometimes the Shared Memory Interface of a server can take some
+			seconds to initialize.  One should wait until that happens, otherwise
+			 synths may not be created in the default group.
+			 Here Count 1/2 seconds while waiting, thus notifying user to wait. 
+			 Using own ServerBootCheck because ServerTree does not catch
+			 false boots on system wake-up after sleep. */
 		 if (server.isLocal) {
 			 {
 				 var time, waitingSecs;

@@ -47,7 +47,7 @@ Add some more synths to the tree:
 { SinOsc.ar(660) } => \mi;
 #+END_EXAMPLE
 
-Stop all synths by typing Command-. (on SC IDE), or Control-c Control-s (on Emacs), or by evalyating this:
+Stop all synths by typing Command-. (on SC IDE), or Control-c Control-s (on Emacs), or by evaluating this:
 
 #+BEGIN_EXAMPLE
 thisProcess.stop;
@@ -69,7 +69,7 @@ SynthTree.stopAll;
 
 After this, no synths will be restarted with =SynthTree.initTree=.
 
-* Synth I/O
+* Patching Audio Synth I/O
 
 Example 1:  Simple patching of one source to one effect:
 

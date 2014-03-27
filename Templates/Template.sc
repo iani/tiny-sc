@@ -68,6 +68,21 @@ Template {
 						sourceView.object = Library.at(this.key, tagsView.item, me.item)
 					}
 				};
+				namesView.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
+					switch (char,
+						13.asAscii, { // return key
+							if (modifiers == 0) {
+								sourceView.object.template => 
+								sourceView.object.makeSynthTreeName;
+							}{
+								
+							}
+						},
+						{ view.defaultKeyDownAction(
+							char, modifiers, unicode, keycode, key) 
+						}
+					);
+				};
 				sourceView.object = "THIS TEMPLATE LIST IS EMPTY";
 				tagsView.doAction;
 				namesView.doAction;
@@ -77,11 +92,11 @@ Template {
 
 	asString { ^format("% (%)", name, template.class); }
 
-	makeSynthDefName { | server |
+	makeSynthTreeName { | server |
 		if (SynthTree.onServer(server ?? { SynthTree.server })[name].isNil) {
 			^name;
 		}{
-			^(name ++ UniqueID.next).asSymbol
+			^(name ++ (UniqueID.next - 1000)).asSymbol
 		};
 	}
 }

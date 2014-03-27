@@ -58,6 +58,11 @@ IZ Sat, Mar  8 2014, 23:40 EET
 }
 
 + Function {
+
+	asSynthTemplate { | synthTree | 
+		^FunctionSynthTemplate(this, synthTree);
+	}
+
     asSynth { | synthTree, fadeTime |
 		var outputBus;
 		outputBus = synthTree.getOutputBusIndex;
@@ -68,7 +73,6 @@ IZ Sat, Mar  8 2014, 23:40 EET
             addAction: \addToHead,
             args: synthTree.synthArgs
         );
-		
     }
 	/*
 	chuck { | symbol |
@@ -88,6 +92,8 @@ IZ Sat, Mar  8 2014, 23:40 EET
 
 + SynthDef {
 
+	asSynthTemplate { ^this }
+
 	asSynth { | synthTree |
         ^Synth.new(this.name, synthTree.synthArgs, synthTree.group, \addToHead);
     }
@@ -96,6 +102,11 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		^this.allControlNames;
 	}
 
+	inputSpecs {
+		^this.allControlNames
+		.select({ | cn | cn.name.asString[..1] == "in" })
+		.collect({ | cn | [cn.name, 1] });
+	}
 }
 
 + Symbol {
