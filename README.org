@@ -95,7 +95,7 @@ Example 2: Several synths sending to one effect.
 Example 3: Changing the synths of the source and of the effect:
 
 #+BEGIN_EXAMPLE
-{ Inp.ar * Decay.kr({ Dust.kr(1) } ! 2) } =<>.5 \lpf;
+{ Inp.ar * Decay.kr({ Dust.kr(\trigRate.kr(1)) } ! 2) } =<>.5 \lpf;
 \lpf =< ({ LFTri.ar(LFNoise2.kr(12).range(400, 4000)) } ==> \source2);
 #+END_EXAMPLE
 
@@ -107,10 +107,15 @@ SynthTree.initTree;
 
 * GUI Views
 
-** Faders for all SynthTrees
+** Overview: 5 View Types
 
-#+BEGIN_EXAMPLE
-SynthTree.faders;
+There are 5 main view types:
+
+- Fader View :: Vertical strip on the left, showing the currently registered SynthTree instances and their run status, with a slider for controlling the level of each instance.
+- Knobs View :: Horizontal strip at the bottom, one for each SynthTree instances, with knob controls for setting all registered parameters of the SynthTree.  This is opened from the Fader view by typing "k" on a selected SynthTree strip's label.
+- Synth Template View :: A window with 2 list views: The left list shows the tags (categories) of SynthTree templates (SynthDefs or Functions) and the right list shows the templates belonging to the selected category.  At the bottom is a drag view showing the name of the selected template.  Drag the selected template onto any label on the Fader view to play that template on the SynthTree belonging to that fader strip.
+- Pattern Template View :: (Tentative / Under development!)  Holds templates of patterns to play in SynthTrees.  May be integrated in the same list as the Synth Template View.
+- Process Registry View :: Experimental / Proof of concept: Shows a list of currently running synth and routine processes, in a manner similar to the process view of Mini Audicle in ChucK.  Works together with Emacs/Org-Mode (see keyboard shortcuts).  Can also work with SuperCollider IDE, but requires using different methods for playing Functions, Synths or Routines.  This feature is superseded by the Fader View, but kept here as proof-of-concept.
 #+END_EXAMPLE
 
 *** Keyboard commands on SynthTree.faders
@@ -228,7 +233,7 @@ SinOsc.ar(\freq.kr(800) * LFNoise0.kr(12).range(0.8, 1.2));
 //:
 #+END_EXAMPLE
 
-Stop or restart the example above by typing =H-c H-space=.
+Stop the example above by typing =H-c H-space=.
 
 Following keyboard shortcuts select a buffer from the list of buffers currently loaded in SuperCollider, or operate on the buffer list:
 
@@ -241,22 +246,122 @@ Following keyboard shortcuts select a buffer from the list of buffers currently 
 
 ** Org-mode bindings
 
+*** General org-mode bindings for SuperCollider
   - C-c C-s :: sclang-main-stop
   - H-C-o :: org-sc-toggle-mode
+*** Evaluating org-mode sections in sclang
+
+Note: The process registry window and the org-sc-eval-in-routine technique is now superseded by SynthTree and its guis.  SynthTree Fader gui is a more convenient way to control running synths.  The process registry is nevertheless kept here as mere "proof of concept", imitating the MiniAudicle process list window of ChucK.
+
+  - H-C-r :: sclang-process-registry-gui: Open registry gui.
   - C-M-x :: org-sc-eval
-  - H-C-x :: org-sc-eval-in-routine
-  - H-C-r :: sclang-process-registry-gui
-  - C-M-z :: org-sc-stop-section-processes
+  - H-C-x :: org-sc-eval-in-routine.  Wraps code in routine and registers it in ProcessRegistry.
+  - C-M-z :: org-sc-stop-section-processes.  Stop all processes started from the current section.  Uses automatically generated section ID to identify the current section.
   - H-C-z :: org-sc-stop-section-processes
   - C-c C-M-. :: org-sc-stop-section-processes
   - H-C-n :: org-sc-next-section
-  - C-M-n :: org-sc-eval-next
+  - C-M-n :: org-sc-eval-next.  Go to next section and evaluate as in org-sc-eval.
   - H-C-p :: org-sc-previous-section
   - C-M-p :: org-sc-eval-previous
   - C-c C-, :: sclang-eval-line
   - C-c C-9 :: sclang-eval-dwim
   - C-c C-x l :: org-sc-toggle-autoload
   - C-c C-x C-l :: org-sc-load-marked
+*** Examples for evaluating in orgmode
+
+Before evaluating the following sections, type =H-C-r= to open the Process Registry window.  This displays the currently running processes.   Selecting a process and typing delete will stop or free that process.
+
+**** A sine, 3 frequencies
+:PROPERTIES:
+:ID:       0BDDB708-1BFE-45F0-8B50-2340127918F1
+:eval-id:  11
+:END:
+// Type C-M-x with the cursor in the current section
+
+a = { SinOsc.ar(\freq.kr(440), 0, 0.1) }.pla;
+0.1.wait;
+a.set(\freq, 550);
+0.1.wait;
+a.set(\freq, 660);
+a release: 3;
+
+**** Sine, simple loop
+:PROPERTIES:
+:ID:       0BDDB708-1BFE-45F0-8B50-2340127918F1
+:eval-id:  13
+:END:
+// Type C-M-x with the cursor in the current section
+
+a = { SinOsc.ar(\freq.kr(440), 0, 0.1) }.pla;
+7 do: {
+	0.1.wait;
+	a.set(\freq, 550);
+	0.1.wait;
+	a.set(\freq, 660);
+};
+a release: 3;
+
+**** Sine, random melody loop
+:PROPERTIES:
+:ID:       0BDDB708-1BFE-45F0-8B50-2340127918F1
+:eval-id:  22
+:END:
+// Type C-M-x with the cursor in the current section
+
+a = { SinOsc.ar(\freq.kr(440), 0, 0.1) }.pla;
+50 do: {
+	0.1.wait;
+	a.set(\freq, (440 * (4..12).choose / 4).postln);
+};
+a release: 3;
+3.wait;
+"DONE!".postln;
+
+**** Wandering dense sine cluster
+:PROPERTIES:
+:ID:       5869D44F-B75A-4713-9E9C-C5A7C6CFBFA1
+:eval-id:  2
+:END:
+// Watch the registry window tracking 1 to 30 rapidly changing synths
+// Kill the routine by selecting it in the registry window and
+// hitting the backspace key.
+// Then kill any remaining synths one by one with the backspace key
+
+var synths, fwalk, swalk, synth;
+synths = List();
+fwalk = (Pbrown(30, 90, 0.75, inf) + Pfunc({ 0.01.exprand(1.5)})).asStream;
+swalk = Pbrown(0, 30, 1, inf).asStream;
+loop {
+	if (swalk.next > synths.size) {
+		synths add: Syn("adsrsine", [\freq, fwalk.next.midicps]);
+	}{
+		synth = synths.choose;
+		synth.release(1.0.exprand(5.0));
+		synths remove: synth;
+	};
+	0.05.wait;
+};
+
+**** Ghost voices
+:PROPERTIES:
+:ID:       F6420F84-E198-4469-9788-7119EB29CA00
+:eval-id:  3
+:END:
+
+var synths, fwalk, swalk, synth;
+synths = List();
+fwalk = (Pbrown(30, 90, 0.75, inf) + Pfunc({ 0.01.exprand(1.5)})).asStream;
+swalk = Pbrown(0, 30, 1, inf).asStream;
+loop {
+	if (swalk.next > synths.size) {
+		synths add: Syn("adsrringz", [\freq, fwalk.next.midicps, \decayTime, 3, \amp, 0.02]);
+	}{
+		synth = synths.choose;
+		synth.release(1.0.exprand(5.0));
+		synths remove: synth;
+	};
+	0.05.wait;
+};
 
 ** Sclang-mode bindings
 

@@ -87,11 +87,11 @@ Template {
 }
 
 SynthTemplate : Template {
-	*gui { ^super.gui.shift(-200) }
+	*gui { ^super.gui.shiftTo(200, 600) }
 }
 
 PatternTemplate : Template {
-	*gui { ^super.gui.shift(200) }
+	*gui { ^super.gui.shiftTo(200, 180) }
 }
 
 // Utility classes: create lists of templates.

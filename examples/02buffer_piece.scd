@@ -14,9 +14,23 @@ boat_attach_back
 
 */
 
+//:
+a = { | freq = 400 | SinOsc.ar(freq, 0, 0.1); }.play;
+//:
+a = { SinOsc.ar(\freq.kr(440), 0, 0.1) }.play;
+//:
+{ SinOsc.ar } => \tiny;
+//:
+SinOsc.ar(\freq.kr(440));
+//:
+a.set(\freq, 880);
+
+
+
+//:
 (
 { | i |
-	{ Pan2.ar(\buf.playBuf(loop: 1)); } => format("bell%", i).asSymbol.buf(\bell).set(\amp, 0.01)
+	{ Pan2.ar(\buf.playBuf(loop: 1), \pos.kr(0)); } => format("bell%", i).asSymbol.buf(\bell).set(\amp, 0.01)
 	.set(\rate, 0.5);
 } ! 10;
 )
@@ -25,7 +39,7 @@ boat_attach_back
 
 (
 { | i |
-	format("bell%", i).asSymbol.set(\rate, i / 10 + 1.0);
+	format("bell%", i).asSymbol.set(\rate, i + 0.1 * 0.4 - 14.3);
 } ! 10;
 )
 
@@ -35,9 +49,9 @@ boat_attach_back
 
 ~all = { | i | format("bell%", i).asSymbol } ! 10;
 
-~all do: _.set(\amp, 0.3);
+~all do: _.set(\amp, 0.6);
 
-~all do: _.set(\pan, 0.5);
+~all do: _.set(\pos, 1);
 
 
 //:

@@ -37,7 +37,7 @@ SynthTree : IdentityTree {
 	var >group;  // optional group enclosing synth as well as
 	// synths of input subtree [!??!?]
 	var <>template; // optional template for re-creating synth
-    var <notStopped = true; // if false, do not restart on initTree or
+    var <>notStopped = true; // if false, do not restart on initTree or
 	// on chuck/replace
     var <>fadeTime = 0.1;
 	var <>name;
@@ -121,7 +121,10 @@ SynthTree : IdentityTree {
 		this do: _.stopAll(argFadeTime);
 	}
 
-	*initTree { | remakeInputs = false | default.initTree(remakeInputs); }
+	*initTree { | remakeInputs = false |
+		default.notStopped = true;
+		default.initTree(remakeInputs);
+	}
 
     initTree { | remakeInputs = false |
 		/*  Restart all synths.
@@ -131,8 +134,10 @@ SynthTree : IdentityTree {
 			Only nodes that have "notStopped" set to true will be restarted.
 			Safety: If a synth is already running, do not restart.
 		*/
+
 		if (remakeInputs) { this.remakeInputs; };
 		if (synth.isPlaying) { synth.free };
+		[this, thisMethod.name, "notStopped", notStopped].postln;
         if (notStopped) {
             this.makeSynth;
             this do: _.initTree(remakeInputs);
@@ -193,7 +198,7 @@ SynthTree : IdentityTree {
 	}
 	chuck { | synthOrTemplate, argReplaceAction = \fadeOut, argFadeTime |
 		/*  Set my template.  Start synth. Replace previous one. */
-			if (synthOrTemplate.isKindOf(Node)) {
+		if (synthOrTemplate.isKindOf(Node)) {
 			synth = synthOrTemplate;
 			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
 			inputs do: _.moveBefore(synth);

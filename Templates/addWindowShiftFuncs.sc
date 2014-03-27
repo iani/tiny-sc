@@ -10,4 +10,9 @@ IZ Thu, Mar 27 2014, 09:36 EET
 		bounds = this.bounds;
 		this.bounds = bounds.left_(bounds.left + x).top_(bounds.top + y);
 	}
+	shiftTo { | x, y |
+		var bounds;
+		bounds = this.bounds;
+		this.bounds = bounds.left_(x ?? { bounds.left }).top_(y ?? { bounds.top });
+	}
 }
