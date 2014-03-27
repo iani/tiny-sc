@@ -1,0 +1,74 @@
+* About Templates
+Experimental!
+
+Files placed in this folder are evaluated at startup, and their resulting items are collected as named templates for SynthTree (SynthDefs, Synth-creating Functions) or for Patterns and Pattern players.  These can then be used from an SC gui to drag onto SynthTree instances, or from Emacs with ido-completing-read for choosing via context-sensitive string search from the lists of templates.
+
+For compatibility with the SuperCollider IDE, the templates are not saved in org-mode files but in pure .scd source files.
+
+Tiny-sc will look in two places for templates:
+1. The Template subfolder of the top-level directory of tiny-sc source code.  This is for standard templates that come with the tiny-sc distribution.
+
+2. If a folder named Template exists in the User App Support Dir (=Platform.userAppSupportDir=), then all .scd files inside that folder will be evaluated.  This is for user-defined templates.
+
+The tiny-sc templates are evaluated first, and the user-defined templates last.  So user-defined templates can overwrite previously defined default tiny-sc templates.
+
+IZ Wed, Mar 26 2014, 17:09 EET
+
+* Format
+
+(Draft!)
+
+Array of elements in key-value format, where key is the name of the template and value is the template object.
+
+** SynthTree templates
+
+#+BEGIN_EXAMPLE
+SynthTemplates([
+def1: SynthDef({ .... }),
+def2:
+func1: { WhiteNoise.ar },
+func2: { SinOsc.ar(\freq.kr(440)) },
+...
+]);
+#+END_EXAMPLE
+
+** PatternPlayer templates
+
+(Note: these could be fragments building-blocks for scores of pieces).
+
+Each pattern player can be written as an association of one value pattern and a duration pattern or with PatternPlayer():
+
+#+BEGIN_EXAMPLE
+PatternTemplates([
+pat1: Pseq(...)->1,
+pat2: PatternPlayer(
+     Pwhite(...),
+     Pbrown(...)
+),
+pat3: ...
+])
+#+END_EXAMPLE
+
+** Storing and retrieving Templates
+
+
+Templates are stored in Library.global under the paths shown by following examples:
+
+SynthTemplates:
+
+	// All SynthTemplates are stored under tag 'all', each under its name;
+Library.put('SynthTemplate', '---ALL---', '<name>', <template>);
+	// Additionally, each template is stored under each of its tags:
+Library.put('SynthTemplate', 'tag1', '<name>', <template>);
+Library.put('SynthTemplate', 'tag2', '<name>', <template>);
+
+	// PatternTemplates are stored in similar manner under 'PatternTemplates':
+Library.put('PatternTemplate', '---ALL---', '<name>', <template>)
+Library.put('PatternTemplate', 'tagx', '<name>', <template>)
+...
+SynthTemplate.gui;
+
+[\all, '_all', '0all', '---ALL---'].sort;
+
+
+** Pattern templates???

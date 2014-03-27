@@ -86,6 +86,18 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	
 }
 
++ SynthDef {
+
+	asSynth { | synthTree |
+        ^Synth.new(this.name, synthTree.synthArgs, synthTree.group, \addToHead);
+    }
+
+	templateArgs {
+		^this.allControlNames;
+	}
+
+}
+
 + Symbol {
     asSynth { | synthTree |
 		^[this].asSynth(synthTree);

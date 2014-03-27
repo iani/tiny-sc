@@ -2,6 +2,24 @@
 
 * Currently working on
 
+** Templates
+
+Predefined SynthDefs or Synth Functions and PatternPlayers, stored under names, for use in SynthTree, selectable from SC GUI with drag-and-drop or Emacs-ido-completion.
+
+Maybe Templates should be taggable!
+
+So a Template class should be defined, to hold the tags along with the template.
+
+See =Templates/AboutTemplates.org=.
+
+Testing synthdefs chucked into SynthTrees:
+
+#+BEGIN_EXAMPLE
+d = SynthDef("asdf", { WhiteNoise.ar.adsrOut }).add;
+d => \test;
+#+END_EXAMPLE
+
+
 ** Playing patterns in SynthTree
 
 Steps:

@@ -443,7 +443,16 @@ SynthTree : IdentityTree {
 		argServer ?? { argServer = SynthTree.server };
 		all = SynthTree.onServer(argServer);
 		panel = Sliders.getPanel(argServer.asSymbol);
-		panel.sliders do: { | s | 
+		panel.sliders do: { | s |
+			s.label.canReceiveDragHandler = { View.currentDrag isKindOf: Template };
+			s.label.receiveDragHandler = {
+				var name;
+				if (s.label.object isKindOf: String) {
+					name = View.currentDrag.makeSynthDefName;
+					View.currentDrag.template => name;
+					s.label.string = name;
+				};
+			};
 			s.slider.keyDownAction = { | view, char |
 				switch (char,
 					$b, { BufferList.showList('Create Buffer Player', argServer); },
@@ -580,4 +589,5 @@ SynthTree : IdentityTree {
 		if (removeRoot) { names remove: \root };
 		^names;
 	}
+	
 }

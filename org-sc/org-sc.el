@@ -336,6 +336,23 @@ free the SynthTree with the same name, and free the buffer"
   (interactive)
   (sclang-eval-string "BufferList.showList;"))
 
+(defun org-sc-synthtemplate-gui ()
+  (interactive)
+  (sclang-eval-string "SynthTemplate.gui;"))
+
+(defun org-sc-patterntemplate-gui ()
+  (interactive)
+  (sclang-eval-string "PatternTemplate.gui;"))
+
+(defun org-sc-templates-gui ()
+  (interactive)
+  (org-sc-synthtemplate-gui)
+  (org-sc-patterntemplate-gui))
+
+(global-set-key (kbd "C-c C-y") 'sclang-open-help-gui)
+(global-set-key (kbd "H-c t") 'org-sc-synthtemplate-gui)
+(global-set-key (kbd "H-c H-t") 'org-sc-templates-gui)
+(global-set-key (kbd "H-c p") 'org-sc-patterntemplate-gui)
 (global-set-key (kbd "H-c c") 'org-sc-select-synthtree-then-chuck)
 (global-set-key (kbd "H-c H-c") 'org-sc-chuck-into-last-synthtree)
 (global-set-key (kbd "H-c k") 'org-sc-select-synthtree-then-knobs)
