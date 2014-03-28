@@ -104,6 +104,8 @@ Possible class group for playing patterns in SynthTrees, in Pbind-like manner:
 	- possibly a group and bus to fade/adjust gain of the whole output signal
 	- the PatternFunc
 
+See also: BasicIdeas.org, Extending AbstractResponderFunc paradigm -> Generalizing Responders -> Example 2: Playing Patterns.
+
 *** SynthTreePlayer draft notes
 - Should work as a template and as a synth (same instance?) in SynthTree.
 - Should keep its synths in own variable, allowing for playing of multiple synths at the same time.
