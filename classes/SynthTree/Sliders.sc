@@ -117,4 +117,6 @@ SliderWithLabel {
 		label.object = object;
 		label.string = object.asString;
 	}
+
+	object { ^label.object }
 }

@@ -2,24 +2,6 @@
 
 * Currently working on
 
-** Templates
-
-Predefined SynthDefs or Synth Functions and PatternPlayers, stored under names, for use in SynthTree, selectable from SC GUI with drag-and-drop or Emacs-ido-completion.
-
-Maybe Templates should be taggable!
-
-So a Template class should be defined, to hold the tags along with the template.
-
-See =Templates/AboutTemplates.org=.
-
-Testing synthdefs chucked into SynthTrees:
-
-#+BEGIN_EXAMPLE
-d = SynthDef("asdf", { WhiteNoise.ar.adsrOut }).add;
-d => \test;
-#+END_EXAMPLE
-
-
 ** Playing patterns in SynthTree
 
 Steps:
@@ -28,6 +10,41 @@ Steps:
 2. Try timing the triggering of new synths in SynthTree with a routine
 3. Try PatternFunc for control of single parameters
 4. Define class SynthTreePlayer that acts similarly to Pbind, but plays a SynthTree.
+
+
+*** Playing patterns in single parameters of a SynthTree
+:PROPERTIES:
+:DATE:     <2014-03-28 Fri 12:55>
+:END:
+
+New idea of how to do this:
+
+- Chucking something into a SynthTree always makes this the selected SynthTree - on which further actions from gui or code apply.
+- The selected SynthTree makes its parameter (SynthArgs) environment be the current environment, so that one can chuck stuff to the parameters through the environment!
+
+Draft of how this looks in code.  Different things that one could do with a synth parameter by addressing it (as MultiControl instance) through the environment:
+#+BEGIN_SRC
+0.03 => ~amp;
+660 => ~freq;
+~freq.slider;
+~freq.knob;
+~freq.numbox;
+~freq.numSlider;
+~freq.knobSlider;
+~freq.osdFunc(...)
+~freq.midiFunc(...);
+~freq.pattern(...);
+<a pattern player> => ~freq;
+
+\anotherSynth.push; // switch to another SynthTree for working ...
+#+END_SRC
+
+- There should also be a second selected classvar of SynthTree, for storing the last selected instance which has an input ("fx SynthTree).  That way one can send any new synthtree to the input of the fx synthtree. So two variables should be always available in the currentEnvironment:
+  - ~source :: the last selected synth
+  - ~fx :: the last selected synth with input
+
+IMPORTANT: Maybe use another operator for chucking stuff to a synthtree *without* making it current.  Unclear yet how this all works together when for example chaining several fx synths.
+
 
 *** PatternFunc notes
 
@@ -356,6 +373,24 @@ Possibly: H-c H-p ?
 *** org-files with lists of SynthDefs, Functions etc.
 
 To be stored in dicts with symbols, from which guis are created to use these with drag-and-drop onto the SynthTree fader gui or onto the Knobs gui.
+
+** Templates
+
+Predefined SynthDefs or Synth Functions and PatternPlayers, stored under names, for use in SynthTree, selectable from SC GUI with drag-and-drop or Emacs-ido-completion.
+
+Maybe Templates should be taggable!
+
+So a Template class should be defined, to hold the tags along with the template.
+
+See =Templates/AboutTemplates.org=.
+
+Testing synthdefs chucked into SynthTrees:
+
+#+BEGIN_EXAMPLE
+d = SynthDef("asdf", { WhiteNoise.ar.adsrOut }).add;
+d => \test;
+#+END_EXAMPLE
+
 
 * Undergoing tests
 

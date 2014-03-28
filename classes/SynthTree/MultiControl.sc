@@ -8,12 +8,15 @@ It can be individually enabled/disabled, changed or removed.
 IZ Tue, Mar 11 2014, 18:10 EET
 */
 
-SynthTreeArgs : IdentityDictionary {
+SynthTreeArgs : /* IdentityDictionary */ Event {
 	var <synthTree;
-	
+	var <event;
+
 	*new { | synthTree | ^super.new.init(synthTree); }
 
-	init { | argSynthTree | synthTree = argSynthTree }
+	init { | argSynthTree |
+		synthTree = argSynthTree;
+	}
 
 	storeArgValue { | key, value |
 		this.getParam(key).storeValue(value);

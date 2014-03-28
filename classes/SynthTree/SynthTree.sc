@@ -30,9 +30,11 @@ SynthTree : IdentityTree {
 	classvar showGuiAtStartup = true;
 	classvar <default;
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
-	classvar <selected; /* Current synthtree to act on
-		Usually selected on Faders pane.  Used to chuck new 
-		templates into, either as template or as input. 
+	classvar parentEvents; // contains parent events for each server. 
+	/* Each parent event contains: 
+		~fx: the last chucked SynthTree which has inputs
+		~st: the last chucked SynthTree or the SynthTree pushed explicitly with 
+		aSynthTree.push;
 	*/
 	var <synth;  // the synth of this node
 	var <>inputs; // dictionary of input names and bus specs or busses
@@ -213,7 +215,19 @@ SynthTree : IdentityTree {
 			};
 			this.makeSynth;
 		};
+		this.push;
 		this.changed(\chuck);
+	}
+
+	push {
+		[this, thisMethod.name, args.parent].postln;
+	}
+
+	getParentEvent {
+		/*
+		var pe
+		parentEvents[]
+		*/
 	}
 
 	moveBefore { | argSynth |
@@ -471,7 +485,7 @@ SynthTree : IdentityTree {
 				};
 			};
 			s.label.focusGainedAction = { | me |
-				selected = me.object; // SynthTree.at(me.string.asSymbol, false);
+				me.object.push;
 			};
 			s.slider.keyDownAction = { | view, char |
 				switch (char,

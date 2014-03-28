@@ -49,6 +49,10 @@ IZ Sat, Mar  8 2014, 23:40 EET
 			action.(synthTree, this);
 		};
 	}
+
+	hasInputs { ^false }
+
+	push {}
 }
 
 + Nil {
