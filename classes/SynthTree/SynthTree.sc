@@ -27,6 +27,7 @@ SynthTree.initTree;
 
 SynthTree : IdentityTree {
 
+	classvar showGuiAtStartup = true;
 	classvar <default;
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
 	classvar <selected; /* Current synthtree to act on
@@ -68,6 +69,7 @@ SynthTree : IdentityTree {
             };
 			Spec.specs.at(\amp).default = 0.1;
 			Spec.specs.[\trigRate] = [0.1, 50, 'exp', 0, 1, ""].asSpec;
+			if (showGuiAtStartup) { this.faders };
 		}
 	}
 
