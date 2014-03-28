@@ -105,7 +105,8 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	inputSpecs {
 		^this.allControlNames
 		.select({ | cn | cn.name.asString[..1] == "in" })
-		.collect({ | cn | [cn.name, 1] });
+		.collect({ | cn | [cn.name, 1] })
+		.flat;
 	}
 }
 

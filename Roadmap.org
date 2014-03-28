@@ -114,6 +114,9 @@ See also PatternPlayer ...
 
 * Immediate TODOs
 
+** fix drag start from fader DragBoth.  SynthTree:asString -> Function does not understand "name"!
+
+** creating a new synthtree which contains an input should make that synthtree the current selection, so that typing control-return on a SynthTemplate selection sends it to the latest created SynthTree with input.
 
 ** Add fade-in and fade-out toggles for both selected node and entire SynthTree, with times from 0 to 9 seconds, bound to the corresponding keys from 0 to 9.
 
@@ -123,18 +126,6 @@ Also improve the keyboard command documentation, showing the rationale for the c
 - Basic combination 1: C-M key
 - Basic combination 2: H-c key or H-c H-key
 - Basic combiantion 3: H-c H-x key or H-c H-x H-key
-
-** Palettes of components for dragging onto fader gui
-
-: Palettes.show;
-
-Keyboard command on Emacs?
-
-Possibly: H-c H-p ?
-
-*** org-files with lists of SynthDefs, Functions etc.
-
-To be stored in dicts with symbols, from which guis are created to use these with drag-and-drop onto the SynthTree fader gui or onto the Knobs gui.
 
 ** Global Streams, StreamPatterns, Patterns, PatternPlayers
 
@@ -351,6 +342,18 @@ Solution implemented: Use =|> instead of ==>
 
 ** stop+clear tree command
 Add kbd command to free the entire SynthTree and set all nodes isStopped to true.  This is good instead of Command-. to make sure that no unwanted SynthTree nodes will be restarted.  Proposed key binding: =C-c C-x C-=.
+
+** Palettes of components for dragging onto fader gui
+
+: Palettes.show;
+
+Keyboard command on Emacs?
+
+Possibly: H-c H-p ?
+
+*** org-files with lists of SynthDefs, Functions etc.
+
+To be stored in dicts with symbols, from which guis are created to use these with drag-and-drop onto the SynthTree fader gui or onto the Knobs gui.
 
 * Undergoing tests
 

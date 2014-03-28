@@ -34,8 +34,8 @@ Sliders {
 		^this.getSlider(panelName, label);
 	}
 
-	*getSlider { | panelName, label |
-		^this.getPanel(panelName).sliderLabeled(label);
+	*getSlider { | panelName, object |
+		^this.getPanel(panelName).sliderFor(object);
 	}
 
 	*getPanel { | panelName |
@@ -71,21 +71,24 @@ Sliders {
 		window.front;
 	}
 
-	sliderLabeled { | string |
-		var slider, message;
-		message = string.asString;
-		slider = sliders detect: { | k | k.label.object == message };
-		slider ?? { slider = this.allocateSlider(string); };
-		^slider !? { slider.slider };
+	widgetFor { | object |
+		var slider;
+		slider = sliders detect: { | k | k.label.object === object };
+		slider ?? { slider = this.allocateSlider(object); };
+		^slider;
+	}
+
+	sliderFor { | object |
+		^this.widgetFor(object).slider;
 	}
 		
-	allocateSlider { | string |
+	allocateSlider { | object |
 		var slider;
 		slider = sliders detect: { | k | k.label.object == "" };
 		if (slider.isNil) {
-			postf("Could not allocate new slider for %\n", string);
+			postf("Could not allocate new slider for %\n", object);
 		}{
-			slider setLabel: string;
+			slider setObject: object;
 		};
 		^slider;
 	}
@@ -95,18 +98,23 @@ SliderWithLabel {
 
 	var <layout;
 	var <slider;
-	var <label;
+	var <label;  // note: The object is stored in label.object.
 
 	*new { ^super.new.init; }
 
 	init {
 		slider = Slider().orientation_(\horizontal).fixedWidth_(70).canFocus_(false);
+		slider.onClose = { slider.objectClosed };
 		label = DragBoth().object_("").font_(Font.default.size_(10));
+		label.onClose = { label.objectClosed };
 		layout = HLayout(label, slider);
 		label.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
 			slider.keyDownAction.(slider, char, modifiers, unicode, keycode, key)
 		};
 	}
 
-	setLabel { | string | label.object = string.asString; }
+	setObject { | object | 
+		label.object = object;
+		label.string = object.asString;
+	}
 }

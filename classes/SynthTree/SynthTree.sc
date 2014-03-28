@@ -100,6 +100,10 @@ SynthTree : IdentityTree {
 		args = SynthTreeArgs(this);
 	}
 
+	asString {
+		^format("%:%", if (template.isNil) { "-" } { template.name }, name);
+	}
+
 	*nameSpaces {
 		^nameSpaces ?? { nameSpaces = MultiLevelIdentityDictionary() };
 	}
@@ -207,6 +211,7 @@ SynthTree : IdentityTree {
 			};
 			this.makeSynth;
 		};
+		this.changed(\chuck);
 	}
 
 	moveBefore { | argSynth |
@@ -425,7 +430,8 @@ SynthTree : IdentityTree {
 
 	getArgsFromTemplate {
 		^template.templateArgs.reject({ | cName |
-			cName.rate === \scalar or: { [\gate, \out] includes: cName.name }
+			cName.rate === \scalar or: { [\gate, \out, \in, \in1, \in2, \timeScale]
+				includes: cName.name }
 		}) collect: { | cName |
 			args.getParam(cName.name, nil, cName.defaultValue);
 		};
@@ -446,7 +452,14 @@ SynthTree : IdentityTree {
 		all = SynthTree.onServer(argServer);
 		panel = Sliders.getPanel(argServer.asSymbol);
 		panel.sliders do: { | s |
-			s.label.canReceiveDragHandler = { View.currentDrag isKindOf: Template };
+			s.label.canReceiveDragHandler = {
+				View.currentDrag isKindOf: Template or: 
+				{ View.currentDrag isKindOf: SynthTree and: 
+					{ s.object.hasInputs; }
+					and:
+					{ s.object hasNoCycles: View.currentDrag }
+				}
+			};
 			s.label.receiveDragHandler = {
 				var name;
 				if (s.label.object isKindOf: String) {
@@ -456,11 +469,12 @@ SynthTree : IdentityTree {
 				};
 			};
 			s.label.focusGainedAction = { | me |
-				selected = SynthTree.at(me.string.asSymbol, false);
+				selected = me.object; // SynthTree.at(me.string.asSymbol, false);
 			};
 			s.slider.keyDownAction = { | view, char |
 				switch (char,
 					$b, { BufferList.showList('Create Buffer Player', argServer); },
+					$t, { SynthTemplate.gui; },
 					$,, { thisProcess.stop },
 					$., { SynthTree.stopAll },
 					$i, { SynthTree.initTree },
@@ -470,7 +484,9 @@ SynthTree : IdentityTree {
 		};
 		all.keys.asArray.select({ | name | name != \root }).sort
 		do: { | name | all[name].prFader(panel) };
-		panel.addNotifier(this, \newSynthTree, { | synthTree | this.faders });
+		panel.addNotifier(this, \newSynthTree, { | synthTree |
+			synthTree.prFader(panel);
+		});
 		^panel;
 	}
 
@@ -479,12 +495,24 @@ SynthTree : IdentityTree {
 			Note: This is a private class.  It is called via notification
 			whenever a new SynthTree is created and an amp faders panel is open.
 		*/
-		var param;
+		var param, widget, label;
 		panel = panel ?? { Sliders.getPanel(this.server.asSymbol) };
 		param = args.getParam(\amp);
-		param.addView(\fader, 
-			param.connectParamView(panel.sliderLabeled(name))
+		widget = panel.widgetFor(this);
+		label = widget.label;
+		label.addNotifier(this, \chuck, { 
+			label.string = this.asString;
+		});
+		param.addView(\fader,
+			param.connectParamView(widget.slider)
 		);
+	}
+
+	hasInputs { ^inputs.size > 0 }
+
+	hasNoCycles { | potentialInput |
+		/* make sure that potentialInput is not part of the output chain */
+		if (output.isNil) { ^true } { ^output hasNoCycles: potentialInput }
 	}
 
 	// under development

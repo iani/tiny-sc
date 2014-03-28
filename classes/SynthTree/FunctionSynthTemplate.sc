@@ -14,8 +14,9 @@ FunctionSynthTemplate {
 	}
 
 	makeSynthDef { | synthTree |
-		synthdef = { function.value.adsrOut(attackTime: synthTree.fadeTime); }
-		.asSynthDef; // we don't actually use it on the server. no .add
+		synthdef = SynthDef(synthTree.name, 
+			{ function.value.adsrOut(attackTime: synthTree.fadeTime); }
+		); // we don't actually use it on the server. no .add
 	}
 
 	inputSpecs { ^synthdef.inputSpecs }
@@ -27,4 +28,6 @@ FunctionSynthTemplate {
 	asSynth { | synthTree, fadeTime |
 		^function.asSynth(synthTree, fadeTime);
 	}
+
+	name { ^synthdef.name }
 }

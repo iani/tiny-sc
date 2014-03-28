@@ -13,14 +13,22 @@ Library.at(SynthTemplate);
 */
 
 Template {
+
+	classvar showGuiAtStartup = true;
+
 	var <name;
 	var <template;
 	var <tags;
 	
 	*initClass {
 		StartUp add: {
+			// Load template files in same folder as Template class
 			(PathName(this.filenameSymbol.asString).pathOnly ++ "*.scd").pathMatch
 			do: _.load;
+			// Load template files from user app suppor dir
+			(Platform.userAppSupportDir +/+ Templates +/+ "*.scd").pathMatch
+			do: _.load;
+			if (showGuiAtStartup) { this.subclasses do: _.gui; };
 		}
 	}
 
@@ -69,20 +77,66 @@ Template {
 					}
 				};
 				namesView.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
-					switch (char,
-						13.asAscii, { // return key
-							if (modifiers == 0) {
-								sourceView.object.template => 
-								sourceView.object.makeSynthTreeName;
-							}{
-								
-							}
+					// modifiers.postln;
+					postf("char: %, modifiers: %, key: %\n", char, modifiers, key);
+					switch (key,
+						16777220, { "control return".postln; },
+						16777250, { "just plain control no other key".postln; },
+						16777220, { "control return".postln; },
+					);
+					switch (modifiers,
+						131072, { // shift key
+							switch (char, // KeyFunc
+ 								[char, 
+								char.asCompileString,
+									unicode,
+									keycode,
+									key
+								].postln;
+								13.asAscii, { // return key: chuck into selected ST
+									if (SynthTree.selected.notNil) {
+										sourceView.object.template =>
+										SynthTree.selected;
+									};
+								}
+							)
 						},
-						{ view.defaultKeyDownAction(
-							char, modifiers, unicode, keycode, key) 
+						262144, { // control key
+							switch (key,
+								[char, 
+								char.asCompileString,
+									unicode,
+									keycode,
+									key
+								].postln;
+								
+								16777220, { // return key: add input to selected ST
+									[SynthTree.selected, "selected st"].postln;
+									if (SynthTree.selected.notNil) {
+										SynthTree.selected =<
+										(sourceView.object.template ==>
+											sourceView.object.makeSynthTreeName
+										);
+									};
+								},
+								70, { SynthTree.faders } // $f
+							)
+						},
+						0, { // no modifier
+
+							switch (char,
+								13.asAscii, { // return key: Start new ST
+										sourceView.object.template => 
+										sourceView.object.makeSynthTreeName;
+								},
+								{ view.defaultKeyDownAction(
+									char, modifiers, unicode, keycode, key) 
+								}
+							)
 						}
 					);
 				};
+				
 				sourceView.object = "THIS TEMPLATE LIST IS EMPTY";
 				tagsView.doAction;
 				namesView.doAction;
