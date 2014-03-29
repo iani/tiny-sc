@@ -43,6 +43,7 @@ UniqueWindow {
 		window.onClose = { window.objectClosed };
 		this.addNotifierOneShot(window, \objectClosed, {
 			all.removeEmptyAt(object, key);
+			this.objectClosed;
 		});
 		all.put(object, key, this);
 	}

@@ -18,95 +18,88 @@ For the moment only one slider panel is used, stored in variable defaults.
 It is possible to extend the class to provide more panels. 
 
 IZ Wed, Mar 12 2014, 15:02 EET
+New version using ScrollView: Sat, Mar 29 2014, 13:51 EET
 
 */
 
-Sliders {
-	
-	classvar <all;
-	var <name;
-	var <window;
-	var <sliders;
-	
-	*initClass { all = IdentityDictionary() }
+Sliders : UniqueWindow {
 
-	*slider { | label, panelName = \Sliders |
-		^this.getSlider(panelName, label);
-	}
-
-	*getSlider { | panelName, object |
-		^this.getPanel(panelName).sliderFor(object);
-	}
-
-	*getPanel { | panelName |
-		var panel;
-		panelName = panelName.asSymbol;
-		panel = all[panelName];
-		if (panel.isNil) {
-			panel = this.new(panelName);
-			all[panelName] = panel;
-		};
-		^panel;
-	}
-
-	*new { | panelName |
-		^this.newCopyArgs(panelName).init;
-	}
-
-	*at { | key | ^all.at(key); }
-
+	var <layout, <sliders;
+	var <selection;  // currently selected slider/label widget
+ 
 	init {
-		var height;
-		height = Window.screenBounds.height;
-		window = Window(name, Rect(0, height - 200, 200, height - 200));
-		sliders = { SliderWithLabel() } ! (height - 50 / 35);
-		window.view.layout = VLayout(
-			*sliders.collect(_.layout)
-		);
-		window.onClose = { | w |
-			all[name.asSymbol] = nil;
-			w.objectClosed;
-			this.objectClosed;
-		};
-		window.front;
+		layout = VLayout();
+		sliders = IdentityDictionary();
+		super.init;
 	}
 
-	widgetFor { | object |
-		var slider;
-		slider = sliders detect: { | k | k.label.object === object };
-		slider ?? { slider = this.allocateSlider(object); };
-		^slider;
+	*getPanel { | model, panelName |
+		^this.for(model ?? { SynthTree.server }, panelName ? \faders, { | self |
+			var scroll, canvas, layout, window;
+			window = self.window;
+			window.bounds = Rect(0, 200, 200, Window.availableBounds.height - 200);
+			scroll = ScrollView(window, window.view.bounds).canFocus_(false);
+			canvas = View();
+			canvas.layout = self.layout;
+			scroll.canvas = canvas;
+		});
 	}
 
-	sliderFor { | object |
-		^this.widgetFor(object).slider;
+	*slider { | object, model, panelName |
+		^this.getPanel(model, panelName).sliderFor(object);
 	}
-		
-	allocateSlider { | object |
-		var slider;
-		slider = sliders detect: { | k | k.label.object == "" };
-		if (slider.isNil) {
-			postf("Could not allocate new slider for %\n", object);
-		}{
-			slider setObject: object;
+
+	sliderFor { | object | ^this.widgetFor(object).slider; }
+
+	widgetFor { | object | ^sliders[object] ?? { this.newWidget(object) }; }
+
+	newWidget { | object |
+		var widget;
+		widget = SliderWithLabel(this);
+		widget.setObject(object);
+		sliders[object] = widget;
+		layout insert: widget.layout;
+		^widget;
+	}
+
+	setSelection { | object |
+		var obName, widget;
+		obName = object.asString;
+		window.name = obName;
+		widget = sliders[object];
+		widget !? {
+			widget.label.string = obName;
+			widget.label focus: true;
+			widget.label.background = Color(0.3, 0.8, 0.9);
+			if (selection != widget) {
+				selection !? {
+					selection.label.background = Color.grey.alpha_(0);
+				};
+			};
 		};
-		^slider;
+		selection = widget;
 	}
+
 }
 
 SliderWithLabel {
 
+	var <panel;
 	var <layout;
 	var <slider;
 	var <label;  // note: The object is stored in label.object.
 
-	*new { ^super.new.init; }
+	*new { | panel | ^this.newCopyArgs(panel).init; }
 
 	init {
 		slider = Slider().orientation_(\horizontal).fixedWidth_(70).canFocus_(false);
 		slider.onClose = { slider.objectClosed };
-		label = DragBoth().object_("").font_(Font.default.size_(10));
+		label = DragBoth().object_("").font_(Font.default.size_(11));
 		label.onClose = { label.objectClosed };
+		label.focusGainedAction = {
+			// CHECK: without defer, sometimes loops to-fro between last focus?
+			{ panel.setSelection(this.object) }.defer(0.001);
+		};
 		layout = HLayout(label, slider);
 		label.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
 			slider.keyDownAction.(slider, char, modifiers, unicode, keycode, key)
