@@ -4,25 +4,8 @@ Each node of the tree holds a synth, and if present, the group, and input-output
 control names and busses.
 
 Each server has one root SynthTree, whose root branch contains the RootNode.
-There is one global root tree, that holds the root trees of all servers.
-
-For more, see separate doc.
 
 IZ Thu, Mar  6 2014, 21:51 EET
-
-SynthDef("test", { WhiteNoise.ar().adsrOut }).add;
-"test" => \test;
-\test.fadeOut(5);
-
-{ WhiteNoise.ar() } => \noise;
-{ SinOsc.ar(440) } =>.5 \noise;
-{ PinkNoise.ar } =>.3 \noise;
-{ GrayNoise.ar } => \gnoise;
-\noise.fadeOut;
-\noise.start;
-{ SinOsc.ar(440) } =>.free \noise;
-
-SynthTree.initTree;
 */
 
 SynthTree : IdentityTree {
@@ -220,13 +203,13 @@ SynthTree : IdentityTree {
 			};
 			this.makeSynth;
 		};
-		this.gotChucked;
+		this.push;
 	}
 
-	gotChucked {
+	push {
 		args.parent[\st] = this;
 		if (inputs.size > 0) { args.parent[\fx] = this; };
-		currentEnvironment = args;
+		args.pushl; // currentEnvironment = args; 
 		this.changed(\chuck);
 	}
 
@@ -467,6 +450,11 @@ SynthTree : IdentityTree {
 		argServer ?? { argServer = SynthTree.server };
 		all = SynthTree.onServer(argServer);
 		panel = Sliders.getPanel(argServer.asSymbol);
+		panel.window.view.keyDownAction = { | view, char |
+			switch (char,
+				$b, { BufferList.showList('Create Buffer Player', argServer); }
+			);
+		};
 		panel.sliders do: { | s |
 			s.label.canReceiveDragHandler = {
 				View.currentDrag isKindOf: Template or: 

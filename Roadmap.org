@@ -36,8 +36,8 @@ IMPORTANT: Maybe use another operator for chucking stuff to a synthtree *without
 :DATE:     <2014-03-29 Sat 16:43>
 :END:
 
-~st: current synthtree: ==>= operates as usual, chucking into synthtree.
-~fx: current effect.  Can be used with ==<= to add new input.
+~st: current synthtree: => operates as usual, chucking into synthtree.
+~fx: current effect.  Can be used with =< to add new input.
 
 All other environment parameters will return a multiparameter instance controlling one of the synthree's parameters.
 
@@ -58,7 +58,7 @@ Shortcut method for turning Function, pattern, array, or stream into a patternpl
 
 Alternative operator for constructing a pattern player (instead of =pp= method): Chuck:
 
-: <values: pattern/func/array>=> <durations: pattern/func/array/number>
+: <values: pattern/func/array> => <durations: pattern/func/array/number>
 
 So one can go:
 
@@ -68,10 +68,12 @@ To construct a pattern player and play it in parameter =freq=.
 
 **** Chucking into busses
 
+- =<function> => bus= :: play the function to that bus
+- =<envelope> => bus= :: play the envelope to that bus
+- =<UGen> => bus= :: convert ugen to synth and play in that bus.  Good for playing Line.kr.  But this could be done with something like: ~amp.fadeTo(...);
 
 
-
-*** PatternFunc notes
+*** (Older:) PatternFunc notes
 
 #+BEGIN_EXAMPLE
 <pfunc template> %> 'pfunc_name' *>.param_name synthtree_name;
