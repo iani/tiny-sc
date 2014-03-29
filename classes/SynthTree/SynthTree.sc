@@ -200,6 +200,11 @@ SynthTree : IdentityTree {
 		});
 		this.chuck;
 	}
+
+	receiveChuck { | chucker, replaceAction |
+		this.chuck(chucker, replaceAction);
+	}
+
 	chuck { | synthOrTemplate, argReplaceAction = \fadeOut, argFadeTime |
 		/*  Set my template.  Start synth. Replace previous one. */
 		notStopped = true;
@@ -215,19 +220,24 @@ SynthTree : IdentityTree {
 			};
 			this.makeSynth;
 		};
-		this.push;
+		this.gotChucked;
+	}
+
+	gotChucked {
+		args.parent[\st] = this;
+		if (inputs.size > 0) { args.parent[\fx] = this; };
+		currentEnvironment = args;
 		this.changed(\chuck);
 	}
 
-	push {
-		[this, thisMethod.name, args.parent].postln;
-	}
-
-	getParentEvent {
-		/*
-		var pe
-		parentEvents[]
-		*/
+	setTemplate { | argTemplate, argReplaceAction = \fadeOut |
+		/* set template without starting. Called by ==> operator
+			Starting is deferred to after connecting
+			self as input to another SynthTree (=<).
+			Manner of replacing previous synth is stored in replaceAction */
+		replaceAction = argReplaceAction;
+		template = argTemplate.asSynthTemplate(this);
+		this.gotChucked;
 	}
 
 	moveBefore { | argSynth |
@@ -250,15 +260,6 @@ SynthTree : IdentityTree {
 			});
 		};
 		notStopped = true;
-	}
-
-	setTemplate { | argTemplate, argReplaceAction = \fadeOut |
-		/* set template without starting. Called by ==> operator
-			Starting is deferred to after connecting
-			self as input to another SynthTree (=<).
-			Manner of replacing previous synth is stored in replaceAction */
-		replaceAction = argReplaceAction;
-		template = argTemplate;
 	}
 
 	addInputSynth{ | synthTree, inputName = \in, startWhen = \now |
@@ -440,13 +441,12 @@ SynthTree : IdentityTree {
 	*/
 	
 	knobs {
-		Knobs.getPanel(name).front;
 		this.getArgsFromTemplate do: _.addView;
 	}
 
 	getArgsFromTemplate {
 		^template.templateArgs.reject({ | cName |
-			cName.rate === \scalar or: { [\gate, \out, \in, \in1, \in2, \timeScale]
+			cName.rate === \scalar or: { [\buf, \gate, \out, \in, \in1, \in2, \timeScale]
 				includes: cName.name }
 		}) collect: { | cName |
 			args.getParam(cName.name, nil, cName.defaultValue);

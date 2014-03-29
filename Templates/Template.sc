@@ -78,60 +78,37 @@ Template {
 				};
 				namesView.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
 					// modifiers.postln;
-					postf("char: %, modifiers: %, key: %\n", char, modifiers, key);
-					switch (key,
-						16777220, { "control return".postln; },
-						16777250, { "just plain control no other key".postln; },
-						16777220, { "control return".postln; },
-					);
 					switch (modifiers,
+						0, { // no modifier (just one key typed)
+							switch (char,
+								13.asAscii, { // return key: chuck into selected ST
+									sourceView.object.template => ~st;			
+								},
+								Char.space, { // space key: toggle selected ST
+									~st !? { ~st.toggle }
+								},
+								{ view.defaultKeyDownAction(
+									char, modifiers, unicode, keycode, key) 
+								}
+							)
+						},
 						131072, { // shift key
 							switch (char, // KeyFunc
- 								[char, 
-								char.asCompileString,
-									unicode,
-									keycode,
-									key
-								].postln;
-								13.asAscii, { // return key: chuck into selected ST
-									if (SynthTree.selected.notNil) {
-										sourceView.object.template =>
-										SynthTree.selected;
-									};
+								13.asAscii, { // shift+return: chuck into new ST
+									sourceView.object.template => 
+									sourceView.object.makeSynthTreeName;
 								}
 							)
 						},
 						262144, { // control key
 							switch (key,
-								[char, 
-								char.asCompileString,
-									unicode,
-									keycode,
-									key
-								].postln;
-								
 								16777220, { // return key: add input to selected ST
-									[SynthTree.selected, "selected st"].postln;
-									if (SynthTree.selected.notNil) {
-										SynthTree.selected =<
-										(sourceView.object.template ==>
-											sourceView.object.makeSynthTreeName
-										);
-									};
+									~fx =<
+									(sourceView.object.template ==>
+										sourceView.object.makeSynthTreeName
+									);
 								},
-								70, { SynthTree.faders } // $f
-							)
-						},
-						0, { // no modifier
-
-							switch (char,
-								13.asAscii, { // return key: Start new ST
-										sourceView.object.template => 
-										sourceView.object.makeSynthTreeName;
-								},
-								{ view.defaultKeyDownAction(
-									char, modifiers, unicode, keycode, key) 
-								}
+								70, { SynthTree.faders } // $f : Show faders
 							)
 						}
 					);
@@ -159,9 +136,11 @@ SynthTemplate : Template {
 	*gui { ^super.gui.shiftTo(200, 600) }
 }
 
+/*
 PatternTemplate : Template {
 	*gui { ^super.gui.shiftTo(200, 180) }
 }
+*/
 
 // Utility classes: create lists of templates.
 

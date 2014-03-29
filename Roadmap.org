@@ -2,6 +2,11 @@
 
 * Currently working on
 
+
+** push params in currentEnvir
+
+
+
 ** Playing patterns in SynthTree
 
 Steps:

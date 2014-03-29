@@ -15,7 +15,14 @@ SynthTreeArgs : /* IdentityDictionary */ Event {
 	*new { | synthTree | ^super.new.init(synthTree); }
 
 	init { | argSynthTree |
+		var myParent;
 		synthTree = argSynthTree;
+		myParent = parentEvents[synthTree.server];
+		if (myParent.isNil) {
+			myParent = ();
+			parentEvents[synthTree.server] = myParent;
+		};
+		parent = myParent;
 	}
 
 	storeArgValue { | key, value |

@@ -5,16 +5,18 @@ IZ Sat, Mar  8 2014, 23:40 EET
 */
 
 + Object {
-	=> { | synthTree, replaceAction = \fadeOut |
+	=> { | chuckee, replaceAction = \fadeOut |
 		// chuck a source to a synthTree and play
-		^synthTree.asSynthTree.chuck(this, replaceAction);
+		//		^synthTree.asSynthTree.chuck(this, replaceAction);
+		// New implementation: Sat, Mar 29 2014, 03:14 EET :
+		^chuckee.receiveChuck(this, replaceAction);
 	}
-
+	/*  // now done automatically, see chuck. Sat, Mar 29 2014, 03:00 EET
 	=<> { | synthTree, replaceAction = \fadeOut |
 		// chuck, and create default input bus
 		^synthTree.asSynthTree.chuckMakingInput(this, replaceAction);
 	}
-
+	*/
 	// TODO:
 	=< { | synthTree, inputName = \in |
 		// add synthTree to the input synths of the receiver
@@ -56,65 +58,23 @@ IZ Sat, Mar  8 2014, 23:40 EET
 }
 
 + Nil {
+	receiveChuck { | chucker, fadeAction |
+		("Ooops!  Someone tried to chuck to nil.  Probable causes:").postln;
+		("1. No SynthTree has yet been created by chucking.").postln;
+		("2. Trying to chuck into a SynthTree parameter that does not exist.").postln;
+		"Current parameters are:".scatList(currentEnvironment.keys.asArray.sort).postln;
+		^chucker;
+	}
     asSynth { /* ^nil */ }
 	inputBusIndex { /* ^nil */ }
 	onEnd { /* ^nil */ }
 }
 
-+ Function {
-
-	asSynthTemplate { | synthTree | 
-		^FunctionSynthTemplate(this, synthTree);
-	}
-
-    asSynth { | synthTree, fadeTime |
-		var outputBus;
-		outputBus = synthTree.getOutputBusIndex;
-        ^this.xplay(
-            synthTree.group,
-            outbus: outputBus, 
-            fadeTime: fadeTime ?? { synthTree.fadeTime },
-            addAction: \addToHead,
-            args: synthTree.synthArgs
-        );
-    }
-	/*
-	chuck { | symbol |
-		^symbol.asSynthTree...
-	}
-	*/
-	xplay { | target, outbus = 0, fadeTime = 0.02, addAction = 'addToHead', args |
-		^{ this.value.adsrOut(attackTime: fadeTime) }
-		.play(target, outbus, fadeTime, addAction, args);
-	}
-
-	templateArgs {
-		^{ this.value.adsrOut }.asSynthDef.allControlNames;
-	}
-	
-}
-
-+ SynthDef {
-
-	asSynthTemplate { ^this }
-
-	asSynth { | synthTree |
-        ^Synth.new(this.name, synthTree.synthArgs, synthTree.group, \addToHead);
-    }
-
-	templateArgs {
-		^this.allControlNames;
-	}
-
-	inputSpecs {
-		^this.allControlNames
-		.select({ | cn | cn.name.asString[..1] == "in" })
-		.collect({ | cn | [cn.name, 1] })
-		.flat;
-	}
-}
-
 + Symbol {
+	receiveChuck { | chucker, replaceAction |
+		//		^synthTree.asSynthTree.chuck(this, replaceAction);
+		^this.asSynthTree.chuck(chucker, replaceAction)
+	}
     asSynth { | synthTree |
 		^[this].asSynth(synthTree);
     }
@@ -224,6 +184,59 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		synthTree = this.asSynthTree;
 		SynthTree.faders(synthTree.server);
 		^synthTree;
+	}
+}
+
++ Function {
+
+	asSynthTemplate { | synthTree | 
+		^FunctionSynthTemplate(this, synthTree);
+	}
+
+    asSynth { | synthTree, fadeTime |
+		var outputBus;
+		outputBus = synthTree.getOutputBusIndex;
+        ^this.xplay(
+            synthTree.group,
+            outbus: outputBus, 
+            fadeTime: fadeTime ?? { synthTree.fadeTime },
+            addAction: \addToHead,
+            args: synthTree.synthArgs
+        );
+    }
+	/*
+	chuck { | symbol |
+		^symbol.asSynthTree...
+	}
+	*/
+	xplay { | target, outbus = 0, fadeTime = 0.02, addAction = 'addToHead', args |
+		^{ this.value.adsrOut(attackTime: fadeTime) }
+		.play(target, outbus, fadeTime, addAction, args);
+	}
+
+	templateArgs {
+		^{ this.value.adsrOut }.asSynthDef.allControlNames;
+	}
+	
+}
+
++ SynthDef {
+
+	asSynthTemplate { ^this }
+
+	asSynth { | synthTree |
+        ^Synth.new(this.name, synthTree.synthArgs, synthTree.group, \addToHead);
+    }
+
+	templateArgs {
+		^this.allControlNames;
+	}
+
+	inputSpecs {
+		^this.allControlNames
+		.select({ | cn | cn.name.asString[..1] == "in" })
+		.collect({ | cn | [cn.name, 1] })
+		.flat;
 	}
 }
 
