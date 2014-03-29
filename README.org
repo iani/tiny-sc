@@ -103,7 +103,7 @@ Confirm that the tree can be restarted after Command-. also when it contains lin
 
 #+BEGIN_EXAMPLE
 thisProcess.stop; // run this to stop all synths first
-// Then run this to restart all stopped synths: 
+// Then run this to restart all stopped synths:
 SynthTree.initTree;
 #+END_EXAMPLE
 
@@ -120,7 +120,7 @@ There are 5 main view types:
 - Process Registry View :: Experimental / Proof of concept: Shows a list of currently running synth and routine processes, in a manner similar to the process view of Mini Audicle in ChucK.  Works together with Emacs/Org-Mode (see keyboard shortcuts).  Can also work with SuperCollider IDE, but requires using different methods for playing Functions, Synths or Routines.  This feature is superseded by the Fader View, but kept here as proof-of-concept.
 #+END_EXAMPLE
 
-*** The Synth Template View
+** The Synth Template View
 
 #+BEGIN_EXAMPLE
 SynthTemplate.gui;
@@ -133,21 +133,21 @@ Not yet implemented!
 |----------------+-----------------------------------------------------------------+---|
 | Key            | Action                                                          |   |
 |----------------+-----------------------------------------------------------------+---|
-| return         | send template to a new SynthTree instance                       |   |
-| shift-return   | send template to currently selected SynthTree instance*         |   |
+| return         | send template to currently selected SynthTree instance*         |   |
+| shift-return   | send template to a new SynthTree instance                       |   |
 | control-return | add template as input to currently selected SynthTree instance  |   |
 | control-.      | thisProcess.quit (like in SuperCollider IDE)                    |   |
 | control-/      | SynthTree.initTree (restart all SynthTrees stopped by control-. |   |
 |----------------+-----------------------------------------------------------------+---|
 
 (*) Note : The currently selected SynthTree instance is the one selected in the Faders panel by clicking on the label displaying the SynthTree description (template name + synthtree name).
-*** The SynhTree-Fader View
+** The SynhTree-Fader View
 
 #+BEGIN_EXAMPLE
 SynthTree.faders;
 #+END_EXAMPLE
 
-**** Keyboard commands on SynthTree.faders
+*** Keyboard commands on SynthTree.faders
 
 |-------+-----------------------------------------------------------+---|
 | Key   | Action                                                    |   |
@@ -170,7 +170,7 @@ SynthTree.faders;
 | i     | SynthTree.initTree.  Restart non-removed synths           |   |
 | /     | SynthTree.initTree.  Restart non-removed synths           |   |
 |-------+-----------------------------------------------------------+---|
-*** The Knobs view
+** The Knobs view
 
 
 ** Creating Views for any parameter

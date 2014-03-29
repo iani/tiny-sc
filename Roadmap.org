@@ -2,22 +2,7 @@
 
 * Currently working on
 
-
-** push params in currentEnvir
-
-
-
-** Playing patterns in SynthTree
-
-Steps:
-
-1. Try getting values from stream in MultiControl
-2. Try timing the triggering of new synths in SynthTree with a routine
-3. Try PatternFunc for control of single parameters
-4. Define class SynthTreePlayer that acts similarly to Pbind, but plays a SynthTree.
-
-
-*** Playing patterns in single parameters of a SynthTree
+** Playing patterns in single parameters of a SynthTree
 :PROPERTIES:
 :DATE:     <2014-03-28 Fri 12:55>
 :END:
@@ -36,7 +21,7 @@ Draft of how this looks in code.  Different things that one could do with a synt
 ~freq.numbox;
 ~freq.numSlider;
 ~freq.knobSlider;
-~freq.osdFunc(...)
+~freq.oscFunc(...)
 ~freq.midiFunc(...);
 ~freq.pattern(...);
 <a pattern player> => ~freq;
@@ -44,11 +29,46 @@ Draft of how this looks in code.  Different things that one could do with a synt
 \anotherSynth.push; // switch to another SynthTree for working ...
 #+END_SRC
 
-- There should also be a second selected classvar of SynthTree, for storing the last selected instance which has an input ("fx SynthTree).  That way one can send any new synthtree to the input of the fx synthtree. So two variables should be always available in the currentEnvironment:
-  - ~source :: the last selected synth
-  - ~fx :: the last selected synth with input
-
 IMPORTANT: Maybe use another operator for chucking stuff to a synthtree *without* making it current.  Unclear yet how this all works together when for example chaining several fx synths.
+
+*** Analysis: possible operations on parameters.
+:PROPERTIES:
+:DATE:     <2014-03-29 Sat 16:43>
+:END:
+
+~st: current synthtree: ==>= operates as usual, chucking into synthtree.
+~fx: current effect.  Can be used with ==<= to add new input.
+
+All other environment parameters will return a multiparameter instance controlling one of the synthree's parameters.
+
+There are following possibilities of chucking something to a synthree parameter:
+
+- number :: set the synthree parameter to that number
+- bus :: map the parameter to that bus
+- pattern or stream :: play the pattern or stream into that parameter
+- array :: convert array to pseq with inf repeats and play??????
+- function :: play it into bus and map the parameter to that bus
+- view :: set view to contol parameter
+- OSCFunc: set func to control parameter
+- MIDIFunc: set func to control parameter
+- Buffer :: set bufnum to the parameter for playing the buffer
+
+**** Constructing pattern players
+Shortcut method for turning Function, pattern, array, or stream into a patternplayer for playing into the parameter: =pp=!
+
+Alternative operator for constructing a pattern player (instead of =pp= method): Chuck:
+
+: <values: pattern/func/array>=> <durations: pattern/func/array/number>
+
+So one can go:
+
+: <values pat> => <durations pat> => ~freq
+
+To construct a pattern player and play it in parameter =freq=.
+
+**** Chucking into busses
+
+
 
 
 *** PatternFunc notes
@@ -133,6 +153,16 @@ See also: BasicIdeas.org, Extending AbstractResponderFunc paradigm -> Generalizi
 - Should keep its synths in own variable, allowing for playing of multiple synths at the same time.
 
 See also PatternPlayer ...
+
+
+** Playing patterns in SynthTree
+
+Steps:
+
+1. Try getting values from stream in MultiControl
+2. Try timing the triggering of new synths in SynthTree with a routine
+3. Try PatternFunc for control of single parameters
+4. Define class SynthTreePlayer that acts similarly to Pbind, but plays a SynthTree.
 
 
 
@@ -395,6 +425,10 @@ Testing synthdefs chucked into SynthTrees:
 d = SynthDef("asdf", { WhiteNoise.ar.adsrOut }).add;
 d => \test;
 #+END_EXAMPLE
+
+
+** push params in currentEnvir
+
 
 
 * Undergoing tests
