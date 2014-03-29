@@ -19,6 +19,7 @@ Template {
 	var <name;
 	var <template;
 	var <tags;
+	var <path;
 	
 	*initClass {
 		StartUp add: {
@@ -96,7 +97,7 @@ Template {
 							switch (char, // KeyFunc
 								13.asAscii, { // shift+return: chuck into new ST
 									sourceView.object.template => 
-									sourceView.object.makeSynthTreeName;
+									format("st%", UniqueID.next - 1001).asSymbol;
 								}
 							)
 						},

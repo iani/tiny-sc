@@ -516,7 +516,7 @@ SynthTree : IdentityTree {
 		param = args.getParam(\amp);
 		widget = panel.widgetFor(this);
 		label = widget.label;
-		label.addNotifier(this, \chuck, { 
+		label.addNotifier(this, \chuck, {
 			label.string = this.asString;
 		});
 		param.addView(\fader,
