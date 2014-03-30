@@ -95,6 +95,7 @@ BufferList {
 						this.free(view.item);
 					},
 					Char.space, { this.chuckBuffer(view.item, modifiers != 0) },
+					$n, { this.newStChuckBuffer(view.item, modifiers != 0) },
 					$f, { SynthTree.faders; },
 					$l, { this.loadBufferDialog; },
 					$s, { this.saveListDialog; },
@@ -102,9 +103,17 @@ BufferList {
 					{ view.defaultKeyDownAction(
 						char, modifiers, unicode, keycode, key)
 					}
-			)
-		};
+				)
+			};
 		});
+	}
+
+	newStChuckBuffer { | bufName, loop = true |
+		{ \buf.playBuf } asSynthTemplate: bufName
+		=> format("%%", bufName, UniqueID.next - 1001).asSymbol.asSynthTree
+		.buf(bufName)
+		.set(\amp, 1)
+		.set(\loop, if (loop) { 1 } { 0 });
 	}
 
  	chuckBuffer { | bufName, loop = true |
@@ -113,7 +122,7 @@ BufferList {
 		if (synthTree.isNil) {
 			synthTree = format("buf%", UniqueID.next - 1001).asSymbol.asSynthTree;
 		};
-		{ \buf.playBuf } => synthTree.buf(bufName)
+		{ \buf.playBuf } asSynthTemplate: bufName => synthTree.buf(bufName)
 		.set(\amp, 1)
 		.set(\loop, if (loop) { 1 } { 0 });
 	}

@@ -112,7 +112,8 @@ MultiControl : IdentityDictionary {
 		}
 	}
 
-	addPattern { | pattern, controlName = \pattern, startTogether = true, stopTogether = true |
+	addPattern { | pattern, controlName = \pattern, 
+		startTogether = true, stopTogether = true |
 		var pFunc;
 		pFunc = this[controlName];
 		pFunc !? { pFunc.remove };
@@ -125,7 +126,7 @@ MultiControl : IdentityDictionary {
 			pFunc.addNotifier(synthTree, \started, { pFunc.pattern.start });
 		};
 		if (stopTogether) {
-			pFunc.addNotifier(synthTree, \started, { pFunc.pattern.stop });
+			pFunc.addNotifier(synthTree, \stopped, { pFunc.pattern.stop });
 		}
 	}
 

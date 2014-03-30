@@ -200,21 +200,13 @@ SynthTree : IdentityTree {
 	chuck { | argTemplate, argReplaceAction = \fadeOut, argFadeTime |
 		/*  Set my template.  Start synth. Replace previous one. */
 		notStopped = true;
-
-		/*		if (argTemplate.isKindOf(Node)) {
-			synth = argTemplate;
-			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
-			inputs do: _.moveBefore(synth);
-		}{
-		*/
-			template = (argTemplate ? template).asSynthTemplate(this);
-			this.makeInputs(template.inputSpecs);
-			this.makeArgs(template.templateArgs);
-			if (synth.isPlaying) {
-				this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
-			};
-			this.makeSynth;
-		//	};
+		template = (argTemplate ? template).asSynthTemplate(name);
+		this.makeInputs(template.inputSpecs);
+		this.makeArgs(template.templateArgs);
+		if (synth.isPlaying) {
+			this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
+		};
+		this.makeSynth;
 		this.push;
 	}
 
@@ -238,7 +230,7 @@ SynthTree : IdentityTree {
 			self as input to another SynthTree (=<).
 			Manner of replacing previous synth is stored in replaceAction */
 		replaceAction = argReplaceAction;
-		template = argTemplate.asSynthTemplate(this);
+		template = argTemplate.asSynthTemplate(name);
 		this.makeInputs(template.inputSpecs);
 		this.makeArgs(template.templateArgs);
 		this.push;
@@ -257,7 +249,9 @@ SynthTree : IdentityTree {
 		synth = template.asSynth(this, attackTime);
 		// guarantee that moveBefore happens AFTER the synth has really started!
 		synth !? {
-			synth.onEnd(\this, { this.changed(\stopped) }); // This also registers on NodeWatcher
+			synth.onEnd(\this, { // This also registers on NodeWatcher:
+				if (this.isPlaying.not) { this.changed(\stopped) };
+			}); 
 			this.addNotifierOneShot(synth, 'n_go', {
 				this do: _.moveBefore(synth);
 				this.changed(\started);

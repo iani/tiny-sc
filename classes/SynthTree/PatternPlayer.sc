@@ -26,8 +26,10 @@ PatternPlayer {
 	}
 
 	values_ { | values |
+		[this, thisMethod.name, "beforre", valuePattern, valueStream].postln;
 		valuePattern = values;
 		valueStream = valuePattern.asStream;
+		[this, thisMethod.name, "after", valuePattern, valueStream].postln;
 	}
 
 	durations_ { | durations |
@@ -102,12 +104,21 @@ PatternFunc {
 	}
 }
 
-+ Function {
-	pp { | durations | 
-		^PatternPlayer(Pfunc(this), durations ?? { Pfunc({ ~dur }) })
-	}
-	ppn { | repeats = 1, durations | 
-		^PatternPlayer(Pfuncn(this, repeats), durations ?? { Pfunc({ ~dur }) })
++ Association {
+	=> { | param |
+		^key pp: value => param
 	}
 }
 
++ Function {
+	pp { | durations | 
+		^PatternPlayer(Pfunc(this), durations ?? { Pfunc({ ~dur.next }) })
+	}
+	ppn { | repeats = 1, durations | 
+		^PatternPlayer(Pfuncn(this, repeats), durations ?? { Pfunc({ ~dur.next }) })
+	}
+}
+
++ Object {
+	globDur { currentEnvironment.parent[\dur] = this.asStream } 
+}

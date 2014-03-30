@@ -9,13 +9,13 @@ IZ Thu, Mar 27 2014, 17:39 EET
 
 FunctionSynthTemplate {
 	var <function, <synthdef;
-	*new { | function, synthTree |
-		^this.newCopyArgs(function).makeSynthDef(synthTree);
+	*new { | function, name |
+		^this.newCopyArgs(function).makeSynthDef(name);
 	}
 
-	makeSynthDef { | synthTree |
-		synthdef = SynthDef(synthTree.name, 
-			{ function.value.adsrOut(attackTime: synthTree.fadeTime); }
+	makeSynthDef { | name |
+		synthdef = SynthDef(name, 
+			{ function.value.adsrOut(attackTime: 0.2); }
 		); // we don't actually use it on the server. no .add
 	}
 

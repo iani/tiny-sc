@@ -8,7 +8,7 @@
 
 The purpose of this library is to provide simple and short solutions for some relatively complex or arduous recurring tasks in SuperCollider.  It is hoped that it will make working with SuperCollider easier, at any level.  The following sections introduce features of the library through examples.
 
-Examples are added here after being tested.  More details about what tiny-sc sets out to do are found in file =Roadmap.org=.
+Examples are added here after being tested.  More details about what tiny-sc sets out to do are found in files =Roadmap.org= and =BasicIdeas.org=.
 
 * Basic synth handling
 
@@ -52,20 +52,29 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 { 50 do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; \sound.fadeOut(3); }.fork;
 #+END_EXAMPLE
 
-* Play patterns in parameters
+* QUOTE Play patterns in parameters
 
 #+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(400)) } => \sound;
 // Play a pattern into ~freq:
-{ 50.rrand(80).midicps }.pp(0.1) => ~freq;
+{ 50.rrand(80).midicps } -> 0.1 => ~freq;
+// Alternative formulation:
+{ 80.rrand(90).midicps } pp: 0.2 => ~freq;
 //: Play another pattern into ~freq:
-{ 250 rrand: 350 }.pp(0.05) => ~freq;
+{ 250 rrand: 350 } -> 0.05 => ~freq;
 //: And another:
-{ [60, 62, 66, 67].choose.midicps }.pp(Prand([0.1, 0.2, 0.4], inf)) => ~freq;
+{ [60, 62, 66, 67].choose.midicps } -> Prand([0.1, 0.2, 0.4], inf) => ~freq;
+// Pattern keeps playing when new synth is chucked into tree:
+{ LPF.ar(LFPulse.ar(\freq.kr(440)), 1000) } => \sound;
 // Open knobs interface to watch how freq changes
 ~st.knobs;
+// Use nil to play with global duration stored in ~dur:
+{ [65, 69, 70, 73].choose.midicps } -> nil => ~freq;
+// Change global duration:
+0.1.globDur;
+// Use a pattern for global duration:
+Pbrown(0.01, 0.2, 0.25, inf).globDur;
 #+END_EXAMPLE
-
 
 * Restart synths after Command-.
 
