@@ -188,7 +188,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 }
 
 + Function {
-
+	
 	asSynthTemplate { | synthTree | 
 		^FunctionSynthTemplate(this, synthTree);
 	}

@@ -5,7 +5,7 @@ IZ Sun, Mar 16 2014, 17:45 EET
 */
 
 BufferList {
-	
+
 	classvar <>autoload = false;
 	classvar <all;
 
@@ -29,7 +29,7 @@ BufferList {
 		};
 		^instance;
 	}
-	
+
 	init {
 		var bufferDict, buffer;
 		bufferDict = Library.at(server);
@@ -62,7 +62,7 @@ BufferList {
 			extension = pathname.extension.asSymbol;
 			if ([\aiff, \aif, \wav] includes: extension) {
 				postf("Pre-loading: %\n", filePath);
-				Library.put(server, pathname.fileNameWithoutExtension.asSymbol, 
+				Library.put(server, pathname.fileNameWithoutExtension.asSymbol,
 					BufferDummy(filePath);
 				);
 			}
@@ -94,17 +94,28 @@ BufferList {
 					8.asAscii, { // backspace key
 						this.free(view.item);
 					},
-					Char.space, { this.toggleBuffer(view.item, modifiers != 0) },
+					Char.space, { this.chuckBuffer(view.item, modifiers != 0) },
 					$f, { SynthTree.faders; },
 					$l, { this.loadBufferDialog; },
 					$s, { this.saveListDialog; },
 					$o, { this.openListDialog; },
 					{ view.defaultKeyDownAction(
-						char, modifiers, unicode, keycode, key) 
+						char, modifiers, unicode, keycode, key)
 					}
 			)
 		};
 		});
+	}
+
+ 	chuckBuffer { | bufName, loop = true |
+		var synthTree;
+		synthTree = ~st;
+		if (synthTree.isNil) {
+			synthTree = format("buf%", UniqueID.next - 1001).asSymbol.asSynthTree;
+		};
+		{ \buf.playBuf } => synthTree.buf(bufName)
+		.set(\amp, 1)
+		.set(\loop, if (loop) { 1 } { 0 });
 	}
 
 	toggleBuffer { | bufName, loop = true |
@@ -170,7 +181,7 @@ BufferList {
 	*nameList { | server |
 		^this.new(server).nameList;
 	}
-	
+
 	nameList {
 		var buffers;
 		buffers = Library.at(server);
