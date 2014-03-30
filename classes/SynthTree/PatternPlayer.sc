@@ -79,7 +79,19 @@ PatternFunc {
 	disable {
 		this.removeNotifier(pattern, \value);
 	}
-
 	remove { this.disable }
-
 }
+
++ SequenceableCollection {
+	=> { | durations, repeats |
+		repeats = repeats ? 1;
+		if (repeats == 'i') { repeats = inf };
+		^PatternPlayer(Pseq(this, repeats), durations);
+		
+	}
+
+	pp { | repeats = 1, durations |
+		^PatternPlayer(Pseq(this, repeats), durations ?? { Pfunc({ ~dur }) })
+	}
+}
+
