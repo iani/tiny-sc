@@ -33,18 +33,39 @@ Try the following, one line at a time:
 \sound.set(\out, 1);
 // So can the amplitude
 \sound.set(\amp, 0.01);
-// Parameters of last chucked SynthTree are in the environment.
-// So, one can chuck into them:
-0.03 => ~amp;
-// Change channels again
-{ 30 do: { 2.rand => ~out; 0.1.wait } }.fork;
-// Set a sound with frequency to play with:
-{ LFSaw.ar(\freq.kr(440)) } => \sound;
-// Play with frequency
-{ 150 do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; }.fork;
 // Fadeout with custom duration
 \sound.fadeOut(5);
 #+END_EXAMPLE
+
+* Synth parameters are environment variables
+
+When a synth template gets chucked to a synthtree with =>, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.
+
+#+BEGIN_EXAMPLE
+{ LPF.ar(LFSaw.ar(\freq.kr(440)), \filterFreq.kr(1000)) } => \sound;
+// Parameters of last chucked SynthTree are in the environment.
+// Change the filter frequency:
+400 => ~filterFreq;
+// Change the generator frequency:
+600 => ~freq;
+// Play a routine into frequency, then fade out
+{ 50 do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; \sound.fadeOut(3); }.fork;
+#+END_EXAMPLE
+
+* Play patterns in parameters
+
+#+BEGIN_EXAMPLE
+{ SinOsc.ar(\freq.kr(400)) } => \sound;
+// Play a pattern into ~freq:
+{ 50.rrand(80).midicps }.pp(0.1) => ~freq;
+//: Play another pattern into ~freq:
+{ 250 rrand: 350 }.pp(0.05) => ~freq;
+//: And another:
+{ [60, 62, 66, 67].choose.midicps }.pp(Prand([0.1, 0.2, 0.4], inf)) => ~freq;
+// Open knobs interface to watch how freq changes
+~st.knobs;
+#+END_EXAMPLE
+
 
 * Restart synths after Command-.
 

@@ -112,14 +112,21 @@ MultiControl : IdentityDictionary {
 		}
 	}
 
-	addPattern { | pattern, controlName = \pattern |
+	addPattern { | pattern, controlName = \pattern, startTogether = true, stopTogether = true |
 		var pFunc;
 		pFunc = this[controlName];
 		pFunc !? { pFunc.remove };
-		this[controlName] = PatternFunc(pattern, this, { | value |
-			[this, thisMethod.name, value].postln;
+		pFunc = PatternFunc(pattern, this, { | value |
 			this.set(value);
 		});
+		this[controlName] = pFunc;
+		if (synthTree.isPlaying and: { pattern.isPlaying.not }) { pattern.start };
+		if (startTogether) {
+			pFunc.addNotifier(synthTree, \started, { pFunc.pattern.start });
+		};
+		if (stopTogether) {
+			pFunc.addNotifier(synthTree, \started, { pFunc.pattern.stop });
+		}
 	}
 
 	add { | controlName, control |

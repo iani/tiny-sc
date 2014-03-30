@@ -443,7 +443,12 @@ SynthTree : IdentityTree {
    .choose(param, element, path);
    .wchoose(param, element, path);
 	*/
-	
+
+	addPattern { | patternPlayer |
+		// Make patternPlayer my template, and play synths with it
+		// TODO !
+		[this, thisMethod.name, "Not yet implemented"].postln;
+	}
 	knobs {
 		this.getArgsFromTemplate do: _.addView;
 	}

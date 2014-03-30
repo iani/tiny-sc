@@ -60,6 +60,10 @@ PatternPlayer {
 	reset { task.reset; }
 
     isPlaying { ^task.isPlaying; }
+
+	=> { | synthOrParameter, key = \pattern |
+		synthOrParameter.addPattern(this, key)
+	}
 }
 
 /* 
@@ -79,7 +83,10 @@ PatternFunc {
 	disable {
 		this.removeNotifier(pattern, \value);
 	}
-	remove { this.disable }
+	remove {
+		this.disable;
+		this.objectClosed;
+	}
 }
 
 + SequenceableCollection {
@@ -92,6 +99,15 @@ PatternFunc {
 
 	pp { | repeats = 1, durations |
 		^PatternPlayer(Pseq(this, repeats), durations ?? { Pfunc({ ~dur }) })
+	}
+}
+
++ Function {
+	pp { | durations | 
+		^PatternPlayer(Pfunc(this), durations ?? { Pfunc({ ~dur }) })
+	}
+	ppn { | repeats = 1, durations | 
+		^PatternPlayer(Pfuncn(this, repeats), durations ?? { Pfunc({ ~dur }) })
 	}
 }
 

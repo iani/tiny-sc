@@ -23,7 +23,7 @@ Draft of how this looks in code.  Different things that one could do with a synt
 ~freq.knobSlider;
 ~freq.oscFunc(...)
 ~freq.midiFunc(...);
-~freq.pattern(...);
+~freq.pattern(...);  // or: ~freq.pp(...);
 <a pattern player> => ~freq;
 
 \anotherSynth.push; // switch to another SynthTree for working ...
@@ -183,6 +183,24 @@ Steps:
 
 
 * Immediate TODOs
+
+
+** Make patterns restart on SynthTree.init and continue on synth chuck
+(Sun, Mar 30 2014, 19:55 EEST)
+
+#+BEGIN_EXAMPLE
+{ SinOsc.ar(\freq.kr(400)) } => \sound;
+// Play a pattern into ~freq:
+{ 50.rrand(80).midicps }.pp(0.1) => ~freq;
+// Pattern should keep playing:
+{ LFPulse.ar(\freq.kr(400)) } => \sound;
+// Pattern restarts when the synth starts, even after thisProcess.stop;
+thisProcess.stop; // stop routines and synths
+// Pattern should also restart now:
+SynthTree.init;
+#+END_EXAMPLE
+
+
 
 ** SynthTree: review root scheme to use envir
 
