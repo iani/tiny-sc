@@ -52,6 +52,7 @@ There are following possibilities of chucking something to a synthree parameter:
 - OSCFunc: set func to control parameter
 - MIDIFunc: set func to control parameter
 - Buffer :: set bufnum to the parameter for playing the buffer
+- Event :: set all params and restart.
 
 **** Constructing pattern players
 Shortcut method for turning Function, pattern, array, or stream into a patternplayer for playing into the parameter: =pp=!
@@ -65,6 +66,19 @@ So one can go:
 : <values pat> => <durations pat> => ~freq
 
 To construct a pattern player and play it in parameter =freq=.
+
+One could also use this with an event, in which case there are 2 possibilities:
+
+1. Play all associations in the event as parameter-value pairs, with the values forming streams, pbind-like, playing new synths at each new evaluation of the pattern's values.
+: <event> => <durations pat> => <synthtree>
+
+2. Do not play new synths at each evaluation, but just set the parameters of the synth.
+
+: <event> => <durations pat> =*> <synthtree>
+
+Additionally, for case 1, one may use a special instrument name such as \slur or \portamento, or '*' or '-', to skip a new synth and set the parameters of the current synth, behaving as in case 2.
+
+
 
 **** Chucking into busses
 
@@ -170,42 +184,12 @@ Steps:
 
 * Immediate TODOs
 
-** fix drag start from fader DragBoth.  SynthTree:asString -> Function does not understand "name"!
+** SynthTree: review root scheme to use envir
 
-** creating a new synthtree which contains an input should make that synthtree the current selection, so that typing control-return on a SynthTemplate selection sends it to the latest created SynthTree with input.
 
-** Add fade-in and fade-out toggles for both selected node and entire SynthTree, with times from 0 to 9 seconds, bound to the corresponding keys from 0 to 9.
-
-** Group of global keyboard commands based on H-c and H-c H-x.
-Also improve the keyboard command documentation, showing the rationale for the commands:
-
-- Basic combination 1: C-M key
-- Basic combination 2: H-c key or H-c H-key
-- Basic combiantion 3: H-c H-x key or H-c H-x H-key
-
-** Global Streams, StreamPatterns, Patterns, PatternPlayers
-
-Patterns, Streams, StreamPatterns and PatternPlayers should be stored globally each in its own dict, and added to any number of SynthTrees.  One SynthTree might want to compose the stream source used by another SynthTree with a second stream source!
-
-They could be stored in / accessed from the global Library.
-
-How many categories should exist?
-
-- Patterns :: Used to spawn streams that go directly in a MultiControl stream, privately
-- Streams :: Used to store streams for global access.  Cannot respawn. Note: sharing streams as sources of values in different SynthTrees problematic (cannot call next twice - who calls first? See note below: "Important:", and next section, StreamFunc for solution of this problem).
-- StreamPatterns :: Like streams, but can respawn their stream when ended.  Multiple access problem of Streams also apply here.
-- PatternPlayers :: Play patterns in time.  Can be distributed to multiple patterns via Notification.  Play independently of Synth start, therefore no synchronization problem.
-
-Important:  Calling "next" on demand at synth start: Cannot ask the same stream to share with multiple events.  How to synchronize/distribute?  Common pattern player for many synth-trees?  The solution is to broadcast a stream's values with 'changed' method calls, and catch them in similar manner as a ViewFunc does (i.e. like an Responder).  Call this StreamFunc.  One can define FilterStreamFunc as a subclass of StreamFunc, to process the incoming values of with either a function or a FilterPattern, also creating BinOp trees for composing different operations on the incoming value.
-
-** StreamFunc
-
-see above.  (more to come)
-
-*** PatternPlayers vs SynthPlayers
-PatternPlayers play a single stream
-
-SynthPlayers play a SynthTree in Pbind-like manner.  They enclose the created synth events in a single group private to the SynthTree, divert the synths to a private bus, which is then processed by a synth that provides amplitude and fadein/out control.
+Insert 2 envir variables, separate for each server parent envir:
+~root = the root of the server tree
+~dur = the default duration for playing patterns.  Can be a stream, or even responder ... (!)
 
 ** SynthTree:
 
@@ -272,6 +256,32 @@ Finally, better use message style, because clearer, and also chainable:
 **** StreamPattern methods / operators?
   - Pattern.play(durationPattern);
   - SequenceableCollection.play(durationPattern);
+
+** Add fade-in and fade-out toggles for both selected node and entire SynthTree, with times from 0 to 9 seconds, bound to the corresponding keys from 0 to 9.
+
+** Global Streams, StreamPatterns, Patterns, PatternPlayers
+
+Patterns, Streams, StreamPatterns and PatternPlayers should be stored globally each in its own dict, and added to any number of SynthTrees.  One SynthTree might want to compose the stream source used by another SynthTree with a second stream source!
+
+They could be stored in / accessed from the global Library.
+
+How many categories should exist?
+
+- Patterns :: Used to spawn streams that go directly in a MultiControl stream, privately
+- Streams :: Used to store streams for global access.  Cannot respawn. Note: sharing streams as sources of values in different SynthTrees problematic (cannot call next twice - who calls first? See note below: "Important:", and next section, StreamFunc for solution of this problem).
+- StreamPatterns :: Like streams, but can respawn their stream when ended.  Multiple access problem of Streams also apply here.
+- PatternPlayers :: Play patterns in time.  Can be distributed to multiple patterns via Notification.  Play independently of Synth start, therefore no synchronization problem.
+
+Important:  Calling "next" on demand at synth start: Cannot ask the same stream to share with multiple events.  How to synchronize/distribute?  Common pattern player for many synth-trees?  The solution is to broadcast a stream's values with 'changed' method calls, and catch them in similar manner as a ViewFunc does (i.e. like an Responder).  Call this StreamFunc.  One can define FilterStreamFunc as a subclass of StreamFunc, to process the incoming values of with either a function or a FilterPattern, also creating BinOp trees for composing different operations on the incoming value.
+
+** StreamFunc
+
+see above.  (more to come)
+
+*** PatternPlayers vs SynthPlayers
+PatternPlayers play a single stream
+
+SynthPlayers play a SynthTree in Pbind-like manner.  They enclose the created synth events in a single group private to the SynthTree, divert the synths to a private bus, which is then processed by a synth that provides amplitude and fadein/out control.
 
 ** Map synths to params via busses
 :PROPERTIES:
@@ -432,6 +442,17 @@ d => \test;
 ** push params in currentEnvir
 
 
+
+** fix drag start from fader DragBoth.  SynthTree:asString -> Function does not understand "name"!
+
+** creating a new synthtree which contains an input should make that synthtree the current selection, so that typing control-return on a SynthTemplate selection sends it to the latest created SynthTree with input.
+
+** Group of global keyboard commands based on H-c and H-c H-x.
+Also improve the keyboard command documentation, showing the rationale for the commands:
+
+- Basic combination 1: C-M key
+- Basic combination 2: H-c key or H-c H-key
+- Basic combiantion 3: H-c H-x key or H-c H-x H-key
 
 * Undergoing tests
 

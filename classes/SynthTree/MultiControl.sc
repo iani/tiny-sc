@@ -15,14 +15,10 @@ SynthTreeArgs : /* IdentityDictionary */ Event {
 	*new { | synthTree | ^super.new.init(synthTree); }
 
 	init { | argSynthTree |
-		var myParent;
+		var myServer;
 		synthTree = argSynthTree;
-		myParent = parentEvents[synthTree.server];
-		if (myParent.isNil) {
-			myParent = ();
-			parentEvents[synthTree.server] = myParent;
-		};
-		parent = myParent;
+		myServer = synthTree.server;
+		parent = parentEvents[myServer] ?? { SynthTree.makeParentEvent(myServer) };
 	}
 
 	storeArgValue { | key, value |
@@ -110,35 +106,10 @@ MultiControl : IdentityDictionary {
 		this.changed(\value, value, unmappedValue);
 	}
 
-	// NOT YET DONE:
-	map { | curve |
-		/*  Fade any parameter to any value(s) using a line or envelope ugen
-			on a control bus, mapped to the parameter.
-			The control bus is allocated on the fly and released when the 
-			fade synth is freed.  Specification of curves: 
-			target@dur point: line from current value to x in dur seconds.
-			function: make control rate output synth to the bus.
-			Env: Play it with control rate synth to the bus.
-			
-			Enhancements: Add value of param at start as offset to control signal.
-			Control shape funcs/envs etc. can be stored in separate lists/symbols and
-			mapped to params by \curve =@>.param \synth
-			Or by drag-and-drop from curve list GUI to knobs of synth gui.
-			var synthFunc, bus, synth, startVal, endVal;
-
-			Implementation Note: 
-			This should be handled by a separate class encapsulating the bus
-			to be mapped and any number of synths that are writing to it.
-
-		*/
-		var bus, synthFunc, synth, startVal, endVal;
-		bus = Bus.control(this.server, 1);
-
-		synth = synthFunc.();
-		synth.onEnd({
-			
-			this.set()
-		})
+	map { | bus |
+		if (synthTree.isPlaying) {
+			synthTree.synth.map(name, bus.index);
+		}
 	}
 
 	add { | controlName, control |

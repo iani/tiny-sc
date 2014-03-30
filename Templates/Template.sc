@@ -83,6 +83,11 @@ Template {
 						0, { // no modifier (just one key typed)
 							switch (char,
 								13.asAscii, { // return key: chuck into selected ST
+									[this, thisMethod.name, 
+											sourceView.object.template,
+										"=>",
+										~st
+									].postln;
 									sourceView.object.template => ~st;			
 								},
 								Char.space, { // space key: toggle selected ST

@@ -254,3 +254,10 @@ IZ Sat, Mar  8 2014, 23:40 EET
         ^Synth.new(this[0], args, synthTree.group, \addToHead);
     }
 }
+
++ SimpleNumber {
+	=> { | param |
+		[this, thisMethod.name, param].postln;
+		param.set(this);
+	}
+}

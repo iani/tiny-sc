@@ -17,7 +17,7 @@ SynthTree : IdentityTree {
 	/* Each parent event contains: 
 		~fx: the last chucked SynthTree which has inputs
 		~st: the last chucked SynthTree or the SynthTree pushed explicitly with 
-		aSynthTree.push;
+		~dur: the default duration for playing patterns
 	*/
 	var <synth;  // the synth of this node
 	var <>inputs; // dictionary of input names and bus specs or busses
@@ -37,9 +37,11 @@ SynthTree : IdentityTree {
 		StartUp add: {
 			var server;
 			server = Server.default;
-			default = this.new(\root);
+			parentEvents = IdentityDictionary();
+			this.makeParentEvent(server);
 			nameSpaces = MultiLevelIdentityDictionary();
 			nameSpaces[server, \root] = default;
+			default = this.new(\root);
 			default.inputs = IdentityDictionary();
 			default.inputs[\in] = Bus('audio', 0,
 				// server.options.numOutputBusChannels,
@@ -56,6 +58,13 @@ SynthTree : IdentityTree {
 			Spec.specs.[\trigRate] = [0.1, 50, 'exp', 0, 1, ""].asSpec;
 			if (showGuiAtStartup) { this.faders };
 		}
+	}
+
+	*makeParentEvent { | argServer |
+		var parentEvent;
+		parentEvent = (dur: 1/3);
+		parentEvents[argServer] = parentEvent;
+		^parentEvent;
 	}
 
 	*at { | symbol, createIfMissing = true |
@@ -188,29 +197,39 @@ SynthTree : IdentityTree {
 		this.chuck(chucker, replaceAction);
 	}
 
-	chuck { | synthOrTemplate, argReplaceAction = \fadeOut, argFadeTime |
+	chuck { | argTemplate, argReplaceAction = \fadeOut, argFadeTime |
 		/*  Set my template.  Start synth. Replace previous one. */
 		notStopped = true;
-		if (synthOrTemplate.isKindOf(Node)) {
-			synth = synthOrTemplate;
+
+		/*		if (argTemplate.isKindOf(Node)) {
+			synth = argTemplate;
 			synth.set(\out, this.getOutputBusIndex).moveToHead(this.group);
 			inputs do: _.moveBefore(synth);
 		}{
-			template = (synthOrTemplate ? template).asSynthTemplate(this);
+		*/
+			template = (argTemplate ? template).asSynthTemplate(this);
 			this.makeInputs(template.inputSpecs);
+			this.makeArgs(template.templateArgs);
 			if (synth.isPlaying) {
 				this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
 			};
 			this.makeSynth;
-		};
+		//	};
 		this.push;
+	}
+
+	makeArgs { | templateArgs |
+		templateArgs do: { | cn |
+			args.getParam(cn.name, nil, cn.defaultValue);
+		};
 	}
 
 	push {
 		args.parent[\st] = this;
 		if (inputs.size > 0) { args.parent[\fx] = this; };
-		args.pushl; // currentEnvironment = args; 
+		args.push;		// currentEnvironment = args; 
 		this.changed(\chuck);
+		postf("~st set to: %\n", this);
 	}
 
 	setTemplate { | argTemplate, argReplaceAction = \fadeOut |
@@ -220,7 +239,9 @@ SynthTree : IdentityTree {
 			Manner of replacing previous synth is stored in replaceAction */
 		replaceAction = argReplaceAction;
 		template = argTemplate.asSynthTemplate(this);
-		this.gotChucked;
+		this.makeInputs(template.inputSpecs);
+		this.makeArgs(template.templateArgs);
+		this.push;
 	}
 
 	moveBefore { | argSynth |
@@ -452,39 +473,13 @@ SynthTree : IdentityTree {
 		panel = Sliders.getPanel(argServer.asSymbol);
 		panel.window.view.keyDownAction = { | view, char |
 			switch (char,
-				$b, { BufferList.showList('Create Buffer Player', argServer); }
+				$b, { BufferList.showList('Create Buffer Player', argServer); },
+				$t, { SynthTemplate.gui; },
+				$,, { thisProcess.stop },
+				$., { SynthTree.stopAll },
+				$i, { SynthTree.initTree },
+				$/, { SynthTree.initTree }
 			);
-		};
-		panel.sliders do: { | s |
-			s.label.canReceiveDragHandler = {
-				View.currentDrag isKindOf: Template or: 
-				{ View.currentDrag isKindOf: SynthTree and: 
-					{ s.object.hasInputs; }
-					and:
-					{ s.object hasNoCycles: View.currentDrag }
-				}
-			};
-			s.label.receiveDragHandler = {
-				var name;
-				if (s.label.object isKindOf: String) {
-					name = View.currentDrag.makeSynthTreeName;
-					View.currentDrag.template => name;
-					s.label.string = name;
-				};
-			};
-			s.label.focusGainedAction = { | me |
-				me.object.push;
-			};
-			s.slider.keyDownAction = { | view, char |
-				switch (char,
-					$b, { BufferList.showList('Create Buffer Player', argServer); },
-					$t, { SynthTemplate.gui; },
-					$,, { thisProcess.stop },
-					$., { SynthTree.stopAll },
-					$i, { SynthTree.initTree },
-					$/, { SynthTree.initTree }
-				)
-			};
 		};
 		all.keys.asArray.select({ | name | name != \root }).sort
 		do: { | name | all[name].prFader(panel) };
@@ -505,8 +500,29 @@ SynthTree : IdentityTree {
 		widget = panel.widgetFor(this);
 		label = widget.label;
 		label.addNotifier(this, \chuck, {
-			panel.setSelection(this);
+			panel.setSelection(label, this);
 		});
+		label.canReceiveDragHandler = {
+			var drag;
+			drag = View.currentDrag;
+			drag isKindOf: Template or: 
+			{ drag isKindOf: SynthTree and: 
+				{ this.hasInputs; }
+				and:
+				{ this hasNoCycles: drag }
+			}
+		};
+		label.receiveDragHandler = {
+			var drag;
+			drag = View.currentDrag;
+			switch (drag.class,
+				SynthTemplate, { drag.template => this },
+				SynthTree, { this =< drag }
+			);
+		};
+		label.focusGainedAction = {
+			if (not(~st === this)) { this.push };
+		};
 		param.addView(\fader,
 			param.connectParamView(widget.slider)
 		);
@@ -515,10 +531,14 @@ SynthTree : IdentityTree {
 	hasInputs { ^inputs.size > 0 }
 
 	hasNoCycles { | potentialInput |
-		/* make sure that potentialInput is not part of the output chain */
-		if (output.isNil) { ^true } { ^output hasNoCycles: potentialInput }
+		^not(this === potentialInput) 
+		and: {
+			output.isNil 
+			or: { output hasNoCycles: potentialInput }
+		};
 	}
 
+	/*
 	// under development
 	fade { | duration = 1, target = 0 |
 		// fade amplitude with a line ugen from current value to 
@@ -532,6 +552,7 @@ SynthTree : IdentityTree {
 		*/
 		this.getParam(param).map(curve);
 	}
+	*/
 
 	bufferList {
 		// From BufferList. Select buffer from list and play it

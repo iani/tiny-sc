@@ -62,24 +62,13 @@ Sliders : UniqueWindow {
 		^widget;
 	}
 
-	setSelection { | object |
-		var obName, widget;
-		obName = object.asString;
-		window.name = obName;
-		widget = sliders[object];
-		widget !? {
-			widget.label.string = obName;
-			widget.label focus: true;
-			widget.label.background = Color(0.3, 0.8, 0.9);
-			if (selection != widget) {
-				selection !? {
-					selection.label.background = Color.grey.alpha_(0);
-				};
-			};
-		};
-		selection = widget;
+	setSelection { | label, object |
+		selection !? { selection.background = Color.gray.alpha_(0) };
+		label.background = Color(0.1, 0.8, 0.9);
+		label.string = object.asString;
+		selection = label;
+		label focus: true;
 	}
-
 }
 
 SliderWithLabel {
@@ -96,10 +85,6 @@ SliderWithLabel {
 		slider.onClose = { slider.objectClosed };
 		label = DragBoth().object_("").font_(Font.default.size_(11));
 		label.onClose = { label.objectClosed };
-		label.focusGainedAction = {
-			// CHECK: without defer, sometimes loops to-fro between last focus?
-			{ panel.setSelection(this.object) }.defer(0.001);
-		};
 		layout = HLayout(label, slider);
 		label.keyDownAction = { | view, char, modifiers, unicode, keycode, key |
 			slider.keyDownAction.(slider, char, modifiers, unicode, keycode, key)
