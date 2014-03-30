@@ -33,6 +33,15 @@ Try the following, one line at a time:
 \sound.set(\out, 1);
 // So can the amplitude
 \sound.set(\amp, 0.01);
+// Parameters of last chucked SynthTree are in the environment.
+// So, one can chuck into them:
+0.03 => ~amp;
+// Change channels again
+{ 30 do: { 2.rand => ~out; 0.1.wait } }.fork;
+// Set a sound with frequency to play with:
+{ LFSaw.ar(\freq.kr(440)) } => \sound;
+// Play with frequency
+{ 150 do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; }.fork;
 // Fadeout with custom duration
 \sound.fadeOut(5);
 #+END_EXAMPLE

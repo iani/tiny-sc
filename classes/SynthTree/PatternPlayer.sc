@@ -10,82 +10,76 @@ IZ Wed, Mar  5 2014, 10:47 EET
 */
 
 PatternPlayer {
-	/*
-		// New draft: Wed, Mar 26 2014, 12:59 EET
-
-		var <name;
-		var <valueTemplate;
-		var <durationTemplate;
-		var <clock;
-		var <valueStream;
-		var <durationStream;
-		var <currentValue;
-		var <currentDuration;
-		var <task;
-
-	*/
-
+	
+	var <>initialDelay;
+	var <>clock;
 	var <valuePattern;
 	var <durationPattern;
-	var <>initialDelay = 0;
-	var <>clock;
-	var <pub;
 	var <valueStream;
 	var <durationStream;
 	var <task;
 	var <currentValue, <currentDuration;
 
-	*new { | values, durations |
-		^this.newCopyArgs(values, durations);
+	*new { | values, durations, delay, clock |
+		^this.newCopyArgs(delay, clock)
+		.values_(values).durations_(durations);
 	}
 
 	values_ { | values |
-		valuePattern = values.asPattern;
+		valuePattern = values;
 		valueStream = valuePattern.asStream;
 	}
 
 	durations_ { | durations |
-		durationPattern = (durations ?? {{ pub.pollRate }}).asPattern;
+		durationPattern = durations;
 		durationStream = durationPattern.asStream;
 	}
 	
-	makePubAction { | argPub |
-		pub = argPub;
-		this.values = valuePattern;
-		this.durations = durationPattern;
+	makeTask {
 		task = Task {
-			pub.changed(\taskStarted);
-			initialDelay.wait;
-			pub.changed(\taskLoopStarted);
+			this.changed(\taskStarted);
+			initialDelay !? { initialDelay.wait; };
+			this.changed(\taskLoopStarted);
 			while {
 				(currentValue = valueStream.next).notNil 
 				and:
 				{ (currentDuration = durationStream.next).notNil }
 			}{
-				pub.changed(\value, currentValue);
+				this.changed(\value, currentValue);
 				currentDuration.wait;
 			};
-			pub.changed(\taskStopped);
+			this.changed(\taskStopped);
+			task = nil;
 		}
 	}
-    start { task.play(clock); }
+    start {
+		task ?? { this.makeTask }; 
+		task.play(clock);
+	}
     stop { task.stop; }
+	reset { task.reset; }
+
     isPlaying { ^task.isPlaying; }
 }
 
-+ Object {
-	asPattern { | repeats = inf | ^Pn(this, repeats) }
-}
+/* 
+IZ Sun, Mar 30 2014, 16:37 EEST
+*/
 
-+ Pattern {
-	asPattern { /* ^this */ }
-}
+PatternFunc {
+	var <pattern, <receiver, <>action;
+	*new { | pattern, receiver, action |
+		^this.newCopyArgs(pattern, receiver, action).enable;
+	}
 
-+ SequenceableCollection {
-	asPattern { | repeats = inf | ^Pseq(this, repeats) }
-}
+	enable {
+		this.addNotifier(pattern, \value, action);
+	}
 
-+ Function {
-	asPattern { | repeats = inf | ^Pfuncn(this, repeats) }
-}
+	disable {
+		this.removeNotifier(pattern, \value);
+	}
 
+	remove { this.disable }
+
+}

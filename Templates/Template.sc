@@ -83,12 +83,12 @@ Template {
 						0, { // no modifier (just one key typed)
 							switch (char,
 								13.asAscii, { // return key: chuck into selected ST
-									[this, thisMethod.name, 
-											sourceView.object.template,
-										"=>",
-										~st
-									].postln;
-									sourceView.object.template => ~st;			
+									if (~st.isNil) {
+										sourceView.object.template => 
+										format("st%", UniqueID.next - 1001).asSymbol;
+									}{
+										sourceView.object.template => ~st;
+									}
 								},
 								Char.space, { // space key: toggle selected ST
 									~st !? { ~st.toggle }
@@ -102,17 +102,21 @@ Template {
 							switch (char, // KeyFunc
 								13.asAscii, { // shift+return: chuck into new ST
 									sourceView.object.template => 
-									format("st%", UniqueID.next - 1001).asSymbol;
-								}
+									format("st%", UniqueID.next - 1001).asSymbol;}
 							)
 						},
 						262144, { // control key
 							switch (key,
 								16777220, { // return key: add input to selected ST
-									~fx =<
-									(sourceView.object.template ==>
-										sourceView.object.makeSynthTreeName
-									);
+									if (~fx.isNil) {
+										sourceView.object.template => 
+										format("st%", UniqueID.next - 1001).asSymbol;
+									}{
+										~fx =<
+										(sourceView.object.template ==>
+											sourceView.object.makeSynthTreeName
+										);
+									};
 								},
 								70, { SynthTree.faders } // $f : Show faders
 							)

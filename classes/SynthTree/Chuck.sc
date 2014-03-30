@@ -256,8 +256,18 @@ IZ Sat, Mar  8 2014, 23:40 EET
 }
 
 + SimpleNumber {
-	=> { | param |
-		[this, thisMethod.name, param].postln;
-		param.set(this);
+	=> { | param | param.set(this); }
+}
+
++ SequenceableCollection {
+	=> { | durations, repeats |
+		repeats = repeats ? 1;
+		if (repeats == 'i') { repeats = inf };
+		^PatternPlayer(Pseq(this, repeats), durations);
+		
+	}
+
+	pp { | repeats = 1, durations |
+		^PatternPlayer(Pseq(this, repeats), durations ?? { Pfunc({ ~dur }) })
 	}
 }

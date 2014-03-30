@@ -50,7 +50,7 @@ SynthTree : IdentityTree {
 			ServerBootCheck add: { // most reliable way to check server boot
 				default.group = server.asTarget;
 				BufferFunc.initBuffers(server);
-				{ BufferFunc.postBufNames }.defer(3);
+				{ BufferFunc.postBufNames }.defer(1);
 				default.initTree(true);
 				this.changed(\serverBooted);
             };

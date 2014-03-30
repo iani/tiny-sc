@@ -112,6 +112,16 @@ MultiControl : IdentityDictionary {
 		}
 	}
 
+	addPattern { | pattern, controlName = \pattern |
+		var pFunc;
+		pFunc = this[controlName];
+		pFunc !? { pFunc.remove };
+		this[controlName] = PatternFunc(pattern, this, { | value |
+			[this, thisMethod.name, value].postln;
+			this.set(value);
+		});
+	}
+
 	add { | controlName, control |
 
 	}
@@ -216,6 +226,7 @@ MultiControl : IdentityDictionary {
 		view.value = unmappedValue ?? { spec unmap: nextValue };
 		^view;
 	}
+
 	// NOT YET TESTED!
 	setBuffer { | bufName, action |		
 		/* Different handling:
