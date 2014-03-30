@@ -360,7 +360,7 @@ free the SynthTree with the same name, and free the buffer"
 (global-set-key (kbd "H-c t") 'org-sc-synthtemplate-gui)
 (global-set-key (kbd "H-c H-t") 'org-sc-templates-gui)
 (global-set-key (kbd "H-c H-g") 'org-sc-guis)
-(global-set-key (kbdc "H-c p") 'org-sc-patterntemplate-gui)
+(global-set-key (kbd "H-c p") 'org-sc-patterntemplate-gui)
 (global-set-key (kbd "H-c c") 'org-sc-select-synthtree-then-chuck)
 (global-set-key (kbd "H-c H-c") 'org-sc-chuck-into-last-synthtree)
 (global-set-key (kbd "H-c k") 'org-sc-select-synthtree-then-knobs)
