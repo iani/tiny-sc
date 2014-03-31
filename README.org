@@ -286,17 +286,16 @@ BufferList.showList;
 
 Keyboard commands on the Buffer List list view:
 
-|--------------------+---------------------------------------------------------|
-| Key                | Action                                                  |
-|--------------------+---------------------------------------------------------|
-| return             | play/stop selected buffer in a SynthTree instance       |
-|                    | named after the buffer                                  |
-| shift-return       | like return, but set loop to 1 (loop buffer)            |
-| space, shift-space | like return, but always create new SynthTree to play in |
-| l                  | load a new buffer from file                             |
-| s                  | save list of loaded buffers to file                     |
-| o                  | load list of buffers from file                          |
-|--------------------+---------------------------------------------------------|
+|--------------------+--------------------------------------------------------------|
+| Key                | Action                                                       |
+|--------------------+--------------------------------------------------------------|
+| return             | play/stop selected buffer in a SynthTree named as the buffer |
+| shift-return       | like return, but set loop to 1 (loop buffer)                 |
+| space, shift-space | like return, but always create new SynthTree to play in      |
+| l                  | load a new buffer from file                                  |
+| s                  | save list of loaded buffers to file                          |
+| o                  | load list of buffers from file                               |
+|--------------------+--------------------------------------------------------------|
 
 
 
