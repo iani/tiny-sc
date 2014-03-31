@@ -167,7 +167,7 @@ BufferList {
 		};
 	}
 
-	*selectPlay { | argServer, fadeTime |
+	*selectPlay { | argServer |
 		/* Select a buffer from the buffer list on server, using ido menu in Emacs,
 			and play it in a SynthTree with the same name. */
 		Emacs.selectEval(

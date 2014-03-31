@@ -1,6 +1,6 @@
 /* 
 A private bus that provides level, crossfade, and fx-plugin facilities. 
-Uses currentEnvironment.  Works together with Sin class. 
+Uses currentEnvironment.  Works together with Syn class. 
 
 IZ Mon, 03 Mar 2014 00:15:12
 */

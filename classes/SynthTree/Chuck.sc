@@ -199,7 +199,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
         ^this.xplay(
             synthTree.group,
             outbus: outputBus, 
-            fadeTime: fadeTime ?? { synthTree.fadeTime },
+            fadeTime: synthTree.getfadeTime(fadeTime),
             addAction: \addToHead,
             args: synthTree.synthArgs
         );

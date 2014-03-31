@@ -15,9 +15,10 @@ SynthTree : IdentityTree {
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
 	classvar parentEvents; // contains parent events for each server. 
 	/* Each parent event contains: 
-		~fx: the last chucked SynthTree which has inputs
-		~st: the last chucked SynthTree or the SynthTree pushed explicitly with 
-		~dur: the default duration for playing patterns
+		~fx: Last chucked SynthTree which has inputs
+		~st: Last chucked SynthTree (or a SynthTree explicitly pushed)
+		~dur: Default duration for playing patterns
+		~fadeTime: Global default duration for fade-in and fade-out
 	*/
 	var <synth;  // the synth of this node
 	var <>inputs; // dictionary of input names and bus specs or busses
@@ -28,41 +29,45 @@ SynthTree : IdentityTree {
 	var <>template; // optional template for re-creating synth
     var <>notStopped = true; // if false, do not restart on initTree or
 	// on chuck/replace
-    var <>fadeTime = 0.1;
+    var <>fadeTime;
 	var <>name;
 	var <>args; // TODO: args sent to synth at creation time
 	var <>replaceAction = \fadeOut; // only used by addInputSynth
 
 	*initClass {
 		StartUp add: {
-			var server;
-			server = Server.default;
 			parentEvents = IdentityDictionary();
-			this.makeParentEvent(server);
 			nameSpaces = MultiLevelIdentityDictionary();
-			nameSpaces[server, \root] = default;
-			default = this.new(\root);
-			default.inputs = IdentityDictionary();
-			default.inputs[\in] = Bus('audio', 0,
-				// server.options.numOutputBusChannels,
-				0, // trick the allocator: reserve 0 channels
-				server);
-			ServerBootCheck add: { // most reliable way to check server boot
-				default.group = server.asTarget;
-				BufferFunc.initBuffers(server);
-				{ BufferFunc.postBufNames }.defer(1);
-				default.initTree(true);
-				this.changed(\serverBooted);
-            };
+			this.setServer(Server.default);
 			Spec.specs.at(\amp).default = 0.1;
 			Spec.specs.[\trigRate] = [0.1, 50, 'exp', 0, 1, ""].asSpec;
 			if (showGuiAtStartup) { this.faders };
 		}
 	}
 
+	*setServer { | server |
+		server ?? { server = Server.default };
+		this.makeParentEvent(server);
+		default = this.new(\root);
+		default.inputs = IdentityDictionary();
+		default.inputs[\in] = Bus('audio', 0,
+			// server.options.numOutputBusChannels,
+			0, // trick the allocator: reserve 0 channels
+			server);
+		nameSpaces[server, \root] = default;
+		ServerBootCheck add: { // most reliable way to check server boot
+				default.group = server.asTarget;
+				BufferFunc.initBuffers(server);
+				{ BufferFunc.postBufNames }.defer(1);
+				default.initTree(true);
+				this.changed(\serverBooted, server);
+		};
+		^server;
+	}
+
 	*makeParentEvent { | argServer |
 		var parentEvent;
-		parentEvent = (dur: 1/3);
+		parentEvent = (dur: 1/3, fadeTime: 0.1);
 		parentEvents[argServer] = parentEvent;
 		^parentEvent;
 	}
@@ -204,7 +209,7 @@ SynthTree : IdentityTree {
 		this.makeInputs(template.inputSpecs);
 		this.makeArgs(template.templateArgs);
 		if (synth.isPlaying) {
-			this.endSynth(argReplaceAction, argFadeTime ? fadeTime);
+			this.endSynth(argReplaceAction, this getFadeTime: argFadeTime);
 		};
 		this.makeSynth;
 		this.push;
@@ -214,6 +219,10 @@ SynthTree : IdentityTree {
 		templateArgs do: { | cn |
 			args.getParam(cn.name, nil, cn.defaultValue);
 		};
+	}
+	
+	getFadeTime { | argFadeTime |
+		^argFadeTime ?? { fadeTime ?? { ~fadeTime }};
 	}
 
 	push {
@@ -309,7 +318,7 @@ SynthTree : IdentityTree {
 			synth.fadeOut(argReplaceAction);
 		}{
 			switch (argReplaceAction,
-				\fadeOut, { synth.fadeOut(argFadeTime ? fadeTime) },
+				\fadeOut, { synth.fadeOut(this getFadeTime: argFadeTime) },
 				\free, { synth.free }
 			)
 		}
@@ -342,8 +351,13 @@ SynthTree : IdentityTree {
 		}
 	}
 
-	toggle { | fadeTime | 
-		if (this.isPlaying) { this.fadeOut(fadeTime) } { this.start(fadeTime) } }
+	toggle { | argFadeTime | 
+		if (this.isPlaying) {
+			this.fadeOut(this getFadeTime: argFadeTime)
+		}{
+			this.start(this getFadeTime: argFadeTime)
+		}
+	}
 
     start { | attackTime |
 		// start, but only if synth is not playing
@@ -351,14 +365,14 @@ SynthTree : IdentityTree {
 	}
 
 	release { | argFadeTime |
-		synth release: argFadeTime ? fadeTime;
+		synth release: this.getFadeTime(argFadeTime);
 		synth.isPlaying = false;
 		notStopped = false;
 	}
 
 	fadeOut { | argFadeTime |
 		if (synth.isPlaying) {
-			synth.set(\timeScale, argFadeTime ? fadeTime, \gate, 0);
+			synth.set(\timeScale, this.getFadeTime(argFadeTime), \gate, 0);
 			synth.isPlaying = false;
 		};
 		notStopped = false;
