@@ -26,10 +26,8 @@ PatternPlayer {
 	}
 
 	values_ { | values |
-		[this, thisMethod.name, "beforre", valuePattern, valueStream].postln;
 		valuePattern = values;
 		valueStream = valuePattern.asStream;
-		[this, thisMethod.name, "after", valuePattern, valueStream].postln;
 	}
 
 	durations_ { | durations |
@@ -95,12 +93,11 @@ PatternFunc {
 	=> { | durations, repeats |
 		repeats = repeats ? 1;
 		if (repeats == 'i') { repeats = inf };
-		^PatternPlayer(Pseq(this, repeats), durations);
-		
+		^PatternPlayer(Pseq(this, repeats), durations);	
 	}
 
 	pp { | repeats = 1, durations |
-		^PatternPlayer(Pseq(this, repeats), durations ?? { Pfunc({ ~dur }) })
+		^PatternPlayer(Pseq(this, repeats), durations ?? { Pfunc({ ~dur.next }) })
 	}
 }
 

@@ -130,6 +130,22 @@ MultiControl : IdentityDictionary {
 		}
 	}
 
+	valuePattern { | pattern, controlName = \pattern |
+		// get the valuepattern. Can be used for adding further patterns
+		
+	}
+	valuePattern_ { | pattern, controlName = \pattern |
+		// replace the valuepattern 
+	}
+
+
+	durPattern { | pattern, controlName = \pattern |
+		// get the duration pattern. Can be used for adding further patterns
+	}
+	durPattern_ { | pattern, controlName = \pattern |
+		// replace the duration pattern 
+	}
+
 	add { | controlName, control |
 
 	}
