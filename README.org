@@ -37,6 +37,30 @@ Try the following, one line at a time:
 \sound.fadeOut(5);
 #+END_EXAMPLE
 
+* Setting global fade time
+
+The environment variable ~fadeTime stores the global default duration for fade-in and fade-out of synths.  It is stored in the parent environment of the current environment.  The =!> operator is used to set environment variables of the parent environment.  Examples:
+
+#+BEGIN_EXAMPLE
+// Set global fade time to 3 seconds
+3 =!> \fadeTime;
+// Fade in a synth
+{ WhiteNoise.ar } => \sound;
+// Cross-fade another synth in its place
+{ SinOsc.ar(LFNoise0.kr(5).range(400, 4000)) } => \sound;
+// And a third synth
+{ LPF.ar(GrayNoise.ar, LFNoise0.kr(5).range(400, 4000)) } => \sound;
+// Set global fade time to 0.01 seconds
+0.01 =!> \fadeTime;
+// Notice difference in cross-fading duration
+{ LFDNoise3.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound;
+// One more time
+{ SinOsc.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound;
+// Fadeout also uses the global default
+\sound.fadeOut;
+
+#+END_EXAMPLE
+
 * Synth parameters are environment variables
 
 When a synth template gets chucked to a synthtree with =>, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.

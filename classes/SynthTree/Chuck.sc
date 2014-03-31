@@ -5,6 +5,10 @@ IZ Sat, Mar  8 2014, 23:40 EET
 */
 
 + Object {
+	=!> { | key |
+		currentEnvironment.parent[key] = this;
+	}
+
 	=> { | chuckee, replaceAction = \fadeOut |
 		// chuck a source to a synthTree and play
 		//		^synthTree.asSynthTree.chuck(this, replaceAction);
@@ -199,7 +203,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
         ^this.xplay(
             synthTree.group,
             outbus: outputBus, 
-            fadeTime: synthTree.getfadeTime(fadeTime),
+            fadeTime: synthTree.getFadeTime(fadeTime),
             addAction: \addToHead,
             args: synthTree.synthArgs
         );

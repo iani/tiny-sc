@@ -46,8 +46,11 @@ SynthTree : IdentityTree {
 	}
 
 	*setServer { | server |
+		var parentEvent;
 		server ?? { server = Server.default };
-		this.makeParentEvent(server);
+		parentEvent = this.makeParentEvent(server);
+		// TODO? Keep track of separate envir stacks for each server?
+		().parent_(parentEvent).push; // we loose last ~st for this server
 		default = this.new(\root);
 		default.inputs = IdentityDictionary();
 		default.inputs[\in] = Bus('audio', 0,
@@ -67,8 +70,11 @@ SynthTree : IdentityTree {
 
 	*makeParentEvent { | argServer |
 		var parentEvent;
-		parentEvent = (dur: 1/3, fadeTime: 0.1);
-		parentEvents[argServer] = parentEvent;
+		parentEvent = parentEvents[argServer];
+		parentEvent ?? {
+			parentEvent = (dur: 1/3, fadeTime: 0.1);
+			parentEvents[argServer] = parentEvent;
+		};
 		^parentEvent;
 	}
 
