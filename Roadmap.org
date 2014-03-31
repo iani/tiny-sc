@@ -179,6 +179,11 @@ Steps:
 * Immediate TODOs
 
 
+** Fix mixup when restart/free during fadeout
+:PROPERTIES:
+:DATE:     <2014-03-31 Mon 12:24>
+:END:
+
 ** SynthTree:
 
 *** operators for: insert synth between, replace input
@@ -472,6 +477,10 @@ SynthTree.init;
 Insert 2 envir variables, separate for each server parent envir:
 ~root = the root of the server tree
 ~dur = the default duration for playing patterns.  Can be a stream, or even responder ... (!)
+
+** Faders: Free, Indicate released status of synths
+
+When fadeout is long, one may think that it is not working.  Change color of fader to indicate that fadeout has started.
 
 * Undergoing tests
 

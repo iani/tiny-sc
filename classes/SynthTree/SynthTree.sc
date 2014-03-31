@@ -371,15 +371,19 @@ SynthTree : IdentityTree {
 	}
 
 	release { | argFadeTime |
-		synth release: this.getFadeTime(argFadeTime);
-		synth.isPlaying = false;
+		if (synth.isPlaying) {
+			synth release: this.getFadeTime(argFadeTime);
+		// synth.isPlaying = false;
+			this.changed(\fadeOut);
+		};
 		notStopped = false;
 	}
 
 	fadeOut { | argFadeTime |
 		if (synth.isPlaying) {
 			synth.set(\timeScale, this.getFadeTime(argFadeTime), \gate, 0);
-			synth.isPlaying = false;
+			// synth.isPlaying = false;
+			this.changed(\fadeOut);
 		};
 		notStopped = false;
 	}

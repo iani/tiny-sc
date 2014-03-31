@@ -12,6 +12,12 @@
 			this.color = [Color.white, Color.black, Color.white, Color.black]
 		}.defer
 	}
+
+	setFadeOut {
+		{ 
+			this.color = [Color.yellow, Color.yellow, Color.white, Color.black]
+		}.defer
+	}
 }
 
 
@@ -28,6 +34,13 @@
 		{ 
 			this.knobColor = Color.black;
 			this.background = Color.white;
+		}.defer
+	}
+
+	setFadeOut {
+		{ 
+			this.knobColor = Color.yellow;
+			this.background = Color.yellow;
 		}.defer
 	}
 

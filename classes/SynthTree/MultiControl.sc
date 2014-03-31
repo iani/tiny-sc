@@ -221,7 +221,12 @@ MultiControl : IdentityDictionary {
 			view.setPlaying;
 		});
 		view.addNotifier(synthTree, \stopped, { | ... args |
-			if (synthTree.isPlaying) {} { view.setStopped; };
+			//			if (synthTree.isPlaying) {} { view.setStopped; };
+			view.setStopped;
+		});
+		view.addNotifier(synthTree, \fadeOut, { | ... args |
+			//			if (synthTree.isPlaying) {} { view.setFadeOut; };
+			view.setFadeOut;
 		});
 		if (synthTree.isPlaying) { 
 			view.setPlaying;
@@ -232,6 +237,7 @@ MultiControl : IdentityDictionary {
 				$G, { synthTree.trig },
 				$s, { synthTree.fadeOut },
 				$S, { synthTree.free },
+				$f, { synthTree.free }, // Better synonym
 				$k, { synthTree.knobs },
 				$b, { synthTree.bufferList },
 				$,, { thisProcess.stop },
