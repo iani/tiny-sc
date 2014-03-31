@@ -30,9 +30,9 @@ Try the following, one line at a time:
 // Floating point durations must be given through a message
 { GrayNoise.ar(Decay.kr(Dust.kr(5))) } => \sound.fadeOut(0.5);
 // Output channel can be set
-\sound.set(\out, 1);
+1 => ~out;
 // So can the amplitude
-\sound.set(\amp, 0.01);
+0.01 => ~amp;  // Alternative syntax: \sound.set(\amp, 0.01)
 // Fadeout with custom duration
 \sound.fadeOut(5);
 #+END_EXAMPLE
