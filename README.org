@@ -240,7 +240,7 @@ SynthTree.faders;
 \viewtest.view(\freq).view(\amp);
 #+END_EXAMPLE
 
-* Setting fadeTime
+* Setting fadeTime in individual synths
 
 #+BEGIN_EXAMPLE
 // Start an "effect" synth with an input
@@ -258,7 +258,6 @@ SynthTree.faders;
 // change source again, With fadeTime stored previously
 { LFTri.ar(400 rrand: 800) } ==> \source;
 #+END_EXAMPLE
-
 
 * Buffers and samples
 
@@ -288,16 +287,17 @@ BufferList.showList;
 
 Keyboard commands on the Buffer List list view:
 
-|--------------------+---------------------------------------------------|
-| Key                | Action                                            |
-|--------------------+---------------------------------------------------|
-| return             | play/stop selected buffer in a SynthTree instance |
-| shift-return       | like return, but set loop to 1 (loop buffer)      |
-| space, shift-space | same as return, shift-return                      |
-| l                  | load a new buffer from file                       |
-| s                  | save list of loaded buffers to file               |
-| o                  | load list of buffers from file                    |
-|--------------------+---------------------------------------------------|
+|--------------------+---------------------------------------------------------|
+| Key                | Action                                                  |
+|--------------------+---------------------------------------------------------|
+| return             | play/stop selected buffer in a SynthTree instance       |
+|                    | named after the buffer                                  |
+| shift-return       | like return, but set loop to 1 (loop buffer)            |
+| space, shift-space | like return, but always create new SynthTree to play in |
+| l                  | load a new buffer from file                             |
+| s                  | save list of loaded buffers to file                     |
+| o                  | load list of buffers from file                          |
+|--------------------+---------------------------------------------------------|
 
 
 
