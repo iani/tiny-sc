@@ -501,7 +501,17 @@ SynthTree : IdentityTree {
 				$,, { thisProcess.stop },
 				$., { SynthTree.stopAll },
 				$i, { SynthTree.initTree },
-				$/, { SynthTree.initTree }
+				$/, { SynthTree.initTree },
+				$0, { 0.02 =!> \fadeTime },
+				$1, { 1 =!> \fadeTime },
+				$2, { 2 =!> \fadeTime },
+				$3, { 3 =!> \fadeTime },
+				$4, { 4 =!> \fadeTime },
+				$5, { 5 =!> \fadeTime },
+				$6, { 6 =!> \fadeTime },
+				$7, { 7 =!> \fadeTime },
+				$8, { 8 =!> \fadeTime },
+				$9, { 9 =!> \fadeTime },
 			);
 		};
 		all.keys.asArray.select({ | name | name != \root }).sort

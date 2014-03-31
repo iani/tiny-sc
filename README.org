@@ -213,12 +213,13 @@ SynthTree.faders;
 |-------+-----------------------------------------------------------+---|
 | Key   | Action                                                    |   |
 |-------+-----------------------------------------------------------+---|
-|       | *On an empty slot:*                                       |   |
+|       | *On the whole window*                                     |   |
 | b     | Open Buffer List for creating buffer-playback synth       |   |
 | ,     | Stop synths and routines (=thisProcess.stop=)             |   |
 | .     | Stop synths and remove from SynthTree.initTree            |   |
 | i     | SynthTree.initTree.  Restart non-removed synths           |   |
 | /     | SynthTree.initTree.  Restart non-removed synths           |   |
+| 0-9   | Set global fade time to 0.02, 1, 2, 3 ... 9 seconds       |   |
 |-------+-----------------------------------------------------------+---|
 |       | *On slots that contain a SynthTree:*                      |   |
 |-------+-----------------------------------------------------------+---|
@@ -228,8 +229,6 @@ SynthTree.faders;
 | space | Toggle play status of selected SynthTree.                 |   |
 | ,     | Stop synths and routines (=thisProcess.stop=)             |   |
 | .     | Stop synths and remove from SynthTree.initTree            |   |
-| i     | SynthTree.initTree.  Restart non-removed synths           |   |
-| /     | SynthTree.initTree.  Restart non-removed synths           |   |
 |-------+-----------------------------------------------------------+---|
 ** The Knobs view
 
