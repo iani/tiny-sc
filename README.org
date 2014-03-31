@@ -138,7 +138,7 @@ Example 1:  Simple patching of one source to one effect:
 
 #+BEGIN_EXAMPLE
 // Start an effects synth with a low-pass filter
-{ LPF.ar(In.ar(\in.kr(0)), \freq.kr(2000)) } => \lpf;
+{ LPF.ar(Inp.ar, \freq.kr(2000)) } => \lpf;
 // Start a WhiteNoise synth
 { WhiteNoise.ar } => \source;
 // Send the noise synth to the filter
@@ -150,8 +150,8 @@ Example 1:  Simple patching of one source to one effect:
 Example 2: Several synths sending to one effect.
 
 #+BEGIN_EXAMPLE
-{ LPF.ar(In.ar(\in.kr(0)), LFNoise0.kr(40 ! 2).range(500, 4000)) } => \lpf;
-\lpf =< ({ WhiteNoise.ar } ==> \source);
+{ LPF.ar(Inp.ar, LFNoise0.kr(40 ! 2).range(500, 4000)) } => \lpf;
+\lpf =< ({ PinkNoise.ar } ==> \source);
 \lpf =< ({ LFPulse.ar(LFNoise0.kr(30).range(3000, 4000)) } ==> \source2);
 #+END_EXAMPLE
 
@@ -297,9 +297,10 @@ Keyboard commands on the Buffer List list view:
 | o                  | load list of buffers from file                               |
 |--------------------+--------------------------------------------------------------|
 
-
-
 * Keyboard Bindings
+
+Following keyboard bindings only apply to Emacs.
+
 ** Global key bindings
 
 - C-c C-x C-/ :: sclang-init-synth-tree

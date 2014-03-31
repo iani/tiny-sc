@@ -2,10 +2,27 @@
 
 * Currently working on
 
-** Things to do with parameters in currenEnvironment
+** Things to do with parameters/synths in currenEnvironment
 :PROPERTIES:
 :DATE:     <2014-03-31 Mon 12:06>
 :END:
+
+*** Synth timing / chaining?
+
+Play a synth for a given duration:
+
+{ } => number => symbol (synthDef)
+
+or
+
+{ } dur: number => symbol (synthdef)
+
+Number: receiveChuck ->
+
+- Make routine for starting / stopping
+- add SynthTree as notifier to stop if SynthTree is released/faded out/freed.
+
+*** Possible shortcuts for params
 Draft of how this looks in code.  Different things that one could do with a synth parameter by addressing it (as MultiControl instance) through the environment:
 #+BEGIN_SRC
 0.03 => ~amp;
@@ -179,11 +196,6 @@ Steps:
 * Immediate TODOs
 
 
-** Fix mixup when restart/free during fadeout
-:PROPERTIES:
-:DATE:     <2014-03-31 Mon 12:24>
-:END:
-
 ** SynthTree:
 
 *** operators for: insert synth between, replace input
@@ -249,8 +261,6 @@ Finally, better use message style, because clearer, and also chainable:
 **** StreamPattern methods / operators?
   - Pattern.play(durationPattern);
   - SequenceableCollection.play(durationPattern);
-
-** Add fade-in and fade-out toggles for both selected node and entire SynthTree, with times from 0 to 9 seconds, bound to the corresponding keys from 0 to 9.
 
 ** Global Streams, StreamPatterns, Patterns, PatternPlayers
 
@@ -481,6 +491,13 @@ Insert 2 envir variables, separate for each server parent envir:
 ** Faders: Free, Indicate released status of synths
 
 When fadeout is long, one may think that it is not working.  Change color of fader to indicate that fadeout has started.
+
+** Fix mixup when restart/free during fadeout
+:PROPERTIES:
+:DATE:     <2014-03-31 Mon 12:24>
+:END:
+
+** Add fade-in and fade-out toggles for both selected node and entire SynthTree, with times from 0 to 9 seconds, bound to the corresponding keys from 0 to 9.
 
 * Undergoing tests
 
