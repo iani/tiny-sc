@@ -2,16 +2,10 @@
 
 * Currently working on
 
-** Playing patterns in single parameters of a SynthTree
+** Things to do with parameters in currenEnvironment
 :PROPERTIES:
-:DATE:     <2014-03-28 Fri 12:55>
+:DATE:     <2014-03-31 Mon 12:06>
 :END:
-
-New idea of how to do this:
-
-- Chucking something into a SynthTree always makes this the selected SynthTree - on which further actions from gui or code apply.
-- The selected SynthTree makes its parameter (SynthArgs) environment be the current environment, so that one can chuck stuff to the parameters through the environment!
-
 Draft of how this looks in code.  Different things that one could do with a synth parameter by addressing it (as MultiControl instance) through the environment:
 #+BEGIN_SRC
 0.03 => ~amp;
@@ -31,7 +25,7 @@ Draft of how this looks in code.  Different things that one could do with a synt
 
 IMPORTANT: Maybe use another operator for chucking stuff to a synthtree *without* making it current.  Unclear yet how this all works together when for example chaining several fx synths.
 
-*** Analysis: possible operations on parameters.
+**** Analysis: possible operations on parameters.
 :PROPERTIES:
 :DATE:     <2014-03-29 Sat 16:43>
 :END:
@@ -54,7 +48,7 @@ There are following possibilities of chucking something to a synthree parameter:
 - Buffer :: set bufnum to the parameter for playing the buffer
 - Event :: set all params and restart.
 
-**** Constructing pattern players
+***** Constructing pattern players
 Shortcut method for turning Function, pattern, array, or stream into a patternplayer for playing into the parameter: =pp=!
 
 Alternative operator for constructing a pattern player (instead of =pp= method): Chuck:
@@ -80,14 +74,14 @@ Additionally, for case 1, one may use a special instrument name such as \slur or
 
 
 
-**** Chucking into busses
+***** Chucking into busses
 
 - =<function> => bus= :: play the function to that bus
 - =<envelope> => bus= :: play the envelope to that bus
 - =<UGen> => bus= :: convert ugen to synth and play in that bus.  Good for playing Line.kr.  But this could be done with something like: ~amp.fadeTo(...);
 
 
-*** (Older:) PatternFunc notes
+**** (Older:) PatternFunc notes
 
 #+BEGIN_EXAMPLE
 <pfunc template> %> 'pfunc_name' *>.param_name synthtree_name;
@@ -133,7 +127,7 @@ multiparam.pattern(<template or name> <operator> <filter>);
 alternatively with messages:
 multiparam.pattern(<template or name>.add|mul|map|unmap|select|reject(<filter>));
 
-**** Playing SynthTree events with PatternPlayer/PatternFunc
+***** Playing SynthTree events with PatternPlayer/PatternFunc
 Important: Alternatively, a PatternFunc may store as currentValue an event with many parameters, and SynthTrees receiving notifications from it could play that event each in its own way.
 
 One could thus bind a whole SynthTree to a PatternFunc with the same operator:
@@ -164,14 +158,14 @@ Possible class group for playing patterns in SynthTrees, in Pbind-like manner:
 
 See also: BasicIdeas.org, Extending AbstractResponderFunc paradigm -> Generalizing Responders -> Example 2: Playing Patterns.
 
-*** SynthTreePlayer draft notes
+**** SynthTreePlayer draft notes
 - Should work as a template and as a synth (same instance?) in SynthTree.
 - Should keep its synths in own variable, allowing for playing of multiple synths at the same time.
 
 See also PatternPlayer ...
 
 
-** Playing patterns in SynthTree
+*** Playing patterns in SynthTree
 
 Steps:
 
@@ -184,30 +178,6 @@ Steps:
 
 * Immediate TODOs
 
-
-** Make patterns restart on SynthTree.init and continue on synth chuck
-(Sun, Mar 30 2014, 19:55 EEST)
-
-#+BEGIN_EXAMPLE
-{ SinOsc.ar(\freq.kr(400)) } => \sound;
-// Play a pattern into ~freq:
-{ 50.rrand(80).midicps }.pp(0.1) => ~freq;
-// Pattern should keep playing:
-{ LFPulse.ar(\freq.kr(400)) } => \sound;
-// Pattern restarts when the synth starts, even after thisProcess.stop;
-thisProcess.stop; // stop routines and synths
-// Pattern should also restart now:
-SynthTree.init;
-#+END_EXAMPLE
-
-
-
-** SynthTree: review root scheme to use envir
-
-
-Insert 2 envir variables, separate for each server parent envir:
-~root = the root of the server tree
-~dur = the default duration for playing patterns.  Can be a stream, or even responder ... (!)
 
 ** SynthTree:
 
@@ -471,6 +441,37 @@ Also improve the keyboard command documentation, showing the rationale for the c
 - Basic combination 1: C-M key
 - Basic combination 2: H-c key or H-c H-key
 - Basic combiantion 3: H-c H-x key or H-c H-x H-key
+
+** Push synth+parameters onto currentEnvironment
+:PROPERTIES:
+:DATE:     <2014-03-31 Mon 12:06>
+:END:
+
+- Chucking something into a SynthTree always makes this the selected SynthTree - on which further actions from gui or code apply.
+- The selected SynthTree makes its parameter (SynthArgs) environment be the current environment, so that one can chuck stuff to the parameters through the environment!
+** Make patterns restart on SynthTree.init and continue on synth chuck
+(Sun, Mar 30 2014, 19:55 EEST)
+
+#+BEGIN_EXAMPLE
+{ SinOsc.ar(\freq.kr(400)) } => \sound;
+// Play a pattern into ~freq:
+{ 50.rrand(80).midicps }.pp(0.1) => ~freq;
+// Pattern should keep playing:
+{ LFPulse.ar(\freq.kr(400)) } => \sound;
+// Pattern restarts when the synth starts, even after thisProcess.stop;
+thisProcess.stop; // stop routines and synths
+// Pattern should also restart now:
+SynthTree.init;
+#+END_EXAMPLE
+
+
+
+** SynthTree: review root scheme to use envir
+
+
+Insert 2 envir variables, separate for each server parent envir:
+~root = the root of the server tree
+~dur = the default duration for playing patterns.  Can be a stream, or even responder ... (!)
 
 * Undergoing tests
 
