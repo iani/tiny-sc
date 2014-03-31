@@ -334,7 +334,7 @@ SynthTree : IdentityTree {
 		/* return argument array for Synth.new / Function.play, containing
 			the setters for the output and the input busses */
 		var argsArray;
-		argsArray = [out: this.getOutputBusIndex];
+		argsArray = [out: this.getOutputBusIndex, timeScale: 50 * this.getFadeTime];
 		inputs !? {
 			inputs keysValuesDo: { | key, bus |
 				argsArray = argsArray add: key;
