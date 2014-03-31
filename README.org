@@ -1,6 +1,6 @@
 #+TITLE: Tiny-sc
 
-/Compact but powerful tools for SuperCollider, with Emacs Org-mode intergration/
+/Compact coding tools for SuperCollider, with Emacs Org-mode intergration/
 
 (IZ Tue, 25 Feb 2014 16:20:26ff)
 
@@ -95,9 +95,9 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 // Use nil to play with global duration stored in ~dur:
 { [65, 69, 70, 73].choose.midicps } -> nil => ~freq;
 // Change global duration:
-0.1.globDur;
+0.1 =!> \dur;
 // Use a pattern for global duration:
-Pbrown(0.01, 0.2, 0.25, inf).globDur;
+Pbrown(0.01, 0.26, 0.05, inf).asStream =!> \dur;
 #+END_EXAMPLE
 
 * Restart synths after Command-.
