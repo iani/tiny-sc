@@ -201,7 +201,7 @@ SynthTemplate.gui;
 | control-/      | SynthTree.initTree (restart all SynthTrees stopped by control-. |   |
 |----------------+-----------------------------------------------------------------+---|
 
-(*) Note : The currently selected SynthTree instance is the one selected in the Faders panel by clicking on the label displaying the SynthTree description (template name + synthtree name).
+(*) Note : The currently SynthTree is selected in the Faders panel by clicking on the label displaying the SynthTree description (template name + synthtree name), or by chucking into a SynthTree in code (=>).
 ** The SynhTree-Fader View
 
 #+BEGIN_EXAMPLE
