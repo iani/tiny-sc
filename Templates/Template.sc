@@ -84,10 +84,10 @@ Template {
 							switch (char,
 								13.asAscii, { // return key: chuck into selected ST
 									if (~st.isNil) {
-										sourceView.object.template => 
+										sourceView.object.template =>> 
 										format("st%", UniqueID.next - 1001).asSymbol;
 									}{
-										sourceView.object.template => ~st;
+										sourceView.object.template =>> ~st;
 									}
 								},
 								Char.space, { // space key: toggle selected ST
@@ -101,7 +101,7 @@ Template {
 						131072, { // shift key
 							switch (char, // KeyFunc
 								13.asAscii, { // shift+return: chuck into new ST
-									sourceView.object.template => 
+									sourceView.object.template =>> 
 									format("st%", UniqueID.next - 1001).asSymbol;}
 							)
 						},
@@ -109,11 +109,11 @@ Template {
 							switch (key,
 								16777220, { // return key: add input to selected ST
 									if (~fx.isNil) {
-										sourceView.object.template => 
+										sourceView.object.template =>> 
 										format("st%", UniqueID.next - 1001).asSymbol;
 									}{
 										~fx =<
-										(sourceView.object.template ==>
+										(sourceView.object.template ==>>
 											sourceView.object.makeSynthTreeName
 										);
 									};

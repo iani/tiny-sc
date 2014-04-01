@@ -202,7 +202,7 @@ org-sc-chuck-selecting-into-synthtree.")
   (interactive)
   (sclang-eval-string
    (format
-    "{ %s } => \\%s"
+    "{ %s } =>> \\%s"
     (sclang-get-current-snippet) org-sc-selected-synthtree)))
 
 (defun org-sc-chuck-selecting-into-synthtree (synthtree-list)
@@ -218,7 +218,7 @@ org-sc-select-synthtree-then-chuck"
     (if (equal major-mode 'sclang-mode)
         (setq expression (sclang-get-current-snippet))
       (setq expression (org-get-section-contents)))
-    (sclang-eval-string (format "{ %s } => \\%s" expression synthtree))))
+    (sclang-eval-string (format "{ %s } =>> \\%s" expression synthtree))))
 
 (defun org-sc-select-synthtree-then-chuck ()
   "Select or enter a synthree, then chuck current snippet or org-mode section

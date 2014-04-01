@@ -9,7 +9,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		currentEnvironment.parent[key] = this;
 	}
 
-	=> { | chuckee, replaceAction = \fadeOut |
+	=>> { | chuckee, replaceAction = \fadeOut |
 		// chuck a source to a synthTree and play
 		//		^synthTree.asSynthTree.chuck(this, replaceAction);
 		// New implementation: Sat, Mar 29 2014, 03:14 EET :
@@ -27,8 +27,8 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		this.asSynthTree.addInputSynth(synthTree.asSynthTree, inputName)
 	}
 
-	==> { | synthTree, replaceAction = \fadeOut |
-		// as => but do not start the synth now: 
+	==>> { | synthTree, replaceAction = \fadeOut |
+		// as =>> but do not start the synth now: 
 		// synth gets started when the synthTree is added as input with =<
 		synthTree = synthTree.asSynthTree;
 		if (synthTree.isPlaying) {
@@ -260,7 +260,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 }
 
 + SimpleNumber {
-	=> { | param | param.set(this); }
+	=>> { | param | param.set(this); }
 
 	
 }

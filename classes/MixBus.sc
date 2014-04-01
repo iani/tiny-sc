@@ -120,7 +120,7 @@ MixBus {
 }
 
 + Synth {
-    => { | mixer = \default |
+    =>> { | mixer = \default |
         /* TODO: per default init (fadeIn?) the synth of the mixer
             if that synth is not already running.
             Add a adverb "s" to override this default: 

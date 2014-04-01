@@ -14,11 +14,11 @@ a.fadeOut(5);
 
 b = { SinOsc.ar(440, 0, \amp.kr(0.1)).out; }.play;
 
-b => \default;
+b =>> \default;
 
 c = { LFTri.ar(550, 0, 0.1).out }.play;
 
-c => \default;
+c =>> \default;
 
 \default.mixBus.fadeOut(5);
 

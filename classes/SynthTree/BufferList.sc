@@ -110,7 +110,7 @@ BufferList {
 
 	newStChuckBuffer { | bufName, loop = true |
 		{ \buf.playBuf } asSynthTemplate: bufName
-		=> format("%%", bufName, UniqueID.next - 1001).asSymbol.asSynthTree
+		=>> format("%%", bufName, UniqueID.next - 1001).asSymbol.asSynthTree
 		.buf(bufName)
 		.set(\amp, 1)
 		.set(\loop, if (loop) { 1 } { 0 });
@@ -122,7 +122,7 @@ BufferList {
 		if (synthTree.isNil) {
 			synthTree = format("buf%", UniqueID.next - 1001).asSymbol.asSynthTree;
 		};
-		{ \buf.playBuf } asSynthTemplate: bufName => synthTree.buf(bufName)
+		{ \buf.playBuf } asSynthTemplate: bufName =>> synthTree.buf(bufName)
 		.set(\amp, 1)
 		.set(\loop, if (loop) { 1 } { 0 });
 	}
@@ -131,7 +131,7 @@ BufferList {
 		if (bufName.asSynthTree.isPlaying) {
 			bufName.asSynthTree.stop;
 		}{
-			{ \buf.playBuf } => bufName.buf
+			{ \buf.playBuf } =>> bufName.buf
 			.set(\amp, 1)
 			.set(\loop, if (loop) { 1 } { 0 });
 		}
@@ -172,7 +172,7 @@ BufferList {
 			and play it in a SynthTree with the same name. */
 		Emacs.selectEval(
 			this.nameList(argServer),
-			"{ 'buf'.playBuf } => '%s'.buf",
+			"{ 'buf'.playBuf } =>> '%s'.buf",
 			"Play buffer in SynthTree (default: %s): "
 		)
 	}

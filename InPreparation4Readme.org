@@ -8,7 +8,7 @@
 \test fadeOut: 10;
 
 //:
-{ SinOsc.ar(400) } => \test;
+{ SinOsc.ar(400) } =>> \test;
 
 \test.asSynthTree.buf(\test1);
 
@@ -30,7 +30,7 @@ Library.at(Server.default);
 
 //:
 Or:
-{ SinOsc.ar(400) } => \test
+{ SinOsc.ar(400) } =>> \test
 .view(\freq)
 .buffer(\buf, \glock); // argname, bufname!
 .midi(...)
@@ -42,7 +42,7 @@ Or:
 { LPF.ar(In.ar(\in.kr(0)), \freq.kr(2000)) } =<> \comb;
 
 // Send another synth to the input of the effect synth
-\comb =< ({ WhiteNoise.ar } ==> \source);
+\comb =< ({ WhiteNoise.ar } ==>> \source);
 
 \comb.set(\freq, 9500);
 

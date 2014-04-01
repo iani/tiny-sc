@@ -240,7 +240,7 @@ SynthTree : IdentityTree {
 	}
 
 	setTemplate { | argTemplate, argReplaceAction = \fadeOut |
-		/* set template without starting. Called by ==> operator
+		/* set template without starting. Called by ==>> operator
 			Starting is deferred to after connecting
 			self as input to another SynthTree (=<).
 			Manner of replacing previous synth is stored in replaceAction */
@@ -549,7 +549,7 @@ SynthTree : IdentityTree {
 			var drag;
 			drag = View.currentDrag;
 			switch (drag.class,
-				SynthTemplate, { drag.template => this },
+				SynthTemplate, { drag.template =>> this },
 				SynthTree, { this =< drag }
 			);
 		};
@@ -604,7 +604,7 @@ SynthTree : IdentityTree {
 						if (this.isPlaying) {
 							this.stop;
 						}{
-							{ \buf.playBuf } => this.buf(view.item)
+							{ \buf.playBuf } =>> this.buf(view.item)
 							.set(\amp, 1)
 							.set(\loop, if (modifiers == 0) { 0 } { 1 });
 						}
@@ -626,7 +626,7 @@ SynthTree : IdentityTree {
 		synthtree selected or input interactively in Emacs. */
 		Emacs.selectEvalSnippet(
 			this.synthTreeNames(argServer),
-			"{ %s } => '%s'",
+			"{ %s } =>> '%s'",
 			"Chuck snippet into SynthTree (default: %s): "
 		)
 	}

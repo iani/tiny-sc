@@ -48,11 +48,11 @@ We can make these work with PatternPlayer.
 
 Play a synth for a given duration:
 
-{ } => number => symbol (synthDef)
+{ } =>> number =>> symbol (synthDef)
 
 or
 
-{ } dur: number => symbol (synthdef)
+{ } dur: number =>> symbol (synthdef)
 
 Number: receiveChuck ->
 
@@ -68,8 +68,8 @@ Instead of holding the lists (streams) of value events and durations separately,
 *** Possible shortcuts for params
 Draft of how this looks in code.  Different things that one could do with a synth parameter by addressing it (as MultiControl instance) through the environment:
 #+BEGIN_SRC
-0.03 => ~amp;
-660 => ~freq;
+0.03 =>> ~amp;
+660 =>> ~freq;
 ~freq.slider;
 ~freq.knob;
 ~freq.numbox;
@@ -78,7 +78,7 @@ Draft of how this looks in code.  Different things that one could do with a synt
 ~freq.oscFunc(...)
 ~freq.midiFunc(...);
 ~freq.pattern(...);  // or: ~freq.pp(...);
-<a pattern player> => ~freq;
+<a pattern player> =>> ~freq;
 
 \anotherSynth.push; // switch to another SynthTree for working ...
 #+END_SRC
@@ -90,7 +90,7 @@ IMPORTANT: Maybe use another operator for chucking stuff to a synthtree *without
 :DATE:     <2014-03-29 Sat 16:43>
 :END:
 
-~st: current synthtree: => operates as usual, chucking into synthtree.
+~st: current synthtree: =>> operates as usual, chucking into synthtree.
 ~fx: current effect.  Can be used with =< to add new input.
 
 All other environment parameters will return a multiparameter instance controlling one of the synthree's parameters.
@@ -113,22 +113,22 @@ Shortcut method for turning Function, pattern, array, or stream into a patternpl
 
 Alternative operator for constructing a pattern player (instead of =pp= method): Chuck:
 
-: <values: pattern/func/array> => <durations: pattern/func/array/number>
+: <values: pattern/func/array> =>> <durations: pattern/func/array/number>
 
 So one can go:
 
-: <values pat> => <durations pat> => ~freq
+: <values pat> =>> <durations pat> =>> ~freq
 
 To construct a pattern player and play it in parameter =freq=.
 
 One could also use this with an event, in which case there are 2 possibilities:
 
 1. Play all associations in the event as parameter-value pairs, with the values forming streams, pbind-like, playing new synths at each new evaluation of the pattern's values.
-: <event> => <durations pat> => <synthtree>
+: <event> =>> <durations pat> =>> <synthtree>
 
 2. Do not play new synths at each evaluation, but just set the parameters of the synth.
 
-: <event> => <durations pat> =*> <synthtree>
+: <event> =>> <durations pat> =*> <synthtree>
 
 Additionally, for case 1, one may use a special instrument name such as \slur or \portamento, or '*' or '-', to skip a new synth and set the parameters of the current synth, behaving as in case 2.
 
@@ -136,9 +136,9 @@ Additionally, for case 1, one may use a special instrument name such as \slur or
 
 ***** Chucking into busses
 
-- =<function> => bus= :: play the function to that bus
-- =<envelope> => bus= :: play the envelope to that bus
-- =<UGen> => bus= :: convert ugen to synth and play in that bus.  Good for playing Line.kr.  But this could be done with something like: ~amp.fadeTo(...);
+- =<function> =>> bus= :: play the function to that bus
+- =<envelope> =>> bus= :: play the envelope to that bus
+- =<UGen> =>> bus= :: convert ugen to synth and play in that bus.  Good for playing Line.kr.  But this could be done with something like: ~amp.fadeTo(...);
 
 
 **** (Older:) PatternFunc notes
@@ -272,7 +272,7 @@ Also need to accommodate both busses and buffers, with name access.
 
 \mySynth @ param <operation>.<position> <right operand/new element>
 
-{ } => \mySynth @ param ...
+{ } =>> \mySynth @ param ...
 
 Finally, better use message style, because clearer, and also chainable:
 #+BEGIN_EXAMPLE
@@ -383,7 +383,7 @@ Following only controls freq.  View does not control amp.
 \asdf.view(\freq);
 \asdf.view(\amp);
 
-{ LFTri.ar(\freq.kr(400)) } => \asdf;
+{ LFTri.ar(\freq.kr(400)) } =>> \asdf;
 \asdf.set(\amp, 0.02);
 #+END_EXAMPLE
 ** symbol.buf(...)
@@ -425,8 +425,8 @@ Upon server real boot:
 
 ** Debug SynthTree:trig:
 
-Restarting this with ==> leaves the old synth hanging
-Solution implemented: Use =|> instead of ==>
+Restarting this with ==>> leaves the old synth hanging
+Solution implemented: Use =|> instead of ==>>
 
 #+BEGIN_EXAMPLE
 {
@@ -484,7 +484,7 @@ Testing synthdefs chucked into SynthTrees:
 
 #+BEGIN_EXAMPLE
 d = SynthDef("asdf", { WhiteNoise.ar.adsrOut }).add;
-d => \test;
+d =>> \test;
 #+END_EXAMPLE
 
 
@@ -514,11 +514,11 @@ Also improve the keyboard command documentation, showing the rationale for the c
 (Sun, Mar 30 2014, 19:55 EEST)
 
 #+BEGIN_EXAMPLE
-{ SinOsc.ar(\freq.kr(400)) } => \sound;
+{ SinOsc.ar(\freq.kr(400)) } =>> \sound;
 // Play a pattern into ~freq:
-{ 50.rrand(80).midicps }.pp(0.1) => ~freq;
+{ 50.rrand(80).midicps }.pp(0.1) =>> ~freq;
 // Pattern should keep playing:
-{ LFPulse.ar(\freq.kr(400)) } => \sound;
+{ LFPulse.ar(\freq.kr(400)) } =>> \sound;
 // Pattern restarts when the synth starts, even after thisProcess.stop;
 thisProcess.stop; // stop routines and synths
 // Pattern should also restart now:
@@ -549,7 +549,7 @@ When fadeout is long, one may think that it is not working.  Change color of fad
 
 ** =SynthTree=: Storing/interconnecting Synths
 
-ChucK-style operators: =>, variants: =<>, ==>, =<, =^.
+ChucK-style operators: =>>, variants: =<>, ==>>, =<, =^.
 
 ** =Pub= (previously defined as =Source=) Flexibly connect objects to data sources
 

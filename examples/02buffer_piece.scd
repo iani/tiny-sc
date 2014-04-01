@@ -19,7 +19,7 @@ a = { | freq = 400 | SinOsc.ar(freq, 0, 0.1); }.play;
 //:
 a = { SinOsc.ar(\freq.kr(440), 0, 0.1) }.play;
 //:
-{ SinOsc.ar } => \tiny;
+{ SinOsc.ar } =>> \tiny;
 //:
 SinOsc.ar(\freq.kr(440));
 //:
@@ -30,7 +30,7 @@ a.set(\freq, 880);
 //:
 (
 { | i |
-	{ Pan2.ar(\buf.playBuf(loop: 1), \pos.kr(0)); } => format("bell%", i).asSymbol.buf(\bell).set(\amp, 0.01)
+	{ Pan2.ar(\buf.playBuf(loop: 1), \pos.kr(0)); } =>> format("bell%", i).asSymbol.buf(\bell).set(\amp, 0.01)
 	.set(\rate, 0.5);
 } ! 10;
 )
@@ -70,7 +70,7 @@ BufferFunc.postBufNames;
 
 //:
 
-{ Pan2.ar(\buf.playBuf(loop: 1)); } => \bell.buf;
+{ Pan2.ar(\buf.playBuf(loop: 1)); } =>> \bell.buf;
 
 \bell.buf(\boat);
 

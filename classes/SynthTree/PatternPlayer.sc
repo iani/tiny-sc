@@ -61,7 +61,7 @@ PatternPlayer {
 
     isPlaying { ^task.isPlaying; }
 
-	=> { | synthOrParameter, key = \pattern |
+	=>> { | synthOrParameter, key = \pattern |
 		synthOrParameter.addPattern(this, key)
 	}
 }
@@ -90,7 +90,7 @@ PatternFunc {
 }
 
 + SequenceableCollection {
-	=> { | durations, repeats |
+	=>> { | durations, repeats |
 		repeats = repeats ? 1;
 		if (repeats == 'i') { repeats = inf };
 		^PatternPlayer(Pseq(this, repeats), durations);	
@@ -102,8 +102,8 @@ PatternFunc {
 }
 
 + Association {
-	=> { | param |
-		^key pp: value => param
+	=>> { | param |
+		^key pp: value =>> param
 	}
 }
 

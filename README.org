@@ -12,7 +12,7 @@ Examples are added here after being tested.  More details about what tiny-sc set
 
 * Compatibility: chuckLib
 
-chuckLib by James Harkins (ddwChucklib Quark, see http://sourceforge.net/p/quarks/code/HEAD/tree/ and http://www.dewdrop-world.net/sc3/tutorials/index.php?id=6) uses the chuck operator (=>) in a different way.  If you want to use both chuckLib and tiny-sc at the same time, please download the chucklib_compat branch from the github repo and use it intead of the master branch.
+chuckLib by James Harkins (ddwChucklib Quark, see http://sourceforge.net/p/quarks/code/HEAD/tree/ and http://www.dewdrop-world.net/sc3/tutorials/index.php?id=6) uses the chuck operator (=>>) in a different way.  If you want to use both chuckLib and tiny-sc at the same time, please download the chucklib_compat branch from the github repo and use it intead of the master branch.
 
 * Basic synth handling
 
@@ -22,21 +22,21 @@ Try the following, one line at a time:
 
 #+BEGIN_EXAMPLE
 // Start a synth and store it in a name
-{ WhiteNoise.ar } => \sound;
+{ WhiteNoise.ar } =>> \sound;
 // Stop The sound with the default fade-out duration
 \sound.fadeOut;
 // Restart the stored sound - remake the synth.
 \sound.start;
 // Replace the synth at \sound with another one
-{ SinOsc.ar(440) } => \sound;
+{ SinOsc.ar(440) } =>> \sound;
 // Replace again, fading-out the previous sound in 5 seconds
-{ PinkNoise.ar } =>.5 \sound;
+{ PinkNoise.ar } =>>.5 \sound;
 // Floating point durations must be given through a message
-{ GrayNoise.ar(Decay.kr(Dust.kr(5))) } => \sound.fadeOut(0.5);
+{ GrayNoise.ar(Decay.kr(Dust.kr(5))) } =>> \sound.fadeOut(0.5);
 // Output channel can be set
-1 => ~out;
+1 =>> ~out;
 // So can the amplitude
-0.01 => ~amp;  // Alternative syntax: \sound.set(\amp, 0.01)
+0.01 =>> ~amp;  // Alternative syntax: \sound.set(\amp, 0.01)
 // Fadeout with custom duration
 \sound.fadeOut(5);
 #+END_EXAMPLE
@@ -48,18 +48,18 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 #+BEGIN_EXAMPLE
 // Set global fade time to 3 seconds
 3 =!> \fadeTime;
-// Fade in a synth
-{ WhiteNoise.ar } => \sound;
+// Fade in a synth.  Reset amp back to 0.1 from previous example
+{ WhiteNoise.ar } =>> \sound.set(\amp, 0.1);
 // Cross-fade another synth in its place
-{ SinOsc.ar(LFNoise0.kr(5).range(400, 4000)) } => \sound;
+{ SinOsc.ar(LFNoise0.kr(5).range(400, 4000)) } =>> \sound;
 // And a third synth
-{ LPF.ar(GrayNoise.ar, LFNoise0.kr(5).range(400, 4000)) } => \sound;
+{ LPF.ar(GrayNoise.ar, LFNoise0.kr(5).range(400, 4000)) } =>> \sound;
 // Set global fade time to 0.01 seconds
 0.01 =!> \fadeTime;
 // Notice difference in cross-fading duration
-{ LFDNoise3.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound;
+{ LFDNoise3.ar(LFNoise0.kr(15).range(400, 4000)) } =>> \sound;
 // One more time
-{ SinOsc.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound;
+{ SinOsc.ar(LFNoise0.kr(15).range(400, 4000)) } =>> \sound;
 // Fadeout also uses the global default
 \sound.fadeOut;
 
@@ -67,37 +67,37 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 
 * Synth parameters are environment variables
 
-When a synth template gets chucked to a synthtree with =>, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.
+When a synth template gets chucked to a synthtree with =>>, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.
 
 #+BEGIN_EXAMPLE
-{ LPF.ar(LFSaw.ar(\freq.kr(440)), \filterFreq.kr(1000)) } => \sound;
+{ LPF.ar(LFSaw.ar(\freq.kr(440)), \filterFreq.kr(1000)) } =>> \sound;
 // Parameters of last chucked SynthTree are in the environment.
 // Change the filter frequency:
-400 => ~filterFreq;
+400 =>> ~filterFreq;
 // Change the generator frequency:
-600 => ~freq;
+600 =>> ~freq;
 // Play a routine into frequency, then fade out
-{ 50 do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; \sound.fadeOut(3); }.fork;
+{ 50 do: { 50.rrand(80).midicps =>> ~freq; 0.05.wait }; \sound.fadeOut(3); }.fork;
 #+END_EXAMPLE
 
 * Play patterns in parameters
 
 #+BEGIN_EXAMPLE
-{ SinOsc.ar(\freq.kr(400)) } => \sound;
+{ SinOsc.ar(\freq.kr(400)) } =>> \sound;
 // Play a pattern into ~freq:
-{ 50.rrand(80).midicps } -> 0.1 => ~freq;
+{ 50.rrand(80).midicps } -> 0.1 =>> ~freq;
 // Alternative formulation:
-{ 80.rrand(90).midicps } pp: 0.2 => ~freq;
+{ 80.rrand(90).midicps } pp: 0.2 =>> ~freq;
 //: Play another pattern into ~freq:
-{ 250 rrand: 350 } -> 0.05 => ~freq;
+{ 250 rrand: 350 } -> 0.05 =>> ~freq;
 //: And another:
-{ [60, 62, 66, 67].choose.midicps } -> Prand([0.1, 0.2, 0.4], inf) => ~freq;
+{ [60, 62, 66, 67].choose.midicps } -> Prand([0.1, 0.2, 0.4], inf) =>> ~freq;
 // Pattern keeps playing when new synth is chucked into tree:
-{ LPF.ar(LFPulse.ar(\freq.kr(440)), 1000) } => \sound;
+{ LPF.ar(LFPulse.ar(\freq.kr(440)), 1000) } =>> \sound;
 // Open knobs interface to watch how freq changes
 ~st.knobs;
 // Use nil to play with global duration stored in ~dur:
-{ [65, 69, 70, 73].choose.midicps } -> nil => ~freq;
+{ [65, 69, 70, 73].choose.midicps } -> nil =>> ~freq;
 // Change global duration:
 0.1 =!> \dur;
 // Use a pattern for global duration:
@@ -109,9 +109,9 @@ Pbrown(0.01, 0.26, 0.05, inf).asStream =!> \dur;
 Add some more synths to the tree:
 
 #+BEGIN_EXAMPLE
-{ SinOsc.ar(440) } => \la;
-{ SinOsc.ar(550) } => \doDiese;
-{ SinOsc.ar(660) } => \mi;
+{ SinOsc.ar(440) } =>> \la;
+{ SinOsc.ar(550) } =>> \doDiese;
+{ SinOsc.ar(660) } =>> \mi;
 #+END_EXAMPLE
 
 Stop all synths by typing Command-. (on SC IDE), or Control-c Control-s (on Emacs), or by evaluating this:
@@ -142,9 +142,9 @@ Example 1:  Simple patching of one source to one effect:
 
 #+BEGIN_EXAMPLE
 // Start an effects synth with a low-pass filter
-{ LPF.ar(Inp.ar, \freq.kr(2000)) } => \lpf;
+{ LPF.ar(Inp.ar, \freq.kr(2000)) } =>> \lpf;
 // Start a WhiteNoise synth
-{ WhiteNoise.ar } => \source;
+{ WhiteNoise.ar } =>> \source;
 // Send the noise synth to the filter
 \lpf =< \source;
 // Change the frequency of the low pass filter
@@ -154,16 +154,16 @@ Example 1:  Simple patching of one source to one effect:
 Example 2: Several synths sending to one effect.
 
 #+BEGIN_EXAMPLE
-{ LPF.ar(Inp.ar, LFNoise0.kr(40 ! 2).range(500, 4000)) } => \lpf;
-\lpf =< ({ PinkNoise.ar } ==> \source);
-\lpf =< ({ LFPulse.ar(LFNoise0.kr(30).range(3000, 4000)) } ==> \source2);
+{ LPF.ar(Inp.ar, LFNoise0.kr(40 ! 2).range(500, 4000)) } =>> \lpf;
+\lpf =< ({ PinkNoise.ar } ==>> \source);
+\lpf =< ({ LFPulse.ar(LFNoise0.kr(30).range(3000, 4000)) } ==>> \source2);
 #+END_EXAMPLE
 
 Example 3: Changing the synths of the source and of the effect:
 
 #+BEGIN_EXAMPLE
-{ Inp.ar * Decay.kr({ Dust.kr(\trigRate.kr(1)) } ! 2) } =>.5 \lpf;
-\lpf =< ({ LFTri.ar(LFNoise2.kr(12).range(400, 4000)) } ==> \source2);
+{ Inp.ar * Decay.kr({ Dust.kr(\trigRate.kr(1)) } ! 2) } =>>.5 \lpf;
+\lpf =< ({ LFTri.ar(LFNoise2.kr(12).range(400, 4000)) } ==>> \source2);
 #+END_EXAMPLE
 
 Confirm that the tree can be restarted after Command-. also when it contains linked synths:
@@ -205,7 +205,7 @@ SynthTemplate.gui;
 | control-/      | SynthTree.initTree (restart all SynthTrees stopped by control-. |   |
 |----------------+-----------------------------------------------------------------+---|
 
-(*) Note : The currently SynthTree is selected in the Faders panel by clicking on the label displaying the SynthTree description (template name + synthtree name), or by chucking into a SynthTree in code (=>).
+(*) Note : The currently SynthTree is selected in the Faders panel by clicking on the label displaying the SynthTree description (template name + synthtree name), or by chucking into a SynthTree in code (=>>).
 ** The SynhTree-Fader View
 
 #+BEGIN_EXAMPLE
@@ -239,7 +239,7 @@ SynthTree.faders;
 
 ** Creating Views for any parameter
 #+BEGIN_EXAMPLE
-{ SinOsc.ar(\freq.kr(440)) } => \viewtest;
+{ SinOsc.ar(\freq.kr(440)) } =>> \viewtest;
 \viewtest.view(\freq).view(\amp);
 #+END_EXAMPLE
 
@@ -247,19 +247,19 @@ SynthTree.faders;
 
 #+BEGIN_EXAMPLE
 // Start an "effect" synth with an input
-{ LPF.ar(In.ar(\in.kr(0)), \freq.kr(4000)) } => \lpf;
+{ LPF.ar(In.ar(\in.kr(0)), \freq.kr(4000)) } =>> \lpf;
 // Set fadeTime of effect:
 \lpf.fadeTime = 10;
 // Send a synth to the input of the effect synth
-\lpf =< ({ WhiteNoise.ar } ==> \source);
+\lpf =< ({ WhiteNoise.ar } ==>> \source);
 // Set fadeTime of source;
 \source.fadeTime = 5;
 // change effect, with fadeTime stored previously
-{ Inp.ar * Decay2.kr(Dust.kr(3)) } => \lpf;
+{ Inp.ar * Decay2.kr(Dust.kr(3)) } =>> \lpf;
 // change source, with fadeTime stored previously
-{ SinOsc.ar(2000 rrand: 3000) } ==> \source;
+{ SinOsc.ar(2000 rrand: 3000) } ==>> \source;
 // change source again, With fadeTime stored previously
-{ LFTri.ar(400 rrand: 800) } ==> \source;
+{ LFTri.ar(400 rrand: 800) } ==>> \source;
 #+END_EXAMPLE
 
 * Buffers and samples
@@ -267,13 +267,13 @@ SynthTree.faders;
 Play a sample loaded from disk with PlayBuf (If no name is specified, the name of the receiver of =.buf= is used to find a buffer of the same name.  If no such buffer exists, then a Dialog window is opened for choosing a file to load into a buffer):
 
 #+BEGIN_EXAMPLE
-{ \buf.playBuf } => \chimes.buf.set(\amp, 1);
+{ \buf.playBuf } =>> \chimes.buf.set(\amp, 1);
 #+END_EXAMPLE
 
 Play the same sample in a different synth, with different rate
 
 #+BEGIN_EXAMPLE
-{ \buf.playBuf(rate: 1.2) } => \different.buf(\chimes).set(\amp, 1);
+{ \buf.playBuf(rate: 1.2) } =>> \different.buf(\chimes).set(\amp, 1);
 #+END_EXAMPLE
 
 ** BufferList autoload
@@ -505,8 +505,8 @@ Use =|> to set the source of a SynthTree without starting it.  This is necessary
 ** =Inp.ar=
 
 #+BEGIN_EXAMPLE
-{ Inp.ar * Decay2.kr({ Dust.kr(1) } ! 2, 0.5, 2) } => \smooth;
-\smooth =< ({ GrayNoise.ar(3) } ==> \gray);
+{ Inp.ar * Decay2.kr({ Dust.kr(1) } ! 2, 0.5, 2) } =>> \smooth;
+\smooth =< ({ GrayNoise.ar(3) } ==>> \gray);
 #+END_EXAMPLE
 
 * List of running synths and patterns
