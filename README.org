@@ -16,6 +16,8 @@ chuckLib by James Harkins (ddwChucklib Quark, see http://sourceforge.net/p/quark
 
 https://github.com/iani/tiny-sc/releases/tag/chuckLib01
 
+When using the chucklib_compat branch, the chuck operator for tiny-sc becomes =>> instead of =>. So you can use => in the usual way in chuckLib.
+
 * Basic synth handling
 
 Associating symbols with synths, starting, stopping with fadeout, replacing the stored synth in the same symbol:
