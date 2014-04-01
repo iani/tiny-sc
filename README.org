@@ -10,6 +10,10 @@ The purpose of this library is to provide simple and short solutions for some re
 
 Examples are added here after being tested.  More details about what tiny-sc sets out to do are found in files =Roadmap.org= and =BasicIdeas.org=.
 
+* Compatibility: chuckLib
+
+chuckLib by James Harkins (ddwChucklib Quark, see http://sourceforge.net/p/quarks/code/HEAD/tree/ and http://www.dewdrop-world.net/sc3/tutorials/index.php?id=6) uses the chuck operator (=>) in a different way.  If you want to use both chuckLib and tiny-sc at the same time, please download the chucklib_compat branch from the github repo and use it intead of the master branch.
+
 * Basic synth handling
 
 Associating symbols with synths, starting, stopping with fadeout, replacing the stored synth in the same symbol:
