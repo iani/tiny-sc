@@ -12,7 +12,9 @@ Examples are added here after being tested.  More details about what tiny-sc set
 
 * Compatibility: chuckLib
 
-chuckLib by James Harkins (ddwChucklib Quark, see http://sourceforge.net/p/quarks/code/HEAD/tree/ and http://www.dewdrop-world.net/sc3/tutorials/index.php?id=6) uses the chuck operator (=>) in a different way.  If you want to use both chuckLib and tiny-sc at the same time, please download the chucklib_compat branch from the github repo and use it intead of the master branch.
+chuckLib by James Harkins (ddwChucklib Quark, see http://sourceforge.net/p/quarks/code/HEAD/tree/ and http://www.dewdrop-world.net/sc3/tutorials/index.php?id=6) uses the chuck operator (=>) in a different way.  If you want to use both chuckLib and tiny-sc at the same time, please download the chucklib_compat branch from the github repo and use it intead of the master branch. You can get the chuckLib compatible version of tiny-sc as a zipped file from:
+
+https://github.com/iani/tiny-sc/releases/tag/chuckLib01
 
 * Basic synth handling
 
@@ -48,8 +50,8 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 #+BEGIN_EXAMPLE
 // Set global fade time to 3 seconds
 3 =!> \fadeTime;
-// Fade in a synth
-{ WhiteNoise.ar } => \sound;
+// Fade in a synth.  Reset amp back to 0.1 from previous example
+{ WhiteNoise.ar } => \sound.set(\amp, 0.1);
 // Cross-fade another synth in its place
 { SinOsc.ar(LFNoise0.kr(5).range(400, 4000)) } => \sound;
 // And a third synth
