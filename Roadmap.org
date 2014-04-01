@@ -2,6 +2,43 @@
 
 * Currently working on
 
+
+** Extend PatternPlayer to play SynthTrees
+:PROPERTIES:
+:DATE:     <2014-03-31 Mon 23:32>
+:END:
+
+(Note to self: Forget about nesting here.  For that you need EventList.)
+
+The valueStream may produce as value an array of 3 elements:
+
+  1. Name of synthdef to play, or nil for silence.
+  2. Args array for the synth, eg: [\freq, 440, \amp, 0.1 ... etc]. The SynthTree adds the target group, addAction, and output/input parameters to create the synth.
+  3. Duration after which the SynthTree should release the synth.  The SynthTree schedules a function roughly like this:
+
+: SystemClock.sched(dur, { synth.release })
+
+or:
+
+: aTempoClock.sched(dur, { synth.release })
+
+Dur may be different from the delta time for the next event of the pattern, depending on legato.
+
+Following this through the three stages patern -> stream -> next value:
+
+Pattern should contain:
+- instrumentpattern
+- parampattern
+- legatopattern
+
+These three are converted to streams and put into a SynthStream, which creates SynthEvents to play.  So we have following classes:
+
+1. SynthPattern - contains the pattern producing the stream
+2. SynthStream - contains the stream producing the event
+3. SynthEvent - contains the parameters for creating the Synth
+
+We can make these work with PatternPlayer.
+
 ** Things to do with parameters/synths in currenEnvironment
 :PROPERTIES:
 :DATE:     <2014-03-31 Mon 12:06>
@@ -21,6 +58,12 @@ Number: receiveChuck ->
 
 - Make routine for starting / stopping
 - add SynthTree as notifier to stop if SynthTree is released/faded out/freed.
+
+*** EventList class
+
+(Earlier version done in Lilt2 lib: Chain).
+
+Instead of holding the lists (streams) of value events and durations separately, each event holds its own duration together with the data in one object.  This is good for editing event chains by cutting-pasting, inserting events or event lists to change lists or to create other lists.  May be good also for displaying event lists as a graphic score.
 
 *** Possible shortcuts for params
 Draft of how this looks in code.  Different things that one could do with a synth parameter by addressing it (as MultiControl instance) through the environment:
@@ -195,7 +238,6 @@ Steps:
 
 * Immediate TODOs
 
-
 ** SynthTree:
 
 *** operators for: insert synth between, replace input
@@ -295,6 +337,10 @@ Map synths playing envelopes, any function, lines to input controls of other syn
 
 ** Improve keyboard commands for setting fadeTime
 
+* More TODOs
+
+** Review / remove use of changed(\value) in PatternPlayer
+Could a function be called directly instead, to save CPU cycles?
 
 * Done
 
