@@ -69,6 +69,11 @@ Template {
 						namesItems = Library.at(this.key, me.item);
 						if (namesItems.notNil) {
 							namesView.items = namesItems.keys.asArray.sort;
+							if (namesView.items.size > 0) {
+								namesView.value = 0;
+								namesView.doAction;
+								namesView.focus(true);
+							}
 						}
 					}
 				};

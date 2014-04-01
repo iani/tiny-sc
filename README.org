@@ -515,8 +515,4 @@ Use =|> to set the source of a SynthTree without starting it.  This is necessary
 
 * List of running synths and patterns
 
-* Another way to play patterns
-
-...
-
 * Broadcast data events to any listening object

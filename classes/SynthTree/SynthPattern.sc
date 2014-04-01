@@ -63,7 +63,7 @@ ParamStream {
 	var <keys, <values;
 
 	*new { | params |
-		super.new.init(params)
+		^super.new.init(params)
 	}
 
 	init { | params |
@@ -72,6 +72,12 @@ ParamStream {
 
 	next {
 		^[keys, values collect: _.next].flop.flat;
+	}
+
+	set { | param, value |
+		var index;
+		index = keys indexOf: param;
+		index !? values[index] = value.asStream;
 	}
 }
 

@@ -20,8 +20,8 @@ PatternPlayer {
 	var <task;
 	var <currentValue, <currentDuration;
 
-	*new { | values, durations, delay, clock |
-		^this.newCopyArgs(delay, clock)
+	*new { | values, durations, delay = 0, clock |
+		^this.newCopyArgs(delay, clock ?? { TempoClock() })
 		.values_(values).durations_(durations);
 	}
 
