@@ -44,18 +44,26 @@ SynthPattern {
 	var <params;
 	var <legato;
 
+	*new { | instrument, params, legato = 1 |
+		^this.newCopyArgs (instrument, params, legato);
+	}
+
 	asStream { ^SynthStream(instrument, params, legato) }
+
+	%> { | durations |
+		^PatternPlayer (this, durations)
+	}
 }
 
 SynthStream {
 	var <instrument, <params, <legato;
 
-	*new { | instrument, params, legato |
+	*new { | instrument, params, legato = 1 |
 		^this.newCopyArgs(instrument.asStream, ParamStream(params), legato.asStream);
 	}
 
 	next { | dur |
-		^SynthEvent(instrument.next, params.next, legato.next(dur))
+		^SynthEvent (instrument.next, params.next, legato.next * dur)
 	}
 }
 
@@ -68,6 +76,7 @@ ParamStream {
 
 	init { | params |
 		#keys, values = params.clump(2).flop;
+		values = values collect: _.asStream;
 	}
 
 	next {
@@ -84,4 +93,9 @@ ParamStream {
 SynthEvent {
 	var <instrument, <params, <dur;
 	var <synth;
+
+	*new { | instrument, params, dur |
+		^this.newCopyArgs (instrument, params, dur);
+	}
+
 }

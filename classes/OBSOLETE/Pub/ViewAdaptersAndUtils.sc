@@ -45,15 +45,6 @@ MappingView {
     }
 }
 
-// Could define these in Nil instead. But no: 
-// We want to see errors when trying to map nil (unset variable) instead of a spec!
-NullSpec {
-    *map { | val | ^val }
-    *unmap { | val | ^val }
-    *asSpec { ^this }
-	*default { ^0 }
-}
-
 /* Note: Cannot define this in View, because it is a redirect class, and returns
 platform specific classes instead.  Therefore, doing it for QT.  Other GUI
     classes can be added in a similar way */

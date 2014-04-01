@@ -33,7 +33,6 @@ Template {
 		}
 	}
 
-	
 	*new { | name, template, tags |
 		^super.newCopyArgs(name, template, tags).store;
 	}

@@ -1,0 +1,197 @@
+TITLE::PatternPlayer
+summary::play a pattern in time
+categories::Libraries>TinySC>Classes
+related:: Classes/SynthPattern, Classes/SynthStream, Classes/ParamStream, Classes/SynthEvent
+
+DESCRIPTION::
+PatternPlayer holds 2 patterns: 
+
+1. valuePattern: This produces values to play. 
+2. durationPattern:  This produces durations for timing the production of the next value. 
+
+Each time that the PatternPlayer produces a new value, it broadcasts this value through 
+
+code:: this.changed(\value). ::
+
+Any number of objects can set a function to play with the values produced by the PatternPlayer by using the Notification class. 
+
+To create a PatternPlayer, one may use the %> operator.  For example: . 
+
+code:: [freq: Pseq((30..90).midicps, inf)] %> 0.02; ::
+
+To add an object to play with a PatternPlayer use the method play, or chuck the pattern with the chuck operator (=>).  Examples 
+
+code:: [freq: Pseq((30..90).midicps, inf)] %> 0.02 => \default; ::
+
+
+CLASSMETHODS::
+
+METHOD:: new
+(describe method here)
+
+ARGUMENT:: values
+(describe argument here)
+
+ARGUMENT:: durations
+(describe argument here)
+
+ARGUMENT:: delay
+(describe argument here)
+
+ARGUMENT:: clock
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+INSTANCEMETHODS::
+
+METHOD:: stop
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: currentDuration
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: task
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: currentValue
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setStreamParam
+(describe method here)
+
+ARGUMENT:: param
+(describe argument here)
+
+ARGUMENT:: value
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: valuePattern
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: durations
+(describe method here)
+
+ARGUMENT:: durations
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: clock
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: makeTask
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: start
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: valueStream
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: durationStream
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: durationPattern
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: initialDelay
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: reset
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: =>
+(describe method here)
+
+ARGUMENT:: synthOrParameter
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: isPlaying
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setPatternParam
+(describe method here)
+
+ARGUMENT:: param
+(describe argument here)
+
+ARGUMENT:: value
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: values
+(describe method here)
+
+ARGUMENT:: values
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: set
+(describe method here)
+
+ARGUMENT:: param
+(describe argument here)
+
+ARGUMENT:: value
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+EXAMPLES::
+
+code::
+(some example code)
+::
+
+code::
+// associations can be a good way to store named data in order:
+(
+a = [\x -> 700, \y -> 200, \z -> 900];
+
+fork {
+	a.do { |assoc|
+		assoc.key.postln;
+		assoc.value.postln;
+		(freq: assoc.value).play;
+		2.wait;
+	}
+};
+)
+::

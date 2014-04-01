@@ -56,6 +56,10 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		};
 	}
 
+	%> { | params |
+		^SynthPattern (this, params)
+	}
+
 	hasInputs { ^false }
 
 	push {}

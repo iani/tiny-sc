@@ -1,0 +1,61 @@
+CLASS::ParamStream
+summary::relate two objects
+categories::Libraries>TinySC>Classes
+
+DESCRIPTION::
+(put long description here)
+
+
+CLASSMETHODS::
+
+METHOD:: new
+(describe method here)
+
+ARGUMENT:: params
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+INSTANCEMETHODS::
+
+METHOD:: keys
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: set
+(describe method here)
+
+ARGUMENT:: param
+(describe argument here)
+
+ARGUMENT:: value
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: next
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: values
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: init
+(describe method here)
+
+ARGUMENT:: params
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+EXAMPLES::
+
+code::
+(some example code)
+::

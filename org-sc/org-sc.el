@@ -357,6 +357,7 @@ free the SynthTree with the same name, and free the buffer"
 (global-set-key (kbd "H-c w") 'sclang-switch-to-workspace)
 (global-set-key (kbd "H-c >") 'sclang-show-post-buffer)
 (global-set-key (kbd "H-c H-y") 'sclang-open-help-gui)
+(global-set-key (kbd "H-c :") 'sclang-find-definitions)
 (global-set-key (kbd "H-c t") 'org-sc-synthtemplate-gui)
 (global-set-key (kbd "H-c H-t") 'org-sc-templates-gui)
 (global-set-key (kbd "H-c H-g") 'org-sc-guis)
