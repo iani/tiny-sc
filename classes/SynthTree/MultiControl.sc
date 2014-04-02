@@ -112,7 +112,7 @@ MultiControl : IdentityDictionary {
 		}
 	}
 
-	addPattern { | pattern, controlName = \pattern, 
+	playPattern { | pattern, controlName = \pattern, 
 		startTogether = true, stopTogether = true |
 		var pFunc;
 		pFunc = this[controlName];
