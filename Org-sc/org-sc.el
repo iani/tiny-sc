@@ -201,9 +201,7 @@ org-sc-chuck-selecting-into-synthtree.")
   "Chuck current SC expression into latest selected SynthTree."
   (interactive)
   (sclang-eval-string
-   (format
-    "{ %s } => \\%s"
-    (sclang-get-current-snippet) org-sc-selected-synthtree)))
+   (format "{ %s } => ~st;" (sclang-get-current-snippet))))
 
 (defun org-sc-chuck-selecting-into-synthtree (synthtree-list)
   "Select a synthtree returned from SC and chuck current SC expression
@@ -267,11 +265,11 @@ sent by sclang."
     (setq org-sc-selected-synthtree selection)
     (sclang-eval-string (format format-string selection))))
 
-(defun org-sc-toggle-synthtree (last-one)
+(defun org-sc-toggle-synthtree (select)
   (interactive "P")
-  (if last-one
-      (sclang-eval-string (format "'%s'.toggle" org-sc-selected-synthtree))
-      (sclang-eval-string "SynthTree.toggleSelectingSynthTree;")))
+  (if select
+      (sclang-eval-string "SynthTree.toggleSelectingSynthTree;")
+      (sclang-eval-string "~st.toggle")))
 
 (defun org-sc-toggle-last-synthtree (fadeTime)
   (interactive "P")

@@ -1,12 +1,17 @@
 #+STARTUP: showall
+
+Demonstrate the mini-audicle-style process monitor.  This feature is superseded by Synthtree - Faders.
+
+To show the audicle-style process monitor, type C-H-r (Control key + Function key + r).
+
 * test organising and running sc-code in sections|
 :PROPERTIES:
 :ID:       485215FB-C773-4785-8503-D70AA06EC85D
-:eval-id:  127
+:eval-id:  130
 :END:
 
 loop {
-	~a = { LFSaw.ar((60..90).choose.midicps, 0, 0.1) }.pla;
+	~a = { LPF.ar(LFSaw.ar((60..90).choose.midicps, 0, 0.1), 1000) }.pla;
 	[0.1, 0.2, 0.4].choose.wait;
 	~a.release(0.01.exprand(5.0));
 	[0.1, 0.2].choose.wait;
@@ -18,7 +23,7 @@ loop {
 :eval-id:  16
 :END:
 
-a.release(3);
+~a.release(3);
 
 * once more getting contents
 :PROPERTIES:
