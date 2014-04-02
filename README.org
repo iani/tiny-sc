@@ -367,18 +367,18 @@ Following keyboard shortcuts select a buffer from the list of buffers currently 
      See 2 above regarding what is evaluated.
      Name of synthtree to be chucked to can be given as tag or as value of property =SYNTHREE_NAME=.  If no name is given, then the expression is chucked into the current synthtree (=~st=).
 
-- H-n :: next section
-- H-C-n :: next section + evaluate
-- H-M-n :: next section + chuck
-- H-p :: previous section
-- H-C-p :: previous section + evaluate
-- H-M-p :: previous section + chuck
-- H-<down> :: next section at same level
-- H-C-<down> :: next section at same level + evaluate
-- H-M-<down> :: next section at same level + chuck
-- H-<up> :: previous section at same level
-- H-C-<up> :: previous section at same level + evaluate
-- H-M-<up> :: previous section at same level + chuck
+- =H-n= :: next section
+- =H-C-n= :: next section + evaluate
+- =H-M-n= :: next section + chuck
+- =H-p= :: previous section
+- =H-C-p= :: previous section + evaluate
+- =H-M-p= :: previous section + chuck
+- =H-<down>= :: next section at same level
+- =H-C-<down>= :: next section at same level + evaluate
+- =H-M-<down>= :: next section at same level + chuck
+- =H-<up>= :: previous section at same level
+- =H-C-<up>= :: previous section at same level + evaluate
+- =H-M-<up>= :: previous section at same level + chuck
 
 **** From alpha02
 Note: The process registry window and the org-sc-eval-in-routine technique is now superseded by SynthTree and its guis.  SynthTree Fader gui is a more convenient way to control running synths.  The process registry is nevertheless kept here as mere "proof of concept", imitating the MiniAudicle process list window of ChucK.
