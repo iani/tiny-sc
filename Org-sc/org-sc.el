@@ -18,10 +18,10 @@ org-sc-eval-as-routine uses enclosure to enclose the string link like this:
          (string
           (if (equal (car element) 'src-block)
               (plist-get (cadr element) :value)
-            (org-get-section-contents))))
+            (org-sc-get-section-contents))))
     (org-sc-eval-string-with-id string replace-p enclosure)))
 
-(defun org-get-section-contents ()
+(defun org-sc-get-section-contents ()
   "Get the contents substring of an org-mode section, without the property drawer."
   (save-restriction
     (widen)
@@ -192,7 +192,7 @@ Adapted from org-toggle-ordered-property."
      (org-map-entries
      (lambda ()
        (sclang-eval-string
-        (org-get-section-contents)
+        (org-sc-get-section-contents)
         t))
      "AUTOLOAD" 'file))))
 
@@ -228,7 +228,7 @@ org-sc-select-synthtree-then-chuck"
     (setq org-sc-selected-synthtree synthtree)
     (if (equal major-mode 'sclang-mode)
         (setq expression (sclang-get-current-snippet))
-      (setq expression (org-get-section-contents)))
+      (setq expression (org-sc-get-section-contents)))
     (sclang-eval-string (format "{ %s } => \\%s" expression synthtree))))
 
 (defun org-sc-select-synthtree-then-chuck ()
@@ -261,7 +261,7 @@ sent by sclang."
     (setq org-sc-selected-synthtree selection)
     (if (equal major-mode 'sclang-mode)
         (setq expression (sclang-get-current-snippet))
-      (setq expression (org-get-section-contents)))
+      (setq expression (org-sc-get-section-contents)))
     (sclang-eval-string (format format-string expression selection))))
 
 (defun org-sc-select-eval
@@ -365,8 +365,88 @@ free the SynthTree with the same name, and free the buffer"
   (org-sc-templates-gui)
   (org-sc-faders))
 
+;;'org-sc-eval-this-section
+(defun org-sc-eval-this-section ()
+  (interactive)
+  (sclang-eval-string (org-sc-get-section-contents)))
+
+;;'org-sc-chuck-this-section
+(defun org-sc-chuck-this-section ()
+  (interactive)
+  (sclang-eval-string
+   (format "{ %s } => (~st ?? { \\st0.asSynthTree });"
+           (org-sc-get-section-contents))
+   t))
+
+;;'org-sc-next-section OK DONE
+;;'org-sc-previous-section OK DONE
+
+;;'org-sc-eval-next-section
+(defun org-sc-eval-next-section ()
+  (interactive)
+  (outline-next-heading)
+  (org-sc-eval-this-section))
+
+;;'org-sc-eval-previous-section
+(defun org-sc-eval-previous-section ()
+  (interactive)
+  (outline-previous-heading)
+  (org-sc-eval-this-section))
+
+;;'org-sc-chuck-next-section
+(defun org-sc-chuck-next-section ()
+  (interactive)
+  (outline-next-heading)
+  (org-sc-chuck-this-section))
+
+;;'org-sc-chuck-previous-section
+(defun org-sc-chuck-previous-section ()
+  (interactive)
+  (outline-previous-heading)
+  (org-sc-chuck-this-section))
+
+
+;;;;
+;;'org-sc-next-same-level-section
+(defun org-sc-next-same-level-section ()
+  (interactive)
+  (org-forward-heading-same-level 1)
+  (org-goto-contents-begin))
+
+;;'org-sc-previous-same-level-section
+(defun org-sc-previous-same-level-section ()
+  (interactive)
+  (org-backward-heading-same-level 1)
+  (org-goto-contents-begin))
+
+;;'org-sc-eval-next-same-level-section
+(defun org-sc-eval-next-same-level-section ()
+  (interactive)
+  (org-forward-heading-same-level 1)
+  (org-sc-eval-this-section))
+
+;;'org-sc-eval-previous-same-level-section
+(defun org-sc-eval-previous-same-level-section ()
+  (interactive)
+  (org-backward-heading-same-level 1)
+  (org-sc-eval-this-section))
+
+;;'org-sc-chuck-next-same-level-section
+(defun org-sc-chuck-next-same-level-section ()
+  (interactive)
+  (org-forward-heading-same-level 1)
+  (org-sc-chuck-this-section))
+
+;;'org-sc-chuck-previous-same-level-section
+(defun org-sc-chuck-next-same-level-section ()
+  (interactive)
+  (org-backward-heading-same-level 1)
+  (org-sc-chuck-this-section))
+
+
 (global-set-key (kbd "H-c l") 'sclang-start)
 (global-set-key (kbd "H-c w") 'sclang-switch-to-workspace)
+(global-set-key (kbd "M-P") 'sclang-clear-post-buffer)
 (global-set-key (kbd "H-c >") 'sclang-show-post-buffer)
 (global-set-key (kbd "H-c H-y") 'sclang-open-help-gui)
 (global-set-key (kbd "H-c :") 'sclang-find-definitions)
@@ -392,45 +472,44 @@ free the SynthTree with the same name, and free the buffer"
 (global-set-key (kbd "H-b s") 'org-sc-save-buffer-list)
 (global-set-key (kbd "H-b f") 'org-sc-free-buffer)
 
+
 (eval-after-load "org"
-  'progn
-   ;; move / eval / chuck sections
-  ((define-key org-mode-map (kbd "H-C <space>") 'org-sc-eval-this-section)
-   (define-key org-mode-map (kbd "H-M <space>") 'org-sc-chuck-this-section)
-   (define-key org-mode-map (kbd "H-n") 'org-sc-next-section)
-   (define-key org-mode-map (kbd "H-p") 'org-sc-previous-section)
-   (define-key org-mode-map (kbd "H-C-n") 'org-sc-eval-next-section)
-   (define-key org-mode-map (kbd "H-C-p") 'org-sc-eval-previous-section)
-   (define-key org-mode-map (kbd "H-M-n") 'org-sc-chuck-this-section)
-   (define-key org-mode-map (kbd "H-M-p") 'org-sc-chuck-previous-section)
-   ;; same level movement: up and down arrow keys
-   (define-key org-mode-map (kbd "H-<down>") 'org-sc-next-same-level-section)
-   (define-key org-mode-map (kbd "H-<up>") 'org-sc-previous-same-level-section)
-   (define-key org-mode-map (kbd "H-C-<down>") 'org-sc-eval-next-same-level-section)
-   (define-key org-mode-map (kbd "H-C-<up>") 'org-sc-eval-previous-same-level-section)
-   (define-key org-mode-map (kbd "H-M-<down>") 'org-sc-chuck-next-same-level-section)
-   (define-key org-mode-map (kbd "H-M-<up>") 'org-sc-chuck-previous-same-level-section)
-
-;;; more stuff:
-
-   (define-key org-mode-map (kbd "C-M-x") 'org-sc-eval)
-   (define-key org-mode-map (kbd "C-c C-,") 'sclang-eval-line)
-   ;; 9 because in the us keyboard it is below open paren:
-   (define-key org-mode-map (kbd "C-c C-9") 'sclang-eval-dwim)
-   (define-key org-mode-map (kbd "C-M-z") 'org-sc-stop-section-processes)
-   (define-key org-mode-map (kbd "H-C-x") 'org-sc-eval-in-routine)
-   ;; convenient parallel to H-C-x:
-   (define-key org-mode-map (kbd "H-C-z") 'org-sc-stop-section-processes)
-   (define-key org-mode-map (kbd "C-M-n") 'org-sc-eval-next)
-   (define-key org-mode-map (kbd "C-M-p") 'org-sc-eval-previous)
-   ;; this overrides the default binding org-schedule, which I do not use often:
-   (define-key org-mode-map (kbd "C-c C-s") 'sclang-main-stop)
-   (define-key org-mode-map (kbd "H-C-r") 'sclang-process-registry-gui)
-   (define-key org-mode-map (kbd "C-c C-M-.") 'org-sc-stop-section-processes)
-   (define-key org-mode-map (kbd "H-C-n  )") 'org-sc-next-section)
-   (define-key org-mode-map (kbd "H-C-p") 'org-sc-previous-section)
-   (define-key org-mode-map (kbd "C-c C-x l") 'org-sc-toggle-autoload)
-   (define-key org-mode-map (kbd "C-c C-x C-l") 'org-sc-load-marked)))
+  ;; move / eval / chuck sections
+  '(progn
+     (define-key org-mode-map (kbd "H-C-SPC") 'org-sc-eval-this-section)
+     (define-key org-mode-map (kbd "H-M-SPC") 'org-sc-chuck-this-section)
+     (define-key org-mode-map (kbd "H-n") 'org-sc-next-section)
+     (define-key org-mode-map (kbd "H-p") 'org-sc-previous-section)
+     (define-key org-mode-map (kbd "H-C-n") 'org-sc-eval-next-section)
+     (define-key org-mode-map (kbd "H-C-p") 'org-sc-eval-previous-section)
+     (define-key org-mode-map (kbd "H-M-n") 'org-sc-chuck-next-section)
+     (define-key org-mode-map (kbd "H-M-p") 'org-sc-chuck-previous-section)
+     ;; same level movement: up and down arrow keys
+     (define-key org-mode-map (kbd "H-j") 'org-sc-next-same-level-section)
+     (define-key org-mode-map (kbd "H-k") 'org-sc-previous-same-level-section)
+     (define-key org-mode-map (kbd "H-C-j") 'org-sc-eval-next-same-level-section)
+     (define-key org-mode-map (kbd "H-C-k") 'org-sc-eval-previous-same-level-section)
+     (define-key org-mode-map (kbd "H-M-j") 'org-sc-chuck-next-same-level-section)
+     (define-key org-mode-map (kbd "H-M-k") 'org-sc-chuck-previous-same-level-section)
+     ;; more stuff:
+     (define-key org-mode-map (kbd "C-M-x") 'org-sc-eval)
+     (define-key org-mode-map (kbd "C-c C-,") 'sclang-eval-line)
+     ;; 9 because in the us keyboard it is below open paren:
+     (define-key org-mode-map (kbd "C-c C-9") 'sclang-eval-dwim)
+     (define-key org-mode-map (kbd "C-M-z") 'org-sc-stop-section-processes)
+     (define-key org-mode-map (kbd "H-C-x") 'org-sc-eval-in-routine)
+     ;; convenient parallel to H-C-x:
+     (define-key org-mode-map (kbd "H-C-z") 'org-sc-stop-section-processes)
+     (define-key org-mode-map (kbd "C-M-n") 'org-sc-eval-next)
+     (define-key org-mode-map (kbd "C-M-p") 'org-sc-eval-previous)
+     ;; this overrides the default binding org-schedule, which I do not use often:
+     (define-key org-mode-map (kbd "C-c C-s") 'sclang-main-stop)
+     (define-key org-mode-map (kbd "H-C-r") 'sclang-process-registry-gui)
+     (define-key org-mode-map (kbd "C-c C-M-.") 'org-sc-stop-section-processes)
+     (define-key org-mode-map (kbd "H-C-n") 'org-sc-next-section)
+     (define-key org-mode-map (kbd "H-C-p") 'org-sc-previous-section)
+     (define-key org-mode-map (kbd "C-c C-x l") 'org-sc-toggle-autoload)
+     (define-key org-mode-map (kbd "C-c C-x C-l") 'org-sc-load-marked)))
 
 (eval-after-load "sclang"
   '(progn

@@ -386,12 +386,12 @@ add choices of what to do without moving: = 14 commands
 - =H-p= :: previous section
 - =H-C-p= :: previous section + evaluate
 - =H-M-p= :: previous section + chuck
-- =H-<down>= :: next section at same level
-- =H-C-<down>= :: next section at same level + evaluate
-- =H-M-<down>= :: next section at same level + chuck
-- =H-<up>= :: previous section at same level
-- =H-C-<up>= :: previous section at same level + evaluate
-- =H-M-<up>= :: previous section at same level + chuck
+- =H-j= :: next section at same level
+- =H-C-j= :: next section at same level + evaluate
+- =H-M-j= :: next section at same level + chuck
+- =H-k= :: previous section at same level
+- =H-C-k= :: previous section at same level + evaluate
+- =H-M-k= :: previous section at same level + chuck
 
 **** From alpha02
 Note: The process registry window and the org-sc-eval-in-routine technique is now superseded by SynthTree and its guis.  SynthTree Fader gui is a more convenient way to control running synths.  The process registry is nevertheless kept here as mere "proof of concept", imitating the MiniAudicle process list window of ChucK.

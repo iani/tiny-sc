@@ -1,0 +1,6 @@
+* test
+
+WhiteNoise.ar;
+* ! GrayNoise.ar;
+
+* ! 1 =!> \fadeTime;
