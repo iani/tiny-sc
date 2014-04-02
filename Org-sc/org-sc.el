@@ -352,6 +352,7 @@ free the SynthTree with the same name, and free the buffer"
   (org-sc-templates-gui)
   (org-sc-faders))
 
+(global-set-key (kbd "H-c l") 'sclang-start)
 (global-set-key (kbd "H-c w") 'sclang-switch-to-workspace)
 (global-set-key (kbd "H-c >") 'sclang-show-post-buffer)
 (global-set-key (kbd "H-c H-y") 'sclang-open-help-gui)

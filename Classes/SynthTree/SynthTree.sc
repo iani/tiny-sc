@@ -68,6 +68,8 @@ SynthTree : IdentityTree {
 		^server;
 	}
 
+	*newName { | baseName = "st" | ^format ("%%", baseName, UniqueID.next) }
+
 	*makeParentEvent { | argServer |
 		var parentEvent;
 		parentEvent = parentEvents[argServer];

@@ -183,9 +183,9 @@ PatternFunc {
 */
 
 + SequenceableCollection {
-	=> { | durations, repeats |
+	=> { | duration, repeats |
 		if (repeats === 'i') { repeats = inf } { repeats = repeats ? 1 };
-		^PatternPlayer(Pseq(this, repeats), durations);	
+		^PatternPlayer(Pseq(this, repeats), duration);
 	}
 
 	pp { | repeats = 1, durations |
