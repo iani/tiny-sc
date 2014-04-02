@@ -112,18 +112,23 @@ in a routine:
          (org-show-entry))))
 
 (defun org-goto-contents-begin ()
-  "Go to the first line of contents of a section, skipping the property drawer."
+  "If section begins with ! then use the section heading as code.
+Else go to the first line of contents of a section, skipping the property drawer."
   (save-restriction
     (widen)
     (org-back-to-heading)
     (let* ((element (org-element-at-point))
+           (type (car element))
            (plist (cadr element))
            (end (plist-get plist :end)))
-      (goto-char (plist-get plist :contents-begin))
-      ;; skip property drawer if it exists:
-      (setq element (org-element-at-pSoint))
-      (if (equal 'property-drawer (car element))
-          (goto-char (plist-get (cadr element) :end))))))
+      (unless (and (eq 'headline type)
+               (equal "!" (substring-no-properties
+                           (plist-get plist :raw-value)
+                           0 1)))
+        (goto-char (plist-get plist :contents-begin))
+        (setq element (org-element-at-point))
+        (if (equal 'property-drawer (car element))
+            (goto-char (plist-get (cadr element) :end)))))))
 
 (defun org-sc-next-section ()
   "Go to the next section, and jump to the beginning of the code,
@@ -381,7 +386,22 @@ free the SynthTree with the same name, and free the buffer"
 
 (eval-after-load "org"
 '(progn
+   ;; move / eval / chuck sections
+   (define-key org-mode-map (kbd "H-n") 'org-sc-next-section)
+   (define-key org-mode-map (kbd "H-p") 'org-sc-previous-section)
    (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+
+;;; more stuff:
+
    (define-key org-mode-map (kbd "C-M-x") 'org-sc-eval)
    (define-key org-mode-map (kbd "C-c C-,") 'sclang-eval-line)
    ;; 9 because in the us keyboard it is below open paren:

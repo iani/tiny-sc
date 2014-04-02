@@ -180,7 +180,10 @@ SynthTree.initTree;
 
 * GUI Views
 
-** Overview: 5 View Types
+** ! Overview: 5 View Types
+:PROPERTIES:
+:DATE:     <2014-04-02 Wed 16:40>
+:END:
 
 There are 5 main view types:
 
@@ -192,6 +195,9 @@ There are 5 main view types:
 #+END_EXAMPLE
 
 ** The Synth Template View
+:PROPERTIES:
+:DATE:     <2014-04-02 Wed 16:40>
+:END:
 
 #+BEGIN_EXAMPLE
 SynthTemplate.gui;
