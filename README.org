@@ -180,7 +180,7 @@ SynthTree.initTree;
 
 * GUI Views
 
-** ! Overview: 5 View Types
+** Overview: 5 View Types                                              :test:
 :PROPERTIES:
 :DATE:     <2014-04-02 Wed 16:40>
 :END:
@@ -192,7 +192,6 @@ There are 5 main view types:
 - Synth Template View :: A window with 2 list views: The left list shows the tags (categories) of SynthTree templates (SynthDefs or Functions) and the right list shows the templates belonging to the selected category.  At the bottom is a drag view showing the name of the selected template.  Drag the selected template onto any label on the Fader view to play that template on the SynthTree belonging to that fader strip.
 - Pattern Template View :: (Tentative / Under development!)  Holds templates of patterns to play in SynthTrees.  May be integrated in the same list as the Synth Template View.
 - Process Registry View :: Experimental / Proof of concept: Shows a list of currently running synth and routine processes, in a manner similar to the process view of Mini Audicle in ChucK.  Works together with Emacs/Org-Mode (see keyboard shortcuts).  Can also work with SuperCollider IDE, but requires using different methods for playing Functions, Synths or Routines.  This feature is superseded by the Fader View, but kept here as proof-of-concept.
-#+END_EXAMPLE
 
 ** The Synth Template View
 :PROPERTIES:
@@ -360,6 +359,8 @@ Following keyboard shortcuts select a buffer from the list of buffers currently 
 
 2 types of movement x 3 choices of what to do with section = 12 commands.
 
+add choices of what to do without moving: = 14 commands
+
 - 2 types of movement ::
   1. Move to immediately next/previous section
   2. Move to next/previous section at same level
@@ -373,6 +374,12 @@ Following keyboard shortcuts select a buffer from the list of buffers currently 
      See 2 above regarding what is evaluated.
      Name of synthtree to be chucked to can be given as tag or as value of property =SYNTHREE_NAME=.  If no name is given, then the expression is chucked into the current synthtree (=~st=).
 
+- 2 choices of what to do without moving:
+  1. evaluate this section
+  2. chuck this section
+
+- =H-C-space= :: evaluate this section
+- =H-M-space= :: chuck this section
 - =H-n= :: next section
 - =H-C-n= :: next section + evaluate
 - =H-M-n= :: next section + chuck

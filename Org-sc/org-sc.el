@@ -27,14 +27,22 @@ org-sc-eval-as-routine uses enclosure to enclose the string link like this:
     (widen)
     (org-back-to-heading)
     (let* ((element (org-element-at-point))
+           (type (car element))
+           (headline)
            (plist (cadr element))
           (end (plist-get plist :end)))
-     (goto-char (plist-get plist :contents-begin))
-     ;; skip property drawer if it exists:
-     (setq element (org-element-at-point))
-     (if (equal 'property-drawer (car element))
-         (goto-char (plist-get (cadr element) :end)))
-     (buffer-substring-no-properties (point) end))))
+      (if (and (eq 'headline type)
+                   (equal "!" (substring-no-properties
+                               (setq headline (plist-get plist :raw-value))
+                               0 1)))
+          (substring-no-properties headline 1)
+        (progn
+         (goto-char (plist-get plist :contents-begin))
+         ;; skip property drawer if it exists:
+         (setq element (org-element-at-point))
+         (if (equal 'property-drawer (car element))
+             (goto-char (plist-get (cadr element) :end)))
+         (buffer-substring-no-properties (point) end))))))
 
 (defun org-sc-eval-string-with-id (string &optional replace-p enclosure)
   "Eval string in SuperCollider, providing the id of the section
@@ -385,20 +393,23 @@ free the SynthTree with the same name, and free the buffer"
 (global-set-key (kbd "H-b f") 'org-sc-free-buffer)
 
 (eval-after-load "org"
-'(progn
+  'progn
    ;; move / eval / chuck sections
+  ((define-key org-mode-map (kbd "H-C <space>") 'org-sc-eval-this-section)
+   (define-key org-mode-map (kbd "H-M <space>") 'org-sc-chuck-this-section)
    (define-key org-mode-map (kbd "H-n") 'org-sc-next-section)
    (define-key org-mode-map (kbd "H-p") 'org-sc-previous-section)
-   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
-   (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
+   (define-key org-mode-map (kbd "H-C-n") 'org-sc-eval-next-section)
+   (define-key org-mode-map (kbd "H-C-p") 'org-sc-eval-previous-section)
+   (define-key org-mode-map (kbd "H-M-n") 'org-sc-chuck-this-section)
+   (define-key org-mode-map (kbd "H-M-p") 'org-sc-chuck-previous-section)
+   ;; same level movement: up and down arrow keys
+   (define-key org-mode-map (kbd "H-<down>") 'org-sc-next-same-level-section)
+   (define-key org-mode-map (kbd "H-<up>") 'org-sc-previous-same-level-section)
+   (define-key org-mode-map (kbd "H-C-<down>") 'org-sc-eval-next-same-level-section)
+   (define-key org-mode-map (kbd "H-C-<up>") 'org-sc-eval-previous-same-level-section)
+   (define-key org-mode-map (kbd "H-M-<down>") 'org-sc-chuck-next-same-level-section)
+   (define-key org-mode-map (kbd "H-M-<up>") 'org-sc-chuck-previous-same-level-section)
 
 ;;; more stuff:
 
