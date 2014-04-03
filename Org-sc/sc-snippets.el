@@ -44,6 +44,13 @@ for evaluation after processing in Emacs."
       (sclang-eval-region)
       (set-mark nil))))
 
+(defun sclang-chuck-current-snippet ()
+  "Evaluate region between //: comments in sclang."
+  (interactive)
+  (sclang-eval-string
+   (format "{ %s } => (~st ?? { \\st0.asSynthTree });"
+           (sclang-get-current-snippet))))
+
 (defun sclang-goto-next-snippet ()
   "Go to the next region delimited with //: comment line."
   (interactive)
@@ -71,6 +78,18 @@ for evaluation after processing in Emacs."
   (interactive)
   (sclang-goto-next-snippet)
   (sclang-execute-current-snippet))
+
+(defun sclang-chuck-previous-snippet ()
+  "Go to the previous sclang snippet and evaluate it."
+  (interactive)
+  (sclang-goto-previous-snippet)
+  (sclang-chuck-current-snippet))
+
+(defun sclang-chuck-next-snippet ()
+  "Go to the next sclang snippet and evaluate it."
+  (interactive)
+  (sclang-goto-next-snippet)
+  (sclang-chuck-current-snippet))
 
 (defun sclang-select-snippet ()
   "Select the region between two //: comments."
@@ -111,12 +130,15 @@ for evaluation after processing in Emacs."
   (local-set-key (kbd "C-M-b") 'sclang-goto-previous-snippet)
   (local-set-key (kbd "C-M-n") 'sclang-execute-next-snippet)
   (local-set-key (kbd "C-M-p") 'sclang-execute-previous-snippet)
-  ;; alternatives using Control+Function-key:
-  (local-set-key (kbd "C-H-f") 'sclang-goto-next-snippet)
-  (local-set-key (kbd "C-H-b") 'sclang-goto-previous-snippet)
-  (local-set-key (kbd "C-H-n") 'sclang-execute-next-snippet)
-  (local-set-key (kbd "C-H-p") 'sclang-execute-previous-snippet)
-  (local-set-key (kbd "C-H-r") 'sclang-process-registry-gui)
+  ;; alternatives using Control/Meta+Function-key:
+  (local-set-key (kbd "H-SPC") 'org-sc-toggle-synthtree)
+  (local-set-key (kbd "H-C-SPC") 'sclang-execute-current-snippet)
+  (local-set-key (kbd "H-M-SPC") 'sclang-chuck-current-snippet)
+  (local-set-key (kbd "H-C-n") 'sclang-execute-next-snippet)
+  (local-set-key (kbd "H-C-p") 'sclang-execute-previous-snippet)
+  (local-set-key (kbd "H-M-n") 'sclang-chuck-next-snippet)
+  (local-set-key (kbd "H-M-p") 'sclang-chuck-previous-snippet)
+  (local-set-key (kbd "H-C-r") 'sclang-process-registry-gui)
   ;; C-c C-l is overrriden by sc-extensions. Therefore substitute:
   (local-set-key (kbd "C-c l") 'sclang-recompile)
   ;; additional key for convenience: provide SC-IDE shortcut for clearing buffer:

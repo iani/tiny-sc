@@ -7,9 +7,12 @@
 :DATE:     <2014-04-02 Wed 11:16>
 :END:
 
-Remove instrument from SynthPattern / SynthStream / SynthEvent.
+- Remove instrument from SynthPattern / SynthStream / SynthEvent. The instrument should be provided by the PatternFunc that plays the SynthEvent.
 
-The instrument should be provided
+- fadeTime should not be given as adverb of =>.  Instead use adverb of => to specify numChan.
+
+- add numChan as parent environment variable for SynthTree
+
 
 ** Things to do with parameters/synths in currenEnvironment
 :PROPERTIES:

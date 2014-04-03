@@ -35,8 +35,7 @@ a = \default %> [freq: Pseq((40..80).midicps, inf)];
 
 //:
 
-p = [freq: Pseq((30..90).midicps, inf)] %> 0.02;
-
+p = [freq: Prand((30..90).midicps, inf)] %> 0.02;
 
 \test.addNotifier (p, \value, { | value |
 	var synth;
@@ -49,3 +48,7 @@ p.start;
 //:
 
 p.valueStream;
+
+//:
+
+p = [freq: Prand((30..90).midicps, inf)] %> 0.02 => \sound;
