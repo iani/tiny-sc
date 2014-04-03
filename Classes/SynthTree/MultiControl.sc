@@ -242,8 +242,7 @@ MultiControl : IdentityDictionary {
 				$b, { synthTree.bufferList },
 				$,, { thisProcess.stop },
 				$., { SynthTree.stopAll },
-				$i, { SynthTree.initTree },
-				$/, { SynthTree.initTree },
+				$i, { synthTree.inspect },
 				Char.space, { synthTree.toggle },
 				{ view.defaultKeyDownAction(
 					char, modifiers, unicode, keycode, key) 

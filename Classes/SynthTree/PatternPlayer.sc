@@ -21,7 +21,7 @@ PatternPlayer {
 	var <currentValue, <currentDuration;
 
 	*new { | values, durations, delay = 0, clock |
-		^this.newCopyArgs(delay, clock ?? { TempoClock() })
+		^this.newCopyArgs(delay, clock ?? { TempoClock /*() */ })
 		.values_(values).durations_(durations);
 	}
 
@@ -56,6 +56,15 @@ PatternPlayer {
 		task ?? { this.makeTask }; 
 		task.play(clock);
 	}
+
+	startAfterSynth { | synth |
+		if (synth.isPlaying) {
+			this.start;
+		}{
+			synth.onStart()
+		}
+	}
+
     stop { task.stop; }
 	reset { task.reset; }
 

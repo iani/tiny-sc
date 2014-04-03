@@ -506,7 +506,7 @@ SynthTree : IdentityTree {
 				$t, { SynthTemplate.gui; },
 				$,, { thisProcess.stop },
 				$., { SynthTree.stopAll },
-				$i, { SynthTree.initTree },
+				$I, { SynthTree.initTree },
 				$/, { SynthTree.initTree },
 				$0, { 0.02 =!> \fadeTime },
 				$1, { 1 =!> \fadeTime },

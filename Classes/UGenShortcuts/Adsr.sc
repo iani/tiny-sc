@@ -57,11 +57,14 @@ Sine {
 }
 
 Inp { 
-	*ar { | inputName = \in, channelNum |
-		^In.ar(inputName.kr(channelNum ?? { Server.default.options.numInputBusChannels }));
+	*ar { | inputName = \in, channelNum, numChannels = 1 |
+		^In.ar(
+			inputName.kr(channelNum ?? { Server.default.options.numInputBusChannels }),
+			numChannels
+		);
 	}
-	*kr { | inputName = \in, channelNum = 0 |
-		^In.kr(inputName.kr(channelNum));
+	*kr { | inputName = \in, channelNum = 0, numChannels = 1 |
+		^In.kr(inputName.kr(channelNum), numChannels);
 	}
 }
  
