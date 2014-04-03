@@ -477,8 +477,10 @@ SynthTree : IdentityTree {
 
 	getArgsFromTemplate {
 		^template.templateArgs.reject({ | cName |
-			cName.rate === \scalar or: { [\buf, \gate, \out, \in, \in1, \in2, \timeScale]
-				includes: cName.name }
+			cName.rate === \scalar or: { 
+				[\buf, \gate, \out, \in, \in1, \in2, \timeScale, \fadeIn]
+				includes: cName.name 
+			}
 		}) collect: { | cName |
 			args.getParam(cName.name, nil, cName.defaultValue);
 		};
