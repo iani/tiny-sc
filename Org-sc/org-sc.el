@@ -390,6 +390,8 @@ free the SynthTree with the same name, and free the buffer"
 ;;'org-sc-eval-previous-section
 (defun org-sc-eval-previous-section ()
   (interactive)
+  (when (not (eq 'headline (car (org-element-at-point))))
+    (outline-previous-heading))
   (outline-previous-heading)
   (org-sc-eval-this-section))
 
