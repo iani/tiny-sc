@@ -33,16 +33,18 @@ Try the following, one line at a time:
 \sound.start;
 // Replace the synth at \sound with another one
 { SinOsc.ar(440) } => \sound;
-// Replace again, fading-out the previous sound in 5 seconds
-{ PinkNoise.ar } =>.5 \sound;
-// Floating point durations must be given through a message
-{ GrayNoise.ar(Decay.kr(Dust.kr(5))) } => \sound.fadeOut(0.5);
+// Set the fade-in fade-out time to 0.5 seconds
+\sound.fadeTime = 5;
+// Replace again, fading-out the previous sound in 0.5 seconds
+{ PinkNoise.ar } => \sound;
+// Change the fade-time of the SynthTree in the same line:
+{ LPF.ar(GrayNoise.ar(Decay.kr(Dust.kr(10))), \freq.kr(5000)) } => \sound.fadeTime_(0.5);
 // Output channel can be set
 1 => ~out;
-// So can the amplitude
-0.01 => ~amp;  // Alternative syntax: \sound.set(\amp, 0.01)
+// So can the freq or any other parameter
+250 => ~freq;  // Alternative syntax: \sound.set(\freq, 250)
 // Fadeout with custom duration
-\sound.fadeOut(5);
+\sound.fadeOut(12);
 #+END_EXAMPLE
 
 * Setting global fade time
@@ -51,21 +53,21 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 
 #+BEGIN_EXAMPLE
 // Set global fade time to 3 seconds
-3 =!> \fadeTime;
+10 =!> \fadeTime;
 // Fade in a synth.  Reset amp back to 0.1 from previous example
-{ WhiteNoise.ar } => \sound.set(\amp, 0.1);
+{ WhiteNoise.ar } => \sound2;
 // Cross-fade another synth in its place
-{ SinOsc.ar(LFNoise0.kr(5).range(400, 4000)) } => \sound;
+{ SinOsc.ar(LFNoise0.kr(5).range(400, 4000)) } => \sound2;
 // And a third synth
-{ LPF.ar(GrayNoise.ar, LFNoise0.kr(5).range(400, 4000)) } => \sound;
+{ LPF.ar(GrayNoise.ar, LFNoise0.kr(5).range(400, 4000)) } => \sound2;
 // Set global fade time to 0.01 seconds
 0.01 =!> \fadeTime;
 // Notice difference in cross-fading duration
-{ LFDNoise3.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound;
+{ LFDNoise3.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound2;
 // One more time
-{ SinOsc.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound;
+{ SinOsc.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound2;
 // Fadeout also uses the global default
-\sound.fadeOut;
+\sound2.fadeOut;
 
 #+END_EXAMPLE
 

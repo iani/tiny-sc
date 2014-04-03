@@ -45,6 +45,21 @@ IZ Wed, 26 Feb 2014 08:22:41
 		)
 	}
 
+	/* Fix for setting the fade-in time reliably. */
+	ladsrOut { | outName = \out, outValue = 0,
+		attackTime = 0.02, decayTime = 0.3, sustainLevel = 1, releaseTime = 1, 
+		peakLevel = 1, curve = -4, bias = 0,
+		gateName = \gate, gateValue = 1,
+		ampName = \amp, ampValue = 0.1, doneAction = 2, fadeIn = 0 |
+		^(
+			Line.kr(0, 1, \fadeIn.kr(fadeIn)) *
+			this *
+			Adsr(attackTime, decayTime, sustainLevel, releaseTime, 
+				peakLevel, curve, bias, gateName, gateValue,
+				ampName, ampValue, doneAction
+			)
+		).out(outName, outValue);
+	}
 
 	adsrOut { | outName = \out, outValue = 0,
 		attackTime = 0.02, decayTime = 0.3, sustainLevel = 1, releaseTime = 1, 
@@ -87,7 +102,26 @@ IZ Wed, 26 Feb 2014 08:22:41
 		)
 	}
 
-	// TODO: combine envelope and out in one message:
+	/* Fix for setting the fade-in time reliably. */
+	ladsrOut { | outName = \out, outValue = 0,
+		attackTime = 0.02, decayTime = 0.3, sustainLevel = 1, releaseTime = 1, 
+		peakLevel = 1, curve = -4, bias = 0,
+		gateName = \gate, gateValue = 1,
+		ampName = \amp, ampValue = 0.1, doneAction = 2, fadeIn = 0 |
+		^(
+			Line.kr(0, 1, \fadeIn.kr(fadeIn)) *
+			this *
+			Adsr(attackTime, decayTime, sustainLevel, releaseTime, 
+				peakLevel, curve, bias, gateName, gateValue,
+				ampName, ampValue, doneAction
+			)
+		).out(outName, outValue);
+	}
+
+	/* Note:  Setting timeScale of Adsr seems to break the speed
+		or final level of the amplitude.  Using Line instead. 
+		See ladrsOut. 
+	*/
 	adsrOut { | outName = \out, outValue = 0,
 		attackTime = 0.02, decayTime = 0.3, sustainLevel = 1, releaseTime = 1, 
 		peakLevel = 1, curve = -4, bias = 0,
@@ -101,6 +135,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 		).out(outName, outValue);
 	}
 
+	// TODO: complete these
 	envOut {
 		// plain Env from values - times array
 		/* // draft:
@@ -118,3 +153,4 @@ IZ Wed, 26 Feb 2014 08:22:41
 
 	}
 }
+

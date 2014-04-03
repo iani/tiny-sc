@@ -409,7 +409,6 @@ free the SynthTree with the same name, and free the buffer"
   (outline-previous-heading)
   (org-sc-chuck-this-section))
 
-
 ;;;;
 ;;'org-sc-next-same-level-section
 (defun org-sc-next-same-level-section ()

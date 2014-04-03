@@ -19,6 +19,7 @@ SynthTree : IdentityTree {
 		~st: Last chucked SynthTree (or a SynthTree explicitly pushed)
 		~dur: Default duration for playing patterns
 		~fadeTime: Global default duration for fade-in and fade-out
+		~numChans: Global default number of channels for audio input busses (default: 2)
 	*/
 	var <synth;  // the synth of this node
 	var <>inputs; // dictionary of input names and bus specs or busses
@@ -74,7 +75,7 @@ SynthTree : IdentityTree {
 		var parentEvent;
 		parentEvent = parentEvents[argServer];
 		parentEvent ?? {
-			parentEvent = (dur: 1/3, fadeTime: 0.1);
+			parentEvent = (dur: 1/3, fadeTime: 0.1, numChans: 2);
 			parentEvents[argServer] = parentEvent;
 		};
 		^parentEvent;
@@ -176,23 +177,24 @@ SynthTree : IdentityTree {
 		this.chuck(synthOrTemplate, replaceAction, argFadeTime, startWhen);
 	}
 
-	makeInputs { | specs |
+	makeInputs { | specs, numChans |
 		var server, bus;
 		server = this.server;
-		specs = specs ?? { [in: 1] };
+		numChans ?? { numChans = ~numChans };
+		specs = specs ?? { [in: numChans] };
 		switch (specs.class,
 			Integer, { specs = [in: specs] },
-			Symbol, { specs = [specs, 1] }
+			Symbol, { specs = [specs, numChans] }
 		);
 		inputs = inputs ?? { IdentityDictionary(); };
-		specs keysValuesDo: { | key, numChans |
+		specs keysValuesDo: { | key, numChannels |
 			bus = inputs[key];
 			if (bus.isNil) {
-				inputs[key] = Bus.audio(server, numChans);
+				inputs[key] = Bus.audio(server, numChannels);
 			}{
-				if (bus.numChannels != numChans) {
+				if (bus.numChannels != numChannels) {
 					bus.free;
-					inputs[key] = Bus.audio(server, numChans);
+					inputs[key] = Bus.audio(server, numChannels);
 				}
 			}
 		};
@@ -210,14 +212,14 @@ SynthTree : IdentityTree {
 		this.chuck(chucker, replaceAction);
 	}
 
-	chuck { | argTemplate, argReplaceAction = \fadeOut, argFadeTime |
+	chuck { | argTemplate, numChans |
 		/*  Set my template.  Start synth. Replace previous one. */
 		notStopped = true;
 		template = (argTemplate ? template).asSynthTemplate(name);
-		this.makeInputs(template.inputSpecs);
+		this.makeInputs(template.inputSpecs, numChans);
 		this.makeArgs(template.templateArgs);
 		if (synth.isPlaying) {
-			this.endSynth(argReplaceAction, this getFadeTime: argFadeTime);
+			this.endSynth(\fadeOut, this.getFadeTime);
 		};
 		this.makeSynth;
 		this.push;
@@ -336,7 +338,7 @@ SynthTree : IdentityTree {
 		/* return argument array for Synth.new / Function.play, containing
 			the setters for the output and the input busses */
 		var argsArray;
-		argsArray = [out: this.getOutputBusIndex, timeScale: 50 * this.getFadeTime];
+		argsArray = [out: this.getOutputBusIndex, fadeIn: this.getFadeTime];
 		inputs !? {
 			inputs keysValuesDo: { | key, bus |
 				argsArray = argsArray add: key;
