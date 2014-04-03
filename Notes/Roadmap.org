@@ -213,8 +213,10 @@ Steps:
 
 * Immediate TODOs
 
+
 ** SynthTree:
 
+*** fix ==> n_fre Node not found when =< to fx
 *** operators for: insert synth between, replace input
 
 =^ replace previous input by this one (for example to switch input between audio in and a buffer playback, or between different buffer playback synths etc.

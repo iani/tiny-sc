@@ -218,12 +218,12 @@ IZ Sat, Mar  8 2014, 23:40 EET
 	}
 	*/
 	xplay { | target, outbus = 0, fadeTime = 0.02, addAction = 'addToHead', args |
-		^{ this.value.adsrOut(attackTime: fadeTime) }
+		^{ this.value.ladsrOut(fadeIn: fadeTime) }
 		.play(target, outbus, fadeTime, addAction, args);
 	}
 
 	templateArgs {
-		^{ this.value.adsrOut }.asSynthDef.allControlNames;
+		^{ this.value.ladsrOut }.asSynthDef.allControlNames;
 	}
 	
 }

@@ -15,7 +15,7 @@ FunctionSynthTemplate {
 
 	makeSynthDef { | name |
 		synthdef = SynthDef(name, 
-			{ function.value.adsrOut(attackTime: 0.2); }
+			{ function.value.ladsrOut(attackTime: 0.2); }
 		); // we don't actually use it on the server. no .add
 	}
 

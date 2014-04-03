@@ -178,6 +178,8 @@ Confirm that the tree can be restarted after Command-. also when it contains lin
 thisProcess.stop; // run this to stop all synths first
 // Then run this to restart all stopped synths:
 SynthTree.initTree;
+// Modify parameters of the lpf SynthTree
+\lpf.set(\trigRate, 10, \freq, 2000);
 #+END_EXAMPLE
 
 * GUI Views

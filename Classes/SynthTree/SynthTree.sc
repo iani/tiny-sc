@@ -577,12 +577,6 @@ SynthTree : IdentityTree {
 
 	/*
 	// under development
-	fade { | duration = 1, target = 0 |
-		// fade amplitude with a line ugen from current value to 
-		// target value in duration seconds
-		this.map(\amp, target@duration);
-	}
-
 	map { | param, curve | 
 		/*  Fade any parameter to any value(s) using a line or envelope ugen
            on a control bus, mapped to the parameter. See MultiControl:map for details.

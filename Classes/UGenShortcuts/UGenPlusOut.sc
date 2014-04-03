@@ -8,7 +8,7 @@ Write:
 SynthDef("test", { WhiteNoise.ar(0.1).out }).add; 
 
 To add envelopes: 
-SynthDef("test", { WhiteNoise.ar(0.1).adsrOut }).add; 
+SynthDef("test", { WhiteNoise.ar(0.1).ladsrOut }).add; 
 a = Synth("test");
 a release: 0.4;
 
@@ -16,7 +16,7 @@ SynthDef("test2", { WhiteNoise.ar(Adsr()).out }).add;
 b = Synth("test2");
 b.set(\timeScale, 1, \gate, 0);
 
-SynthDef("test3", { WhiteNoise.ar.adsrOut }).add; 
+SynthDef("test3", { WhiteNoise.ar.ladsrOut }).add; 
 c = Synth("test3", [amp: 0.02]);
 c.set(\out, 1);
 c.fadeOut(5);
