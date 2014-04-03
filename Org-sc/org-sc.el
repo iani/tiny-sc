@@ -402,6 +402,8 @@ free the SynthTree with the same name, and free the buffer"
 ;;'org-sc-chuck-previous-section
 (defun org-sc-chuck-previous-section ()
   (interactive)
+  (when (not (eq 'headline (car (org-element-at-point))))
+      (outline-previous-heading))
   (outline-previous-heading)
   (org-sc-chuck-this-section))
 
@@ -461,6 +463,7 @@ free the SynthTree with the same name, and free the buffer"
 ;; (global-set-key (kbd "H-c H-f") 'org-sc-set-global-fade-time)
 ;; (global-set-key (kbd "H-c H-C-f") 'org-sc-set-fade-time)
 (global-set-key (kbd "H-c SPC") 'org-sc-toggle-synthtree)
+(global-set-key (kbd "H-SPC") 'org-sc-toggle-synthtree)
 (global-set-key (kbd "H-c H-SPC") 'org-sc-toggle-last-synthtree)
 (global-set-key (kbd "H-c g") 'org-sc-start-synthtree)
 (global-set-key (kbd "H-c s") 'org-sc-stop-synthtree)

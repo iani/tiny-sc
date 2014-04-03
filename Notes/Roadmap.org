@@ -555,6 +555,14 @@ These three are converted to streams and put into a SynthStream, which creates S
 
 We can make these work with PatternPlayer.
 
+** Fix H-M-p and H-p going backwards for org-mode
+
+*** ! Mix (SinOsc.ar(LFNoise0.kr (10).range (50, 70).midicps * [1, 3, 5], 0, 0.2 / (1..3)) )
+*** 1, 3, 5, 7
+Mix (SinOsc.ar(LFNoise0.kr (11).range (50, 70).midicps * [1, 3, 5, 7], 0, 0.2 / (1..4)) )
+*** Lower 1, 3, 5, 7
+Mix (SinOsc.ar(LFNoise0.kr (12).range (30, 50).midicps * [1, 3, 5, 7], 0, 0.2 / (1..4)) )
+
 * Undergoing tests
 
 ** =SynthTree=: Storing/interconnecting Synths
