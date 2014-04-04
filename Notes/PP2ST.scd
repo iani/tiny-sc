@@ -11,7 +11,6 @@ p = [freq: Prand((50..70).midicps, inf)] %> 0.2;
 
 //:
 p;
-//
 //:
 \test.addNotifier(p, \value, { | value |
 	var synth;

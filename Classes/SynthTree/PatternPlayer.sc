@@ -57,14 +57,6 @@ PatternPlayer {
 		task.play(clock);
 	}
 
-	startAfterSynth { | synth |
-		if (synth.isPlaying) {
-			this.start;
-		}{
-			synth.onStart()
-		}
-	}
-
     stop { task.stop; }
 	reset { task.reset; }
 

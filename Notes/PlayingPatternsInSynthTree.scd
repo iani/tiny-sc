@@ -46,7 +46,7 @@ p.valueStream;
 \test.asSynthTree =!> \st;
 ~pstest = PatternSynth(~st);
 //:
-~pstest.addNotifier(~pattern, \value, { | synthEvent |
+~st.addNotifier(~st, \value, { | synthEvent |
 	var synth;
 	synth = ~pstest.addSynth(\default, synthEvent.params);
 	SystemClock.sched(synthEvent.dur, { synth.release });
