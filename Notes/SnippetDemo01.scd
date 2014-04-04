@@ -1,7 +1,7 @@
 /*
 IZ Thu, Apr  3 2014, 10:04 EEST
 
-Play with:  
++Play with:  
 
 H-M-space:
 H-M-n:
@@ -10,6 +10,7 @@ H-space:
 
 */
 
+//:
 WhiteNoise.ar 
 //:
 GrayNoise.ar

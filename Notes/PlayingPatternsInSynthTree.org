@@ -1,0 +1,16 @@
+PatternPlayer is put inside a PatternInstrument.
+
+The PatternInstrument is the template for playing.
+
+It produces a PatternSynth, which becomes the synth inside the SynthTree.
+
+Other classes are:
+
+SynthPattern
+SynthStream
+ParamStream
+SynthEvent
+
+-------
+
+IZ Fri, Apr  4 2014, 12:55 EEST

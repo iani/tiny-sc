@@ -1,6 +1,9 @@
 /*
+Hold Group, Bus, Copy-Synth for playing a pattern's synths, inside a single SynthTree. 
 
+TODO: Build interface for getting the instrument from a PatternInstrument. 
 
+IZ Fri, Apr  4 2014, 12:49 EEST
 */
 
 PatternSynth {
@@ -45,6 +48,17 @@ PatternSynth {
 			synth = this.addSynth(\default, synthEvent.params);
 			pattern.clock.sched(synthEvent.dur, { synth.release });
 		});
-
 	}
+
+	isPlaying {
+		^group.isPlaying;
+	}
+
+	release { | dur |
+		synth release: dur;
+	}
+
+	set { | param, val | synth.set(param, val) }
+
+
 }
