@@ -1,3 +1,100 @@
+* Motivation / Goals
+
+You want to play a pattern in a SynthTree.  Pbind-like.
+
+Why re-invent the wheel:
+
+- Make it easy to change parts of a pattern (patterns that play individual parameters in the pattern).  This is already possible in dewDrop lib and in JITLib, but it is even easier in PatternPlayer.
+- Make it possible to play the same pattern in different synthtrees, with different synths/instruments, at the same time.
+
+* Scenario / Basic principles
+
+Start with a pattern as an array of streams, where each stream produces values to for one parameter of an instrument.   The array of collected values is used as =args= to create a synth with =Synth(instrument, args, target, addAction)=.  (But it can easily be used for triggering other types of events, alternatively or additionally).
+
+In addition to the array of streams, two more items of information are needed to play the pattern:
+
+1. The stream of durations separating each successive event of the pattern (i.e. the timing of the events of the pattern).
+2. The stream of instruments (synthdef names or possibly other types of objects) used to play each successive event.
+
+Pbind incorporates the durationand the instrument stream in the parameter array.  PatternPlayer separates these two, for ease of handling.  Separating durations makes it easier to code the Function of the Task that plays the pattern.   Separating the instrument makes it possible to play the same stream of parameters with different instruments.
+
+* QUOTE Coding the creation and playing of Patterns
+
+A simple way to create and play a pattern is through a chain of binary operations, where each successive operation adds a component to create the final pattern object that is played in the SynthTree.  The final object is of class PatternInstrument, and contains the parameter array, the duration stream and the instrument stream.   The steps in creating a PatternInstrument are:
+
+1. Start with an array of key-pattern pairs:
+   =~params = [freq: 440, amp: Prand([1, 2], inf)]=
+2. Add the duration stream to create a PatternPlayer:
+   =~player = ~params %> Pseq([0.1, 0.1, 0.2],inf );=
+3. Add the instrument stream to create a PatternInstrument:
+   =~patternInstrument = ~player %> \default;=
+4. Finally, chuck the PatternInstrument into a SynthTree to play it:
+   =~patternInstrument => \sound_pattern1=
+
+This can be written in one chain of operations, without storing the intermediate objects in variables:
+
+#+BEGIN_EXAMPLE
+[freq: 440, amp: Prand([1, 2], inf)]
+=> Pseq([0.1, 0.1, 0.2],inf )
+=> `\default
+=> \sound_pattern1;
+#+END_EXAMPLE
+
+If the instrument is \default, it can be skipped:
+
+#+BEGIN_EXAMPLE
+[freq: 440, amp: Prand([1, 2], inf)]
+=> Pseq([0.1, 0.1, 0.2],inf )
+=> \sound_pattern1;
+#+END_EXAMPLE
+
+But also the durations, or both durations and duration can be skipped.  Defaults are provided:
+
+#+BEGIN_EXAMPLE
+[freq: 440, amp: Prand([1, 2], inf)]
+=> `\default
+=> \sound_pattern1;
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+[freq: 440, amp: Prand([1, 2], inf)]
+=> \sound_pattern1;
+#+END_EXAMPLE
+
+To indicate that a pattern is intendet for instrument and not durations, use the adverb 'i':
+
+#+BEGIN_EXAMPLE
+[freq: 440, amp: Prand([1, 2], inf)]
+=>.i [\pad, \fm].prand
+=> \sound_pattern1;
+#+END_EXAMPLE
+
+* Review of => for PatternPlayer
+
+- [] => num :: PatternInstrument(PatternPlayer([], num), nil)
+- [] => pattern :: PatternInstrument(PatternPlayer([], pattern), nil)
+- [] =>.i pattern :: PatternInstrument(PatternPlayer([], nil), pattern)
+- [] => Symbol / SynthTree :: PatternInstrument(PatternPlayer([], nil), nil)
+  => [replace params template:] SynthTree
+- [] =%> Symbol / SynthTree :: or =>.m Symbol / SynthTree :
+  PatternInstrument(PatternPlayer([], nil), nil)
+  => [merge params template if PatternInstrument:] SynthTree
+
+- Pattern, [] / Number =>.d Symbol / SynthTree: chuck pattern / [] / number in durations of pat
+- Pattern, [] / Symbol  =>.i Symbol / SynthTree: chuck pattern / [] / symbol in instr of pat
+
+- PatternInstrument => Pattern :: Pattern becomes instrument of PatternPlayer
+- PatternInstrument => `Symbol :: value of `Symbol ref becomes instrument of PatternPlayer
+- PatternInstrument => Symbol / SynthTree :: play in synthtree.
+  Nil parameters are replaced by defaults or by preexisting patterns
+
+- Pattern => num :: PatternPlayer (single pattern!)
+- Pattern :: pattern :: PatternPLayer (single pattern!)
+- PatternPlayer => MultiControl :: play / PatternFunc
+
+
+
+* Class overview
 PatternPlayer is put inside a PatternInstrument.
 
 The PatternInstrument is the template for playing.

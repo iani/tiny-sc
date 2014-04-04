@@ -41,12 +41,22 @@ p.start;
 p.valueStream;
 
 //: What should work:
-[freq: Prand((30..90).midicps, inf)] %> 0.02 => \sound;
+~pattern = [freq: Prand((30..90).midicps, inf)] %> 0.02;
+
+//:
+
+~pattern.start;
+
+//: Tests: 
+~pattern addDependant: { | ... args | args.postln; };
+//:
+~pattern.release;
+
 //:
 \test.asSynthTree =!> \st;
 ~pstest = PatternSynth(~st);
 //:
-~st.addNotifier(~st, \value, { | synthEvent |
+~st.addNotifier(a, \value, { | synthEvent |
 	var synth;
 	synth = ~pstest.addSynth(\default, synthEvent.params);
 	SystemClock.sched(synthEvent.dur, { synth.release });
