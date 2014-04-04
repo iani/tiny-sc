@@ -40,15 +40,15 @@ IZ Tue, Apr  1 2014, 02:58 EEST
 */
 
 SynthPattern {
-	var <instrument;
+	//	var <instrument;
 	var <params;
 	var <legato;
 
-	*new { | instrument, params, legato = 1 |
-		^this.newCopyArgs (instrument, params, legato);
+	*new { | /* instrument, */ params, legato = 1 |
+		^this.newCopyArgs (/* instrument, */ params, legato);
 	}
 
-	asStream { ^SynthStream(instrument, params, legato) }
+	asStream { ^SynthStream(/* instrument, */ params, legato) }
 
 	%> { | durations |
 		^PatternPlayer (this, durations)
@@ -56,14 +56,14 @@ SynthPattern {
 }
 
 SynthStream {
-	var <instrument, <params, <legato;
+	var /* <instrument, */ <params, <legato;
 
-	*new { | instrument, params, legato = 1 |
-		^this.newCopyArgs(instrument.asStream, ParamStream(params), legato.asStream);
+	*new { | /* instrument, */ params, legato = 1 |
+		^this.newCopyArgs(/* instrument.asStream, */ ParamStream(params), legato.asStream);
 	}
 
 	next { | dur |
-		^SynthEvent (instrument.next, params.next, legato.next * dur)
+		^SynthEvent (/* instrument.next, */ params.next, legato.next * dur)
 	}
 }
 
@@ -91,11 +91,10 @@ ParamStream {
 }
 
 SynthEvent {
-	var <instrument, <params, <dur;
+	var /* <instrument, */ <params, <dur;
 	var <synth;
 
-	*new { | instrument, params, dur |
-		^this.newCopyArgs (instrument, params, dur);
+	*new { | /* instrument, */ params, dur |
+		^this.newCopyArgs (/* instrument, */ params, dur);
 	}
-
 }

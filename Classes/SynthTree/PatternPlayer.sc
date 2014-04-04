@@ -202,7 +202,7 @@ PatternFunc {
 	}
 
 	%> { | durations |
-		^PatternPlayer (SynthPattern (\default, this), durations)
+		^PatternPlayer (SynthPattern (this), durations)
 	}
 }
 

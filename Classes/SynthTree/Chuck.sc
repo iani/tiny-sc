@@ -79,12 +79,16 @@ IZ Sat, Mar  8 2014, 23:40 EET
 }
 
 + Symbol {
+
+	asSynthTemplate { ^SynthDescLib.global[this].def }
+	inputSpecs { ^[] }
 	receiveChuck { | chucker, replaceAction |
 		//		^synthTree.asSynthTree.chuck(this, replaceAction);
 		^this.asSynthTree.chuck(chucker, replaceAction)
 	}
     asSynth { | synthTree |
-		^[this].asSynth(synthTree);
+		//		^[this].asSynth(synthTree);
+        ^Synth.new(this, synthTree.synthArgs, synthTree.group, \addToHead);
     }
 	fadeOut { | fadeTime |
 		var synthTree;
@@ -254,6 +258,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
     }
 }
 
+/*
 + Array {
     asSynth { | synthTree |
 		var args;
@@ -262,6 +267,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
         ^Synth.new(this[0], args, synthTree.group, \addToHead);
     }
 }
+*/
 
 + SimpleNumber {
 	=> { | param | param.set(this); }

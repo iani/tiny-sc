@@ -34,8 +34,17 @@ b = Bus.audio;
 
 //:
 //: OK Test synth is passed output channel as argument on playing.
-b = Bus.audio;
-~copier = { Inp.ar.ladsrOut }.play(args: [in: b.index, fadeIn: 3, amp: 0.3]);
-c = { LPF.ar(WhiteNoise.ar, (LFNoise0.kr(15).range(500, 5000))).ladsrOut }.play(args: [out: b.index]);
+var nc, bus, copySynth, group;
+nc = ~numChans;
+bus = Bus.audio(SynthTree.server, nc);
+group = Group();
+copySynth = { 
+	Inp.ar(numChannels: nc).ladsrOut
+}.play(args: [in: bus.index, fadeIn: 3, amp: 1], target: group, addAction: \addToTail);
 
+c = { 
+	LPF.ar(WhiteNoise.ar, (LFNoise0.kr(15).range(500, 5000))).ladsrOut
+}.play(args: [out: bus.index], target: group, addAction: \addToHead);
 
+//:
+~bus.numChannels;

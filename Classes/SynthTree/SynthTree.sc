@@ -10,7 +10,7 @@ IZ Thu, Mar  6 2014, 21:51 EET
 
 SynthTree : IdentityTree {
 
-	classvar showGuiAtStartup = true;
+	classvar <>showGuiAtStartup = true;
 	classvar <default;
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
 	classvar parentEvents; // contains parent events for each server. 
@@ -27,7 +27,7 @@ SynthTree : IdentityTree {
 	var <output; // SynthTree instance where this synth sends its output
 	var >group;  // optional group enclosing synth as well as
 	// synths of input subtree [!??!?]
-	var <>template; // optional template for re-creating synth
+	var <>template; // template for (re-) creating synth
     var <>notStopped = true; // if false, do not restart on initTree or
 	// on chuck/replace
     var <>fadeTime;

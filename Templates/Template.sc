@@ -14,7 +14,7 @@ Library.at(SynthTemplate);
 
 Template {
 
-	classvar showGuiAtStartup = true;
+	classvar <>showGuiAtStartup = true;
 
 	var <name;
 	var <template;
