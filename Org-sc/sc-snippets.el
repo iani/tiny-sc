@@ -115,6 +115,32 @@ for evaluation after processing in Emacs."
   (interactive)
   (sclang-eval-string "SynthTree.initTree;"))
 
+(defun sclang-eval-line-optionally-inspect (inspect-p)
+  "Evaluate current line as sclang code.
+If prefix argument given, then open inspector in SC on the result"
+  (interactive "P")
+  (if inspect-p
+      (let ((string (sclang-line-at-point)))
+        (when string
+          (sclang-eval-string (format "(%s).inspect;" string) t))
+        (and sclang-eval-line-forward
+             (/= (line-end-position) (point-max))
+             (forward-line 1))
+        string)
+    (sclang-eval-line)))
+
+(defun sclang-eval-line-inspect ()
+  "Evaluate current line as sclang code.
+If prefix argument given, then open inspector in SC on the result"
+  (interactive)
+  (let ((string (sclang-line-at-point)))
+    (when string
+      (sclang-eval-string (format "(%s).inspect;" string) t))
+    (and sclang-eval-line-forward
+         (/= (line-end-position) (point-max))
+         (forward-line 1))
+    string))
+
 (defun sc-snippets ()
   "Define sclang mode keys for snippets."
   (local-set-key (kbd "C-c .") 'sclang-execute-current-snippet)
@@ -122,6 +148,7 @@ for evaluation after processing in Emacs."
   ;; But I do not want to modify the source code of sc-extensions
   ;; So instead:
   (local-set-key (kbd "C-c C-,") 'sclang-eval-line)
+  (local-set-key (kbd "C-c C-M-,") 'sclang-eval-line-inspect)
   ;; sclang-switch-to-post does not work as expected:
   ;; (local-set-key (kbd "C-c C-M-p") 'sclang-switch-to-post)
   (local-set-key (kbd "C-c C-.") 'sclang-select-snippet)

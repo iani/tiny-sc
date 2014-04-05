@@ -26,6 +26,9 @@ PatternPlayer {
 	}
 
 	values_ { | values |
+		if (values isKindOf: SequenceableCollection) {
+			values = SynthPattern(values);
+		};
 		valuePattern = values;
 		valueStream = valuePattern.asStream;
 	}

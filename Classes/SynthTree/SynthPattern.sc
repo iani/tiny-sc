@@ -33,11 +33,40 @@ SynthEvents to play.  So we have following classes:
 2. SynthStream - contains the stream producing the event
 3. SynthEvent - contains the parameters for creating the Synth
 
-We don't need a SynthPatternPlayer
-
 IZ Tue, Apr  1 2014, 02:58 EEST
 
+================ PatternInstrument: ================
+
+Hold the instrument for playing a PatternPlayer. 
+
+Is placed as template in SynthTree.
+
+Instrument can be a stream.
+
+Why separate the instrument from the pattern?  In order to play a pattern with different instruments at the same time.  Like in ... *MUSIC*.
+
+IZ Fri, Apr  4 2014, 12:46 EEST
+
 */
+
+PatternInstrument {
+	var <pattern; // A PatternPlayer
+	var <instrument;
+	var <name;
+	var <numChannels;
+
+	*new { | pattern, instrument = \default, name = \pattern, numChannels |
+		^this.newCopyArgs(pattern, instrument, name, numChannels).init;
+	}
+	init { 
+		instrument = instrument.asStream;
+		numChannels ?? { numChannels = ~numChans; };
+	}
+
+	asSynth { | synthTree, fadeTime |
+		^PatternSynth(synthTree, numChannels)
+	}
+}
 
 SynthPattern {
 	//	var <instrument;
@@ -51,19 +80,19 @@ SynthPattern {
 	asStream { ^SynthStream(/* instrument, */ params, legato) }
 
 	%> { | durations |
-		^PatternPlayer (this, durations)
+		^PatternPlayer(this, durations)
 	}
 }
 
 SynthStream {
-	var /* <instrument, */ <params, <legato;
+	var <params, <legato;
 
-	*new { | /* instrument, */ params, legato = 1 |
-		^this.newCopyArgs(/* instrument.asStream, */ ParamStream(params), legato.asStream);
+	*new { | params, legato = 1 |
+		^this.newCopyArgs(ParamStream(params), legato.asStream);
 	}
 
 	next { | dur |
-		^SynthEvent (/* instrument.next, */ params.next, legato.next * dur)
+		^SynthEvent (params.next, legato.next * dur)
 	}
 }
 

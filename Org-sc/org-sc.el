@@ -449,6 +449,8 @@ free the SynthTree with the same name, and free the buffer"
 
 (global-set-key (kbd "H-c l") 'sclang-start)
 (global-set-key (kbd "H-c w") 'sclang-switch-to-workspace)
+(global-set-key (kbd "C-c C-,") 'sclang-eval-line)
+(global-set-key (kbd "C-c C-M-,") 'sclang-eval-line-inspect)
 (global-set-key (kbd "M-P") 'sclang-clear-post-buffer)
 (global-set-key (kbd "H-c >") 'sclang-show-post-buffer)
 (global-set-key (kbd "H-c H-y") 'sclang-open-help-gui)
@@ -475,7 +477,6 @@ free the SynthTree with the same name, and free the buffer"
 (global-set-key (kbd "H-b o") 'org-sc-open-buffer-list)
 (global-set-key (kbd "H-b s") 'org-sc-save-buffer-list)
 (global-set-key (kbd "H-b f") 'org-sc-free-buffer)
-
 
 (eval-after-load "org"
   ;; move / eval / chuck sections
