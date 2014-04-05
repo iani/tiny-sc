@@ -201,17 +201,6 @@ Steps:
 
 * Immediate TODOs
 
-** Check H-C-n/p
-
-They do not immediately evaluate the chosen snippet, but work like H-p/n
-
-Test here:
-
-*** ! { WhiteNoise.ar } => \test
-
-*** ! { GrayNoise.ar } => \test
-
-
 ** SynthTree:
 
 *** fix ==> n_fre Node not found when =< to fx
@@ -573,6 +562,17 @@ Mix (SinOsc.ar(LFNoise0.kr (12).range (30, 50).midicps * [1, 3, 5, 7], 0, 0.2 / 
 - fadeTime should not be given as adverb of =>.  Instead use adverb of => to specify numChan.
 
 - add numChan as parent environment variable for SynthTree
+
+
+** Check H-C-n/p
+
+They do not immediately evaluate the chosen snippet, but work like H-p/n
+
+Test here:
+
+*** ! { WhiteNoise.ar } => \test
+
+*** ! { GrayNoise.ar } => \test
 
 
 * Undergoing tests

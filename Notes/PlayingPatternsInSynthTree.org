@@ -96,6 +96,8 @@ Prand([60, 61, 66, 67].midicps, inf) => [0.05, 0.1, 0.4].prand(inf) => ~freq;
 
 Some pattern variants to try out:
 
+** ! { LPF.ar(LFPulse.ar(\freq.kr(440)), 500) } => \sound;
+
 ** 1
 Pstutter(2, Prand([60, 62, 63, 64, 67], inf)).midicps
  * Pstutter(12, Pseq([1, 2/3, 3/4, 8/9, 4/3], inf))
@@ -124,10 +126,8 @@ Pstutter(2, Prand([60, 62, 63, 64, 67], inf)).midicps
 Pstutter(3, Prand([60, 62, 63, 64, 67], inf)).midicps
  * Pstutter(12, Pseq([1, 2/3, 3/4, 8/9, 4/3], inf))
  * [[1, 9/8].pseq(24), [1, 8/9].pseq(24)].prand(inf)
- => [0.1 pn: 12, 0.4, 0.2 pn: 2, 0.05 pn: 24].prand(inf)
+ => [0.1 pn: 6, 0.6, 0.05 pn: 6].prand(inf)
  => ~freq
-
-
 
 * Array =>
 
