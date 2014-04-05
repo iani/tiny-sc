@@ -63,9 +63,29 @@ PatternInstrument {
 		numChannels ?? { numChannels = ~numChans; };
 	}
 
+	start { pattern.start }
+	stop { pattern.stop }
+	isPlaying { ^pattern.isPlaying }
+
+	=> { | chuckee, numChans | ^chuckee.reveivePatternInstrument (this, numChans) }
+
+	/* TODO: Interface for chucking to SynthTree: */
+	asSynthTemplate { | argName |
+		name = argName;
+	}
+
+	inputSpecs { 
+
+	}
+
+	templateArgs {
+
+	}
+
 	asSynth { | synthTree, fadeTime |
 		^PatternSynth(synthTree, numChannels)
 	}
+
 }
 
 SynthPattern {
@@ -126,4 +146,25 @@ SynthEvent {
 	*new { | /* instrument, */ params, dur |
 		^this.newCopyArgs (/* instrument, */ params, dur);
 	}
+}
+
++ Ref {
+	receivePatternInstument { | patternInstrument, numChannels |
+		^this.value.receivePatternInstrument(patternInstrument, numChannels);
+	}
+}
+
++ Symbol {
+	receivePatternInstument { | patternInstrument, numChannels |
+		^this.asSynthTree.receivePaternInstument(patternInstrument, numChannels);
+	}
+}
+
++ SynthTree {
+	receivePatternInstument { | patternInstrument, numChannels |
+		^this.chuck(patternInstrument, numChannels);
+		// [this.Method.name, "not implemented"].postln;
+		//	this.value.asSynthTree receivePatternInstrument: pi;
+	}
+
 }

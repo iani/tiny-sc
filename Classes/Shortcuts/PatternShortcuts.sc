@@ -11,53 +11,42 @@ array.sprandi becomes: Pub(Prand(array, inf)) etc.
 */
 
 + Object {
-	pn { | repeats = inf |
-		^Pn(this, repeats)
-	}
+	pn { | repeats = inf | ^Pn(this, repeats); }
 }
 
 + SequenceableCollection {
-    pseq { | repeats = 1 |
-        ^Pseq(this, repeats) //.asStream;
-    }
+    pseq { | repeats = inf | ^Pseq(this, repeats); }
+    pseqi { | repeats = inf | ^this.pseq(repeats); } // shortcut/synonym
+    pseqn { | repeats = 1 | ^this.pseq(repeats); } // shortcut/synonym
+    pseq1 { | repeats = 1 | ^this.pseq(repeats); } // shortcut/synonym
 
-    pseqi { | repeats = 1 |
-        ^this.pseq(inf);
-    }
+    pser { | repeats = inf | ^Pser(this, repeats); }
+    pseri { | repeats = inf | ^this.pser(repeats); }
+    psern { | repeats = 1 | ^this.pser(repeats); }
+    pser1 { | repeats = 1 | ^this.pser(repeats); }
 
-    pser { | repeats = 1 |
-        ^Pser(this, repeats) //.asStream;
-    }
-
-    pseri { | repeats = 1 |
-        ^this.pser(inf);
-    }
-
-    prand { | repeats = 1 |
-        ^Prand(this, repeats) //.asStream;
-    }
-
-    prandi { | repeats = 1 |
-        ^this.prand(inf);
-    }
+    prand { | repeats = inf | ^Prand(this, repeats); }
+    prandi { | repeats = inf | ^this.prand(repeats); }
+    prandn { | repeats = 1 | ^this.prand(repeats); }
+    prand1 { | repeats = 1 | ^this.prand(repeats); }
 }
 
 + Function {
     pfunc {
-        ^Pfunc(this) //.asStream;
+        ^Pfunc(this)
     }
     pfuncn { | repeats = 1 |
-        ^Pfuncn(this, repeats) //.asStream;
+        ^Pfuncn(this, repeats)
     }
 
     pcollect { | pattern |
-        ^Pcollect(this, pattern) //.asStream;
+        ^Pcollect(this, pattern)
     } 
     pselect { | pattern |
-        ^Pselect(this, pattern) //.asStream;
+        ^Pselect(this, pattern)
     }
 
     preject { | pattern |
-        ^Preject(this, pattern) //.asStream;
+        ^Preject(this, pattern)
     }
 }

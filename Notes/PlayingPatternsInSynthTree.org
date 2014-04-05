@@ -96,7 +96,22 @@ To indicate that a pattern is intendet for instrument and not durations, use the
 Pattern => (something) creates a PatternPlayer, with a single pattern.  This is for playing in a single argument of a SynthTree (not a pattern array to create events in a SynthTree).
 
 - Pattern => num :: PatternPlayer (single pattern!)
+
+#+BEGIN_EXAMPLE
+// start sound
+{ SinOsc.ar(\freq.kr(440)) } => \sound;
+// play pattern 1 into frequency
+Prand([60, 62, 63, 64, 67].midicps, inf) => 0.1 => ~freq;
+#+END_EXAMPLE
+
 - Pattern => pattern :: PatternPLayer (single pattern!)
+
+#+BEGIN_EXAMPLE
+// start sound
+{ LPF.ar(LFSaw.ar(\freq.kr(440)), LFNoise2.kr(1).range(300, 2000)) } => \sound;
+// play pattern 1 into frequency
+Prand([50, 51.5, 53, 53.8, 57].midicps, inf) => Pfunc({ 0.01 exprand: 1.5 }) => ~freq;
+#+END_EXAMPLE
 
 ** PatternPlayer =>
 
@@ -105,7 +120,6 @@ A pattern player when sent to a MultiControl plays in a single argument of a Syn
 - PatternPlayer => MultiControl :: play / PatternFunc
 
 Example:
-
 
 #+BEGIN_EXAMPLE
 // start sound
@@ -160,7 +174,8 @@ Pstutter(3, Prand([60, 62, 63, 64, 67], inf)).midicps
 - [] => num :: PatternInstrument(PatternPlayer([], num), nil)
 
 #+BEGIN_EXAMPLE
-[freq: 400, amp: 0.1] => 1.2345;
+{ SinOsc.ar(\freq.kr(400)) } => \sound;
+[freq: 400, amp: 0.1] => 1.2345 => \sound;
 #+END_EXAMPLE
 
 - [] => pattern :: PatternInstrument(PatternPlayer([], pattern), nil)
