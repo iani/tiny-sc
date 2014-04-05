@@ -200,12 +200,20 @@ PatternFunc {
 }
 
 + SimpleNumber {
+	=> { | st | ^st.asSynthTree setPatternDuration: this }
 	patternParams { | paramArray, adverb |
 		^PatternInstrument(PatternPlayer(paramArray, this));
 	}
 }
 
 + Pattern {
+	=> { | st, adverb |
+		^switch (adverb,
+			'd', { st.asSynthTree setPatternDuration: this },
+			'i', { st.asSynthTree setPatternInstrument: this },
+		)
+	}
+
 	patternParams { | paramArray, adverb |
 		if (adverb === 'i') {
 			^PatternInstrument(PatternPlayer(paramArray), this);
@@ -217,6 +225,8 @@ PatternFunc {
 }
 
 + Symbol {
+	=> { | st | ^st.asSynthTree setPatternInstrument: this }
+
 	patternParams { | paramArray, adverb |
 		if (adverb === 'i') {
 			^PatternInstrument(PatternPlayer(paramArray), this);

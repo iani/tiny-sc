@@ -147,9 +147,16 @@ Pstutter(3, Prand([60, 62, 63, 64, 67], inf)).midicps
   Nil parameters are replaced by defaults or by preexisting patterns
 
 * Pattern =>
-- Pattern, [] / Number =>.d Symbol / SynthTree: chuck pattern / [] / number in durations of pat
-- Pattern, [] / Symbol  =>.i Symbol / SynthTree: chuck pattern / [] / symbol in instr of pat
+- Pattern =>.d Symbol / SynthTree: chuck Pattern in durations of pat
+- Pattern =>.i Symbol / SynthTree: chuck Pattern / Symbol in instr of pat
 
+* Number =>
+
+- Number => Symbol / SynthTree: chuck Number in durations of pat
+
+* Symbol =?
+
+- Symbol  => Symbol / SynthTree: chuck Symbol in instr of pat
 
 * Class overview
 PatternPlayer is put inside a PatternInstrument.
