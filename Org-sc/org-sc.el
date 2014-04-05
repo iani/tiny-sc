@@ -510,8 +510,7 @@ free the SynthTree with the same name, and free the buffer"
      (define-key org-mode-map (kbd "C-c C-s") 'sclang-main-stop)
      (define-key org-mode-map (kbd "H-C-r") 'sclang-process-registry-gui)
      (define-key org-mode-map (kbd "C-c C-M-.") 'org-sc-stop-section-processes)
-     (define-key org-mode-map (kbd "H-C-n") 'org-sc-next-section)
-     (define-key org-mode-map (kbd "H-C-p") 'org-sc-previous-section)
+
      (define-key org-mode-map (kbd "C-c C-x l") 'org-sc-toggle-autoload)
      (define-key org-mode-map (kbd "C-c C-x C-l") 'org-sc-load-marked)
      (define-key org-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)))

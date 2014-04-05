@@ -2,18 +2,6 @@
 
 * Currently working on
 
-** Extend PatternPlayer to play SynthTrees
-:PROPERTIES:
-:DATE:     <2014-04-02 Wed 11:16>
-:END:
-
-- Remove instrument from SynthPattern / SynthStream / SynthEvent. The instrument should be provided by the PatternFunc that plays the SynthEvent.
-
-- fadeTime should not be given as adverb of =>.  Instead use adverb of => to specify numChan.
-
-- add numChan as parent environment variable for SynthTree
-
-
 ** Things to do with parameters/synths in currenEnvironment
 :PROPERTIES:
 :DATE:     <2014-03-31 Mon 12:06>
@@ -212,6 +200,16 @@ Steps:
 
 
 * Immediate TODOs
+
+** Check H-C-n/p
+
+They do not immediately evaluate the chosen snippet, but work like H-p/n
+
+Test here:
+
+*** ! { WhiteNoise.ar } => \test
+
+*** ! { GrayNoise.ar } => \test
 
 
 ** SynthTree:
@@ -564,6 +562,18 @@ We can make these work with PatternPlayer.
 Mix (SinOsc.ar(LFNoise0.kr (11).range (50, 70).midicps * [1, 3, 5, 7], 0, 0.2 / (1..4)) )
 *** Lower 1, 3, 5, 7
 Mix (SinOsc.ar(LFNoise0.kr (12).range (30, 50).midicps * [1, 3, 5, 7], 0, 0.2 / (1..4)) )
+
+** Extend PatternPlayer to play SynthTrees
+:PROPERTIES:
+:DATE:     <2014-04-02 Wed 11:16>
+:END:
+
+- Remove instrument from SynthPattern / SynthStream / SynthEvent. The instrument should be provided by the PatternFunc that plays the SynthEvent.
+
+- fadeTime should not be given as adverb of =>.  Instead use adverb of => to specify numChan.
+
+- add numChan as parent environment variable for SynthTree
+
 
 * Undergoing tests
 

@@ -184,18 +184,59 @@ PatternFunc {
 */
 
 + SequenceableCollection {
-	=> { | duration, repeats |
-		if (repeats === 'i') { repeats = inf } { repeats = repeats ? 1 };
-		^PatternPlayer(Pseq(this, repeats), duration);
+	=> { | chuckee, adverb |
+		^chuckee.patternParams(this, adverb)
 	}
 
 	pp { | repeats = 1, durations |
 		^PatternPlayer(Pseq(this, repeats), durations ?? { Pfunc({ ~dur.next }) })
 	}
 
+	/*
 	%> { | durations |
 		^PatternPlayer (SynthPattern (this), durations)
 	}
+	*/
+}
+
++ SimpleNumber {
+	patternParams { | paramArray, adverb |
+		^PatternInstrument(PatternPlayer(paramArray, this));
+	}
+}
+
++ Pattern {
+	patternParams { | paramArray, adverb |
+		if (adverb === 'i') {
+			^PatternInstrument(PatternPlayer(paramArray), this);
+		}{
+			^PatternInstrument(PatternPlayer(paramArray, this));
+		}
+
+	}
+}
+
++ Symbol {
+	patternParams { | paramArray, adverb |
+		if (adverb === 'i') {
+			^PatternInstrument(PatternPlayer(paramArray), this);
+		}{
+			^this.asSynthTree.playPattern(
+				PatternInstrument(PatternPlayer(paramArray)),
+				adverb === 'm' // merge players if 'm'
+			);
+		};
+	}
+}
+
++ Ref {
+	patternParams { | paramArray, adverb |
+		//		^PatternInstrument(PatternPlayer(paramArray, this));
+	}
+}
+
++ PatternInstrument {
+	
 }
 
 + Association {

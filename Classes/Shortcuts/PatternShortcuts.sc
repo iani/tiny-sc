@@ -10,6 +10,12 @@ array.sprandi becomes: Pub(Prand(array, inf)) etc.
 
 */
 
++ Object {
+	pn { | repeats = inf |
+		^Pn(this, repeats)
+	}
+}
+
 + SequenceableCollection {
     pseq { | repeats = 1 |
         ^Pseq(this, repeats) //.asStream;
