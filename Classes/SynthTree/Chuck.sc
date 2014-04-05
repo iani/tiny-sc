@@ -269,6 +269,3 @@ IZ Sat, Mar  8 2014, 23:40 EET
 }
 */
 
-+ SimpleNumber {
-	=> { | param | param.set(this); }
-}

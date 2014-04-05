@@ -203,18 +203,51 @@ PatternFunc {
 }
 
 + SimpleNumber {
-	=> { | st | ^st.asSynthTree setPatternDuration: this }
+	=> { | chuckee | ^chuckee receiveNumberChuck: this }
+	receivePatternChuck { | pattern |
+		^PatternPlayer(pattern, this);
+	}
+	/*
++ SimpleNumber {
+	=> { | param | param.set(this); }
+}
+*/
 	patternParams { | paramArray, adverb |
 		^PatternInstrument(PatternPlayer(paramArray, this));
 	}
 }
 
 + Pattern {
+	/*
 	=> { | st, adverb |
 		^switch (adverb,
 			'd', { st.asSynthTree setPatternDuration: this },
 			'i', { st.asSynthTree setPatternInstrument: this },
 		)
+	}
+
++ Pattern {
+	=> { | durations |
+		^this pp: durations;
+	}
+	
+}
+	*/
+
+	=> { | chuckee, adverb |
+		^switch (adverb,
+			'd', { chuckee.asSynthTree setPatternDuration: this },
+			'i', { chuckee.asSynthTree setPatternInstrument: this },
+			{ chuckee.receivePatternChuck(this, adverb) }
+		);
+	}
+
+	pp { | durations | 
+		^PatternPlayer(this, durations ?? { Pfunc({ ~dur.next }) })
+	}
+
+	receivePatternChuck { | pattern |
+		^PatternPlayer(pattern, this);
 	}
 
 	patternParams { | paramArray, adverb |
@@ -240,6 +273,14 @@ PatternFunc {
 			);
 		};
 	}
+
+	receiveNumberChuck { | number |
+		^this.asSynthTree setPatternDuration: number;
+	}
+
+	receivePatternChuck { | pattern |
+		^this.asSynthTree chuck: pattern.asPatternInstrument;
+	}
 }
 
 + Ref {
@@ -264,15 +305,6 @@ PatternFunc {
 	}
 	ppn { | repeats = 1, durations | 
 		^PatternPlayer(Pfuncn(this, repeats), durations ?? { Pfunc({ ~dur.next }) })
-	}
-}
-
-+ Pattern {
-	=> { | durations |
-		^this pp: durations;
-	}
-	pp { | durations | 
-		^PatternPlayer(this, durations ?? { Pfunc({ ~dur.next }) })
 	}
 }
 

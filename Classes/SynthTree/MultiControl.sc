@@ -93,6 +93,10 @@ MultiControl : IdentityDictionary {
 		this.set(spec map: value, value);
 	}
 
+	receiveNumberChuck { | number |
+		this.set (number);
+	}
+
 	set { | value, argUnmappedValue |
 		synthTree.setSynthParameter(name, value);
 		this.storeValue(value, argUnmappedValue);
@@ -110,6 +114,10 @@ MultiControl : IdentityDictionary {
 		if (synthTree.isPlaying) {
 			synthTree.synth.map(name, bus.index);
 		}
+	}
+
+	receivePatternChuck { | pattern |
+		this.playPattern (pattern);
 	}
 
 	playPattern { | pattern, controlName = \pattern, 

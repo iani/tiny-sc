@@ -212,6 +212,10 @@ SynthTree : IdentityTree {
 		this.chuck(chucker, replaceAction);
 	}
 
+	setPatternDuration { | numberOrPattern |
+		[this, thisMethod.name, "not yet implemented"].postln;
+	}
+
 	chuck { | argTemplate, numChans |
 		/*  Set my template.  Start synth. Replace previous one. */
 		notStopped = true;
@@ -279,9 +283,16 @@ SynthTree : IdentityTree {
 		notStopped = true;
 	}
 
+	addPatternSynth { | instrument = \default, args |
+		/* Make a synth that plays into my synth as event of a PatternInstrument.
+			My synth must be a PatternSynth.
+			This is mainly for testing PatternInstrument */
+		synth.addSynth(instrument, args);
+	}
+
 	addInputSynth{ | synthTree, inputName = \in, startWhen = \now |
-		// TODO! TEST THIS
-		/*  Add synthTree to my inputs and make it output its signal to my input.
+		/*  Add another synthTree as an input to myself. (I am an "fx" synth).
+			Add synthTree to my inputs and make it output its signal to my input.
 			Add synthTree to your dictionary under its name,
 			THEN create the synth, using your group as target,
 			addToHead as add method, and setting the output \out

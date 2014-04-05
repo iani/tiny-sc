@@ -137,7 +137,7 @@ Some pattern variants to try out:
 *** 1 "Upward motif"
 Pstutter(2, Prand([60, 62, 63, 64, 67], inf)).midicps
  * Pstutter(12, Pseq([1, 2/3, 3/4, 8/9, 4/3], inf))
- * [1, 9/8].pseq(inf)
+ * [1, 9/8].pseq
  => [0.1 pn: 12, 0.4, 0.2 pn: 2].prand(inf)
  => ~freq;
 *** 2 "Downward motif"
@@ -159,13 +159,13 @@ Pstutter(2, Prand([60, 62, 63, 64, 67], inf)).midicps
  => [0.1 pn: 12, 0.4, 0.2 pn: 2].prand(inf)
  => ~freq
 *** 5 Occasional trills
-Pstutter(3, Prand([60, 62, 63, 64, 67], inf)).midicps
+Pstutter(2, Prand([60, 62, 63, 64, 67], inf)).midicps
  * Pstutter(12, Pseq([1, 2/3, 3/4, 8/9, 4/3], inf))
  * [[1, 9/8].pseq(24), [1, 8/9].pseq(24)].prand(inf)
- => [0.1 pn: 6, [0.05 pn: 6, 0.3 pn: 2].pseq].prand(inf)
+=> [0.1 pn: 6, [0.05 pn: 6, 0.3 pn: 2].pseq1].prand(inf)
  => ~freq
 
-** QUOTE Array =>
+** Array =>
 :PROPERTIES:
 :ID:       C6757F64-C502-4DC4-A870-5326CEDE28E5
 :eval-id:  2

@@ -23,15 +23,12 @@ p.start;
 ~pstest = PatternSynth(~st);
 
 ~synth = ~pstest.addSynth;
-//: TEST 3: Let the SynthTree create the PatternSynth and put it in its synth
-\test.asSynthTree =!> \st;
-~pstest = PatternSynth(~st);
-
-~synth = ~pstest.addSynth;
-
-
 //:
 ~synth.release;
+//: TEST 3: Let the SynthTree create the PatternSynth and put it in its synth
+p = [freq: Prand((30..90).midicps, inf)] => 0.02;
+p => \newtest;
+
 
 //:
 ~st.addNotifier(a, \value, { | synthEvent |

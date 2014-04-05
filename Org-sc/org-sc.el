@@ -446,7 +446,6 @@ free the SynthTree with the same name, and free the buffer"
   (org-backward-heading-same-level 1)
   (org-sc-chuck-this-section))
 
-
 (global-set-key (kbd "H-c l") 'sclang-start)
 (global-set-key (kbd "H-c w") 'sclang-switch-to-workspace)
 (global-set-key (kbd "C-c C-,") 'sclang-eval-line)
