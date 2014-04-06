@@ -196,8 +196,6 @@ Adapted from org-toggle-ordered-property."
         t))
      "AUTOLOAD" 'file))))
 
-
-
 ;; Select a SynthTree instance to chuck current expression into
 ;; Proof of principle.
 

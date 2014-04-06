@@ -160,7 +160,11 @@ If prefix argument given, then open inspector in SC on the result"
   ;; alternatives using Control/Meta+Function-key:
   (local-set-key (kbd "H-SPC") 'org-sc-toggle-synthtree)
   (local-set-key (kbd "H-C-SPC") 'sclang-execute-current-snippet)
+  (local-set-key (kbd "H-C-.") 'sclang-execute-current-snippet)
   (local-set-key (kbd "H-M-SPC") 'sclang-chuck-current-snippet)
+  (local-set-key (kbd "H-M-.") 'sclang-chuck-current-snippet)
+  (local-set-key (kbd "H-n") 'sclang-goto-next-snippet)
+  (local-set-key (kbd "H-p") 'sclang-goto-previous-snippet)
   (local-set-key (kbd "H-C-n") 'sclang-execute-next-snippet)
   (local-set-key (kbd "H-C-p") 'sclang-execute-previous-snippet)
   (local-set-key (kbd "H-M-n") 'sclang-chuck-next-snippet)
