@@ -22,8 +22,6 @@ PatternInstrument {
 	stop { pattern.stop }
 	isPlaying { ^pattern.isPlaying }
 
-	=> { | chuckee, numChans | ^chuckee.receivePatternInstrument (this, numChans) }
-
 	/* TODO: Interface for chucking to SynthTree: */
 	asSynthTemplate { | argName |
 		name = argName;
@@ -64,6 +62,12 @@ PatternInstrument {
 		pattern.start;
 		^patternSynth;
 	}
+
+	=> { | chuckee, numChans | ^chuckee.receivePatternInstrument (this, numChans) }
+
+	chuckParam { | param, pattern |
+		pattern.chuckParam(param, pattern)
+	}
 }
 
 SynthPattern {
@@ -77,8 +81,15 @@ SynthPattern {
 
 	asStream { ^SynthStream(/* instrument, */ params, legato) }
 
+	/*
 	%> { | durations |
 		^PatternPlayer(this, durations)
+	}
+	*/
+	set { | param, value |
+		var index;
+		index = params indexOf: param;
+		index !? params[index * 2 + 1] = value.asStream;
 	}
 }
 
@@ -91,6 +102,10 @@ SynthStream {
 
 	next { | dur |
 		^SynthEvent (params.next, legato.next * dur)
+	}
+
+	set { | param, pattern |
+		params.set(param, pattern);
 	}
 }
 

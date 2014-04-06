@@ -72,11 +72,29 @@
 	receivePatternChuck { | pattern |
 		^this.asSynthTree chuck: pattern.asPatternInstrument;
 	}
+
+	// TODO: Implement this
+	receiveAssociationChuck { | association |
+		^this.asSynthTree.chuckPatternParam(association.key, association.value)
+	}
 }
 
 + Association {
+	// Old implementation: only for single params
+	/*
 	=> { | param |
 		^key pp: value => param
+	}
+	*/
+	// New implementation: permit chucking into SynthTrees
+	=> { | chuckee |
+		^chuckee.receiveAssociationChuck(this);
+	}
+}
+
++ MultiControl {
+	receiveAssociationChuck { | association |
+		^association.key.pp(association.value) => this;
 	}
 }
 

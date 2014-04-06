@@ -212,6 +212,11 @@ SynthTree : IdentityTree {
 		this.chuck(chucker, replaceAction);
 	}
 
+	chuckPatternParam { | param, pattern |
+		// TODO: implement this
+		template.pattern.chuckParam(param, pattern)
+	}
+
 	playPattern { | patternPlayer, instrument = \default |
 		PatternInstrument(patternPlayer, instrument) => this;
 	}
