@@ -153,8 +153,13 @@ NamedProcess {
 		this.isPlaying = true; // dangerous
 		listener.addNotifierOneShot(this, \n_end, action);
 	}
+
+
 	// TODO:
 	/* 
+	onBegin { | lister, action |
+		
+	}
 	*newNotifying { | listener, action |
 		NodeWatcher.register(this);
 		listener.addNotifierOneShot(this, \n_end, action);

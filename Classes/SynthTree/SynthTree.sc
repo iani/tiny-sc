@@ -181,7 +181,7 @@ SynthTree : IdentityTree {
 		var server, bus;
 		server = this.server;
 		numChans ?? { numChans = ~numChans };
-		specs = specs ?? { [in: numChans] };
+		specs = specs ?? { /* [in: numChans] */ [] };
 		switch (specs.class,
 			Integer, { specs = [in: specs] },
 			Symbol, { specs = [specs, numChans] }
@@ -272,7 +272,7 @@ SynthTree : IdentityTree {
 		synth = template.asSynth(this, attackTime);
 		// guarantee that moveBefore happens AFTER the synth has really started!
 		synth !? {
-			synth.onEnd(\this, { // This also registers on NodeWatcher:
+			synth.onEnd(this, { // This also registers on NodeWatcher:
 				if (this.isPlaying.not) { this.changed(\stopped) };
 			}); 
 			this.addNotifierOneShot(synth, 'n_go', {
@@ -453,11 +453,12 @@ SynthTree : IdentityTree {
 		}
 	}
 
+	getParamValue { | paramName | ^args.getParamValue(paramName) }
 	// Controls
 	/*
    .out(param = \out, chans = 1) // creates bus ref
    .in(param = \in, chans = 1) // creates bus ref
-		.view(param, nameOrView = param) // , storeName = \view
+		.view(param, nameOrView = param) /t/ , storeName = \view
    .osc(param, specs = param, storeName = \osc)
    .buf(name, param, chans) // creates buf ref
    .midi(param, specs, storeName = \midi)

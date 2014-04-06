@@ -25,6 +25,12 @@ SynthTreeArgs : /* IdentityDictionary */ Event {
 		this.getParam(key).storeValue(value);
 	}
 
+	getParamValue { | paramName |
+		var param;
+		param = this [paramName];
+		if (param.isNil) { ^nil } { ^param.nextValue }
+	}
+
 	getParam { | key, spec, initialValue, stream |
 		var param;
 		param = this[key];

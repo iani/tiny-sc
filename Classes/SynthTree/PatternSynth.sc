@@ -6,34 +6,22 @@ TODO: Build interface for getting the instrument from a PatternInstrument.
 IZ Fri, Apr  4 2014, 12:49 EEST
 */
 
-PatternSynth {
+PatternSynth : Synth {
 
-	var <synthTree, <numChannels, <bus, <synth, <group, <busIndex;
+	var <synthTree, <bus, <busIndex;
 
-	*new { | synthTree, numChannels |
-		^this.newCopyArgs(synthTree, numChannels ?? { ~numChans }).init;
-	}
-
-	init {
-		bus = Bus.audio(synthTree.server, numChannels);
+	init { | argSynthTree, argBus |
+		synthTree = argSynthTree;
+		bus = argBus;
 		busIndex = bus.index;
-		group = Group(synthTree.group, \addToHead);
-		this.makeCopySynth;
+		this.onEnd(this, { | n |
+			group.free;
+			bus.free;
+		})
 	}
 
-
-	makeCopySynth {
-		synth = { 
-			Inp.ar(numChannels: numChannels).ladsrOut
-		}.play(
-			target: group,
-			addAction: \addToTail,
-			args: [in: busIndex, fadeIn: synthTree.getFadeTime, amp: 1]
-		);
-	}
-	
 	test {
-		{ 
+		^{
 			LPF.ar(WhiteNoise.ar, (LFNoise0.kr(15).range(500, 5000))).ladsrOut
 		}.play(args: [out: bus.index], target: group, addAction: \addToHead);
 	}
@@ -49,16 +37,4 @@ PatternSynth {
 			pattern.clock.sched(synthEvent.dur, { synth.release });
 		});
 	}
-
-	isPlaying {
-		^group.isPlaying;
-	}
-
-	release { | dur |
-		synth release: dur;
-	}
-
-	set { | param, val | synth.set(param, val) }
-
-
 }

@@ -26,10 +26,25 @@ p.start;
 //:
 ~synth.release;
 //: TEST 3: Let the SynthTree create the PatternSynth and put it in its synth
-p = [freq: Prand((30..90).midicps, inf)] => 0.02;
+p = [freq: (30..90).midicps.prand] => 5;
 p => \newtest;
+//:
+p.start;
+//:
+a = ~st.synth;
+a.addSynth;
+a.isPlaying;
+a.group;
+a.busIndex;
 
+a.set(\in, a.busIndex);
 
+p.start;
+
+//:
+b = { }
+//:
+SynthEvent;
 //:
 ~st.addNotifier(a, \value, { | synthEvent |
 	var synth;

@@ -54,6 +54,7 @@ PatternInstrument {
 	var <instrument;
 	var <name;
 	var <numChannels;
+	var <>inputSpecs;
 
 	*new { | pattern, instrument = \default, name = \pattern, numChannels |
 		^this.newCopyArgs(pattern, instrument, name, numChannels).init;
@@ -74,18 +75,36 @@ PatternInstrument {
 		name = argName;
 	}
 
-	inputSpecs { 
-
-	}
-
 	templateArgs {
-
+		^[ControlName(\amp, nil, \control, 1)]
 	}
 
 	asSynth { | synthTree, fadeTime |
-		^PatternSynth(synthTree, numChannels)
+		var bus, busIndex, patternSynth, group;
+		bus = Bus.audio(synthTree.server, numChannels);
+		busIndex = bus.index;
+		group = Group(synthTree.group, \addToHead);
+		patternSynth = { 
+			Inp.ar(numChannels: numChannels).ladsrOut
+		}.asPatternSynth(
+			target: group,
+			addAction: \addToTail,
+			args: [in: busIndex, fadeIn: synthTree.getFadeTime, 
+				amp: synthTree.getParamValue(\amp)]
+		);
+		this.addNotifier(this.pattern, \value, { | synthEvent |
+			var eventSynth;
+			eventSynth = Synth(instrument.next,
+				synthEvent.params ++ [out: busIndex],
+				group, \addToHead
+			);
+			pattern.clock.sched(synthEvent.dur, {
+				if (patternSynth.isPlaying) { eventSynth.release };
+			});
+		});
+		this.addNotifier(synthTree, \stopped, { this.objectClosed });
+		^patternSynth.init(synthTree, bus);
 	}
-
 }
 
 SynthPattern {
@@ -145,6 +164,33 @@ SynthEvent {
 
 	*new { | /* instrument, */ params, dur |
 		^this.newCopyArgs (/* instrument, */ params, dur);
+	}
+}
+
++ Function {
+	asPatternSynth { | target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args |
+		var def, synth, server, bytes, synthMsg;
+		target = target.asTarget;
+		server = target.server;
+		if(server.serverRunning.not) {
+			("server '" ++ server.name ++ "' not running.").warn; ^nil
+		};
+		def = this.asSynthDef(
+			fadeTime:fadeTime,
+			name: SystemSynthDefs.generateTempName
+		);
+		synth = PatternSynth.basicNew(def.name, server);
+		// if notifications are enabled on the server,
+		// use the n_end signal to remove the temp synthdef
+		if(server.notified) {
+			OSCpathResponder(server.addr, ['/n_end', synth.nodeID], { |time, resp, msg|
+				server.sendMsg(\d_free, def.name);
+				resp.remove;
+			}).add;
+		};
+		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus] ++ args, addAction);
+		def.doSend(server, synthMsg);
+		^synth
 	}
 }
 
