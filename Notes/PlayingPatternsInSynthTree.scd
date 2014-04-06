@@ -16,9 +16,8 @@ p => \newtest;
 
 //: Test pyramid
 [freq: (50 rrand: 55 .. rrand(70, 80)).midicps
-	.curdle(0.5).scramble.flop(4).flat
-.pyramid.pseq] 
+	.curdle(0.5).scramble.flop(4).flat.pyramid
+	.pseq]
 => ((1..8)/16).pyramid.pseq
 => \newtest;
-
 //:
