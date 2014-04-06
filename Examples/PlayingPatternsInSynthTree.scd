@@ -35,3 +35,33 @@ p => \newtest;
 	([500, 600, 550]).prand(15) * Pstutter(12, [0.5, 0.75, 0.8, 0.9, 1, 1.1].prand), 
 	[700, 800, 900].prand(10)
 ].prand => \newtest;
+
+//:
+[freq: (40..80).midicps.prand, amp: { 0.01.exprand(0.1) }.pfunc] => \newtest;
+
+//:
+\newtest.asSynthTree.template.inspect;
+
+//: ================ Preparing examples for README: 
+[freq: 440] => \pattern1;
+//:
+\amp -> { 0.01 exprand: 0.1 }.pfunc => \pattern1;
+//:
+\freq->[440, 550].pseq => \pattern1;
+//:
+0.1 =!> \dur;
+//:
+\freq->[440, 550, 660].prand => \pattern1;
+//:
+\amp->[0.03, 0.05, 0.10].pseq => \pattern1;
+//:
+[freq: (40..50).midicps.prand] => Pstutter(3, Pbrown(0.05, 0.15, 0.05)) => \pattern1;
+//:
+\freq->[
+	([500, 600, 550]).prand(15) * Pstutter(12, [0.5, 0.75, 0.8, 0.9, 1, 1.1].prand), 
+	[700, 800, 900].prand(10)
+].prand => \pattern1;
+//:
+
+
+

@@ -110,6 +110,46 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 Pbrown(0.01, 0.26, 0.05, inf).asStream =!> \dur;
 #+END_EXAMPLE
 
+* Play patterns in SynthTree
+
+#+BEGIN_EXAMPLE
+0.3 =!> \dur;
+[freq: 440] => \pattern1;
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+\amp -> { 0.01 exprand: 0.1 }.pfunc => \pattern1;
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+\freq->[440, 550].pseq => \pattern1;
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+0.1 =!> \dur;
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+\freq->[440, 550, 660].prand => \pattern1;
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+\amp->[0.03, 0.05, 0.10].pseq => \pattern1;
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+[freq: (40..50).midicps.prand] => Pstutter(3, Pbrown(0.05, 0.15, 0.05)) => \pattern1;
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+(
+\freq->[
+	([500, 600, 550]).prand(15) * Pstutter(12, [0.5, 0.75, 0.8, 0.9, 1, 1.1].prand),
+	[700, 800, 900].prand(10)
+].prand => \pattern1;
+)
+#+END_EXAMPLE
+
 * Restart synths after Command-.
 
 Add some more synths to the tree:
@@ -318,7 +358,7 @@ Keyboard commands on the Buffer List list view:
 
 Following keyboard bindings only apply to Emacs.
 
-** Global key bindings
+** Global key bindingsg
 
 - H-c l :: sclang-start
 - C-c C-x C-/ :: sclang-init-synth-tree

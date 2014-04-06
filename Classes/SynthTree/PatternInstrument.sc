@@ -78,15 +78,14 @@ SynthPattern {
 
 	asStream { ^SynthStream(/* instrument, */ params, legato) }
 
-	/*
-	%> { | durations |
-		^PatternPlayer(this, durations)
-	}
-	*/
 	set { | param, value |
 		var index;
 		index = params indexOf: param;
-		index !? params[index * 2 + 1] = value.asStream;
+		if (index.isNil) {
+			params = params ++ [param, value];
+		}{
+			params[index + 1] = value;
+		}
 	}
 }
 
@@ -125,7 +124,12 @@ ParamStream {
 	set { | param, value |
 		var index;
 		index = keys indexOf: param;
-		index !? values[index] = value.asStream;
+		if (index.isNil) {
+			keys = keys add: param;
+			values = values add: value.asStream;
+		}{
+			values[index] = value.asStream;
+		}
 	}
 }
 

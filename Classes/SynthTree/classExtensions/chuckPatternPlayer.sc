@@ -58,10 +58,15 @@
 		if (adverb === 'i') {
 			^PatternInstrument(PatternPlayer(paramArray), this);
 		}{
+			/*
 			^this.asSynthTree.playPattern(
 				PatternInstrument(PatternPlayer(paramArray)),
 				adverb === 'm' // merge players if 'm'
 			);
+			*/
+			^this.asSynthTree.chuck(
+				PatternInstrument(PatternPlayer(paramArray, Pfunc({ ~dur })))
+			)
 		};
 	}
 
