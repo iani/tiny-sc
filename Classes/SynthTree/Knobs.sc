@@ -46,7 +46,7 @@ Knobs {
 			panel = this.new(panelName);
 			all[panelName] = panel;
 		};
-		^panel;
+		^panel.front;
 	}
 
 	*new { | panelName |

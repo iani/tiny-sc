@@ -40,8 +40,6 @@ SynthTree : IdentityTree {
 			parentEvents = IdentityDictionary();
 			nameSpaces = MultiLevelIdentityDictionary();
 			this.setServer(Server.default);
-			Spec.specs.at(\amp).default = 0.1;
-			Spec.specs.[\trigRate] = [0.1, 50, 'exp', 0, 1, ""].asSpec;
 			if (showGuiAtStartup) { this.faders };
 		}
 	}

@@ -54,7 +54,7 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 #+BEGIN_EXAMPLE
 // Set global fade time to 3 seconds
 10 =!> \fadeTime;
-// Fade in a synth.  Reset amp back to 0.1 from previous example
+// Fade in a synth.
 { WhiteNoise.ar } => \sound2;
 // Cross-fade another synth in its place
 { SinOsc.ar(LFNoise0.kr(5).range(400, 4000)) } => \sound2;
@@ -68,7 +68,6 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 { SinOsc.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound2;
 // Fadeout also uses the global default
 \sound2.fadeOut;
-
 #+END_EXAMPLE
 
 * Synth parameters are environment variables
@@ -76,20 +75,20 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 When a synth template gets chucked to a synthtree with =>, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.
 
 #+BEGIN_EXAMPLE
-{ LPF.ar(LFSaw.ar(\freq.kr(440)), \filterFreq.kr(1000)) } => \sound;
+{ LPF.ar(LFSaw.ar(\freq.kr(440)), \filterFreq.kr(1000)) } => \sound3;
 // Parameters of last chucked SynthTree are in the environment.
 // Change the filter frequency:
 400 => ~filterFreq;
 // Change the generator frequency:
 600 => ~freq;
 // Play a routine into frequency, then fade out
-{ 50 do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; \sound.fadeOut(3); }.fork;
+{ 50 do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; \sound3.fadeOut(3); }.fork;
 #+END_EXAMPLE
 
 * Play patterns in parameters
 
 #+BEGIN_EXAMPLE
-{ SinOsc.ar(\freq.kr(400)) } => \sound;
+{ SinOsc.ar(\freq.kr(400)) } => \sound4;
 // Play a pattern into ~freq:
 { 50.rrand(80).midicps } -> 0.1 => ~freq;
 // Alternative formulation:
@@ -99,7 +98,7 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 //: And another:
 { [60, 62, 66, 67].choose.midicps } -> Prand([0.1, 0.2, 0.4], inf) => ~freq;
 // Pattern keeps playing when new synth is chucked into tree:
-{ LPF.ar(LFPulse.ar(\freq.kr(440)), 1000) } => \sound;
+{ LPF.ar(LFPulse.ar(\freq.kr(440)), 1000) } => \sound4;
 // Open knobs interface to watch how freq changes
 ~st.knobs;
 // Use nil to play with global duration stored in ~dur:
@@ -108,6 +107,8 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 0.1 =!> \dur;
 // Use a pattern for global duration:
 Pbrown(0.01, 0.26, 0.05, inf).asStream =!> \dur;
+// Fade out this synth
+\sound4.fadeOut;
 #+END_EXAMPLE
 
 * Play patterns in SynthTree
