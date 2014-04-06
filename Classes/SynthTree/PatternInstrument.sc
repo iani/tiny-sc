@@ -54,10 +54,7 @@ PatternInstrument {
 				if (patternSynth.isPlaying) { eventSynth.release };
 			});
 		});
-		// TODO: use patternSynth instead of this for stop notifications: 
 		patternSynth.onEnd(this, { this.objectClosed });
-		// TODO: scrap this when above is tested: 
-		//		this.addNotifier(synthTree, \stopped, { this.objectClosed });
 		patternSynth.init(synthTree, bus);
 		pattern.start;
 		^patternSynth;

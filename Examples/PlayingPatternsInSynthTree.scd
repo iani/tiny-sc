@@ -23,13 +23,13 @@ p => \newtest;
 //:
 [freq: (40..80).midicps.prand] => 0.1 => \newtest;
 //:
-\newtest.asSynthTree.template.pattern.set(\freq, [500, 600, 700, 900].prand);
-//:
-[freq: (40..50).midicps.prand] => Pbrown(0.05, 0.5, 0.02) => \newtest;
+[freq: (40..50).midicps.prand] => Pstutter(3, Pbrown(0.05, 0.15, 0.05)) => \newtest;
 //:
 \freq->500 => \newtest;
 //:
 \freq->([500, 600]).prand => \newtest;
+//:
+\freq->[500, 600, 700, 900].prand => \newtest;
 //:
 \freq->[
 	([500, 600, 550]).prand(15) * Pstutter(12, [0.5, 0.75, 0.8, 0.9, 1, 1.1].prand), 

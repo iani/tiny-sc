@@ -213,8 +213,8 @@ SynthTree : IdentityTree {
 	}
 
 	chuckPatternParam { | param, pattern |
-		// TODO: implement this
-		template.pattern.chuckParam(param, pattern)
+		template.pattern.chuckParam(param, pattern);
+		if (this.isPlaying.not) { this.start }; // really???
 	}
 
 	playPattern { | patternPlayer, instrument = \default |
