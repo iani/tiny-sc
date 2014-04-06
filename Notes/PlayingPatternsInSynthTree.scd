@@ -26,10 +26,20 @@ p.start;
 //:
 ~synth.release;
 //: TEST 3: Let the SynthTree create the PatternSynth and put it in its synth
-p = [freq: (30..90).midicps.prand] => 5;
+// OK!
+p = [freq: (75..90).midicps.prand] => pseq([Pseries(0.05, 0.01, 25), Pseries(0.30, -0.01, 25)]);
 p => \newtest;
+//: TEST 4: As 3, chaining chucks
+[freq: (30 rrand: 75 .. rrand(40, 90)).midicps.prand] 
+=> pseq([Pseries(0.01 * rrand(1, 5.0), 0.01, 25), Pseries(0.30, -0.01, 25)])
+=> \newtest;
+
 //:
 p.start;
+//:
+p.inspect;
+//:
+\newtest.asSynthTree.inspect;
 //:
 a = ~st.synth;
 a.addSynth;

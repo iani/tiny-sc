@@ -1,0 +1,235 @@
+TITLE::PatternInstrument
+summary::play a PatternPlayer with an instrument stream
+categories::Libraries>TinySC>Classes
+related:: Classes/PatternPlayer
+
+DESCRIPTION::
+
+Play synths in a SynthTree, timed by a duration stream, with parameters
+generated from an array of patterns.  
+
+The valueStream may produce as value an array of 3 elements:
+
+1. Name of synthdef to play, or nil for silence.
+2. Args array for the synth, eg: [\freq, 440, \amp, 0.1 ... etc]. The SynthTree adds the target group, addAction, and output/input parameters to create the synth.
+3. Duration after which the SynthTree should release the synth.  The SynthTree schedules a function roughly like this:
+
+code:: SystemClock.sched(dur, { synth.release }) ::
+
+or:
+
+code:: aTempoClock.sched(dur, { synth.release }) ::
+
+Dur may be different from the delta time for the next event of the pattern, depending on legato.
+
+Following this through the three stages patern -> stream -> next value:
+
+Pattern should contain:
+- instrumentpattern
+- parampattern
+- legatopattern
+
+These three are converted to streams and put into a SynthStream, which creates 
+SynthEvents to play.  So we have following classes:
+
+1. SynthPattern - contains the pattern producing the stream
+2. SynthStream - contains the stream producing the event
+3. SynthEvent - contains the parameters for creating the Synth
+
+IZ Tue, Apr  1 2014, 02:58 EEST
+
+================ PatternInstrument: ================
+
+Hold the instrument for playing a PatternPlayer. 
+
+Is placed as template in SynthTree.
+
+Instrument can be a stream.
+
+Why separate the instrument from the pattern?  In order to play a pattern with different instruments at the same time.  Like in ... *MUSIC*.
+
+
+code:: this.changed(\value). ::
+
+Any number of objects can set a function to play with the values produced by the PatternPlayer by using the Notification class. 
+
+To create a PatternPlayer, one may use the %> operator.  For example: . 
+
+code:: [freq: Pseq((30..90).midicps, inf)] %> 0.02; ::
+
+To add an object to play with a PatternPlayer use the method play, or chuck the pattern with the chuck operator (=>).  Examples 
+
+code:: [freq: Pseq((30..90).midicps, inf)] %> 0.02 => \default; ::
+
+
+CLASSMETHODS::
+
+METHOD:: new
+(describe method here)
+
+ARGUMENT:: values
+(describe argument here)
+
+ARGUMENT:: durations
+(describe argument here)
+
+ARGUMENT:: delay
+(describe argument here)
+
+ARGUMENT:: clock
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+INSTANCEMETHODS::
+
+METHOD:: stop
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: currentDuration
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: task
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: currentValue
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setStreamParam
+(describe method here)
+
+ARGUMENT:: param
+(describe argument here)
+
+ARGUMENT:: value
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: valuePattern
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: durations
+(describe method here)
+
+ARGUMENT:: durations
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: clock
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: makeTask
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: start
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: valueStream
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: durationStream
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: durationPattern
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: initialDelay
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: reset
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: =>
+(describe method here)
+
+ARGUMENT:: synthOrParameter
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: isPlaying
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setPatternParam
+(describe method here)
+
+ARGUMENT:: param
+(describe argument here)
+
+ARGUMENT:: value
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: values
+(describe method here)
+
+ARGUMENT:: values
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: set
+(describe method here)
+
+ARGUMENT:: param
+(describe argument here)
+
+ARGUMENT:: value
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+EXAMPLES::
+
+code::
+(some example code)
+::
+
+code::
+// associations can be a good way to store named data in order:
+(
+a = [\x -> 700, \y -> 200, \z -> 900];
+
+fork {
+	a.do { |assoc|
+		assoc.key.postln;
+		assoc.value.postln;
+		(freq: assoc.value).play;
+		2.wait;
+	}
+};
+)
+::

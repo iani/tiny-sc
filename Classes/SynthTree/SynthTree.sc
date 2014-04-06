@@ -212,8 +212,14 @@ SynthTree : IdentityTree {
 		this.chuck(chucker, replaceAction);
 	}
 
+	playPattern { | patternPlayer, instrument = \default |
+		PatternInstrument(patternPlayer, instrument) => this;
+	}
+
 	setPatternDuration { | numberOrPattern |
-		[this, thisMethod.name, "not yet implemented"].postln;
+		// NOT TESTED
+		// TODO: Test!
+		template.pattern.dur = numberOrPattern;
 	}
 
 	chuck { | argTemplate, numChans |
@@ -477,12 +483,6 @@ SynthTree : IdentityTree {
    .choose(param, element, path);
    .wchoose(param, element, path);
 	*/
-
-	playPattern { | patternPlayer |
-		// Make patternPlayer my template, and play synths with it
-		// TODO !
-		[this, thisMethod.name, "Not yet implemented"].postln;
-	}
 	knobs {
 		this.getArgsFromTemplate do: _.addView;
 	}
