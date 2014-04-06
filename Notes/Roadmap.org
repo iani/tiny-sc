@@ -190,6 +190,11 @@ See also PatternPlayer ...
 
 * Immediate TODOs
 
+
+** TODO SynthTree.initTree loses Patterns in FX
+
+A pattern that outputs in an effect is not put back into that effect on SynthTree.initTree after stopping all synths.
+
 ** SynthTree:
 
 *** fix ==> n_fre Node not found when =< to fx

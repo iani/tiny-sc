@@ -18,7 +18,7 @@ https://github.com/iani/tiny-sc/releases/tag/chuckLib01
 
 *When using the chucklib_compat branch, the chuck operator for tiny-sc becomes =>> instead of =>.  You can use => in the usual way in chuckLib.*
 
-* QUOTE Basic synth handling
+* Basic synth handling
 
 Associating symbols with synths, starting, stopping with fadeout, replacing the stored synth in the same symbol:
 
