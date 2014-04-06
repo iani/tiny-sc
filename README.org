@@ -112,35 +112,50 @@ Pbrown(0.01, 0.26, 0.05, inf).asStream =!> \dur;
 
 * Play patterns in SynthTree
 
+First reset the global duration to a constant value:
 #+BEGIN_EXAMPLE
 0.3 =!> \dur;
+#+END_EXAMPLE
+
+Play a pattern with a constant frequency into a new SynthTree:
+
+#+BEGIN_EXAMPLE
 [freq: 440] => \pattern1;
 #+END_EXAMPLE
 
+Add a pattern for the amplitude parameter to the SynthTree
 #+BEGIN_EXAMPLE
 \amp -> { 0.01 exprand: 0.1 }.pfunc => \pattern1;
 #+END_EXAMPLE
 
+Change the pattern played in the freq parameter
 #+BEGIN_EXAMPLE
 \freq->[440, 550].pseq => \pattern1;
 #+END_EXAMPLE
 
+Set a shorter global duration
 #+BEGIN_EXAMPLE
 0.1 =!> \dur;
 #+END_EXAMPLE
 
+Change the pattern of the freq parameter again.
+Use ~st to address the last synthTree that was chucked.
 #+BEGIN_EXAMPLE
-\freq->[440, 550, 660].prand => \pattern1;
+\freq->[440, 550, 660].prand => ~st;
 #+END_EXAMPLE
 
+Change the pattern of amplitude:  Create 3-part metre.
 #+BEGIN_EXAMPLE
 \amp->[0.03, 0.05, 0.10].pseq => \pattern1;
 #+END_EXAMPLE
 
+Change both the frequency and the duration pattern.
+Chucking a pattern array into a pattern sets the duration of the resulting PlayerPattern.
 #+BEGIN_EXAMPLE
 [freq: (40..50).midicps.prand] => Pstutter(3, Pbrown(0.05, 0.15, 0.05)) => \pattern1;
 #+END_EXAMPLE
 
+Play a different pattern in frequency.
 #+BEGIN_EXAMPLE
 (
 \freq->[

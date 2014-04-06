@@ -212,6 +212,10 @@ SynthTree : IdentityTree {
 		this.chuck(chucker, replaceAction);
 	}
 
+	receiveAssociationChuck { | association |
+		this.chuckPatternParam(association.key, association.value);
+	}
+
 	chuckPatternParam { | param, pattern |
 		template.pattern.chuckParam(param, pattern);
 		if (this.isPlaying.not) { this.start }; // really???

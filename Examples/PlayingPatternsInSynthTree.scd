@@ -53,7 +53,7 @@ p => \newtest;
 //:
 \freq->[440, 550, 660].prand => \pattern1;
 //:
-\amp->[0.03, 0.05, 0.10].pseq => \pattern1;
+\amp->[0.03, 0.05, 0.10, 0.03, 0.05, 0.15].pseq => \pattern1;
 //:
 [freq: (40..50).midicps.prand] => Pstutter(3, Pbrown(0.05, 0.15, 0.05)) => \pattern1;
 //:
