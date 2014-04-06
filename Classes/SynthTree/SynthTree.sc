@@ -276,7 +276,7 @@ SynthTree : IdentityTree {
 
 	moveBefore { | argSynth |
 		// TODO: move my synth before the output synth
-		// and then call moveBeforeOutput on all my inputs sunthTrees
+		// and then call moveBefore (Output) on all my inputs sunthTrees
 		if (synth.isPlaying) {
 			synth.moveBefore(argSynth);
 			this do: _.moveBefore(synth);
@@ -342,7 +342,10 @@ SynthTree : IdentityTree {
 		};
 		output = synthTree;
 		outputName = inputName;
-		if (synth.isPlaying) { synth.set(\out, outputBus.index) }
+		if (synth.isPlaying) {
+			this.moveBefore(synthTree.synth);
+			synth.set(\out, outputBus.index);
+		}
 	}
 
 	getInputBus { | inputName = \in |
@@ -529,6 +532,7 @@ SynthTree : IdentityTree {
 				$., { SynthTree.stopAll },
 				$I, { SynthTree.initTree },
 				$/, { SynthTree.initTree },
+				$q, { Server.default.queryAllNodes; },
 				$0, { 0.02 =!> \fadeTime },
 				$1, { 1 =!> \fadeTime },
 				$2, { 2 =!> \fadeTime },

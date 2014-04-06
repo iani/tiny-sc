@@ -190,10 +190,6 @@ See also PatternPlayer ...
 
 * Immediate TODOs
 
-** Fix sending pattern synthrees to different inputs
-
-When sending a synthtree sending a pattern to one lpf synthree, and then switching to another, hpf, synthtree, the sound stops.  Why?
-
 ** SynthTree:
 
 *** fix ==> n_fre Node not found when =< to fx
@@ -578,6 +574,13 @@ Steps:
 4. Define class SynthTreePlayer that acts similarly to Pbind, but plays a SynthTree.
 
 
+
+** DONE Fix sending pattern synthrees to different inputs
+CLOSED: [2014-04-06 Sun 21:07]
+
+When sending a synthtree sending a pattern to one lpf synthree, and then switching to another, hpf, synthtree, the sound stops.  Why?
+
+Done: PatternSynth should move only its Group, not itself as synth.
 
 * Undergoing tests
 

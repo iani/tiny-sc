@@ -37,4 +37,21 @@ PatternSynth : Synth {
 			pattern.clock.sched(synthEvent.dur, { synth.release });
 		});
 	}
+
+	moveAfter { | argNode |
+		group.moveAfter(argNode);
+		super.moveAfter(argNode);
+	}
+
+	moveBefore { | argNode |
+		group.moveBefore(argNode);
+	}
+
+	moveToHead { | argNode |
+		group.moveToHead(argNode);
+	}
+
+	moveToTail { | argNode |
+		group.moveToTail(argNode);
+	}
 }
