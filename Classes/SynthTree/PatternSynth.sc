@@ -40,7 +40,6 @@ PatternSynth : Synth {
 
 	moveAfter { | argNode |
 		group.moveAfter(argNode);
-		super.moveAfter(argNode);
 	}
 
 	moveBefore { | argNode |
