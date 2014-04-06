@@ -188,18 +188,11 @@ See also: BasicIdeas.org, Extending AbstractResponderFunc paradigm -> Generalizi
 See also PatternPlayer ...
 
 
-*** Playing patterns in SynthTree
-
-Steps:
-
-1. Try getting values from stream in MultiControl
-2. Try timing the triggering of new synths in SynthTree with a routine
-3. Try PatternFunc for control of single parameters
-4. Define class SynthTreePlayer that acts similarly to Pbind, but plays a SynthTree.
-
-
-
 * Immediate TODOs
+
+** Fix sending pattern synthrees to different inputs
+
+When sending a synthtree sending a pattern to one lpf synthree, and then switching to another, hpf, synthtree, the sound stops.  Why?
 
 ** SynthTree:
 
@@ -573,6 +566,17 @@ Test here:
 *** ! { WhiteNoise.ar } => \test
 
 *** ! { GrayNoise.ar } => \test
+
+
+** Playing patterns in SynthTree
+
+Steps:
+
+1. Try getting values from stream in MultiControl
+2. Try timing the triggering of new synths in SynthTree with a routine
+3. Try PatternFunc for control of single parameters
+4. Define class SynthTreePlayer that acts similarly to Pbind, but plays a SynthTree.
+
 
 
 * Undergoing tests
