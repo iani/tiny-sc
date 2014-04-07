@@ -70,8 +70,8 @@ PatternPlayer {
 
     isPlaying { ^task.isPlaying; }
 
-	=> { | chuckee |
-		chuckee.playPattern(this)
+	=> { | chuckee, adverb |
+		^chuckee.playPattern(this)
 	}
 
 	chuckParam { | param, pattern |
@@ -111,50 +111,3 @@ PatternFunc {
 		this.objectClosed;
 	}
 }
-
-+ Object {
-	playPattern { | patternPlayer, action, startNow = true |
-		var stream, pfunc;
-		stream = this.asStream;
-		action ?? { 
-			var synth;
-			action = { | value |
-				synth = Synth (value.instrument, value.params);
-				SystemClock.sched (value.dur, { synth.release });
-			};
-		};
-		pfunc = PatternFunc (patternPlayer, this, action);
-		if (startNow and: { patternPlayer.isPlaying.not }) { patternPlayer.start };
-		^pfunc;
-	}
-}
-
-+ Symbol {
-	playPattern { | pattern | ^this.asSynthTree.playPattern(pattern) }
-}
-
-+ Pattern {
-	playPattern { | patternPlayer, action, startNow = true |
-		^this.asStream.playPattern (patternPlayer, action, startNow)
-	}
-}
-
-+ Routine {
-	playPattern { | patternPlayer, action, startNow = true |
-		var pfunc;
-		action ?? { 
-			action = { | value |
-				var next, synth;
-				next = this.next (value);
-				if (next.notNil) {
-					synth = Synth (next, value.params);
-					SystemClock.sched (value.dur, { synth.release })
-				};
-			};
-		};
-		pfunc = PatternFunc (patternPlayer, this, action);
-		if (startNow and: { patternPlayer.isPlaying.not }) { patternPlayer.start };
-		^pfunc;
-	}
-}
-

@@ -20,6 +20,9 @@ PatternInstrument {
 
 	instrument_ { | argInstrument = \default | instrument = argInstrument.asStream }
 	legato_ { | argLegato | pattern.legato = argLegato }
+	durations_ { | argDurations |
+		pattern.durations = argDurations
+	}
 
 	start { pattern.start }
 	stop { pattern.stop }
@@ -33,9 +36,11 @@ PatternInstrument {
 		^[ControlName(\amp, nil, \control, 1)]
 	}
 
+	// TODO: Fix initTree to work correctly for sending to fx inputs
 	asSynth { | synthTree, fadeTime |
 		var bus, busIndex, patternSynth, group;
 		bus = Bus.audio(synthTree.server, numChannels);
+		// [this, thisMethod.name, bus].postln;
 		busIndex = bus.index;
 		group = Group(synthTree.group, \addToHead);
 		patternSynth = { 

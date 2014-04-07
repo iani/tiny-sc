@@ -28,16 +28,17 @@
 
 + Ref {
 	receivePatternInstrument { | patternInstrument, numChannels |
-		^this.value.receivePatternInstrument(patternInstrument, numChannels);
+		^patternInstrument.instrument = this.value;
 	}
 
 	patternParams { | pattern |
 		^PatternInstrument(PatternPlayer(pattern), this.value);
 	}
-
+	
 	playPattern { | pattern |
-		[this, thisMethod.name, "not yet implemented"].postln;
+		^PatternInstrument(pattern, this.value);
 	}
+	
 }
 
 + Symbol {

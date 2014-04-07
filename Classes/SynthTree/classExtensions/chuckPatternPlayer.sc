@@ -1,3 +1,4 @@
+
 + SequenceableCollection {
 	=> { | chuckee, adverb |
 		^chuckee.patternParams(this, adverb)
@@ -22,6 +23,9 @@
 	patternParams { | paramArray, adverb |
 		^PatternPlayer(paramArray, this);
 	}
+	receivePatternInstrument { | patternInstrument |
+		^patternInstrument.durations = this;
+	}
 }
 
 + Pattern {
@@ -39,6 +43,10 @@
 
 	receivePatternChuck { | pattern |
 		^PatternPlayer(pattern, this);
+	}
+
+	receivePatternInstrument { | patternInstrument |
+		^patternInstrument.durations = this;
 	}
 
 	patternParams { | paramArray, adverb |

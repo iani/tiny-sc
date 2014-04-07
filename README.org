@@ -113,6 +113,8 @@ Pbrown(0.01, 0.26, 0.05, inf).asStream =!> \dur;
 
 * Play patterns in SynthTree
 
+** Setting and adding parameter patterns
+
 First reset the global duration to a constant value:
 #+BEGIN_EXAMPLE
 0.3 =!> \dur;
@@ -155,6 +157,8 @@ Another example for amplitude pattern.
 \amp->[0.1, Pstutter([4, 6].prand, Pn(0.04, 1))].pseq => \pattern1;
 #+END_EXAMPLE
 
+** Setting duration patterns
+
 Change both the frequency and the duration pattern.
 Chucking a pattern array into a pattern sets the duration of the resulting PlayerPattern.
 #+BEGIN_EXAMPLE
@@ -169,6 +173,53 @@ Play a different pattern in frequency.
 	[700, 800, 900].prand(10)
 ].prand => \pattern1;
 )
+#+END_EXAMPLE
+
+** Setting instrument patterns
+
+There are 4 elements to specify for playing a pattern in a synthtree:
+
+1. The pattern
+2. The duration stream for timing individual events of the pattern
+3. The stream of instruments to play each event
+4. The SynthTree where this should be played.
+
+These can be written in the order:
+
+<pattern> => <durations> => instrument => synthree.
+
+Defaults are provide for durations and instruments, so one may omit these.  Following exampleas show how to code the 4 elements.  The examples should be executed one-line-at-a-time.
+
+#+BEGIN_EXAMPLE
+
+// Just a pattern, with default durations and instrument:
+[freq: Pwhite(40, 90, inf).midicps] => \test;
+
+// Set the duration:
+[freq: Pwhite(40, 90, inf).midicps] => 0.1 => \test;
+
+// Set the duration to a pattern:
+[freq: Pwhite(40, 90, inf).midicps] => [0.2, 0.6].pseq => \test;
+
+// Set the instrument, using default duration.
+// The reference (`) backquote indicates that this is an instrument, and
+// not a SynthTree name:
+[freq: Pwhite(40, 90, inf).midicps] => `\sinosc => \test;
+
+// Set the instrument to a pattern.  Here the adverb .i is needed
+// to indicate that the pattern is not for ducations but for the instrument:
+[freq: Pwhite(60, 70, inf).midicps] =>.i [\lpfsaw, \sinosc].pseq => \test
+
+// Durations-first order is best when specifying both duration and instrument:
+[freq: Pwhite(30, 50, inf).midicps] => 0.21 => `\lpfsaw => \test;
+
+// Instrument as pattern
+[freq: Pwhite(60, 70, inf).midicps] => 0.1 => [\lpfsaw, \sinosc].pseq => \test;
+
+// If instrument-first order is used and the instrument is a pattern,
+// then the adverb .i must be used:
+[freq: Pwhite(30, 70, inf).midicps] =>.i [\lpfsaw, \lpfpulse].prand => 0.15 => \test;
+
 #+END_EXAMPLE
 
 * Restart synths after Command-.

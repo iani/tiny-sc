@@ -65,9 +65,13 @@ p => \pattern1;
 ).midicps ] =>.i [
 	Pstutter(Pbrown(1, 30, 1), \sinosc.pn(2)), 
 	Pstutter(Pbrown(1, 30, 2), \lpfpulse.pn(2))].prand => \pattern1;
-
-
-
-
-
-
+//:
+0.02 =!> \dur;
+[freq: Pwhite(
+	Pstutter(5, Pbrown(40, 50, 1)), 
+	Pstutter(5, Pbrown(45, 90, 1))
+).midicps ] 
+=>.i Pwrand([\lpfpulse, \sinosc, \lpfsaw],
+	Pstutter(30, Pfunc({ Array.rand(3, 0.0, 1).normalizeSum })), 
+	inf)
+=> \pattern1;
