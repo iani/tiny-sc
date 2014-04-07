@@ -7,21 +7,6 @@
 :DATE:     <2014-03-31 Mon 12:06>
 :END:
 
-*** Synth timing / chaining?
-
-Play a synth for a given duration:
-
-{ } => number => symbol (synthDef)
-
-or
-
-{ } dur: number => symbol (synthdef)
-
-Number: receiveChuck ->
-
-- Make routine for starting / stopping
-- add SynthTree as notifier to stop if SynthTree is released/faded out/freed.
-
 *** EventList class
 
 (Earlier version done in Lilt2 lib: Chain).
@@ -588,6 +573,24 @@ CLOSED: [2014-04-07 Mon 11:03]
 A pattern that outputs in an effect is not put back into that effect on SynthTree.initTree after stopping all synths.
 
 Fixed: Supplied output bus to PatternSynth in method PatternInstrument:asSynth.
+
+** DONE Synth timing / chaining?
+CLOSED: [2014-04-07 Mon 11:06]
+
+Implemented as a variant of this draft:
+
+Play a synth for a given duration:
+
+{ } => number => symbol (synthDef)
+
+or
+
+{ } dur: number => symbol (synthdef)
+
+Number: receiveChuck ->
+
+- Make routine for starting / stopping
+- add SynthTree as notifier to stop if SynthTree is released/faded out/freed.
 
 * Undergoing tests
 

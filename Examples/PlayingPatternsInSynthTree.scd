@@ -8,7 +8,7 @@ Tue, Apr  1 2014, 21:19 EEST
 p = [freq: (75..90).midicps.prand] => pseq([Pseries(0.3, -0.01, 25), Pseries(0.01, 0.01, 25)]);
 p => \pattern1;
 
-//: As abave, chaining chucks
+//: As above, chaining chucks
 [freq: (30 rrand: 75 .. rrand(40, 90)).midicps.prand] 
 => ([Pseries(0.30, -0.01, 25), Pseries(0.01 * rrand(1, 5.0), 0.01, 25)]).pseq
 => \pattern1;
@@ -75,3 +75,12 @@ p => \pattern1;
 	Pstutter(30, Pfunc({ Array.rand(3, 0.0, 1).normalizeSum })), 
 	inf)
 => \pattern1;
+
+//:
+0.1 =!> \dur;
+//:
+~st.legato = Pwhite(0.2, 3.2, inf);
+//:
+\amp -> Pwhite(0.01, 0.1, inf) => ~st;
+//:
+\amp -> pser(((0..200)/200).pyramid) => ~st;
