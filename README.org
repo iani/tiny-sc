@@ -207,7 +207,7 @@ Defaults are provide for durations and instruments, so one may omit these.  Foll
 [freq: Pwhite(40, 90, inf).midicps] => `\sinosc => \test;
 
 // Set the instrument to a pattern.  Here the adverb .i is needed
-// to indicate that the pattern is not for ducations but for the instrument:
+// to indicate that the pattern is not for durations but for the instrument:
 [freq: Pwhite(60, 70, inf).midicps] =>.i [\lpfsaw, \sinosc].pseq => \test
 
 // Durations-first order is best when specifying both duration and instrument:

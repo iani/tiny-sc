@@ -190,11 +190,6 @@ See also PatternPlayer ...
 
 * Immediate TODOs
 
-
-** TODO SynthTree.initTree loses Patterns in FX
-
-A pattern that outputs in an effect is not put back into that effect on SynthTree.initTree after stopping all synths.
-
 ** SynthTree:
 
 *** fix ==> n_fre Node not found when =< to fx
@@ -586,6 +581,13 @@ CLOSED: [2014-04-06 Sun 21:07]
 When sending a synthtree sending a pattern to one lpf synthree, and then switching to another, hpf, synthtree, the sound stops.  Why?
 
 Done: PatternSynth should move only its Group, not itself as synth.
+
+** DONE SynthTree.initTree loses Patterns in FX
+CLOSED: [2014-04-07 Mon 11:03]
+
+A pattern that outputs in an effect is not put back into that effect on SynthTree.initTree after stopping all synths.
+
+Fixed: Supplied output bus to PatternSynth in method PatternInstrument:asSynth.
 
 * Undergoing tests
 

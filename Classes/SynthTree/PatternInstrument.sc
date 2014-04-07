@@ -40,7 +40,6 @@ PatternInstrument {
 	asSynth { | synthTree, fadeTime |
 		var bus, busIndex, patternSynth, group;
 		bus = Bus.audio(synthTree.server, numChannels);
-		// [this, thisMethod.name, bus].postln;
 		busIndex = bus.index;
 		group = Group(synthTree.group, \addToHead);
 		patternSynth = { 
@@ -49,7 +48,7 @@ PatternInstrument {
 			target: group,
 			addAction: \addToTail,
 			args: [in: busIndex, fadeIn: synthTree.getFadeTime, 
-				amp: synthTree.getParamValue(\amp)]
+				amp: synthTree.getParamValue(\amp), out: synthTree.getOutputBusIndex]
 		);
 		this.addNotifier(this.pattern, \value, { | synthEvent |
 			var eventSynth;
