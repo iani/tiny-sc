@@ -1,4 +1,12 @@
-;;; org-sc.el : Run SuperCollider in org-mode
+;;; org-sc.el --- Run SuperCollider in org-mode
+
+;;; Commentary:
+
+;;; Enable evaluation of SC code in org-mode sections
+;;; Evaluate section headings starting with !.
+;;; Otherwise evaluate section contents
+
+;;; Code:
 
 (defun org-sc-eval (replace-p &optional enclosure)
   "Evaluate contents of org-mode element as SuperCollider code.
@@ -518,7 +526,5 @@ free the SynthTree with the same name, and free the buffer"
      (define-key sclang-mode-map (kbd "H-C-o") 'org-sc-toggle-mode)
      (define-key sclang-mode-map (kbd "C-c C-9") 'sclang-eval-dwim)))
 
-
 (provide 'org-sc)
-
-;;; end of org-sc.el
+;;; org-sc.el ends here

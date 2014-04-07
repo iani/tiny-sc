@@ -14,15 +14,17 @@ PatternInstrument {
 		^this.newCopyArgs(pattern, instrument, name, numChannels).init;
 	}
 	init { 
-		instrument = instrument.asStream;
+		this.instrument = instrument;
 		numChannels ?? { numChannels = ~numChans; };
 	}
+
+	instrument_ { | argInstrument = \default | instrument = argInstrument.asStream }
+	legato_ { | argLegato | pattern.legato = argLegato }
 
 	start { pattern.start }
 	stop { pattern.stop }
 	isPlaying { ^pattern.isPlaying }
-
-	/* TODO: Interface for chucking to SynthTree: */
+	
 	asSynthTemplate { | argName |
 		name = argName;
 	}
@@ -50,7 +52,7 @@ PatternInstrument {
 				synthEvent.params ++ [out: busIndex],
 				group, \addToHead
 			);
-			pattern.clock.sched(synthEvent.dur, {
+			pattern.clock.sched(synthEvent.dur max: 0.02, {
 				if (patternSynth.isPlaying) { eventSynth.release };
 			});
 		});
@@ -70,7 +72,7 @@ PatternInstrument {
 SynthPattern {
 	//	var <instrument;
 	var <params;
-	var <legato;
+	var <>legato;
 
 	*new { | /* instrument, */ params, legato = 1 |
 		^this.newCopyArgs (/* instrument, */ params, legato);
@@ -103,6 +105,8 @@ SynthStream {
 	set { | param, pattern |
 		params.set(param, pattern);
 	}
+
+	legato_ { | argLegato | legato = argLegato.asStream; }
 }
 
 ParamStream {

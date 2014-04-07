@@ -47,3 +47,27 @@ p => \pattern1;
 //:
 0.1 =!> \dur;
 
+//: Cloud event examples
+
+0.02 =!> \dur;
+[freq: (40..90).midicps.prand] => `\lpfsaw => \pattern1;
+
+//:
+[freq: Pwhite(
+	Pstutter(10, Pbrown(40, 50, 1)), 
+	Pstutter(10, Pbrown(45, 90, 1))
+).midicps ] => `\lpfsaw => \pattern1;
+
+//:
+[freq: Pwhite(
+	Pstutter(10, Pbrown(40, 50, 1)), 
+	Pstutter(10, Pbrown(45, 90, 1))
+).midicps ] =>.i [
+	Pstutter(Pbrown(1, 30, 1), \sinosc.pn(2)), 
+	Pstutter(Pbrown(1, 30, 2), \lpfpulse.pn(2))].prand => \pattern1;
+
+
+
+
+
+

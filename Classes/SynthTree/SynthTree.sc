@@ -223,6 +223,8 @@ SynthTree : IdentityTree {
 		PatternInstrument(patternPlayer, instrument) => this;
 	}
 
+	legato_ { | argLegato | template.legato = argLegato }
+
 	setPatternDuration { | numberOrPattern |
 		// NOT TESTED
 		// TODO: Test!

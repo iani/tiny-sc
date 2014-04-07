@@ -31,8 +31,12 @@
 		^this.value.receivePatternInstrument(patternInstrument, numChannels);
 	}
 
+	patternParams { | pattern |
+		^PatternInstrument(PatternPlayer(pattern), this.value);
+	}
+
 	playPattern { | pattern |
-		
+		[this, thisMethod.name, "not yet implemented"].postln;
 	}
 }
 

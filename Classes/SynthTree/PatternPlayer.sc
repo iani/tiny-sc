@@ -22,7 +22,7 @@ PatternPlayer {
 
 	*new { | values, durations, delay = 0, clock |
 		^this.newCopyArgs(delay, clock ?? { TempoClock /*() */ })
-		.values_(values).durations_(durations);
+		.values_(values).durations_(durations ?? { Pfunc({ ~dur })});
 	}
 
 	values_ { | values |
@@ -38,6 +38,11 @@ PatternPlayer {
 		durationStream = durationPattern.asStream;
 	}
 	
+	legato_ { | argLegato |
+		valuePattern.legato = argLegato;
+		valueStream.legato = argLegato;
+	}
+
 	makeTask {
 		task = Task {
 			this.changed(\taskStarted);
