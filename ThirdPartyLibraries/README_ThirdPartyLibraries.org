@@ -1,0 +1,8 @@
+External Libraries, including Quarks, that are needed for running tiny-sc from April 8 onwards will be added in this folder.
+
+IZ, Tue, Apr  8 2014, 11:37 EEST
+
+Planned:
+
+- SCMIR
+- Other libraries used by SCMIR in further examples by Nick Collins

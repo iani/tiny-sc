@@ -83,4 +83,4 @@ p => \pattern1;
 //:
 \amp -> Pwhite(0.01, 0.1, inf) => ~st;
 //:
-\amp -> pser(((0..200)/200).pyramid) => ~st;
+\amp -> pser(((0..200)/2000).pyramid) => ~st;

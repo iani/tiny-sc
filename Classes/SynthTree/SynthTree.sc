@@ -471,6 +471,8 @@ SynthTree : IdentityTree {
 		}
 	}
 
+	get { | paramName | ^this.getParamValue(paramName) }
+
 	getParamValue { | paramName | ^args.getParamValue(paramName) }
 	// Controls
 	/*
@@ -705,5 +707,4 @@ SynthTree : IdentityTree {
 		if (removeRoot) { names remove: \root };
 		^names;
 	}
-	
 }

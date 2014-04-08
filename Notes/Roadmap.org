@@ -2,176 +2,19 @@
 
 * Currently working on
 
-** Things to do with parameters/synths in currenEnvironment
+
+** play data streams
 :PROPERTIES:
-:DATE:     <2014-03-31 Mon 12:06>
+:DATE:     <2014-04-07 Mon 11:44>
 :END:
 
-*** EventList class
+- as full events, single synth per data vector
 
-(Earlier version done in Lilt2 lib: Chain).
+- as streams of st.set(param, nextValue)
 
-Instead of holding the lists (streams) of value events and durations separately, each event holds its own duration together with the data in one object.  This is good for editing event chains by cutting-pasting, inserting events or event lists to change lists or to create other lists.  May be good also for displaying event lists as a graphic score.
+- as envelope-like shapes playing in synths and outputting in control or audio busses
 
-*** Possible shortcuts for params
-Draft of how this looks in code.  Different things that one could do with a synth parameter by addressing it (as MultiControl instance) through the environment:
-#+BEGIN_SRC
-0.03 => ~amp;
-660 => ~freq;
-~freq.slider;
-~freq.knob;
-~freq.numbox;
-~freq.numSlider;
-~freq.knobSlider;
-~freq.oscFunc(...)
-~freq.midiFunc(...);
-~freq.pattern(...);  // or: ~freq.pp(...);
-<a pattern player> => ~freq;
-
-\anotherSynth.push; // switch to another SynthTree for working ...
-#+END_SRC
-
-IMPORTANT: Maybe use another operator for chucking stuff to a synthtree *without* making it current.  Unclear yet how this all works together when for example chaining several fx synths.
-
-**** Analysis: possible operations on parameters.
-:PROPERTIES:
-:DATE:     <2014-03-29 Sat 16:43>
-:END:
-
-~st: current synthtree: => operates as usual, chucking into synthtree.
-~fx: current effect.  Can be used with =< to add new input.
-
-All other environment parameters will return a multiparameter instance controlling one of the synthree's parameters.
-
-There are following possibilities of chucking something to a synthree parameter:
-
-- number :: set the synthree parameter to that number
-- bus :: map the parameter to that bus
-- pattern or stream :: play the pattern or stream into that parameter
-- array :: convert array to pseq with inf repeats and play??????
-- function :: play it into bus and map the parameter to that bus
-- view :: set view to contol parameter
-- OSCFunc: set func to control parameter
-- MIDIFunc: set func to control parameter
-- Buffer :: set bufnum to the parameter for playing the buffer
-- Event :: set all params and restart.
-
-***** Constructing pattern players
-Shortcut method for turning Function, pattern, array, or stream into a patternplayer for playing into the parameter: =pp=!
-
-Alternative operator for constructing a pattern player (instead of =pp= method): Chuck:
-
-: <values: pattern/func/array> => <durations: pattern/func/array/number>
-
-So one can go:
-
-: <values pat> => <durations pat> => ~freq
-
-To construct a pattern player and play it in parameter =freq=.
-
-One could also use this with an event, in which case there are 2 possibilities:
-
-1. Play all associations in the event as parameter-value pairs, with the values forming streams, pbind-like, playing new synths at each new evaluation of the pattern's values.
-: <event> => <durations pat> => <synthtree>
-
-2. Do not play new synths at each evaluation, but just set the parameters of the synth.
-
-: <event> => <durations pat> =*> <synthtree>
-
-Additionally, for case 1, one may use a special instrument name such as \slur or \portamento, or '*' or '-', to skip a new synth and set the parameters of the current synth, behaving as in case 2.
-
-
-
-***** Chucking into busses
-
-- =<function> => bus= :: play the function to that bus
-- =<envelope> => bus= :: play the envelope to that bus
-- =<UGen> => bus= :: convert ugen to synth and play in that bus.  Good for playing Line.kr.  But this could be done with something like: ~amp.fadeTo(...);
-
-
-**** (Older:) PatternFunc notes
-
-#+BEGIN_EXAMPLE
-<pfunc template> %> 'pfunc_name' *>.param_name synthtree_name;
-
-<pfunct template %> 'pfunc_name'; // creates PaternFunc and binds it to name
-
-Alternative:
-
-'pfunc_name'.patternFunc(<template>);
-'pfunc_name'.pf(<template>); // shorter form
-
-// also:
-
-<pfunc template or name> *>.param_name syntree_name;
-#+END_EXAMPLE
-
-The operator *> could be a multi-purpose operator for binding any type of func (osc-, view-, midi-, pattern-funcs) to a parameter.  It could also alternatively be coded with the messages already started:
-
-#+BEGIN_EXAMPLE
-<synthtree or name of synthtree>
-    .osc(param, <template or name>)
-    .midi(param, <template or name>)
-    .view(param, <template or name>)
-    .pattern(param, <template or name>)
-#+END_EXAMPLE
-
-Further notes (originally written in PatternFunc.sc draft):
-
-Binding a MultiControl to a PatternFunc:
-
-- Store the patternfunc under its name in the multicontrol dict. (maybe construct name from name of param ++ name of pattern func to avoid conflicts?.  Must rethink idea of multicontrol as dict, and the problem of naming.  Perhaps there exist alternative names for managing access to different controllers of a multicontrol, that do not involve names?)
-
-- Attach self to patternFunc via a notification action that goes something like:
-
-this.addNotifier(patternFunc, \value, { | value |
-	this.set(value);
-});
-
-Different actions could be added instead of { | value | this.set(value) }.
-These could process (modify) / select / reject the values to be sent to the parameter, and could be composeable with binaryOps.  So one goes:
-
-multiparam.pattern(<template or name> <operator> <filter>);
-alternatively with messages:
-multiparam.pattern(<template or name>.add|mul|map|unmap|select|reject(<filter>));
-
-***** Playing SynthTree events with PatternPlayer/PatternFunc
-Important: Alternatively, a PatternFunc may store as currentValue an event with many parameters, and SynthTrees receiving notifications from it could play that event each in its own way.
-
-One could thus bind a whole SynthTree to a PatternFunc with the same operator:
-
-<patrernfunc or name> *> <synthtree or name>
-
-When no parameter is given as adverb to the *> operator,
-then the patternfunc is bound to play the whole synthtree.
-
-Alternatively:
-
-<synthtree or name>.patternPlay(<patternfunc or name>);
-shorter form:
-<synthtree or name>.pp(<patternfunc or name>);
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-Possible class group for playing patterns in SynthTrees, in Pbind-like manner:
-
-- PatternPlayer: generates and broadcasts event values for any listener
-- PatternFunc: Listens to and filters event values for a Synthtree.
-	Is stored in the template var of SynthTree
-	holds: The PatternPlayer ...
-- PatternSynth: Encapsulates synths generated by patternfunc. Holds:
-	- the synths
-	- possibly a group and bus to fade/adjust gain of the whole output signal
-	- the PatternFunc
-
-See also: BasicIdeas.org, Extending AbstractResponderFunc paradigm -> Generalizing Responders -> Example 2: Playing Patterns.
-
-**** SynthTreePlayer draft notes
-- Should work as a template and as a synth (same instance?) in SynthTree.
-- Should keep its synths in own variable, allowing for playing of multiple synths at the same time.
-
-See also PatternPlayer ...
-
+Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
@@ -279,6 +122,172 @@ Map synths playing envelopes, any function, lines to input controls of other syn
 
 ** Review / remove use of changed(\value) in PatternPlayer
 Could a function be called directly instead, to save CPU cycles?
+
+** EventList class
+
+(Earlier version done in Lilt2 lib: Chain).
+
+Instead of holding the lists (streams) of value events and durations separately, each event holds its own duration together with the data in one object.  This is good for editing event chains by cutting-pasting, inserting events or event lists to change lists or to create other lists.  May be good also for displaying event lists as a graphic score.
+
+** Possible shortcuts for params
+Draft of how this looks in code.  Different things that one could do with a synth parameter by addressing it (as MultiControl instance) through the environment:
+#+BEGIN_SRC
+0.03 => ~amp;
+660 => ~freq;
+~freq.slider;
+~freq.knob;
+~freq.numbox;
+~freq.numSlider;
+~freq.knobSlider;
+~freq.oscFunc(...)
+~freq.midiFunc(...);
+~freq.pattern(...);  // or: ~freq.pp(...);
+<a pattern player> => ~freq;
+
+\anotherSynth.push; // switch to another SynthTree for working ...
+#+END_SRC
+
+IMPORTANT: Maybe use another operator for chucking stuff to a synthtree *without* making it current.  Unclear yet how this all works together when for example chaining several fx synths.
+
+*** Analysis: possible operations on parameters.
+:PROPERTIES:
+:DATE:     <2014-03-29 Sat 16:43>
+:END:
+
+~st: current synthtree: => operates as usual, chucking into synthtree.
+~fx: current effect.  Can be used with =< to add new input.
+
+All other environment parameters will return a multiparameter instance controlling one of the synthree's parameters.
+
+There are following possibilities of chucking something to a synthree parameter:
+
+- number :: set the synthree parameter to that number
+- bus :: map the parameter to that bus
+- pattern or stream :: play the pattern or stream into that parameter
+- array :: convert array to pseq with inf repeats and play??????
+- function :: play it into bus and map the parameter to that bus
+- view :: set view to contol parameter
+- OSCFunc: set func to control parameter
+- MIDIFunc: set func to control parameter
+- Buffer :: set bufnum to the parameter for playing the buffer
+- Event :: set all params and restart.
+
+**** Constructing pattern players
+Shortcut method for turning Function, pattern, array, or stream into a patternplayer for playing into the parameter: =pp=!
+
+Alternative operator for constructing a pattern player (instead of =pp= method): Chuck:
+
+: <values: pattern/func/array> => <durations: pattern/func/array/number>
+
+So one can go:
+
+: <values pat> => <durations pat> => ~freq
+
+To construct a pattern player and play it in parameter =freq=.
+
+One could also use this with an event, in which case there are 2 possibilities:
+
+1. Play all associations in the event as parameter-value pairs, with the values forming streams, pbind-like, playing new synths at each new evaluation of the pattern's values.
+: <event> => <durations pat> => <synthtree>
+
+2. Do not play new synths at each evaluation, but just set the parameters of the synth.
+
+: <event> => <durations pat> =*> <synthtree>
+
+Additionally, for case 1, one may use a special instrument name such as \slur or \portamento, or '*' or '-', to skip a new synth and set the parameters of the current synth, behaving as in case 2.
+
+
+
+**** Chucking into busses
+
+- =<function> => bus= :: play the function to that bus
+- =<envelope> => bus= :: play the envelope to that bus
+- =<UGen> => bus= :: convert ugen to synth and play in that bus.  Good for playing Line.kr.  But this could be done with something like: ~amp.fadeTo(...);
+
+
+*** (Older:) PatternFunc notes
+
+#+BEGIN_EXAMPLE
+<pfunc template> %> 'pfunc_name' *>.param_name synthtree_name;
+
+<pfunct template %> 'pfunc_name'; // creates PaternFunc and binds it to name
+
+Alternative:
+
+'pfunc_name'.patternFunc(<template>);
+'pfunc_name'.pf(<template>); // shorter form
+
+// also:
+
+<pfunc template or name> *>.param_name syntree_name;
+#+END_EXAMPLE
+
+The operator *> could be a multi-purpose operator for binding any type of func (osc-, view-, midi-, pattern-funcs) to a parameter.  It could also alternatively be coded with the messages already started:
+
+#+BEGIN_EXAMPLE
+<synthtree or name of synthtree>
+    .osc(param, <template or name>)
+    .midi(param, <template or name>)
+    .view(param, <template or name>)
+    .pattern(param, <template or name>)
+#+END_EXAMPLE
+
+Further notes (originally written in PatternFunc.sc draft):
+
+Binding a MultiControl to a PatternFunc:
+
+- Store the patternfunc under its name in the multicontrol dict. (maybe construct name from name of param ++ name of pattern func to avoid conflicts?.  Must rethink idea of multicontrol as dict, and the problem of naming.  Perhaps there exist alternative names for managing access to different controllers of a multicontrol, that do not involve names?)
+
+- Attach self to patternFunc via a notification action that goes something like:
+
+this.addNotifier(patternFunc, \value, { | value |
+	this.set(value);
+});
+
+Different actions could be added instead of { | value | this.set(value) }.
+These could process (modify) / select / reject the values to be sent to the parameter, and could be composeable with binaryOps.  So one goes:
+
+multiparam.pattern(<template or name> <operator> <filter>);
+alternatively with messages:
+multiparam.pattern(<template or name>.add|mul|map|unmap|select|reject(<filter>));
+
+**** Playing SynthTree events with PatternPlayer/PatternFunc
+Important: Alternatively, a PatternFunc may store as currentValue an event with many parameters, and SynthTrees receiving notifications from it could play that event each in its own way.
+
+One could thus bind a whole SynthTree to a PatternFunc with the same operator:
+
+<patrernfunc or name> *> <synthtree or name>
+
+When no parameter is given as adverb to the *> operator,
+then the patternfunc is bound to play the whole synthtree.
+
+Alternatively:
+
+<synthtree or name>.patternPlay(<patternfunc or name>);
+shorter form:
+<synthtree or name>.pp(<patternfunc or name>);
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Possible class group for playing patterns in SynthTrees, in Pbind-like manner:
+
+- PatternPlayer: generates and broadcasts event values for any listener
+- PatternFunc: Listens to and filters event values for a Synthtree.
+	Is stored in the template var of SynthTree
+	holds: The PatternPlayer ...
+- PatternSynth: Encapsulates synths generated by patternfunc. Holds:
+	- the synths
+	- possibly a group and bus to fade/adjust gain of the whole output signal
+	- the PatternFunc
+
+See also: BasicIdeas.org, Extending AbstractResponderFunc paradigm -> Generalizing Responders -> Example 2: Playing Patterns.
+
+*** SynthTreePlayer draft notes
+- Should work as a template and as a synth (same instance?) in SynthTree.
+- Should keep its synths in own variable, allowing for playing of multiple synths at the same time.
+
+See also PatternPlayer ...
+
 
 * Done
 

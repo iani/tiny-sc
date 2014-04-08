@@ -167,12 +167,12 @@ Chucking a pattern array into a pattern sets the duration of the resulting Playe
 
 Play a different pattern in frequency.
 #+BEGIN_EXAMPLE
-(
+//:
 \freq->[
 	([500, 600, 550]).prand(15) * Pstutter(12, [0.5, 0.75, 0.8, 0.9, 1, 1.1].prand),
 	[700, 800, 900].prand(10)
 ].prand => \pattern1;
-)
+//:
 #+END_EXAMPLE
 
 ** Setting instrument patterns
