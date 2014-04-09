@@ -263,7 +263,19 @@ SynthTree : IdentityTree {
 	}
 
 	*pushIfDifferent { | synthTreeName |
-		// TODO: ... 
+		// TODO: ...
+		/*
+		postf("% given synthtree: % selected synthtree: %\nIs same? %\n", 
+			thisMethod.name,
+			synthTreeName,
+			~st !? { ~st.name; },
+			~st.name === synthTreeName.asSymbol
+		);
+		*/
+		synthTreeName = (synthTreeName ? 'st0').asSymbol;
+		if (~st and: { ~st.name === synthTreeName }) {} { 
+			synthTreeName.asSynthTree.push
+		};
 	}
 
 	setTemplate { | argTemplate, argReplaceAction = \fadeOut |
