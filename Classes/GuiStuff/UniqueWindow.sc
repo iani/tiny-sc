@@ -14,7 +14,6 @@ UniqueWindow.for(\a, \b);
 
 */
 
-
 UniqueWindow {
 	classvar <all;
 
@@ -46,5 +45,32 @@ UniqueWindow {
 			this.objectClosed;
 		});
 		all.put(object, key, this);
+	}
+
+	top { | height = 20 |
+		var available;
+		available = Window.availableBounds;
+		window.bounds = Rect(0, available.height - height, available.width, height);
+	}
+
+	left { | width = 200 |
+		var available;
+		available = Window.availableBounds;
+		window.bounds = Rect(0, 0, width, available.height);
+
+	}
+
+	bottom { | height = 100 |
+		var available;
+		available = Window.availableBounds;
+		window.bounds = Rect(0, 0, available.width, height);
+
+	}
+
+	right { | width = 200 |
+		var available;
+		available = Window.availableBounds;
+		window.bounds = Rect(available.width - width, 0, width, available.height);
+
 	}
 }

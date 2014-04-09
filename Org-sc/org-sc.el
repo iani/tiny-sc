@@ -8,15 +8,20 @@
 
 ;;; Code:
 
+(defvar org-sc-section-synthtree nil
+"Holds the name of the SynthTree last accessed by org-sc-get-section contents.
+Obtained from property SYNTHTREE of a section, inheritable.
+Gives functions access to the synthtree to which the current section belongs.")
+
 (defun org-sc-eval (replace-p &optional enclosure)
-  "Evaluate contents of org-mode element as SuperCollider code.
+  "Evaluate contents of org mode element as SuperCollider code.
 If inside a section, evaluate whole contents of section.
 If inside a src block, evaluate contents of block.
 If REPLACE-P is not nil, then remove all processes from the previous
 evaluation of this section before evaluating the string.
 If REPLACE-P is '(16) (C-u C-u), then just stop all processes of this section.
 
-ENCLOSURE is a format string to inject the string into. It defaults to %s
+ENCLOSURE is a format string to inject the string into.  It defaults to %s
 org-sc-eval-as-routine uses enclosure to enclose the string link like this:
 { %s }.for;"
   (interactive "P")
@@ -30,7 +35,7 @@ org-sc-eval-as-routine uses enclosure to enclose the string link like this:
     (org-sc-eval-string-with-id string replace-p enclosure)))
 
 (defun org-sc-get-section-contents ()
-  "Get the contents substring of an org-mode section, without the property drawer."
+  "Get contents substring of org mode section, without the property drawer."
   (save-restriction
     (widen)
     (org-back-to-heading)
@@ -39,6 +44,7 @@ org-sc-eval-as-routine uses enclosure to enclose the string link like this:
            (headline)
            (plist (cadr element))
           (end (plist-get plist :end)))
+      (setq org-sc-section-synthtree (org-entry-get (point) "SYNTHTREE" t))
       (if (and (eq 'headline type)
                    (equal "!" (substring-no-properties
                                (setq headline (plist-get plist :raw-value))
@@ -53,17 +59,17 @@ org-sc-eval-as-routine uses enclosure to enclose the string link like this:
          (buffer-substring-no-properties (point) end))))))
 
 (defun org-sc-eval-string-with-id (string &optional replace-p enclosure)
-  "Eval string in SuperCollider, providing the id of the section
+  "Eval STRING in SuperCollider.
+Provide the id of the section
 from which the string originates and the number of times that
 this section has been evaluated as environment variables.
 If REPLACE-P is not nil, then remove all processes from the previous
 evaluation of this section before evaluating the string.
 If REPLACE-P is '(16) (C-u C-u), then just stop all processes of this section.
 
-ENCLOSURE is a format string to inject the string into. It defaults to %s
+ENCLOSURE is a format string to inject the string into.  It defaults to %s
 org-sc-eval-as-routine uses enclosure to enclose the string link like this:
-{ %s }.for;
-"
+{ %s }.for;"
   (let ((eval-id (or (org-entry-get (point) "eval-id") "1"))
         (source-id (org-id-get-create)))
     (if replace-p
@@ -129,7 +135,7 @@ in a routine:
 
 (defun org-goto-contents-begin ()
   "If section begins with ! then use the section heading as code.
-Else go to the first line of contents of a section, skipping the property drawer."
+Else go to the first line of contents of a section, skipping property drawer."
   (save-restriction
     (widen)
     (org-back-to-heading)
@@ -147,16 +153,16 @@ Else go to the first line of contents of a section, skipping the property drawer
             (goto-char (plist-get (cadr element) :end)))))))
 
 (defun org-sc-next-section ()
-  "Go to the next section, and jump to the beginning of the code,
-skipping the property drawer. Show contents of section."
+  "Go to the next section, and jump to the beginning of the code.
+Skip the property drawer.  how contents of section."
   (interactive)
   (outline-next-heading)
   (org-show-entry)
   (org-goto-contents-begin))
 
 (defun org-sc-previous-section ()
-  "Go to the previous section, and jump to the beginning of the code,
-skipping the property drawer.  Show contents of section."
+  "Go to the previous section, and jump to the beginning of the code.
+Skip the property drawer.  Show contents of section."
   (interactive)
   (org-back-to-heading)
   (outline-previous-heading)
@@ -164,8 +170,8 @@ skipping the property drawer.  Show contents of section."
   (org-goto-contents-begin))
 
 (defvar org-track-autoload-property-with-tag t
-  "If not nil, then also set the autoload tag with the property,
-for improved visibility")
+  "If not nil, then also set the autoload tag with the property.
+For improved visibility.")
 
 (defun org-sc-toggle-autoload ()
   "Toggle the AUTOLOAD property of the current entry.
@@ -208,8 +214,8 @@ Adapted from org-toggle-ordered-property."
 ;; Proof of principle.
 
 (defvar org-sc-selected-synthtree "sound1"
-"Store name of last synthtree selected, to act as default for
-org-sc-chuck-selecting-into-synthtree.")
+"Store name of last synthtree selected.
+Acts as default for org-sc-chuck-selecting-into-synthtree.")
 
 (defun org-sc-faders ()
   "Open global faders window in SuperCollider."
@@ -223,8 +229,8 @@ org-sc-chuck-selecting-into-synthtree.")
    (format "{ %s } => ~st;" (sclang-get-current-snippet))))
 
 (defun org-sc-chuck-selecting-into-synthtree (synthtree-list)
-  "Select a synthtree returned from SC and chuck current SC expression
-into it.  This function is called by SC in response to
+  "Select a synthtree returned from SC and chuck current SC expression into it.
+This function is called by SC in response to
 org-sc-select-synthtree-then-chuck"
   (let (expression
         (synthtree
@@ -373,8 +379,15 @@ free the SynthTree with the same name, and free the buffer"
 
 ;;'org-sc-eval-this-section
 (defun org-sc-eval-this-section ()
+  "Evaluate contents of this section as SC code.
+Also set current synthtree (~st) to the synthtree specified by
+property SYNTHTREE of current section (inheritable)."
   (interactive)
-  (sclang-eval-string (org-sc-get-section-contents)))
+  (let ((contents (org-sc-get-section-contents)))
+    (sclang-eval-string
+     (format "SynthTree pushIfDifferent: '%s'; %s"
+      org-sc-section-synthtree
+      contents))))
 
 ;;'org-sc-chuck-this-section
 (defun org-sc-chuck-this-section ()
