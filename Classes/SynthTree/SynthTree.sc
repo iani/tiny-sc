@@ -262,7 +262,7 @@ SynthTree : IdentityTree {
 		postf("~st set to: %\n", this);
 	}
 
-	*pushIfDifferent { | | synthTreeName |
+	*pushIfDifferent { | synthTreeName |
 		// TODO: ... 
 	}
 
