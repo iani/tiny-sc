@@ -262,6 +262,10 @@ SynthTree : IdentityTree {
 		postf("~st set to: %\n", this);
 	}
 
+	*pushIfDifferent { | | synthTreeName |
+		// TODO: ... 
+	}
+
 	setTemplate { | argTemplate, argReplaceAction = \fadeOut |
 		/* set template without starting. Called by ==> operator
 			Starting is deferred to after connecting
