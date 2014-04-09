@@ -45,6 +45,7 @@ org-sc-eval-as-routine uses enclosure to enclose the string link like this:
            (plist (cadr element))
           (end (plist-get plist :end)))
       (setq org-sc-section-synthtree (org-entry-get (point) "SYNTHTREE" t))
+      (message (format "org-sc-section-synthtree set to: %s" org-sc-section-synthtree))
       (if (and (eq 'headline type)
                    (equal "!" (substring-no-properties
                                (setq headline (plist-get plist :raw-value))
@@ -296,14 +297,16 @@ sent by sclang."
       (sclang-eval-string "SynthTree.toggleSelectingSynthTree;")
       (sclang-eval-string "~st.toggle")))
 
-(defun org-sc-toggle-last-synthtree (fadeTime)
+(defun org-sc-toggle-section-synthtree (fadeTime)
   (interactive "P")
-  (sclang-eval-string
-   (format "'%s'.toggle(%s)"
-           org-sc-selected-synthtree
-           (if fadeTime
-               (if (numberp fadeTime) fadeTime (/ (car fadeTime) 4))
-             ""))))
+  (let ((section-synthtree (org-entry-get (point) "SYNTHTREE" t)))
+    (setq section-synthtree (or section-synthtree org-sc-selected-synthtree))
+    (sclang-eval-string
+     (format "'%s'.toggle(%s)"
+             section-synthtree
+             (if fadeTime
+                 (if (numberp fadeTime) fadeTime (/ (car fadeTime) 4))
+               "")))))
 
 (defun org-sc-start-synthtree (last-one)
   (interactive "P")
@@ -385,17 +388,19 @@ property SYNTHTREE of current section (inheritable)."
   (interactive)
   (let ((contents (org-sc-get-section-contents)))
     (sclang-eval-string
-     (format "SynthTree pushIfDifferent: '%s'; %s"
-      org-sc-section-synthtree
+     (format "SynthTree pushIfDifferent: '%s';\n%s"
+      (or org-sc-section-synthtree "st0")
       contents))))
 
 ;;'org-sc-chuck-this-section
 (defun org-sc-chuck-this-section ()
   (interactive)
-  (sclang-eval-string
-   (format "{ %s } => (~st ?? { \\st0.asSynthTree });"
-           (org-sc-get-section-contents))
-   t))
+  (let ((contents (org-sc-get-section-contents)))
+    (sclang-eval-string
+     (format
+      "SynthTree pushIfDifferent: '%s';\n{ %s } => (~st ?? { \\st0.asSynthTree })"
+      (or org-sc-section-synthtree "st0")
+      contents))))
 
 ;;'org-sc-next-section OK DONE
 ;;'org-sc-previous-section OK DONE
@@ -483,9 +488,9 @@ property SYNTHTREE of current section (inheritable)."
 (global-set-key (kbd "H-c f") 'org-sc-faders)
 ;; (global-set-key (kbd "H-c H-f") 'org-sc-set-global-fade-time)
 ;; (global-set-key (kbd "H-c H-C-f") 'org-sc-set-fade-time)
-(global-set-key (kbd "H-c SPC") 'org-sc-toggle-synthtree)
-(global-set-key (kbd "H-SPC") 'org-sc-toggle-synthtree)
-(global-set-key (kbd "H-c H-SPC") 'org-sc-toggle-last-synthtree)
+(global-set-key (kbd "H-c SPC") 'org-sc-toggle-section-synthtree)
+(global-set-key (kbd "H-SPC") 'org-sc-toggle-section-synthtree)
+(global-set-key (kbd "H-c H-SPC") 'org-sc-toggle-section-synthtree)
 (global-set-key (kbd "H-c g") 'org-sc-start-synthtree)
 (global-set-key (kbd "H-c s") 'org-sc-stop-synthtree)
 (global-set-key (kbd "H-c H-s") 'org-sc-stop-last-synthtree)

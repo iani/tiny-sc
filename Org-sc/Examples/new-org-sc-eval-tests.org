@@ -1,6 +1,31 @@
 * test
+:PROPERTIES:
+:SYNTHTREE: test1
+:END:
 
 WhiteNoise.ar;
-* ! GrayNoise.ar;
+** ! GrayNoise.ar;
 
-* ! 1 =!> \fadeTime;
+** ! 1 =!> \fadeTime;
+
+** ! WhiteNoise.ar;
+
+** ! { SinOsc.ar } => ~st;
+
+** ! { WhiteNoise.ar } => ~st;
+
+* test2
+:PROPERTIES:
+:SYNTHTREE: test2
+:END:
+
+WhiteNoise.ar;
+** ! GrayNoise.ar;
+
+** ! 1 =!> \fadeTime;
+
+** ! WhiteNoise.ar;
+
+** ! { SinOsc.ar(400 + 400.rand) } => ~st;
+
+** ! { WhiteNoise.ar } => ~st;

@@ -448,7 +448,7 @@ Following keyboard shortcuts allow one to choose a synthtree from the list of sy
 - H-c H-c :: org-sc-chuck-into-last-synthtree
 - H-c k :: org-sc-select-synthtree-then-knobs
 - H-c space :: org-sc-toggle-synthtree
-- H-c H-space :: org-sc-toggle-last-synthtree
+- H-c H-space :: org-sc-toggle-section-synthtree
 - H-c g :: org-sc-start-synthtree
 - H-c s :: org-sc-stop-synthtree
 - H-c H-s :: org-sc-stop-last-synthtree
