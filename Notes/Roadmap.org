@@ -18,9 +18,26 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
+** Fix chaining with symbols, refs in patterns
+
+Check these, and their further combinations:
+#+BEGIN_EXAMPLE
+
+[freq: { 40 rrand: 250 }.pfunc, amp: 0.2] =>.i \lpfpulse => 0.5 => \test;
+
+[freq: { 40 rrand: 250 }.pfunc, amp: 0.2] => 0.5 =>.i \lpfpulse => \test;
+
+\sine => \test;
+
+`\sine => \test;
+
+#+END_EXAMPLE
+
 ** SynthTree:
 
-*** fix ==> n_fre Node not found when =< to fx
+*** fix ==> n_free Node not found when =< to fx
+
+Note: this is a glitch only.  ==> works fine, but Server sends notification warning n_free Node not found.
 *** operators for: insert synth between, replace input
 
 =^ replace previous input by this one (for example to switch input between audio in and a buffer playback, or between different buffer playback synths etc.

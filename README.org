@@ -211,23 +211,28 @@ Defaults are provide for durations and instruments, so one may omit these.  Foll
 // Set the instrument, using default duration.
 // The reference (`) backquote indicates that this is an instrument, and
 // not a SynthTree name:
-[freq: Pwhite(40, 90, inf).midicps] => `\sinosc => \test;
+[freq: Pwhite(40, 90, inf).midicps] => `\sine => \test;
 
 // Set the instrument to a pattern.  Here the adverb .i is needed
 // to indicate that the pattern is not for durations but for the instrument:
-[freq: Pwhite(60, 70, inf).midicps] =>.i [\lpfsaw, \sinosc].pseq => \test
+[freq: Pwhite(60, 70, inf).midicps] =>.i [\lpfsaw, \sine].pseq => \test
 
 // Durations-first order is best when specifying both duration and instrument:
 [freq: Pwhite(30, 50, inf).midicps] => 0.21 => `\lpfsaw => \test;
 
 // Instrument as pattern
-[freq: Pwhite(60, 70, inf).midicps] => 0.1 => [\lpfsaw, \sinosc].pseq => \test;
+[freq: Pwhite(60, 70, inf).midicps] => 0.1 => [\lpfsaw, \sine].pseq => \test;
 
 // If instrument-first order is used and the instrument is a pattern,
 // then the adverb .i must be used:
 [freq: Pwhite(30, 70, inf).midicps] =>.i [\lpfsaw, \lpfpulse].prand => 0.15 => \test;
 
 #+END_EXAMPLE
+
+*** Setting the instrument of a pattern in a SynthTree
+
+To set the instrument of a pattern in a SynthTree
+
 
 * Restart synths after Command-.
 

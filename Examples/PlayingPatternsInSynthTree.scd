@@ -63,7 +63,7 @@ p => \pattern1;
 	Pstutter(10, Pbrown(40, 50, 1)), 
 	Pstutter(10, Pbrown(45, 90, 1))
 ).midicps ] =>.i [
-	Pstutter(Pbrown(1, 30, 1), \sinosc.pn(2)), 
+	Pstutter(Pbrown(1, 30, 1), \sine.pn(2)), 
 	Pstutter(Pbrown(1, 30, 2), \lpfpulse.pn(2))].prand => \pattern1;
 //:
 0.02 =!> \dur;

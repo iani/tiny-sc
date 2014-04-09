@@ -38,6 +38,10 @@
 	playPattern { | pattern |
 		^PatternInstrument(pattern, this.value);
 	}
+
+	asSynthTemplate {
+		^Library.at(SynthTemplate.key, '---ALL---', this.value).template;
+	}
 	
 }
 

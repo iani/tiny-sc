@@ -62,6 +62,10 @@
 + Symbol {
 	=> { | st | ^st.asSynthTree setPatternInstrument: this }
 
+	asPatternInstrument {
+		^[freq: 440] =>.i this;
+	}
+	
 	patternParams { | paramArray, adverb |
 		if (adverb === 'i') {
 			^PatternInstrument(PatternPlayer(paramArray), this);

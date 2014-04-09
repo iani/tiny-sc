@@ -223,6 +223,14 @@ SynthTree : IdentityTree {
 		PatternInstrument(patternPlayer, instrument) => this;
 	}
 
+	setPatternInstrument { | instrumentPattern |
+		if (template.isKindOf(PatternInstrument)) {
+			template.instrument = instrumentPattern;
+		}{
+			instrumentPattern.asPatternInstrument => this;
+		};
+	}
+
 	legato_ { | argLegato | template.legato = argLegato }
 
 	setPatternDuration { | numberOrPattern |

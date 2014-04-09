@@ -100,7 +100,7 @@ p => \pattern1;
 	Pstutter(5, Pbrown(40, 50, 1)),
 	Pstutter(5, Pbrown(45, 90, 1))
 ).midicps ]
-=>.i Pwrand([\lpfpulse, \sinosc, \lpfsaw],
+=>.i Pwrand([\lpfpulse, \sine, \lpfsaw],
 	Pstutter(30, Pfunc({ Array.rand(3, 0.0, 1).normalizeSum })),
 	inf)
 => \pattern1;
