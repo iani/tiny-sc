@@ -262,6 +262,22 @@ SynthTree : IdentityTree {
 		postf("~st set to: %\n", this);
 	}
 
+	*pushIfDifferent { | synthTreeName |
+		// TODO: ...
+		/*
+		postf("% given synthtree: % selected synthtree: %\nIs same? %\n", 
+			thisMethod.name,
+			synthTreeName,
+			~st !? { ~st.name; },
+			~st.name === synthTreeName.asSymbol
+		);
+		*/
+		synthTreeName = (synthTreeName ? 'st0').asSymbol;
+		if (~st and: { ~st.name === synthTreeName }) {} { 
+			synthTreeName.asSynthTree.push
+		};
+	}
+
 	setTemplate { | argTemplate, argReplaceAction = \fadeOut |
 		/* set template without starting. Called by ==> operator
 			Starting is deferred to after connecting

@@ -54,9 +54,9 @@ for evaluation after processing in Emacs."
 (defun sclang-goto-next-snippet ()
   "Go to the next region delimited with //: comment line."
   (interactive)
-  (let ((nextsnippet (re-search-forward "^//:" nil t)))
-  (if (not nextsnippet) (setq nextsnippet (point-max)))
-  (goto-char nextsnippet)
+  (let ((next-snippet (re-search-forward "^//:" nil t)))
+  (if (not next-snippet) (setq next-snippet (point-max)))
+  (goto-char next-snippet)
   (next-line)))
 
 (defun sclang-goto-previous-snippet ()
