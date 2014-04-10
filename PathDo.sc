@@ -13,5 +13,10 @@ PathDo {
 			function.(path);
 		})
 	}
+}
 
++ Function {
+	doPath {
+		PathDo(this);
+	}
 }

@@ -227,7 +227,7 @@ SynthTree : IdentityTree {
 		if (template.isKindOf(PatternInstrument)) {
 			template.instrument = instrumentPattern;
 		}{
-			instrumentPatterns.asPatternInstrument => this;
+			instrumentPattern.asPatternInstrument => this;
 		};
 	}
 
