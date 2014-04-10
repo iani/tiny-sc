@@ -66,6 +66,8 @@
 		^[freq: 440] =>.i this;
 	}
 	
+	legato_ { | legato = 1 | ^this.asSynthTree.legato = legato }
+
 	patternParams { | paramArray, adverb |
 		if (adverb === 'i') {
 			^PatternInstrument(PatternPlayer(paramArray), this);

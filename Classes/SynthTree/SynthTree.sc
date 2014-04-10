@@ -234,9 +234,7 @@ SynthTree : IdentityTree {
 	legato_ { | argLegato | template.legato = argLegato }
 
 	setPatternDuration { | numberOrPattern |
-		// NOT TESTED
-		// TODO: Test!
-		template.pattern.dur = numberOrPattern;
+		template.pattern.durations = numberOrPattern;
 	}
 
 	chuck { | argTemplate, numChans |

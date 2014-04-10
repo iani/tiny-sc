@@ -53,6 +53,13 @@
 
 + SynthTree {
 	receivePatternInstrument { | patternInstrument, numChannels |
+		// TODO:
+		/*
+			if (template isKindOf: PatternInstrument) {
+				patternInstrument = template mergePatternInstrument: patternInstrument;
+			};
+		*/
+
 		^this.chuck(patternInstrument, numChannels);
 		// [this.Method.name, "not implemented"].postln;
 		//	this.value.asSynthTree receivePatternInstrument: pi;
