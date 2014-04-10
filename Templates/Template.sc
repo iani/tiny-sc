@@ -34,7 +34,7 @@ Template {
 	}
 
 	*new { | name, template, tags |
-		^super.newCopyArgs(name, template, tags).store;
+		^super.newCopyArgs(name.asSymbol, template, tags).store;
 	}
 
 	store {

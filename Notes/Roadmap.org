@@ -18,20 +18,11 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
-** Fix chaining with symbols, refs in patterns
+** Use Linen for adsrOut
 
-Check these, and their further combinations:
-#+BEGIN_EXAMPLE
+adsrOut => linOut;
 
-[freq: { 40 rrand: 250 }.pfunc, amp: 0.2] =>.i \lpfpulse => 0.5 => \test;
-
-[freq: { 40 rrand: 250 }.pfunc, amp: 0.2] => 0.5 =>.i \lpfpulse => \test;
-
-\sine => \test;
-
-`\sine => \test;
-
-#+END_EXAMPLE
+Adsr is superfluous.
 
 ** SynthTree:
 
@@ -617,6 +608,21 @@ Number: receiveChuck ->
 
 - Make routine for starting / stopping
 - add SynthTree as notifier to stop if SynthTree is released/faded out/freed.
+
+** Fix chaining with symbols, refs in patterns
+
+Check these, and their further combinations:
+#+BEGIN_EXAMPLE
+
+[freq: { 40 rrand: 250 }.pfunc, amp: 0.2] =>.i \lpfpulse => 0.5 => \test;
+
+[freq: { 40 rrand: 250 }.pfunc, amp: 0.2] => 0.5 =>.i \lpfpulse => \test;
+
+\sine => \test;
+
+`\sine => \test;
+
+#+END_EXAMPLE
 
 * Undergoing tests
 

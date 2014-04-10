@@ -55,11 +55,15 @@
 		}{
 			^PatternPlayer(paramArray, this);
 		}
-
 	}
 }
 
 + Symbol {
+
+	--> { | pattern |
+		^this->pattern => ~st;
+	}
+
 	=> { | st | ^st.asSynthTree setPatternInstrument: this }
 
 	asPatternInstrument {
