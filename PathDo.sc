@@ -17,6 +17,8 @@ PathDo {
 
 + Function {
 	doPath {
-		PathDo(this);
+		Dialog.openPanel({ | path |
+			this.(path);
+		})
 	}
 }

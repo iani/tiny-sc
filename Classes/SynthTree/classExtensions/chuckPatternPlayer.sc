@@ -56,6 +56,11 @@
 			^PatternPlayer(paramArray, this);
 		}
 	}
+
+	asPatternPlayer {
+		// TODO: Test this
+		^PatternPlayer(this);
+	}
 }
 
 + Symbol {

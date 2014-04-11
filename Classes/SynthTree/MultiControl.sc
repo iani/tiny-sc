@@ -123,7 +123,10 @@ MultiControl : IdentityDictionary {
 	}
 
 	receivePatternChuck { | pattern |
-		this.playPattern (pattern);
+		// TODO: fix this to work with [100, 200].pseq => ~freq;
+		// should be like this: 
+		// this.playPattern(pattern.asPatternPlayer);
+		this.playPattern (pattern); // not like this!
 	}
 
 	playPattern { | pattern, controlName = \pattern, 
