@@ -67,10 +67,6 @@ PatternInstrument {
 	}
 
 	=> { | chuckee, numChans | ^chuckee.receivePatternInstrument (this, numChans) }
-
-	chuckParam { | param, pattern |
-		pattern.chuckParam(param, pattern)
-	}
 }
 
 SynthPattern {

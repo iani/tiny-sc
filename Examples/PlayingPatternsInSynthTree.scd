@@ -27,6 +27,8 @@ p => \pattern1;
 [freq: (40..50).midicps.prand] => Pstutter(3, Pbrown(0.05, 0.15, 0.05)) => \pattern1;
 
 //:
+500 -> \freq => \pattern1;
+//:
 \freq->500 => \pattern1;
 
 //:

@@ -74,10 +74,6 @@ PatternPlayer {
 		^chuckee.playPattern(this)
 	}
 
-	chuckParam { | param, pattern |
-		this.set(param, pattern);
-	}
-
 	set { | param, value |
 		/* When playing a patternplayer as synth in a synthtree */
 		this.setPatternParam (param, value);

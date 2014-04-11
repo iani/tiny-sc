@@ -210,15 +210,6 @@ SynthTree : IdentityTree {
 		this.chuck(chucker, replaceAction);
 	}
 
-	receiveAssociationChuck { | association |
-		this.chuckPatternParam(association.key, association.value);
-	}
-
-	chuckPatternParam { | param, pattern |
-		template.pattern.chuckParam(param, pattern);
-		if (this.isPlaying.not) { this.start }; // really???
-	}
-
 	playPattern { | patternPlayer, instrument = \default |
 		PatternInstrument(patternPlayer, instrument) => this;
 	}
@@ -316,53 +307,6 @@ SynthTree : IdentityTree {
 			My synth must be a PatternSynth.
 			This is mainly for testing PatternInstrument */
 		synth.addSynth(instrument, args);
-	}
-
-	addInputSynth{ | synthTree, inputName = \in, startWhen = \now |
-		/*  Add another synthTree as an input to myself. (I am an "fx" synth).
-			Add synthTree to my inputs and make it output its signal to my input.
-			Add synthTree to your dictionary under its name,
-			THEN create the synth, using your group as target,
-			addToHead as add method, and setting the output \out
-			to one of your inputs, through args at synth creation time.
-		*/
-		if (inputs.isNil) {
-			postf("% has no inputs. Cannot add input.\n", name);
-			^this;
-		};
-		if (this outputsTo: synthTree) {
-			postf("% outputs to % and therefore cannot add it as input. Cycle!\n",
-			name, synthTree.name);
-			^this
-		};
-		this[synthTree.name] = synthTree;
-		synthTree.setOutput(this, inputName);
-		if (startWhen === \now) { synthTree.start };
-	}
-
-	outputsTo { | synthTree |
-		if (output.isNil) { ^false };
-		if (output === synthTree) { ^true } { ^output outputsTo: synthTree };
-	}
-
-	setOutput { | synthTree, inputName = \in |
-		var outputBus;
-		outputBus = synthTree.getInputBus(inputName);
-		if (outputBus.isNil) {
-			postf("% has no input named %. Cannot output to it\n",
-				synthTree.name, inputName);
-			^this;
-		};
-		output = synthTree;
-		outputName = inputName;
-		if (synth.isPlaying) {
-			this.moveBefore(synthTree.synth);
-			synth.set(\out, outputBus.index);
-		}
-	}
-
-	getInputBus { | inputName = \in |
-		^inputs !? { inputs[inputName] };
 	}
 
 	endSynth { | argReplaceAction = \fadeOut, argFadeTime |

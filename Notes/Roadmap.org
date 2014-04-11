@@ -16,46 +16,31 @@
 
 Try these with arrays loaded from data analysed through SCMIR.
 
-* Immediate TODOs
+** Review binary operators
 
-** Make pattern => \symbol work
+*** [Implementing:] Alternative 2: with *>
 
-*** Alternative 1 (without -->)
+Overview / list of operators in alternative 2:
 
-- pattern => symbol :: play pattern in parameter named by symbol, in current SynthTree ~st.
-- pattern => number :: PatternPlayer(pattern, number).  Number is duration
-- pattern => pattern2 :: PatternPlayer(pattern, pattern).  Pattern2 is duration
-- pattern => `symbol / `pattern :: PatternInstrument(PatternPlayer(pattern), symbol/pattern).  symbol/pattern is instrument
-- THIS MAY NOT BE NEEDED: pattern =>.i (|>) pattern2 or => `pattern :: PatternInstrument(PatternPlayer(pattern), pattern2).  Pattern2 is instrument
-- pattern =>.d (*>) symbol / synthtree ::  (Synonym:) Pattern is duration pattern for synthtree's PatternInstrument
-- pattern =>.l (**>) symbol synthtree ::  Pattern is legato pattern for synthtree's PatternInstrument
-- pattern =>.i (|>) symbol / synthtree ::  Pattern is instrument pattern for synthtree's PatternInstrument
-- pattern => synthtree ::  Pattern is duration pattern for synthtree's PatternInstrument
-- pattern => environment var ::
-
-- association => number :: ...
-- association :: pattern :: ...
-- association :: symbol :: ...
-- association :: `symbol
-
-- number => environment var :: ...
-- number => symbol :: ...
-- ???? number => pattern :: ?????
-- number => synthtree :: ...
-
-*** Alternative 2: with *>
-
-Overview / list of operators used in alternative 2:
-
-1. => create or modify PatternPlayers, PatternInstruments, chuck things to SynthTrees.
-2. *> chuck something to a parameter of a synthtree.
+1. => chuck things to SynthTrees, create or modify PatternPlayers, PatternInstruments.
+2. *> chuck something to a parameter of a SynthTree.
 3. -> associate patterns to parameters.
 4. =< send output of a synth to the input of another synth.
+5. @> map parameter of SynthTree to bus
 
 Details:
 
-**** *> chucking to single parameters/aspects of current synthtree
+**** *> chucking to single parameters/aspects of current SynthTree
 *> is for chucking to single parameters or special aspects duration, legato, instrument of the current SynthTree.
+
+Examples:
+
+500 *> \freq;
+[500, 600].pseq *> \freq;
+[0.1, 0.2].pseq *> `\freq;
+0.5 *> \leg;
+0.1 *> \dur;
+\sine *> \instr;
 
 - anything *> symbol :: chuck to parameter of current synth.  Special parameters:
   - duration :: duration of PatternInstrument
@@ -67,18 +52,68 @@ Details:
 
 - anything *> `paramname :: chuck to duration of PatternPlayer of parameter `paramname.
 
-**** value -> parameter chucking to single parameters/aspects of named synthtree
+**** value -> parameter chucking to single parameters/aspects of named SynthTree
 
-[100, 200].pseq -> \freq => \synthTree1
+[100, 200].pseq -> \freq => \SynthTree1
 
-[100, 200].pseq -> \dur => \synthTree1
+[100, 200].pseq -> \dur => \SynthTree1
 
 **** anything => [not symbol, not ref]: make PatternPlayer/InstrumentPlayer
 - anything => [not symbol, not ref] :: make/set duration of PatternPlayer
 **** anything => ref : make / set instrument of PatternInstrument
 - anything => ref :: make / set instrument of PatternInstrument
-**** anything => symbol / synthtree:  Chuck to symbol, synthtree
+**** anything => Symbol: Chuck to Symbol as SyntThree
+**** anything => SynthTree:  Chuck to SyntThree
 
+*** [Rejected:] Alternative 1 (without *>)
+
+- pattern => symbol :: play pattern in parameter named by symbol, in current SynthTree ~st.
+- pattern => number :: PatternPlayer(pattern, number).  Number is duration
+- pattern => pattern2 :: PatternPlayer(pattern, pattern).  Pattern2 is duration
+- pattern => `symbol / `pattern :: PatternInstrument(PatternPlayer(pattern), symbol/pattern).  symbol/pattern is instrument
+- THIS MAY NOT BE NEEDED: pattern =>.i (|>) pattern2 or => `pattern :: PatternInstrument(PatternPlayer(pattern), pattern2).  Pattern2 is instrument
+- pattern =>.d (*>) symbol / SynthTree ::  (Synonym:) Pattern is duration pattern for SynthTree's PatternInstrument
+- pattern =>.l (**>) symbol SynthTree ::  Pattern is legato pattern for SynthTree's PatternInstrument
+- pattern =>.i (|>) symbol / SynthTree ::  Pattern is instrument pattern for SynthTree's PatternInstrument
+- pattern => SynthTree ::  Pattern is duration pattern for SynthTree's PatternInstrument
+- pattern => environment var ::
+
+- association => number :: ...
+- association :: pattern :: ...
+- association :: symbol :: ...
+- association :: `symbol
+
+- number => environment var :: ...
+- number => symbol :: ...
+- ???? number => pattern :: ?????
+- number => SynthTree :: ...
+*** Implementing alternative 2
+:PROPERTIES:
+:DATE:     <2014-04-11 Fri 15:31>
+:END:
+**** Implementing =>
+
+
+
+**** Implementing *>
+
+***** object *> symbol:
+
+~st.chuckToParameter(symbol, object);
+
+***** object *> `symbolRef
+
+~st.chuckToParameterDur(symbol, object)
+
+**** Implementing ->
+
+
+
+**** Implementing =<
+
+
+
+* Immediate TODOs
 
 ** Use Linen for adsrOut
 
@@ -217,14 +252,14 @@ Draft of how this looks in code.  Different things that one could do with a synt
 \anotherSynth.push; // switch to another SynthTree for working ...
 #+END_SRC
 
-IMPORTANT: Maybe use another operator for chucking stuff to a synthtree *without* making it current.  Unclear yet how this all works together when for example chaining several fx synths.
+IMPORTANT: Maybe use another operator for chucking stuff to a SynthTree *without* making it current.  Unclear yet how this all works together when for example chaining several fx synths.
 
 *** Analysis: possible operations on parameters.
 :PROPERTIES:
 :DATE:     <2014-03-29 Sat 16:43>
 :END:
 
-~st: current synthtree: => operates as usual, chucking into synthtree.
+~st: current SynthTree: => operates as usual, chucking into SynthTree.
 ~fx: current effect.  Can be used with =< to add new input.
 
 All other environment parameters will return a multiparameter instance controlling one of the synthree's parameters.
@@ -258,11 +293,11 @@ To construct a pattern player and play it in parameter =freq=.
 One could also use this with an event, in which case there are 2 possibilities:
 
 1. Play all associations in the event as parameter-value pairs, with the values forming streams, pbind-like, playing new synths at each new evaluation of the pattern's values.
-: <event> => <durations pat> => <synthtree>
+: <event> => <durations pat> => <SynthTree>
 
 2. Do not play new synths at each evaluation, but just set the parameters of the synth.
 
-: <event> => <durations pat> =*> <synthtree>
+: <event> => <durations pat> =*> <SynthTree>
 
 Additionally, for case 1, one may use a special instrument name such as \slur or \portamento, or '*' or '-', to skip a new synth and set the parameters of the current synth, behaving as in case 2.
 
@@ -278,7 +313,7 @@ Additionally, for case 1, one may use a special instrument name such as \slur or
 *** (Older:) PatternFunc notes
 
 #+BEGIN_EXAMPLE
-<pfunc template> %> 'pfunc_name' *>.param_name synthtree_name;
+<pfunc template> %> 'pfunc_name' *>.param_name SynthTree_name;
 
 <pfunct template %> 'pfunc_name'; // creates PaternFunc and binds it to name
 
@@ -295,7 +330,7 @@ Alternative:
 The operator *> could be a multi-purpose operator for binding any type of func (osc-, view-, midi-, pattern-funcs) to a parameter.  It could also alternatively be coded with the messages already started:
 
 #+BEGIN_EXAMPLE
-<synthtree or name of synthtree>
+<SynthTree or name of SynthTree>
     .osc(param, <template or name>)
     .midi(param, <template or name>)
     .view(param, <template or name>)
@@ -326,23 +361,23 @@ Important: Alternatively, a PatternFunc may store as currentValue an event with 
 
 One could thus bind a whole SynthTree to a PatternFunc with the same operator:
 
-<patrernfunc or name> *> <synthtree or name>
+<patrernfunc or name> *> <SynthTree or name>
 
 When no parameter is given as adverb to the *> operator,
-then the patternfunc is bound to play the whole synthtree.
+then the patternfunc is bound to play the whole SynthTree.
 
 Alternatively:
 
-<synthtree or name>.patternPlay(<patternfunc or name>);
+<SynthTree or name>.patternPlay(<patternfunc or name>);
 shorter form:
-<synthtree or name>.pp(<patternfunc or name>);
+<SynthTree or name>.pp(<patternfunc or name>);
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 Possible class group for playing patterns in SynthTrees, in Pbind-like manner:
 
 - PatternPlayer: generates and broadcasts event values for any listener
-- PatternFunc: Listens to and filters event values for a Synthtree.
+- PatternFunc: Listens to and filters event values for a SynthTree.
 	Is stored in the template var of SynthTree
 	holds: The PatternPlayer ...
 - PatternSynth: Encapsulates synths generated by patternfunc. Holds:
@@ -470,7 +505,7 @@ Solution implemented: Use =|> instead of ==>
 - , :: Stop running processes
 - . :: Stop running processes and clear SynthTree (set all to stopped)
 - i or / :: init tree = restart processes
-- space :: toggle selected synthtree: start/stop
+- space :: toggle selected SynthTree: start/stop
 
 ** stop+clear tree command
 Add kbd command to free the entire SynthTree and set all nodes isStopped to true.  This is good instead of Command-. to make sure that no unwanted SynthTree nodes will be restarted.  Proposed key binding: =C-c C-x C-=.
@@ -511,7 +546,7 @@ d => \test;
 
 ** fix drag start from fader DragBoth.  SynthTree:asString -> Function does not understand "name"!
 
-** creating a new synthtree which contains an input should make that synthtree the current selection, so that typing control-return on a SynthTemplate selection sends it to the latest created SynthTree with input.
+** creating a new SynthTree which contains an input should make that SynthTree the current selection, so that typing control-return on a SynthTemplate selection sends it to the latest created SynthTree with input.
 
 ** Group of global keyboard commands based on H-c and H-c H-x.
 Also improve the keyboard command documentation, showing the rationale for the commands:
@@ -642,7 +677,7 @@ Steps:
 ** DONE Fix sending pattern synthrees to different inputs
 CLOSED: [2014-04-06 Sun 21:07]
 
-When sending a synthtree sending a pattern to one lpf synthree, and then switching to another, hpf, synthtree, the sound stops.  Why?
+When sending a SynthTree sending a pattern to one lpf synthree, and then switching to another, hpf, SynthTree, the sound stops.  Why?
 
 Done: PatternSynth should move only its Group, not itself as synth.
 

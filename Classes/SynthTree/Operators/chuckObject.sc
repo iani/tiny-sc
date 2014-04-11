@@ -2,6 +2,45 @@
 Chuck operator and variants.
 
 IZ Sat, Mar  8 2014, 23:40 EET
+
+New draft: Fri, Apr 11 2014, 15:30 EEST
+
+*** Alternative 2: with *>
+
+Overview / list of operators used in alternative 2:
+
+1. => create or modify PatternPlayers, PatternInstruments, chuck things to SynthTrees.
+2. *> chuck something to a parameter of a synthtree.
+3. -> associate patterns to parameters.
+4. =< send output of a synth to the input of another synth.
+
+Details:
+
+**** *> chucking to single parameters/aspects of current synthtree
+*> is for chucking to single parameters or special aspects duration, legato, instrument of the current SynthTree.
+
+- anything *> symbol :: chuck to parameter of current synth.  Special parameters:
+  - duration :: duration of PatternInstrument
+  - dur :: synonym of dur
+  - legato :: legato (not a parameter of the PatternPlayer)
+  - leg :: synonym of legato
+  - instrument :: Instrument (of PatternInstrument)
+  - instr :: synonym of Instrument
+
+- anything *> `paramname :: chuck to duration of PatternPlayer of parameter `paramname.
+
+**** value -> parameter chucking to single parameters/aspects of named synthtree
+
+[100, 200].pseq -> \freq => \synthTree1
+
+[100, 200].pseq -> \dur => \synthTree1
+
+**** anything => [not symbol, not ref]: make PatternPlayer/InstrumentPlayer
+- anything => [not symbol, not ref] :: make/set duration of PatternPlayer
+**** anything => ref : make / set instrument of PatternInstrument
+- anything => ref :: make / set instrument of PatternInstrument
+**** anything => symbol / synthtree:  Chuck to symbol, synthtree
+
 */
 
 + Object {
@@ -14,17 +53,6 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		//		^synthTree.asSynthTree.chuck(this, replaceAction);
 		// New implementation: Sat, Mar 29 2014, 03:14 EET :
 		^chuckee.receiveChuck(this, replaceAction);
-	}
-	/*  // now done automatically, see chuck. Sat, Mar 29 2014, 03:00 EET
-	=<> { | synthTree, replaceAction = \fadeOut |
-		// chuck, and create default input bus
-		^synthTree.asSynthTree.chuckMakingInput(this, replaceAction);
-	}
-	*/
-	// TODO:
-	=< { | synthTree, inputName = \in |
-		// add synthTree to the input synths of the receiver
-		this.asSynthTree.addInputSynth(synthTree.asSynthTree, inputName)
 	}
 
 	==> { | synthTree, replaceAction = \fadeOut |
