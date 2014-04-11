@@ -18,6 +18,68 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
+** Make pattern => \symbol work
+
+*** Alternative 1 (without -->)
+
+- pattern => symbol :: play pattern in parameter named by symbol, in current SynthTree ~st.
+- pattern => number :: PatternPlayer(pattern, number).  Number is duration
+- pattern => pattern2 :: PatternPlayer(pattern, pattern).  Pattern2 is duration
+- pattern => `symbol / `pattern :: PatternInstrument(PatternPlayer(pattern), symbol/pattern).  symbol/pattern is instrument
+- THIS MAY NOT BE NEEDED: pattern =>.i (|>) pattern2 or => `pattern :: PatternInstrument(PatternPlayer(pattern), pattern2).  Pattern2 is instrument
+- pattern =>.d (*>) symbol / synthtree ::  (Synonym:) Pattern is duration pattern for synthtree's PatternInstrument
+- pattern =>.l (**>) symbol synthtree ::  Pattern is legato pattern for synthtree's PatternInstrument
+- pattern =>.i (|>) symbol / synthtree ::  Pattern is instrument pattern for synthtree's PatternInstrument
+- pattern => synthtree ::  Pattern is duration pattern for synthtree's PatternInstrument
+- pattern => environment var ::
+
+- association => number :: ...
+- association :: pattern :: ...
+- association :: symbol :: ...
+- association :: `symbol
+
+- number => environment var :: ...
+- number => symbol :: ...
+- ???? number => pattern :: ?????
+- number => synthtree :: ...
+
+*** Alternative 2: with *>
+
+Overview / list of operators used in alternative 2:
+
+1. => create or modify PatternPlayers, PatternInstruments, chuck things to SynthTrees.
+2. *> chuck something to a parameter of a synthtree.
+3. -> associate patterns to parameters.
+4. =< send output of a synth to the input of another synth.
+
+Details:
+
+**** *> chucking to single parameters/aspects of current synthtree
+*> is for chucking to single parameters or special aspects duration, legato, instrument of the current SynthTree.
+
+- anything *> symbol :: chuck to parameter of current synth.  Special parameters:
+  - duration :: duration of PatternInstrument
+  - dur :: synonym of dur
+  - legato :: legato (not a parameter of the PatternPlayer)
+  - leg :: synonym of legato
+  - instrument :: Instrument (of PatternInstrument)
+  - instr :: synonym of Instrument
+
+- anything *> `paramname :: chuck to duration of PatternPlayer of parameter `paramname.
+
+**** value -> parameter chucking to single parameters/aspects of named synthtree
+
+[100, 200].pseq -> \freq => \synthTree1
+
+[100, 200].pseq -> \dur => \synthTree1
+
+**** anything => [not symbol, not ref]: make PatternPlayer/InstrumentPlayer
+- anything => [not symbol, not ref] :: make/set duration of PatternPlayer
+**** anything => ref : make / set instrument of PatternInstrument
+- anything => ref :: make / set instrument of PatternInstrument
+**** anything => symbol / synthtree:  Chuck to symbol, synthtree
+
+
 ** Use Linen for adsrOut
 
 adsrOut => linOut;
