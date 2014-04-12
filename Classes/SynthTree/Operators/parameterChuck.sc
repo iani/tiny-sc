@@ -38,12 +38,14 @@ Here all methods that are needed to handle -> and *>
 	setParamPatternDuration { | param, pattern |
 		args.getParam(param).getPattern.durations = pattern;
 	}
+
+	getParam { | param | ^args.getParam(param) }
 }
 
 + Object {
 	// FunctionSynthTemplate, SynthDef use this:
 	chuckPattern { | param, pattern, synthTree |
-		synthTree.getParam(param).playPattern(pattern);
+		synthTree.getParam(param).playPattern(pattern.asPatternPlayer);
 	}
 }
 
@@ -59,4 +61,8 @@ Here all methods that are needed to handle -> and *>
 			{ this.set(param, argPattern); }
 		);
 	}
+}
+
++ Function {
+	asPatternPlayer { ^PatternPlayer(Pfunc(this), Pfunc({ ~dur })) }
 }

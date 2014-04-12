@@ -79,6 +79,10 @@ SynthTree : IdentityTree {
 		^parentEvent;
 	}
 
+	*clearEnvir {
+		currentEnvironment.parent[\st] = nil;
+	}
+
 	*at { | symbol, createIfMissing = true, defaultChuck |
 		var synthTree;
 		synthTree = this.nameSpaces[this.server, symbol];
@@ -205,10 +209,6 @@ SynthTree : IdentityTree {
 			args.storeArgValue(key, value);
 		});
 		this.chuck;
-	}
-
-	receiveChuck { | chucker, replaceAction |
-		this.chuck(chucker, replaceAction);
 	}
 
 	playPattern { | patternPlayer, instrument = \default |

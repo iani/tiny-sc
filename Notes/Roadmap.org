@@ -16,108 +16,18 @@
 
 Try these with arrays loaded from data analysed through SCMIR.
 
-** Review binary operators
-
-*** [Implementing:] Alternative 2: with *>
-
-Overview / list of operators in alternative 2:
-
-1. => chuck things to SynthTrees, create or modify PatternPlayers, PatternInstruments.
-2. -> associate patterns to parameters.
-3. *> chuck something to a parameter of a SynthTree.
-4. =< send output of a synth to the input of another synth.
-5. @> map parameter of SynthTree to bus
-
-Details:
-
-**** value -> parameter chucking to single parameters/aspects of named SynthTree
-
-[100, 200].pseq -> \freq => \SynthTree1
-
-[100, 200].pseq -> \dur => \SynthTree1
-
-**** *> chucking to single parameters/aspects of current SynthTree
-*> is for chucking to single parameters or special aspects duration, legato, instrument of the current SynthTree.
-
-Examples:
-
-500 *> \freq;
-[500, 600].pseq *> \freq;
-[0.1, 0.2].pseq *> `\freq;
-0.5 *> \leg;
-0.1 *> \dur;
-\sine *> \instr;
-
-- anything *> symbol :: chuck to parameter of current synth.  Special parameters:
-  - duration :: duration of PatternInstrument
-  - dur :: synonym of dur
-  - legato :: legato (not a parameter of the PatternPlayer)
-  - leg :: synonym of legato
-  - instrument :: Instrument (of PatternInstrument)
-  - instr :: synonym of Instrument
-
-- anything *> `paramname :: chuck to duration of PatternPlayer of parameter `paramname.
-
-**** anything => [not symbol, not ref]: make PatternPlayer
-- anything => [not symbol, not ref] :: make/set duration of PatternPlayer
-
-Examples:
-
-
-**** anything => ref : make / set instrument of PatternInstrument
-- anything => ref :: make / set instrument of PatternInstrument
-**** anything => Symbol: Chuck to Symbol as SyntThree
-**** anything => SynthTree:  Chuck to SynthThree
-
-*** [Rejected:] Alternative 1 (without *>)
-
-- pattern => symbol :: play pattern in parameter named by symbol, in current SynthTree ~st.
-- pattern => number :: PatternPlayer(pattern, number).  Number is duration
-- pattern => pattern2 :: PatternPlayer(pattern, pattern).  Pattern2 is duration
-- pattern => `symbol / `pattern :: PatternInstrument(PatternPlayer(pattern), symbol/pattern).  symbol/pattern is instrument
-- THIS MAY NOT BE NEEDED: pattern =>.i (|>) pattern2 or => `pattern :: PatternInstrument(PatternPlayer(pattern), pattern2).  Pattern2 is instrument
-- pattern =>.d (*>) symbol / SynthTree ::  (Synonym:) Pattern is duration pattern for SynthTree's PatternInstrument
-- pattern =>.l (**>) symbol SynthTree ::  Pattern is legato pattern for SynthTree's PatternInstrument
-- pattern =>.i (|>) symbol / SynthTree ::  Pattern is instrument pattern for SynthTree's PatternInstrument
-- pattern => SynthTree ::  Pattern is duration pattern for SynthTree's PatternInstrument
-- pattern => environment var ::
-
-- association => number :: ...
-- association :: pattern :: ...
-- association :: symbol :: ...
-- association :: `symbol
-
-- number => environment var :: ...
-- number => symbol :: ...
-- ???? number => pattern :: ?????
-- number => SynthTree :: ...
-*** Implementing alternative 2
-:PROPERTIES:
-:DATE:     <2014-04-11 Fri 15:31>
-:END:
-**** Implementing =>
-
-
-
-**** Implementing *>
-
-***** object *> symbol:
-
-~st.chuckToParameter(symbol, object);
-
-***** object *> `symbolRef
-
-~st.chuckToParameterDur(symbol, object)
-
-**** Implementing ->
-
-
-
-**** Implementing =<
-
-
-
 * Immediate TODOs
+
+** fix setting the instrument of a pattern in a SynthTree
+
+#+BEGIN_EXAMPLE
+\sine => ~st;
+
+// TODO: Fix these:
+// `([\sine, \werkitd].prand) => ~st;
+#+END_EXAMPLE
+
+** Implement @> for mapping control busses to synthtree params
 
 ** Use Linen for adsrOut
 
@@ -724,6 +634,107 @@ Check these, and their further combinations:
 `\sine => \test;
 
 #+END_EXAMPLE
+
+** Review binary operators
+
+*** [Implementing:] Alternative 2: with *>
+
+Overview / list of operators in alternative 2:
+
+1. => chuck things to SynthTrees, create or modify PatternPlayers, PatternInstruments.
+2. -> associate patterns to parameters.
+3. *> chuck something to a parameter of a SynthTree.
+4. =< send output of a synth to the input of another synth.
+5. @> map parameter of SynthTree to bus
+
+Details:
+
+**** value -> parameter chucking to single parameters/aspects of named SynthTree
+
+[100, 200].pseq -> \freq => \SynthTree1
+
+[100, 200].pseq -> \dur => \SynthTree1
+
+**** *> chucking to single parameters/aspects of current SynthTree
+*> is for chucking to single parameters or special aspects duration, legato, instrument of the current SynthTree.
+
+Examples:
+
+500 *> \freq;
+[500, 600].pseq *> \freq;
+[0.1, 0.2].pseq *> `\freq;
+0.5 *> \leg;
+0.1 *> \dur;
+\sine *> \instr;
+
+- anything *> symbol :: chuck to parameter of current synth.  Special parameters:
+  - duration :: duration of PatternInstrument
+  - dur :: synonym of dur
+  - legato :: legato (not a parameter of the PatternPlayer)
+  - leg :: synonym of legato
+  - instrument :: Instrument (of PatternInstrument)
+  - instr :: synonym of Instrument
+
+- anything *> `paramname :: chuck to duration of PatternPlayer of parameter `paramname.
+
+**** anything => [not symbol, not ref]: make PatternPlayer
+- anything => [not symbol, not ref] :: make/set duration of PatternPlayer
+
+Examples:
+
+
+**** anything => ref : make / set instrument of PatternInstrument
+- anything => ref :: make / set instrument of PatternInstrument
+**** anything => Symbol: Chuck to Symbol as SyntThree
+**** anything => SynthTree:  Chuck to SynthThree
+
+*** [Rejected:] Alternative 1 (without *>)
+
+- pattern => symbol :: play pattern in parameter named by symbol, in current SynthTree ~st.
+- pattern => number :: PatternPlayer(pattern, number).  Number is duration
+- pattern => pattern2 :: PatternPlayer(pattern, pattern).  Pattern2 is duration
+- pattern => `symbol / `pattern :: PatternInstrument(PatternPlayer(pattern), symbol/pattern).  symbol/pattern is instrument
+- THIS MAY NOT BE NEEDED: pattern =>.i (|>) pattern2 or => `pattern :: PatternInstrument(PatternPlayer(pattern), pattern2).  Pattern2 is instrument
+- pattern =>.d (*>) symbol / SynthTree ::  (Synonym:) Pattern is duration pattern for SynthTree's PatternInstrument
+- pattern =>.l (**>) symbol SynthTree ::  Pattern is legato pattern for SynthTree's PatternInstrument
+- pattern =>.i (|>) symbol / SynthTree ::  Pattern is instrument pattern for SynthTree's PatternInstrument
+- pattern => SynthTree ::  Pattern is duration pattern for SynthTree's PatternInstrument
+- pattern => environment var ::
+
+- association => number :: ...
+- association :: pattern :: ...
+- association :: symbol :: ...
+- association :: `symbol
+
+- number => environment var :: ...
+- number => symbol :: ...
+- ???? number => pattern :: ?????
+- number => SynthTree :: ...
+*** Implementing alternative 2
+:PROPERTIES:
+:DATE:     <2014-04-11 Fri 15:31>
+:END:
+**** Implementing =>
+
+
+
+**** Implementing *>
+
+***** object *> symbol:
+
+~st.chuckToParameter(symbol, object);
+
+***** object *> `symbolRef
+
+~st.chuckToParameterDur(symbol, object)
+
+**** Implementing ->
+
+
+
+**** Implementing =<
+
+
 
 * Undergoing tests
 

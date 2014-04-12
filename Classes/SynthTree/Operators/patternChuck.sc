@@ -28,3 +28,5 @@
 		^PatternPlayer(this);
 	}
 }
+
++ PatternPlayer { asPatternPlayer { ^this } }

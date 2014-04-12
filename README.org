@@ -97,23 +97,25 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 #+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(400)) } => \sound4;
 // Play a pattern into ~freq:
-{ 50.rrand(80).midicps } -> 0.1 => ~freq;
+{ 50.rrand(80).midicps } *> \freq;
 // Alternative formulation:
-{ 80.rrand(90).midicps } pp: 0.2 => ~freq;
+{ 80.rrand(90).midicps } => 0.2 *> \freq;
 //: Play another pattern into ~freq:
-{ 250 rrand: 350 } -> 0.05 => ~freq;
+{ 250 rrand: 350 } => 0.05 *> \freq;
 //: And another:
-{ [60, 62, 66, 67].choose.midicps } -> Prand([0.1, 0.2, 0.4], inf) => ~freq;
+{ [60, 62, 66, 67].choose.midicps } => Prand([0.1, 0.2, 0.4], inf) *> \freq;
+//: Shorter formulation of the above (with different paremeter values):
+[70, 72, 76, 77].midicps.prand => [0.2, 0.4, 0.8].prand *> \freq;
 // Pattern keeps playing when new synth is chucked into tree:
 { LPF.ar(LFPulse.ar(\freq.kr(440)), 1000) } => \sound4;
 // Open knobs interface to watch how freq changes
 ~st.knobs;
-// Use nil to play with global duration stored in ~dur:
-{ [65, 69, 70, 73].choose.midicps } -> nil => ~freq;
+//  Play with global duration stored in ~dur:
+{ [65, 69, 70, 73].choose.midicps } => Pfunc({ ~dur.next }) *> \freq;
 // Change global duration:
-0.1 =!> \dur;
+0.2 =!> \dur;
 // Use a pattern for global duration:
-Pbrown(0.01, 0.26, 0.05, inf).asStream =!> \dur;
+Pbrown(0.01, 0.4, 0.05, inf).round(0.1).asStream =!> \dur;
 // Fade out this synth
 \sound4.fadeOut;
 #+END_EXAMPLE
@@ -135,12 +137,17 @@ Play a pattern with a constant frequency into a new SynthTree:
 
 Add a pattern for the amplitude parameter to the SynthTree
 #+BEGIN_EXAMPLE
-\amp -> { 0.01 exprand: 0.1 }.pfunc => \pattern1;
+{ 0.01 exprand: 0.1 }.pfunc -> \amp => \pattern1;
+#+END_EXAMPLE
+
+One can omit the SynthTree name to set the parameter in the current tree:
+#+BEGIN_EXAMPLE
+[0.02, 0.03, 0.07].pseq *> \amp;
 #+END_EXAMPLE
 
 Change the pattern played in the freq parameter
 #+BEGIN_EXAMPLE
-\freq->[440, 550].pseq => \pattern1;
+[440, 550].pseq *> \freq;
 #+END_EXAMPLE
 
 Set a shorter global duration
@@ -151,17 +158,12 @@ Set a shorter global duration
 Change the pattern of the freq parameter again.
 Optional feature: Use ~st to address the last synthTree that was chucked.
 #+BEGIN_EXAMPLE
-\freq->[440, 550, 660].prand => ~st;
-#+END_EXAMPLE
-
-Change the pattern of amplitude:  Create 3-part metre.
-#+BEGIN_EXAMPLE
-\amp->[0.03, 0.05, 0.1].pseq => \pattern1;
+[440, 550, 660].prand *> \freq;
 #+END_EXAMPLE
 
 Another example for amplitude pattern.
 #+BEGIN_EXAMPLE
-\amp->[0.1, Pstutter([4, 6].prand, Pn(0.04, 1))].pseq => \pattern1;
+[0.1, Pstutter([4, 6].prand, Pn(0.04, 1))].pseq *> \amp;
 #+END_EXAMPLE
 
 ** Setting duration patterns
@@ -175,10 +177,10 @@ Chucking a pattern array into a pattern sets the duration of the resulting Playe
 Play a different pattern in frequency.
 #+BEGIN_EXAMPLE
 //:
-\freq->[
+[
 	([500, 600, 550]).prand(15) * Pstutter(12, [0.5, 0.75, 0.8, 0.9, 1, 1.1].prand),
 	[700, 800, 900].prand(10)
-].prand => \pattern1;
+].prand *> \freq;
 //:
 #+END_EXAMPLE
 
@@ -225,13 +227,20 @@ Defaults are provide for durations and instruments, so one may omit these.  Foll
 
 // If instrument-first order is used and the instrument is a pattern,
 // then the adverb .i must be used:
-[freq: Pwhite(30, 70, inf).midicps] =>.i [\lpfsaw, \lpfpulse].prand => 0.15 => \test;
+[freq: Pwhite(30, 70, inf).midicps] =>.i [\lpfsaw, \lpfpulse].prand => 0.05 => \test;
 
+// Or pass the instrument pattern as reference:
+[freq: Pwhite(70, 90, inf).midicps] => `([\lpfpulse, \werkitd].prand) => 0.15 => \test;
 #+END_EXAMPLE
 
 *** Setting the instrument of a pattern in a SynthTree
 
-To set the instrument of a pattern in a SynthTree
+#+BEGIN_EXAMPLE
+\sine => ~st;
+
+// TODO: Fix these:
+// `([\sine, \werkitd].prand) => ~st;
+#+END_EXAMPLE
 
 
 * Restart synths after Command-.

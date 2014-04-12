@@ -1,12 +1,5 @@
 
 + Nil {
-	receiveChuck { | chucker, fadeAction |
-		("Ooops!  Someone tried to chuck to nil.  Probable causes:").postln;
-		("1. No SynthTree has yet been created by chucking.").postln;
-		("2. Trying to chuck into a SynthTree parameter that does not exist.").postln;
-		"Current parameters are:".scatList(currentEnvironment.keys.asArray.sort).postln;
-		^chucker;
-	}
     asSynth { /* ^nil */ }
 	inputBusIndex { /* ^nil */ }
 	onEnd { /* ^nil */ }
@@ -16,10 +9,7 @@
 
 	asSynthTemplate { ^SynthDescLib.global[this].def }
 	inputSpecs { ^[] }
-	receiveChuck { | chucker, replaceAction |
-		//		^synthTree.asSynthTree.chuck(this, replaceAction);
-		^this.asSynthTree.chuck(chucker, replaceAction)
-	}
+
     asSynth { | synthTree |
 		//		^[this].asSynth(synthTree);
         ^Synth.new(this, synthTree.synthArgs, synthTree.group, \addToHead);
