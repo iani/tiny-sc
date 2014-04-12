@@ -43,7 +43,9 @@
 	/* this is not a PatternInstrument, therefore  
 	make a new PatternInstrument and chuck it to my SynthTree */
 	chuckPatternParams { | paramArray, synthTree |
-		synthTree.chuck(paramArray.asPatternInstrument(this.name))
+		synthTree.chuck(
+			paramArray.asPatternInstrument(if (this.isNil) { \default }, { this.name })
+		)
 	}
 }
 
