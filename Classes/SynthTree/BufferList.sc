@@ -170,7 +170,7 @@ BufferList {
 	*selectPlay { | argServer |
 		/* Select a buffer from the buffer list on server, using ido menu in Emacs,
 			and play it in a SynthTree with the same name. */
-		Emacs.selectEval(
+		TinyEmacs.selectEval(
 			this.nameList(argServer),
 			"{ 'buf'.playBuf } => '%s'.buf",
 			"Play buffer in SynthTree (default: %s): "
@@ -180,7 +180,7 @@ BufferList {
 	*selectFree { | argServer |
 		/* Select a buffer from the buffer list on server, using ido menu in Emacs,
 			and free it.  Also free SynthTree of same name. */
-		Emacs.selectEval(
+		TinyEmacs.selectEval(
 			this.nameList(argServer),
 			"'%s'.freeBuffer;",
 			"Free buffer (default: %s): "

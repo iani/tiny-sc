@@ -609,7 +609,7 @@ SynthTree : IdentityTree {
 	*chuckSelectingSynthTree { | argServer |
 		/* Eval current snippet or org section as function and chuck into 
 		synthtree selected or input interactively in Emacs. */
-		Emacs.selectEvalSnippet(
+		TinyEmacs.selectEvalSnippet(
 			this.synthTreeNames(argServer),
 			"{ %s } => '%s'",
 			"Chuck snippet into SynthTree (default: %s): "
@@ -618,7 +618,7 @@ SynthTree : IdentityTree {
 
 	*knobsSelectingSynthTree { | argServer |
 		/* Select a synthtree in Emacs and show its knobs window. */
-		Emacs.selectEval(
+		TinyEmacs.selectEval(
 			this.synthTreeNames(argServer),
 			"'%s'.knobs",
 			"Chuck snippet into SynthTree (default: %s): "
@@ -628,7 +628,7 @@ SynthTree : IdentityTree {
 	*toggleSelectingSynthTree { | argServer |
 		/* Toggle run status (start/stop) of a synthtree interactively
 			selected in Emacs.  Selection defaults to last selected synthtree . */
-		Emacs.selectEval(
+		TinyEmacs.selectEval(
 			this.synthTreeNames(argServer),
 			"'%s'.toggle",
 			"Toggle SynthTree (default: %s): ",
@@ -639,7 +639,7 @@ SynthTree : IdentityTree {
 	*startSelectingSynthTree { | argServer |
 		/* Start a synthtree interactively
 			selected in Emacs.  Selection defaults to last selected synthtree . */
-		Emacs.selectEval(
+		TinyEmacs.selectEval(
 			this.synthTreeNames(argServer),
 			"'%s'.start",
 			"Start SynthTree (default: %s): ",
@@ -651,7 +651,7 @@ SynthTree : IdentityTree {
 		/* Fadeout a synthtree interactively
 			selected in Emacs.  Selection defaults to last selected synthtree . 
 		Universal (C-U) argument value specifies fadeout time in seconds. */
-		Emacs.selectEval(
+		TinyEmacs.selectEval(
 			this.synthTreeNames(argServer),
 			"'%s'" ++ format(".fadeOut(%)", if (fadeTime.isNil) { "" } { fadeTime }),
 			"Fadeout SynthTree (default: %s): ",

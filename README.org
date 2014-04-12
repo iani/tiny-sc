@@ -100,7 +100,7 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 { 50.rrand(80).midicps } *> \freq;
 // Alternative formulation:
 { 80.rrand(90).midicps } => 0.2 *> \freq;
-//: Play another pattern into ~freq:
+//: Play another pattern into freq parameter:
 { 250 rrand: 350 } => 0.05 *> \freq;
 //: And another:
 { [60, 62, 66, 67].choose.midicps } => Prand([0.1, 0.2, 0.4], inf) *> \freq;
@@ -254,7 +254,7 @@ To set the instrument parameter to a named tree, use -> to associate the pattter
 [\sine, \werkitd, \spacetheremin].prand -> \instr => \test2;
 #+END_EXAMPLE
 
-Settin other parameters of the synthree pattern merges these into the existing instrument pattern, leaving the instrument, duration or other parameters as they were:
+Setting other parameters of the synthree pattern merges these into the existing instrument pattern, leaving the instrument, duration or other parameters as they were:
 #+BEGIN_EXAMPLE
 [freq: [400, 500].prand, amp: { 0.01 exprand: 0.1 }.pfunc] => \test2;
 #+END_EXAMPLE

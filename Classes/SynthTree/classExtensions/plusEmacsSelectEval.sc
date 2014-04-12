@@ -14,13 +14,14 @@ IZ Tue, Mar 25 2014, 11:27 EET
 
 */
 
-+ Emacs {
+TinyEmacs {
+
 	*selectEval { | list, formatString, prompt, requireMatch |
 		/* Select a string from a list passed from sclang, 
 			get the current snippet or org-mode section, 
 			compose and run an sclang expression from these two using a format string.
 		*/
-		this.evalLispExpression(
+		Emacs.evalLispExpression(
 			['org-sc-select-eval', 
 				[\quote, list collect: _.asString], 
 				formatString, prompt, requireMatch
@@ -33,11 +34,12 @@ IZ Tue, Mar 25 2014, 11:27 EET
 			get the current snippet or org-mode section, 
 			compose and run an sclang expression from these two using a format string.
 		*/
-		this.evalLispExpression(
+		Emacs.evalLispExpression(
 			['org-sc-select-eval-snippet', 
 				[\quote, list collect: _.asString], 
 				formatString, prompt, requireMatch
 			].asLispString
 		)
 	}
+
 }
