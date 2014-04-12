@@ -4,7 +4,7 @@
 	=> { | st | ^st.asSynthTree setPatternInstrument: this }
 
 	asPatternInstrument {
-		^[freq: 440] =>.i this;
+		^PatternInstrument(PatternPlayer([freq: 440], Pfunc({ ~dur.next })), this);
 	}
 	
 	legato_ { | legato = 1 | ^this.asSynthTree.legato = legato }
@@ -43,11 +43,16 @@
 	/* this is not a PatternInstrument, therefore  
 	make a new PatternInstrument and chuck it to my SynthTree */
 	chuckPatternParams { | paramArray, synthTree |
-		synthTree.chuck(
-			paramArray.asPatternInstrument(if (this.isNil) { \default }, { this.name })
-		)
+		synthTree.chuck(paramArray.asPatternInstrument(\default))
 	}
 }
+
++ SynthDef {
+	chuckPatternParams { | paramArray, synthTree |
+		synthTree.chuck(paramArray.asPatternInstrument(name.asSymbol))
+	}
+}
+
 
 + PatternInstrument {
 	chuckPatternParams { | paramArray |

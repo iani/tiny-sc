@@ -242,6 +242,14 @@ SynthTree : IdentityTree {
 		this.push;
 	}
 
+	/*
+		// Need to restart template!
+	reset {
+		/* Experimental: recovery from a broken PaternInstrument */
+		this.chuck(template);
+	}
+	*/
+
 	makeArgs { | templateArgs |
 		templateArgs do: { | cn |
 			args.getParam(cn.name, nil, cn.defaultValue);
