@@ -3,6 +3,9 @@
     asSynth { /* ^nil */ }
 	inputBusIndex { /* ^nil */ }
 	onEnd { /* ^nil */ }
+	asSynthTree {
+		^SynthTree.at(SynthTree.newName, true, \default);
+	}
 }
 
 + Symbol {

@@ -18,15 +18,6 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
-** fix setting the instrument of a pattern in a SynthTree
-
-#+BEGIN_EXAMPLE
-\sine => ~st;
-
-// TODO: Fix these:
-// `([\sine, \werkitd].prand) => ~st;
-#+END_EXAMPLE
-
 ** Implement @> for mapping control busses to synthtree params
 
 ** Use Linen for adsrOut

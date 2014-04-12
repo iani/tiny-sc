@@ -113,9 +113,7 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 //  Play with global duration stored in ~dur:
 { [65, 69, 70, 73].choose.midicps } => Pfunc({ ~dur.next }) *> \freq;
 // Change global duration:
-0.2 =!> \dur;
-// Use a pattern for global duration:
-Pbrown(0.01, 0.4, 0.05, inf).round(0.1).asStream =!> \dur;
+0.05 =!> \dur;
 // Fade out this synth
 \sound4.fadeOut;
 #+END_EXAMPLE
@@ -235,13 +233,43 @@ Defaults are provide for durations and instruments, so one may omit these.  Foll
 
 *** Setting the instrument of a pattern in a SynthTree
 
+If the instrument is a single synthdef, one may chuck it directly in the tree:
 #+BEGIN_EXAMPLE
-\sine => ~st;
-
-// TODO: Fix these:
-// `([\sine, \werkitd].prand) => ~st;
+\sine => \test2;
 #+END_EXAMPLE
 
+Otherwise use the *> operator to set the \instr parameter (synonym: \instrument):
+#+BEGIN_EXAMPLE
+[\sine, \werkitd].prand *> \instr;
+#+END_EXAMPLE
+
+Setting legato:
+
+#+BEGIN_EXAMPLE
+{ 0.1 exprand: 1.5 }.pfunc *> \legato;
+#+END_EXAMPLE
+
+To set the instrument parameter to a named tree, use -> to associate the patttern with the parameter:
+#+BEGIN_EXAMPLE
+[\sine, \werkitd, \spacetheremin].prand -> \instr => \test2;
+#+END_EXAMPLE
+
+Settin other parameters of the synthree pattern merges these into the existing instrument pattern, leaving the instrument, duration or other parameters as they were:
+#+BEGIN_EXAMPLE
+[freq: [400, 500].prand, amp: { 0.01 exprand: 0.1 }.pfunc] => \test2;
+#+END_EXAMPLE
+
+*** Note: SynthDef as Instrument
+
+Chucking an array of parameters to a SynthTree that is not playing an InstrumentPattern will create an instrument pattern, keeping the existing instrument, if the template is a SynthDef:
+
+#+BEGIN_EXAMPLE
+SynthDef("saw", { LFSaw.ar(\freq.kr(400)).adsrOut }).add => \instrumentTest;
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+[freq: [400, 500].prand, amp: { 0.01 exprand: 0.1 }.pfunc] => \instrumentTest;
+#+END_EXAMPLE
 
 * Restart synths after Command-.
 

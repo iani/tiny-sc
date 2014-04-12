@@ -300,10 +300,11 @@ sent by sclang."
 (defun org-sc-toggle-section-synthtree (fadeTime)
   (interactive "P")
   (let ((section-synthtree (org-entry-get (point) "SYNTHTREE" t)))
-    (setq section-synthtree (or section-synthtree org-sc-selected-synthtree))
     (sclang-eval-string
-     (format "'%s'.toggle(%s)"
-             section-synthtree
+     (format "%s.toggle(%s)"
+             (if section-synthtree
+                 (format "'%s'" section-synthtree)
+               "~st")
              (if fadeTime
                  (if (numberp fadeTime) fadeTime (/ (car fadeTime) 4))
                "")))))
