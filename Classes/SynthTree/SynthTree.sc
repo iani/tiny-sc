@@ -67,7 +67,7 @@ SynthTree : IdentityTree {
 		^server;
 	}
 
-	*newName { | baseName = "st" | ^format ("%%", baseName, UniqueID.next) }
+	*newName { | baseName = "st" | ^format ("%%", baseName, UniqueID.next).asSymbol }
 
 	*makeParentEvent { | argServer |
 		var parentEvent;
@@ -79,7 +79,7 @@ SynthTree : IdentityTree {
 		^parentEvent;
 	}
 
-	*at { | symbol, createIfMissing = true |
+	*at { | symbol, createIfMissing = true, defaultChuck |
 		var synthTree;
 		synthTree = this.nameSpaces[this.server, symbol];
 		if (synthTree.isNil and: createIfMissing) {
@@ -88,6 +88,7 @@ SynthTree : IdentityTree {
 			synthTree = this.new(symbol);
 			this.nameSpaces[this.server, symbol] = synthTree;
 			this.root[synthTree.name] = synthTree;
+			defaultChuck !? { defaultChuck => synthTree };
 			this.changed(\newSynthTree, synthTree);
 		};
 		^synthTree;

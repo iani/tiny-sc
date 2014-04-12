@@ -18,6 +18,10 @@ PatternInstrument {
 		numChannels ?? { numChannels = ~numChans; };
 	}
 
+	set { | param, argPattern |
+		pattern.set(param, argPattern);
+	}
+
 	instrument_ { | argInstrument = \default | instrument = argInstrument.asStream }
 	legato_ { | argLegato | pattern.legato = argLegato }
 	durations_ { | argDurations |
@@ -65,8 +69,6 @@ PatternInstrument {
 		pattern.start;
 		^patternSynth;
 	}
-
-	=> { | chuckee, numChans | ^chuckee.receivePatternInstrument (this, numChans) }
 }
 
 SynthPattern {

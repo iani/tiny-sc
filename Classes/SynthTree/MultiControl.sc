@@ -147,6 +147,10 @@ MultiControl : IdentityDictionary {
 		}
 	}
 
+	getPattern { | patternName = \pattern | ^this[patternName].pattern }
+
+	// USED??? :
+	/*
 	valuePattern { | pattern, controlName = \pattern |
 		// get the valuepattern. Can be used for adding further patterns
 		
@@ -162,7 +166,7 @@ MultiControl : IdentityDictionary {
 	durPattern_ { | pattern, controlName = \pattern |
 		// replace the duration pattern 
 	}
-
+	*/
 	add { | controlName, control |
 
 	}
