@@ -23,12 +23,18 @@ Try these with arrays loaded from data analysed through SCMIR.
 Overview / list of operators in alternative 2:
 
 1. => chuck things to SynthTrees, create or modify PatternPlayers, PatternInstruments.
-2. *> chuck something to a parameter of a SynthTree.
-3. -> associate patterns to parameters.
+2. -> associate patterns to parameters.
+3. *> chuck something to a parameter of a SynthTree.
 4. =< send output of a synth to the input of another synth.
 5. @> map parameter of SynthTree to bus
 
 Details:
+
+**** value -> parameter chucking to single parameters/aspects of named SynthTree
+
+[100, 200].pseq -> \freq => \SynthTree1
+
+[100, 200].pseq -> \dur => \SynthTree1
 
 **** *> chucking to single parameters/aspects of current SynthTree
 *> is for chucking to single parameters or special aspects duration, legato, instrument of the current SynthTree.
@@ -52,18 +58,16 @@ Examples:
 
 - anything *> `paramname :: chuck to duration of PatternPlayer of parameter `paramname.
 
-**** value -> parameter chucking to single parameters/aspects of named SynthTree
-
-[100, 200].pseq -> \freq => \SynthTree1
-
-[100, 200].pseq -> \dur => \SynthTree1
-
-**** anything => [not symbol, not ref]: make PatternPlayer/InstrumentPlayer
+**** anything => [not symbol, not ref]: make PatternPlayer
 - anything => [not symbol, not ref] :: make/set duration of PatternPlayer
+
+Examples:
+
+
 **** anything => ref : make / set instrument of PatternInstrument
 - anything => ref :: make / set instrument of PatternInstrument
 **** anything => Symbol: Chuck to Symbol as SyntThree
-**** anything => SynthTree:  Chuck to SyntThree
+**** anything => SynthTree:  Chuck to SynthThree
 
 *** [Rejected:] Alternative 1 (without *>)
 

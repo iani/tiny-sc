@@ -5,63 +5,32 @@ Here all methods that are needed to handle ->
 */
 
 + Association {
-	=> { | chuckee | ^chuckee.receiveAssociationChuck(this); }
-}
-
-+ MultiControl {
-	receiveAssociationChuck { | association |
-		^association.key.pp(association.value) => this;
-	}
-}
-
-+ Function {
-	pp { | durations | 
-		^PatternPlayer(Pfunc(this), durations ?? { Pfunc({ ~dur.next }) })
-	}
-
-	ppn { | repeats = 1, durations | 
-		^PatternPlayer(Pfuncn(this, repeats), durations ?? { Pfunc({ ~dur.next }) })
-	}
-}
-
-+ Pattern {
-	pp { | durations | 
-		^PatternPlayer(this, durations ?? { Pfunc({ ~dur.next }) })
-	}
-}
-
-+ SequenceableCollection {
-
-	pp { | repeats = 1, durations |
-		^PatternPlayer(Pseq(this, repeats), durations ?? { Pfunc({ ~dur.next }) })
-	}
-
-}
-
-
-+ Symbol {
-	receiveAssociationChuck { | association |
-		^this.asSynthTree.chuckPatternParam(association.key, association.value)
+	=> { | symbolOrSynthTree |
+		^symbolOrSynthTree.asSynthTree.chuckIntoParameter(this.value, this.key);
 	}
 }
 
 + SynthTree {
-	receiveAssociationChuck { | association |
-		this.chuckPatternParam(association.key, association.value);
-	}
-
-	chuckPatternParam { | param, pattern |
-		template.pattern.chuckParam(param, pattern);
+	chuckIntoParameter { | paramName, pattern |
+		switch (paramName,
+			\dur, { template.durations = pattern },
+			\duration, { template.durations = pattern},
+			\leg, { template.legato = pattern },
+			\legato, { template.legato = pattern },
+			\instr, { template.instrument = pattern },
+			\instrument, { template.instrument = pattern },
+			{ template.chuckPattern(paramName, pattern, this); }
+		);
 		if (this.isPlaying.not) { this.start }; // really???
 	}
 }
 
-+ PatternInstrument {
-	chuckParam { | param, pattern | pattern.chuckParam(param, pattern) }
++ Object {
+	chuckPattern { | param, pattern, synthTree |
+		syntThree.getParam(param).playPattern(pattern);
+	}
 }
 
-/*
-+ Pattern {
-	chuckParam { | param, pattern | this.set(param, pattern); }
++ PatternInstrument {
+	chuckPattern { | param, argPattern | pattern.set(param, pattern) }
 }
-*/
