@@ -156,7 +156,7 @@ SynthDef(\laserbeamd, { | out = 0 freq = 440 amp = 0.1 attackTime = 0.04 gate = 
 	//env = EnvGen.ar(Env.adsr(0.01, 0.0, 1.0, 0.1), gate, doneAction:2);
 	// gate added:
 	ampenv = EnvGen.ar(Env([0, 1, 0.5, 0.0], [0.02, 0.2, 0.1], releaseNode: 2), 
-		doneAction:2);
+		gate, doneAction:2);
 
 	Out.ar(out, Pan2.ar(osc1 * ampenv * amp, pan));
 
@@ -179,7 +179,8 @@ SynthDef(\moogbasstone, { | out = 0 freq = 440 amp = 0.1 gate = 1 cutoff = 1000 
 	Out.ar(out, Pan2.ar((0.7 * filter+(0.3 * filter.distort)) * env * amp * 1.5, pan));
 
 }), 
-SynthDef(\moogbasstone2, { | out = 0 freq = 440 amp = 0.1 gate = 1 attackTime = 0.2 fenvamount = 0.5 cutoff = 1000 gain = 2.0 pan = 0.0 | 
+SynthDef(\moogbasstone2, { | out = 0 freq = 440 amp = 0.1 gate = 1 attackTime = 0.2 
+	fenvamount = 0.5 cutoff = 1000 gain = 2.0 pan = 0.0 | 
 
 	var osc, filter, env, filterenv;
 
