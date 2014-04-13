@@ -57,20 +57,24 @@ UniqueWindow {
 		var available;
 		available = Window.availableBounds;
 		window.bounds = Rect(0, 0, width, available.height);
-
 	}
 
 	bottom { | height = 100 |
 		var available;
 		available = Window.availableBounds;
 		window.bounds = Rect(0, 0, available.width, height);
-
 	}
 
 	right { | width = 200 |
 		var available;
 		available = Window.availableBounds;
 		window.bounds = Rect(available.width - width, 0, width, available.height);
+	}
 
+	topRight { | width = 400, height = 400 |
+		var available;
+		available = Window.availableBounds;
+		window.bounds = 
+		Rect(available.width - width, available.height - height, width, height);
 	}
 }
