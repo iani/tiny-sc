@@ -4,10 +4,8 @@
 	=> { | st | ^st.asSynthTree setPatternInstrument: this }
 
 	asPatternInstrument {
-		^PatternInstrument(PatternPlayer([freq: 440], Pfunc({ ~dur.next })), this);
+		^PatternInstrument(PatternPlayer([], Pfunc({ ~dur.next })), this);
 	}
-	
-	legato_ { | legato = 1 | ^this.asSynthTree.legato = legato }
 
 	patternParams { | paramArray, adverb |
 		if (adverb === 'i') {

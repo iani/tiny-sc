@@ -28,14 +28,12 @@ p => \pattern1;
 
 //:
 500 -> \freq => \pattern1;
-//:
-\freq->500 => \pattern1;
 
 //:
-\freq->([500, 600]).prand => \pattern1;
+([500, 600]).prand -> \freq => \pattern1;
 
 //:
-\freq->[500, 600, 700, 900].prand => \pattern1;
+[500, 600, 700, 900].prand -> \freq => \pattern1;
 
 //:
 \freq->[
@@ -68,21 +66,21 @@ p => \pattern1;
 	Pstutter(Pbrown(1, 30, 1), \sine.pn(2)), 
 	Pstutter(Pbrown(1, 30, 2), \lpfpulse.pn(2))].prand => \pattern1;
 //:
-0.02 =!> \dur;
+0.02 *> \dur;
 [freq: Pwhite(
 	Pstutter(5, Pbrown(40, 50, 1)), 
 	Pstutter(5, Pbrown(45, 90, 1))
 ).midicps ] 
-=>.i Pwrand([\lpfpulse, \sinosc, \lpfsaw],
+=>.i Pwrand([\lpfpulse, \sine, \lpfsaw],
 	Pstutter(30, Pfunc({ Array.rand(3, 0.0, 1).normalizeSum })), 
 	inf)
 => \pattern1;
 
 //:
-0.1 =!> \dur;
+0.1 *> \dur;
 //:
-~st.legato = Pwhite(0.2, 3.2, inf);
+Pwhite(0.2, 0.5, inf) *> \legato;
 //:
-\amp -> Pwhite(0.01, 0.1, inf) => ~st;
+Pwhite(0.01, 0.1, inf) *> \amp;
 //:
-\amp -> pser(((0..200)/2000).pyramid) => ~st;
+pser(((0..20)/200).pyramid) *> \amp;

@@ -54,10 +54,10 @@ Here all methods that are needed to handle -> and *>
 		switch (param,
 			\dur, { this.durations = argPattern },
 			\duration, { this.durations = argPattern},
-			\leg, { this.legato = argPattern },
-			\legato, { this.legato = argPattern },
-			\instr, { this.instrument = argPattern },
-			\instrument, { this.instrument = argPattern },
+			// \leg, { this.legato = argPattern },
+			// \legato, { this.legato = argPattern },
+			// \instr, { this.instrument = argPattern },
+			// \instrument, { this.instrument = argPattern },
 			{ this.set(param, argPattern); }
 		);
 	}

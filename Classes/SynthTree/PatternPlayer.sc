@@ -37,11 +37,6 @@ PatternPlayer {
 		durationPattern = durations;
 		durationStream = durationPattern.asStream;
 	}
-	
-	legato_ { | argLegato |
-		valuePattern.legato = argLegato;
-		valueStream.legato = argLegato;
-	}
 
 	makeTask {
 		task = Task {
@@ -105,5 +100,61 @@ PatternFunc {
 	remove {
 		this.disable;
 		this.objectClosed;
+	}
+}
+
+SynthPattern {
+	var <params;
+
+	*new { | params | ^this.newCopyArgs ( params); }
+	asStream { ^SynthStream(params) }
+
+	set { | param, value |
+		var index;
+		index = params indexOf: param;
+		if (index.isNil) {
+			params = params ++ [param, value];
+		}{
+			params[index + 1] = value;
+		}
+	}
+}
+
+SynthStream {
+	var <params; // , <legato;
+
+	*new { | params /* , legato = 1 */ |
+		^this.newCopyArgs(ParamStream(params) /* , legato.asStream */ );
+	}
+	next { | dur | ^params.asEvent(dur); }
+	set { | param, pattern | params.set(param, pattern); }
+}
+
+ParamStream {
+	var <keys, <values;
+
+	*new { | params | ^super.new.init(params) }
+
+	init { | argParams |
+		#keys, values = argParams.clump(2).flop;
+		values = values collect: _.asStream;	
+	}
+
+	asEvent {
+		var event;
+		event = ();
+		keys do: { | key, index | event[key] = values[index].next };
+		^event;
+	}
+	//	next { ^[keys, values collect: _.next].flop.flat; }
+	set { | param, value |
+		var index;
+		index = keys indexOf: param;
+		if (index.isNil) {
+			keys = keys add: param;
+			values = values add: value.asStream;
+		}{
+			values[index] = value.asStream;
+		}
 	}
 }

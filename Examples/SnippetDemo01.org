@@ -55,22 +55,22 @@ p => \pattern1;
 
 ** ! [freq: (50..70).midicps.prand] => Pstutter(3, Pbrown(0.05, 0.15, 0.05)) => \pattern1;
 
-** ! \freq->500 => \pattern1;
+** ! 500 -> \freq  => \pattern1;
 
-** ! \freq->([500, 600]).prand => \pattern1;
+** ! ([500, 600]).prand -> \freq => \pattern1;
 
-** ! \freq->[500, 600, 700, 900].prand => \pattern1;
+** ! [500, 600, 700, 900].prand -> \freq => \pattern1;
 
 ** Yemen?
-\freq->[
+[
 	([500, 600, 550]).prand(15) * Pstutter(12, [0.5, 0.75, 0.8, 0.9, 1, 1.1].prand),
 	[700, 800, 900].prand(10)
-].prand => \pattern1;
+].prand -> \freq => \pattern1;
 
 ** Use global duration
 [freq: (40..80).midicps.prand, amp: { 0.01.exprand(0.1) }.pfunc] => \pattern1;
 
-** ! 0.1 =!> \dur; // go more slowly
+** ! 0.1 pn: inf *> \dur; // go more slowly
 
 ** Cloud event examples
 
@@ -92,7 +92,7 @@ p => \pattern1;
 	Pstutter(10, Pbrown(40, 50, 1)),
 	Pstutter(10, Pbrown(45, 90, 1))
 ).midicps ] =>.i [
-	Pstutter(Pbrown(1, 30, 1), \sinosc.pn(2)),
+	Pstutter(Pbrown(1, 30, 1), \sine.pn(2)),
 	Pstutter(Pbrown(1, 30, 2), \lpfpulse.pn(2))].prand => \pattern1;
 *** Changing instruments interweaving
 0.02 =!> \dur;
@@ -107,10 +107,10 @@ p => \pattern1;
 
 *** ! 0.1 =!> \dur; // Go more slowly
 
-*** ! ~st.legato = Pwhite(0.2, 3.2, inf);
-*** ! \amp -> Pwhite(0.01, 0.1, inf) => ~st;
+*** ! Pwhite(0.2, 3.2, inf) *> \legato;
+*** ! Pwhite(0.01, 0.1, inf) *> \amp;
 *** Pyramid amp: surging waves
-\amp -> pser(((0..200)/200).pyramid) => ~st;
+pser(((0..20)/200).pyramid) *> \amp;
 *** Brown motion amp
 \amp -> Pbrown(0.01, 0.2, 0.02, inf) => ~st;
 *** ! ~st.legato = Pbrown(0.02, 1, 0.1, inf) * Pwrand([1, 15], [0.9, 0.1], inf);

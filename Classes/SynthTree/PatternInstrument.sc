@@ -5,24 +5,46 @@ IZ Fri, Apr  4 2014, 12:46 EEST
 
 PatternInstrument {
 	var <pattern; // A PatternPlayer
-	var <instrument;
+	var <instrument; // this will be removed soon
 	var <name;
 	var <numChannels;
-	var <>inputSpecs;
+	var <>inputSpecs;   // for controls. May be replaced by method
+	// that gets the input specs from the pattern.
+	var synthEventAction; // NEW: can act as filter, copy/changing the event
+	var bus, busIndex, group;
 
-	*new { | pattern, instrument = \default, name = \pattern, numChannels |
-		^this.newCopyArgs(pattern, instrument, name, numChannels).init;
+	*new { | pattern, instrument = \default, name = \pattern, numChannels,
+		synthEventAction |
+		^this.newCopyArgs(pattern, instrument, name, numChannels, synthEventAction)
+		.init;
 	}
 
 	init { 
 		this.instrument = instrument;
 		numChannels ?? { numChannels = ~numChans; };
+		synthEventAction ?? { synthEventAction = this.defaultSynthEventAction; }
+	}
+
+	defaultSynthEventAction {
+		/* Note: This could return an object other than a Function
+			For example, one that encapsulates the standard action below, 
+			but adds further filters to the event, copying + changing it,
+			or choosing to perform other actions also. 
+			Thus subclassing or also composition of the action could be possible.
+		*/
+		^{ | synthEvent |
+			synthEvent
+			.out_(busIndex)
+			.target_(group)
+			.addAction_(\addToHead)
+			.play;
+		}
 	}
 
 	set { | param, argPattern | pattern.set(param, argPattern); }
 
-	instrument_ { | argInstrument = \default | instrument = argInstrument.asStream }
-	legato_ { | argLegato | pattern.legato = argLegato }
+	instrument_ { | argInstrument = \default | pattern.set(\instrument, argInstrument) }
+	legato_ { | argLegato | pattern.set(\legato, argLegato) }
 	durations_ { | argDurations | pattern.durations = argDurations }
 	start { pattern.start }
 	stop { pattern.stop }
@@ -31,7 +53,7 @@ PatternInstrument {
 	templateArgs { ^[ControlName(\amp, nil, \control, 1)] }
 
 	asSynth { | synthTree, fadeTime |
-		var bus, busIndex, patternSynth, group;
+		var patternSynth;
 		bus = Bus.audio(synthTree.server, numChannels);
 		busIndex = bus.index;
 		group = Group(synthTree.group, \addToHead);
@@ -43,110 +65,15 @@ PatternInstrument {
 			args: [in: busIndex, fadeIn: synthTree.getFadeTime, 
 				amp: synthTree.getParamValue(\amp), out: synthTree.getOutputBusIndex]
 		);
-		this.addNotifier(this.pattern, \value, { | synthEvent |
-			synthEvent
-			.out_(busIndex)
-			.target_(group)
-			.addAction_(\addToHead)
-			.play;
-			/*
-			var eventSynth;
-			eventSynth = Synth(instrument.next,
-				synthEvent.params ++ [out: busIndex],
-				group, \addToHead
-			);
-			pattern.clock.sched(synthEvent.dur max: 0.02, {
-				if (patternSynth.isPlaying) { eventSynth.release };
-			});
-			*/
-		});
+		this.setSynthEventAction(synthEventAction);
 		patternSynth.onEnd(this, { this.objectClosed });
 		patternSynth.init(synthTree, bus);
 		pattern.start;
 		^patternSynth;
 	}
-}
 
-SynthPattern {
-	//	var <instrument;
-	var <params;
-	var <>legato;
-
-	*new { | /* instrument, */ params, legato = 1 |
-		^this.newCopyArgs (/* instrument, */ params, legato);
-	}
-
-	asStream { ^SynthStream(/* instrument, */ params, legato) }
-
-	set { | param, value |
-		var index;
-		index = params indexOf: param;
-		if (index.isNil) {
-			params = params ++ [param, value];
-		}{
-			params[index + 1] = value;
-		}
-	}
-}
-
-SynthStream {
-	var <params, <legato;
-
-	*new { | params, legato = 1 |
-		^this.newCopyArgs(ParamStream(params), legato.asStream);
-	}
-
-	next { | dur |
-		//		^SynthEvent (params.next, legato.next * dur)
-		^params.asEvent(dur);
-	}
-
-	set { | param, pattern |
-		params.set(param, pattern);
-	}
-
-	legato_ { | argLegato | legato = argLegato.asStream; }
-}
-
-ParamStream {
-	var <keys, <values;
-
-	*new { | params |
-		^super.new.init(params)
-	}
-
-	init { | argParams |
-		#keys, values = argParams.clump(2).flop;
-		values = values collect: _.asStream;	
-	}
-
-	asEvent {
-		var event;
-		event = ();
-		keys do: { | key, index | event[key] = values[index].next };
-		^event;
-	}
-	next {
-		^[keys, values collect: _.next].flop.flat;
-	}
-
-	set { | param, value |
-		var index;
-		index = keys indexOf: param;
-		if (index.isNil) {
-			keys = keys add: param;
-			values = values add: value.asStream;
-		}{
-			values[index] = value.asStream;
-		}
-	}
-}
-
-SynthEvent {
-	var /* <instrument, */ <params, <dur;
-	var <synth;
-
-	*new { | /* instrument, */ params, dur |
-		^this.newCopyArgs (/* instrument, */ params, dur);
+	setSynthEventAction { | argSynthEventAction |
+		synthEventAction = argSynthEventAction;
+		this.addNotifier(this.pattern, \value, synthEventAction);
 	}
 }

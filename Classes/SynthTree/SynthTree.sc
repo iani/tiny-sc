@@ -223,8 +223,6 @@ SynthTree : IdentityTree {
 		};
 	}
 
-	legato_ { | argLegato | template.legato = argLegato }
-
 	setPatternDuration { | numberOrPattern |
 		template.pattern.durations = numberOrPattern;
 	}

@@ -2,6 +2,12 @@
 
 * Currently working on
 
+** PatternInstrument plays event, custom action
+:PROPERTIES:
+:DATE:     <2014-04-14 Mon 21:59>
+:END:
+
+
 
 ** play data streams
 :PROPERTIES:
