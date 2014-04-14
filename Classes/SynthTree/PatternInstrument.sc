@@ -13,34 +13,23 @@ PatternInstrument {
 	*new { | pattern, instrument = \default, name = \pattern, numChannels |
 		^this.newCopyArgs(pattern, instrument, name, numChannels).init;
 	}
+
 	init { 
 		this.instrument = instrument;
 		numChannels ?? { numChannels = ~numChans; };
 	}
 
-	set { | param, argPattern |
-		pattern.set(param, argPattern);
-	}
+	set { | param, argPattern | pattern.set(param, argPattern); }
 
 	instrument_ { | argInstrument = \default | instrument = argInstrument.asStream }
 	legato_ { | argLegato | pattern.legato = argLegato }
-	durations_ { | argDurations |
-		pattern.durations = argDurations
-	}
-
+	durations_ { | argDurations | pattern.durations = argDurations }
 	start { pattern.start }
 	stop { pattern.stop }
 	isPlaying { ^pattern.isPlaying }
-	
-	asSynthTemplate { | argName |
-		name = argName;
-	}
+	asSynthTemplate { | argName | name = argName; }
+	templateArgs { ^[ControlName(\amp, nil, \control, 1)] }
 
-	templateArgs {
-		^[ControlName(\amp, nil, \control, 1)]
-	}
-
-	// TODO: Fix initTree to work correctly for sending to fx inputs
 	asSynth { | synthTree, fadeTime |
 		var bus, busIndex, patternSynth, group;
 		bus = Bus.audio(synthTree.server, numChannels);
@@ -55,6 +44,12 @@ PatternInstrument {
 				amp: synthTree.getParamValue(\amp), out: synthTree.getOutputBusIndex]
 		);
 		this.addNotifier(this.pattern, \value, { | synthEvent |
+			synthEvent
+			.out_(busIndex)
+			.target_(group)
+			.addAction_(\addToHead)
+			.play;
+			/*
 			var eventSynth;
 			eventSynth = Synth(instrument.next,
 				synthEvent.params ++ [out: busIndex],
@@ -63,6 +58,7 @@ PatternInstrument {
 			pattern.clock.sched(synthEvent.dur max: 0.02, {
 				if (patternSynth.isPlaying) { eventSynth.release };
 			});
+			*/
 		});
 		patternSynth.onEnd(this, { this.objectClosed });
 		patternSynth.init(synthTree, bus);
@@ -101,7 +97,8 @@ SynthStream {
 	}
 
 	next { | dur |
-		^SynthEvent (params.next, legato.next * dur)
+		//		^SynthEvent (params.next, legato.next * dur)
+		^params.asEvent(dur);
 	}
 
 	set { | param, pattern |
@@ -118,11 +115,17 @@ ParamStream {
 		^super.new.init(params)
 	}
 
-	init { | params |
-		#keys, values = params.clump(2).flop;
-		values = values collect: _.asStream;
+	init { | argParams |
+		#keys, values = argParams.clump(2).flop;
+		values = values collect: _.asStream;	
 	}
 
+	asEvent {
+		var event;
+		event = ();
+		keys do: { | key, index | event[key] = values[index].next };
+		^event;
+	}
 	next {
 		^[keys, values collect: _.next].flop.flat;
 	}

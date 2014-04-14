@@ -20,12 +20,7 @@ PatternSynth : Synth {
 		})
 	}
 
-	test {
-		^{
-			LPF.ar(WhiteNoise.ar, (LFNoise0.kr(15).range(500, 5000))).ladsrOut
-		}.play(args: [out: bus.index], target: group, addAction: \addToHead);
-	}
-
+	/*
 	addSynth { | instrument = \default, args |
 		^Synth(instrument, args ++ [out: busIndex], group, \addToHead)
 	}
@@ -37,20 +32,9 @@ PatternSynth : Synth {
 			pattern.clock.sched(synthEvent.dur, { synth.release });
 		});
 	}
-
-	moveAfter { | argNode |
-		group.moveAfter(argNode);
-	}
-
-	moveBefore { | argNode |
-		group.moveBefore(argNode);
-	}
-
-	moveToHead { | argNode |
-		group.moveToHead(argNode);
-	}
-
-	moveToTail { | argNode |
-		group.moveToTail(argNode);
-	}
+	*/
+	moveAfter { | argNode | group.moveAfter(argNode); }
+	moveBefore { | argNode | group.moveBefore(argNode); }
+	moveToHead { | argNode | group.moveToHead(argNode); }
+	moveToTail { | argNode | group.moveToTail(argNode); }
 }
