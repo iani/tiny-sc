@@ -1,7 +1,7 @@
 
 + Symbol {
 
-	=> { | st | ^st.asSynthTree setPatternInstrument: this }
+	=> { | params | ^this.asMdef set: params }
 
 	asPatternInstrument {
 		^PatternInstrument(PatternPlayer([], Pfunc({ ~dur.next })), this);
