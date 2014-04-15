@@ -47,7 +47,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 
 	/* Fix for setting the fade-in time reliably. */
 	ladsrOut { | outName = \out, outValue = 0,
-		attackTime = 0.02, decayTime = 0.3, sustainLevel = 1, releaseTime = 1, 
+		attackTime = 0.02, decayTime = 0.0, sustainLevel = 1, releaseTime = 0.02, 
 		peakLevel = 1, curve = -4, bias = 0,
 		gateName = \gate, gateValue = 1,
 		ampName = \amp, ampValue = 0.1, doneAction = 2, fadeIn = 0 |
@@ -62,7 +62,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 	}
 
 	adsrOut { | outName = \out, outValue = 0,
-		attackTime = 0.02, decayTime = 0.3, sustainLevel = 1, releaseTime = 1, 
+		attackTime = 0.02, decayTime = 0.0, sustainLevel = 1, releaseTime = 0.02, 
 		peakLevel = 1, curve = -4, bias = 0,
 		gateName = \gate, gateValue = 1,
 		ampName = \amp, ampValue = 0.1, doneAction = 2 |
@@ -104,7 +104,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 
 	/* Fix for setting the fade-in time reliably. */
 	ladsrOut { | outName = \out, outValue = 0,
-		attackTime = 0.02, decayTime = 0.3, sustainLevel = 1, releaseTime = 1, 
+		attackTime = 0.02, decayTime = 0.0, sustainLevel = 1, releaseTime = 0.02, 
 		peakLevel = 1, curve = -4, bias = 0,
 		gateName = \gate, gateValue = 1,
 		ampName = \amp, ampValue = 0.1, doneAction = 2, fadeIn = 0 |
@@ -123,7 +123,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 		See ladrsOut. 
 	*/
 	adsrOut { | outName = \out, outValue = 0,
-		attackTime = 0.02, decayTime = 0.3, sustainLevel = 1, releaseTime = 1, 
+		attackTime = 0.02, decayTime = 0.0, sustainLevel = 1, releaseTime = 0.02, 
 		peakLevel = 1, curve = -4, bias = 0,
 		gateName = \gate, gateValue = 1,
 		ampName = \amp, ampValue = 0.1, doneAction = 2 |

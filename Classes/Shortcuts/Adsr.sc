@@ -8,7 +8,7 @@ Not done yet.
 */
 
 Adsr {
-	*new { | attackTime = 0.02, decayTime = 0.3, sustainLevel = 0.5, releaseTime = 1, 
+	*new { | attackTime = 0.02, decayTime = 0.0, sustainLevel = 1, releaseTime = 0.02, 
 		peakLevel = 1, curve = -4, bias = 0, 
 		gateName = \gate, gateValue = 1,
 		ampName = \amp, ampValue = 0.1,

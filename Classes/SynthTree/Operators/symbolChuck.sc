@@ -9,14 +9,8 @@
 
 	patternParams { | paramArray, adverb |
 		if (adverb === 'i') {
-			^PatternInstrument(PatternPlayer(paramArray), this);
+			^PatternInstrument(PatternEventPlayer(paramArray), this);
 		}{
-			/*
-			^this.asSynthTree.playPattern(
-				PatternInstrument(PatternPlayer(paramArray)),
-				adverb === 'm' // merge players if 'm'
-			);
-			*/
 			^this.asSynthTree.chuckPatternParams(paramArray)
 		};
 	}
@@ -62,6 +56,7 @@
 
 + SequenceableCollection {
 	asPatternInstrument { | instrument |
-		^PatternInstrument(PatternPlayer(this, Pfunc({ ~dur.next })), instrument)
+		^PatternInstrument(
+			PatternEventPlayer(this, Pfunc({ ~dur.next })), instrument)
 	}
 }

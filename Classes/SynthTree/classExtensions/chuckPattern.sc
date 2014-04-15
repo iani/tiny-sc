@@ -32,7 +32,7 @@
 	}
 
 	patternParams { | pattern |
-		^PatternInstrument(PatternPlayer(pattern), this.value);
+		^PatternInstrument(PatternEventPlayer(pattern), this.value);
 	}
 	
 	playPattern { | pattern |

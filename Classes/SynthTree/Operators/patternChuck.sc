@@ -17,9 +17,9 @@
 
 	patternParams { | paramArray, adverb |
 		if (adverb === 'i') {
-			^PatternInstrument(PatternPlayer(paramArray), this);
+			^PatternInstrument(PatternEventPlayer(paramArray), this);
 		}{
-			^PatternPlayer(paramArray, this);
+			^PatternEventPlayer(paramArray, this);
 		}
 	}
 

@@ -4,7 +4,7 @@
 		^PatternPlayer(pattern, this);
 	}
 	patternParams { | paramArray, adverb |
-		^PatternPlayer(paramArray, this);
+		^PatternEventPlayer(paramArray, this);
 	}
 	receivePatternInstrument { | patternInstrument |
 		^patternInstrument.durations = this;

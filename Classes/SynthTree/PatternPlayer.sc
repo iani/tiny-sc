@@ -22,13 +22,10 @@ PatternPlayer {
 
 	*new { | values, durations, delay = 0, clock |
 		^this.newCopyArgs(delay, clock ?? { TempoClock /*() */ })
-		.values_(values).durations_(durations ?? { Pfunc({ ~dur })});
+		.values_(values).durations_(durations ? 1);
 	}
 
 	values_ { | values |
-		if (values isKindOf: SequenceableCollection) {
-			values = SynthPattern(values);
-		};
 		valuePattern = values;
 		valueStream = valuePattern.asStream;
 	}
@@ -59,47 +56,30 @@ PatternPlayer {
 		task ?? { this.makeTask }; 
 		task.play(clock);
 	}
-
     stop { task.stop; }
 	reset { task.reset; }
-
     isPlaying { ^task.isPlaying; }
+	=> { | chuckee, adverb | ^chuckee.playPattern(this) }
+}
 
-	=> { | chuckee, adverb |
-		^chuckee.playPattern(this)
+PatternEventPlayer : PatternPlayer {
+	*new { | values, delay = 0, clock |
+		^this.newCopyArgs(delay, clock ?? { TempoClock /*() */ })
+		.values_(SynthPattern(values)).initDurations;
+	}
+
+	initDurations {
+		
+	}
+
+	durations_ {
+
 	}
 
 	set { | param, value |
 		/* When playing a patternplayer as synth in a synthtree */
-		this.setPatternParam (param, value);
-		this.setStreamParam (param, value);
-	}
-
-	setPatternParam { | param, value |
 		valuePattern.set (param, value);
-	}
-
-	setStreamParam { | param, value |
-		valueStream.set (param, value);
-	}
-}
-
-PatternFunc {
-	var <pattern, <receiver, <>action;
-	*new { | pattern, receiver, action |
-		^this.newCopyArgs(pattern, receiver, action).enable;
-	}
-
-	enable {
-		this.addNotifier(pattern, \value, action);
-	}
-
-	disable {
-		this.removeNotifier(pattern, \value);
-	}
-	remove {
-		this.disable;
-		this.objectClosed;
+		valueStream.set (param, value)
 	}
 }
 
@@ -156,5 +136,20 @@ ParamStream {
 		}{
 			values[index] = value.asStream;
 		}
+	}
+}
+
+PatternFunc {
+	var <pattern, <receiver, <>action;
+	*new { | pattern, receiver, action |
+		^this.newCopyArgs(pattern, receiver, action).enable;
+	}
+
+	enable { this.addNotifier(pattern, \value, action); }
+	disable { this.removeNotifier(pattern, \value); }
+
+	remove {
+		this.disable;
+		this.objectClosed;
 	}
 }

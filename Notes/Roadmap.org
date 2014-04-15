@@ -9,34 +9,60 @@
 
 ** Mdef: Named PatternPlayer Model
 
-Usage draft:
+*** Creating, chucking to synthtree
 
 #+BEGIN_EXAMPLE
-Mdef(\p1).play;
-
-Mdef(\p1) => \synthtree1;
-
-\p1.mdef => \synthtree2;
-
-\p1 %> \synthtree2;
-
+Mdef(\p1).play;  // create PatternInstrument named p1, play
+\p1 => \synthtree1; // send it to \synthtree
 #+END_EXAMPLE
 
-Modifying the received event:
+This is no longer possible:
+\instrument => \synthtree;
 
+But this will serve as substitute:
+
+`\instrument => \synthtree;
+
+More examples:
+
+Mdef(\p1, [degree: 5]); // Always (re-) initializes contents!
+
+To not clear, but merge contents:
+
+Mdef(\p1) set: [amp: { 0.01 rrand: 0.1 }.pfunc];
+
+*** Modifying an Mdef: alternative shortcut =>
+
+Mdef(\p1) set: [degree: (1..3).pseq];
+
+or alternative shortcut:
+
+\p1 => [degree: [1, 2, 3].pseq];
+
+*** Modifying the received event:
+
+**** Rejected first tries
 #+BEGIN_EXAMPLE
 // here we have a problem: how to indicate getting the degree:
-\p1 %> [degree: [1, 2].pseq + ~degree] => \synthree3;
+[degree: [1, 2].pseq + ~degree] %> \synthree3;
 // maybe it has to be:
-\p1 %> { [degree: [1, 2].pseq + ~degree] } => \synthree3;
+{ [degree: [1, 2].pseq + ~degree] } %> \synthree3;
 // or use a new type of pattern to access parent:
-\p1 %> [degree: [1, 2].pseq + \degree.parent] => \synthree3;
-// alternative method name: pget
-\p1 %> [degree: [1, 2].pseq + \degree.pget] => \synthree3;
+[degree: [1, 2].pseq + \degree.parent] %> \synthree3;
 #+END_EXAMPLE
 
-\degree.pget would translate to:
-Pfunc({ ~degree })
+**** Solution
+
+#+BEGIN_EXAMPLE
+// alternative method name: pget
+[degree: [1, 2].pseq + \degree.pget] %> \synthree3;
+#+END_EXAMPLE
+
+: \degree.pget
+
+would translate to:
+
+: Pfunc({ ~degree })
 
 and that would be evaluated in the parent environment using =use:=.
 
@@ -48,6 +74,18 @@ parentEnvir use: {
 };
 #+END_EXAMPLE
 
+*** Cloning an Mdef (quasi Pbindf)
+
+#+BEGIN_EXAMPLE
+Mdef(\p1, [degree: [1, 2, 3].pseq]) => \player1;
+Mdef(\p2).clone(\p1, [dur: 0.1]) => \player2;
+#+END_EXAMPLE
+
+Then to add further filters to a player:
+
+#+BEGIN_EXAMPLE
+[degree: 3 + \degree.pget] %> \player1;
+#+END_EXAMPLE
 
 ** play data streams
 :PROPERTIES:
@@ -63,6 +101,10 @@ parentEnvir use: {
 Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
+
+** Make PatternPlayer/Instrument fully compatible to Event
+
+incorporate legato, dur, and instrument in PatternPlayer's pattern.
 
 ** Implement @> for mapping control busses to synthtree params
 
