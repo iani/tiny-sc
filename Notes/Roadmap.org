@@ -9,6 +9,48 @@
 
 ** Mdef: Named PatternPlayer Model
 
+To consider:
+Mdef is subclass of PatternPlayer
+
+This could be a practical coding pattern, and is compatible with the details of the following sections:
+
+: \pattern1 => [instrument: \bass] => \synthtree1;
+
+Alternative to:
+
+: Mdef(\pattern1, [instrument: \bass]) => \synthtree1;
+
+Alternatively this plays with a PatternPlayer, not an Mdef:
+: [instrument: \bass] => \synthtree1;
+
+The advantage of Mdef over PatternPlayer is that it is accessible through its name for further modifications, and that it can be cloned to other Mdefs which then inherit its contents but also subsequent changes.
+
+The ability to filter the event data broadcast by a PatternPlayer is implemented in PatternInstrument, and is available both to PatternPlayer and its subclass Mdef.
+
+*** How Mdef clone inherits
+
+Care must be taken not to overwrite the params that are set for the clone when the params of the prototype change.
+
+Therefore, Mdef should have separate vars for the data from the parent Mdef, and for its own data. So it is something like:
+
+var <parent;
+var <valuePattern; // this is the currently existing variable, remains unchanged.
+
+There is no need to store the full merged *pattern* array of the prototype with the parent *patterns*.   We only need the valueStream to be merged, since this is used to produce the event for playing.  So when a cloned Mdef receives a notification from the parnent Mdef, it goes something like this:
+
+#+BEGIN_EXAMPLE
+var keys;
+keys = valuePattern.clump(2).flop[0];
+parent.valuePattern keysValuesDo: { | param, pattern |
+    if (keys.inclueds(param).not) { ... add only those to stream }
+};
+valuePattern keysValuesDo: { | param, pattern |
+    ... add all params of self to own stream
+}
+#+END_EXAMPLE
+
+
+
 *** Creating, chucking to synthtree
 
 #+BEGIN_EXAMPLE
