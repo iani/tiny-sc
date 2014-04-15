@@ -7,6 +7,46 @@
 :DATE:     <2014-04-14 Mon 21:59>
 :END:
 
+** Mdef: Named PatternPlayer Model
+
+Usage draft:
+
+#+BEGIN_EXAMPLE
+Mdef(\p1).play;
+
+Mdef(\p1) => \synthtree1;
+
+\p1.mdef => \synthtree2;
+
+\p1 %> \synthtree2;
+
+#+END_EXAMPLE
+
+Modifying the received event:
+
+#+BEGIN_EXAMPLE
+// here we have a problem: how to indicate getting the degree:
+\p1 %> [degree: [1, 2].pseq + ~degree] => \synthree3;
+// maybe it has to be:
+\p1 %> { [degree: [1, 2].pseq + ~degree] } => \synthree3;
+// or use a new type of pattern to access parent:
+\p1 %> [degree: [1, 2].pseq + \degree.parent] => \synthree3;
+// alternative method name: pget
+\p1 %> [degree: [1, 2].pseq + \degree.pget] => \synthree3;
+#+END_EXAMPLE
+
+\degree.pget would translate to:
+Pfunc({ ~degree })
+
+and that would be evaluated in the parent environment using =use:=.
+
+#+BEGIN_EXAMPLE
+parentEnvir use: {
+   params keysValuesDo: { | param, stream |
+      childEnvir[param] = stream.next;
+   }
+};
+#+END_EXAMPLE
 
 
 ** play data streams
