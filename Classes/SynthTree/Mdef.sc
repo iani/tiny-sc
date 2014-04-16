@@ -7,7 +7,7 @@ IZ Wed, Apr 16 2014, 04:59 EEST
 Mdef {
 	classvar <all;
 
-	var <player, <parent;
+	var <name, <player, <parent;
 
 	*initClass { all = IdentityDictionary(); }
 
@@ -46,7 +46,7 @@ Mdef {
 
 	clone { | argName, template, durations |
 		var newMdef;
-		newMdef = this.new(argName, template, durations);
+		newMdef = this.class.new(argName, template, durations);
 		newMdef.parent = this;
 		^newMdef;
 	}
@@ -58,7 +58,7 @@ Mdef {
 	}
 
 	getParentValues {
-		player.updateDataFromParent(parent);
+		player !? { player.updateDataFromParent(parent) };
 		this.changed(\values);
 	}
 
@@ -79,4 +79,12 @@ Mdef {
 
 + SequenceableCollection {
 	asPatternPlayer { | durations = 1 | ^PatternEventPlayer(this, durations) }
+}
+
++ PatternPlayer {
+	updeteDataFromParent {}
+}
+
++ PatternEventPlayer {
+	updeteDataFromParent {}
 }
