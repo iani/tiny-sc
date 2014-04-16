@@ -8,9 +8,14 @@
 :END:
 
 ** Mdef: Named PatternPlayer Model
+:PROPERTIES:
+:DATE:     <2014-04-16 Wed 04:58>
+:END:
 
 To consider:
-Mdef is subclass of PatternPlayer
+Mdef subclass of PatternPlayer?
+
+Maybe try first with Ndef as independent class, containing a PatternPlayer or subclass as instance var player.
 
 This could be a practical coding pattern, and is compatible with the details of the following sections:
 

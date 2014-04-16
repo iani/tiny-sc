@@ -64,5 +64,5 @@ Here all methods that are needed to handle -> and *>
 }
 
 + Function {
-	asPatternPlayer { ^PatternPlayer(Pfunc(this), Pfunc({ ~dur })) }
+	asPatternPlayer { | durations = 1 | ^PatternPlayer(Pfunc(this), durations) }
 }
