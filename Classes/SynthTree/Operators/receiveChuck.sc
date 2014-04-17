@@ -30,7 +30,6 @@
 
 + Function {
 	receiveChuck { | chucker | ^PatternPlayer(chucker.asPattern, this.asPattern) }
-
 	asPattern { ^Pfunc(this) }
 }
 
@@ -50,3 +49,5 @@
 + PatternPlayer { asPattern { ^this } }
 
 + SequenceableCollection { asPattern { ^Pseq(this, inf) } }
+
++ Nil { asPattern { } }

@@ -22,7 +22,11 @@ PatternPlayer {
 
 	*new { | values, durations, delay = 0, clock |
 		^this.newCopyArgs(delay, clock ?? { TempoClock /*() */ })
-		.values_(values).durations_(durations ? 1);
+		.values_(values).durations_(durations);
+	}
+
+	set { | values |
+		this.values_(values); // PatternEventPlayer overrides this
 	}
 
 	values_ { | values |
@@ -31,6 +35,7 @@ PatternPlayer {
 	}
 
 	durations_ { | durations |
+		durations ?? { durations = durationPattern ? 1 };
 		durationPattern = durations;
 		durationStream = durationPattern.asStream;
 	}
@@ -63,23 +68,37 @@ PatternPlayer {
 }
 
 PatternEventPlayer : PatternPlayer {
+
 	*new { | values, delay = 0, clock |
 		^this.newCopyArgs(delay, clock ?? { TempoClock /*() */ })
-		.values_(SynthPattern(values)).initDurations;
+		.values_(values).initPatternEventPlayer;
 	}
 
-	initDurations {
-		
+	values_ { | values |
+		// reset pattern/stream if new values are provided
+		if (values.notNil or: { valuePattern.isNil }) {
+			valuePattern = SynthPattern([]);
+			valueStream = valuePattern.asStream;
+		};
+		this.set(values);
 	}
 
-	durations_ {
-
+	initPatternEventPlayer {
+		durationPattern ?? { this.durations = 1; }
 	}
 
-	set { | param, value |
-		/* When playing a patternplayer as synth in a synthtree */
-		valuePattern.set (param, value);
-		valueStream.set (param, value)
+	set { | values |
+		// add all key-value pairs - except for dur.
+		// dur sets durationPattern/durationStream instead.
+		values keysValuesDo: { | param, value |
+			if (param === \dur) {
+				this.durations = value;
+			}{
+				valuePattern.set (param, value);
+				valueStream.set (param, value);
+			};
+		};
+		this.changed(\values);
 	}
 }
 
@@ -98,6 +117,8 @@ SynthPattern {
 			params[index + 1] = value;
 		}
 	}
+
+	asPatternPlayer { | durations | ^params.asPatternPlayer(durations); }
 }
 
 SynthStream {
@@ -113,20 +134,20 @@ SynthStream {
 ParamStream {
 	var <keys, <values;
 
-	*new { | params | ^super.new.init(params) }
+	*new { | params | ^super.new.initParamStream(params) }
 
-	init { | argParams |
+	initParamStream { | argParams |
 		#keys, values = argParams.clump(2).flop;
-		values = values collect: _.asStream;	
+		values = values collect: _.asStream;
 	}
 
-	asEvent {
+	asEvent { | duration |
 		var event;
-		event = ();
+		event = (dur: duration);
 		keys do: { | key, index | event[key] = values[index].next };
 		^event;
 	}
-	//	next { ^[keys, values collect: _.next].flop.flat; }
+
 	set { | param, value |
 		var index;
 		index = keys indexOf: param;
@@ -138,6 +159,8 @@ ParamStream {
 		}
 	}
 }
+
+// ================================================================
 
 PatternFunc {
 	var <pattern, <receiver, <>action;
