@@ -5,7 +5,6 @@ IZ Fri, Apr  4 2014, 12:46 EEST
 
 PatternInstrument {
 	var <pattern; // A PatternPlayer
-	var <instrument; // this will be removed soon
 	var <name;
 	var <numChannels;
 	var <>inputSpecs;   // for controls. May be replaced by method
@@ -16,24 +15,23 @@ PatternInstrument {
 
 	*new { | pattern, instrument = \default, name = \pattern, numChannels,
 		synthEventAction |
-		^this.newCopyArgs(pattern, instrument, name, numChannels, synthEventAction)
+		^this.newCopyArgs(pattern, name, numChannels, synthEventAction)
 		.init;
 	}
 
 	init { 
-		this.instrument = instrument;
 		numChannels ?? { numChannels = ~numChans; };
 	}
 
-	set { | param, argPattern | pattern.set(param, argPattern); }
+	set { | params | pattern.set(params); }
 
-	instrument_ { | argInstrument = \default | pattern.set(\instrument, argInstrument) }
-	legato_ { | argLegato | pattern.set(\legato, argLegato) }
+	instrument_ { | argInstrument = \default | pattern.set([\instrument, argInstrument]) }
+	legato_ { | argLegato | pattern.set([\legato, argLegato]) }
 	durations_ { | argDurations |
 		// TODO: fix this.  One source only!
 		// PatternPlayer should get its durations from the pattern array
 		pattern.durations = argDurations;
-		pattern.set(\dur, argDurations);
+		pattern.set([\dur, argDurations]);
 	}
 	start { pattern.start }
 	stop { pattern.stop }

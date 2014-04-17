@@ -58,7 +58,7 @@ Here all methods that are needed to handle -> and *>
 			// \legato, { this.legato = argPattern },
 			// \instr, { this.instrument = argPattern },
 			// \instrument, { this.instrument = argPattern },
-			{ this.set(param, argPattern); }
+			{ this.set([param, argPattern]); }
 		);
 	}
 }

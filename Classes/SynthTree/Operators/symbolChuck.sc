@@ -25,10 +25,7 @@
 }
 
 + SynthTree {
-
-	chuckPatternParams { | paramArray |
-		template.chuckPatternParams(paramArray, this)
-	}
+	chuckPatternParams { | paramArray | template.chuckPatternParams(paramArray, this) }
 }
 
 + Object {
@@ -47,16 +44,9 @@
 
 
 + PatternInstrument {
-	chuckPatternParams { | paramArray |
-		paramArray keysValuesDo: { | key, value |
-			pattern.set(key, value)
-		}
-	}
+	chuckPatternParams { | paramArray | this.set(paramArray) }
 }
 
 + SequenceableCollection {
-	asPatternInstrument { | instrument |
-		^PatternInstrument(
-			PatternEventPlayer(this, Pfunc({ ~dur.next })), instrument)
-	}
+	asPatternInstrument { ^PatternInstrument(PatternEventPlayer(this)) }
 }

@@ -65,6 +65,13 @@ PatternPlayer {
 	reset { task.reset; }
     isPlaying { ^task.isPlaying; }
 	=> { | chuckee, adverb | ^chuckee.playPattern(this) }
+	monitor { | active = true |
+		if (active) {
+			this.addNotifier(this, \value, { | val | [this, val].postln; })
+		}{
+			this.removeNotifier(this, \value)
+		};
+	}
 }
 
 PatternEventPlayer : PatternPlayer {
