@@ -74,6 +74,19 @@ PatternEventPlayer : PatternPlayer {
 		.values_(values).initPatternEventPlayer;
 	}
 
+	inheritValues { | values |
+		/*  values set by Mdef. 
+			Change only patterns that are not identical, initializing their Streams.
+			Do not notify changed since this comes from Mdef. */
+		this.keepOnly(values.keys.asArray);
+		this.set(values, false);
+	}
+
+	keepOnly { | keys |
+		valuePattern.keepOnly(keys);
+		valueStream.keepOnly(keys);
+	}
+
 	values_ { | values |
 		// reset pattern/stream if new values are provided
 		if (values.notNil or: { valuePattern.isNil }) {
@@ -87,18 +100,17 @@ PatternEventPlayer : PatternPlayer {
 		durationPattern ?? { this.durations = 1; }
 	}
 
-	set { | values |
+	set { | values, notify = true |
 		// add all key-value pairs - except for dur.
 		// dur sets durationPattern/durationStream instead.
 		values keysValuesDo: { | param, value |
 			if (param === \dur) {
 				this.durations = value;
 			}{
-				valuePattern.set (param, value);
-				valueStream.set (param, value);
+				valuePattern.set (param, value, valueStream);
 			};
 		};
-		this.changed(\values);
+		if (notify) {this.changed(\values, values) };
 	}
 }
 
@@ -108,14 +120,29 @@ SynthPattern {
 	*new { | params | ^this.newCopyArgs ( params); }
 	asStream { ^SynthStream(params) }
 
-	set { | param, value |
+	set { | param, value, stream |
 		var index;
+		// Only change streams if the patterns are also changed:
+		// Do not reset running streams if their pattern has not changed!
 		index = params indexOf: param;
 		if (index.isNil) {
 			params = params ++ [param, value];
+			stream.set(param, value);
 		}{
-			params[index + 1] = value;
+			if (params[index + 1] !== value) {
+				params[index + 1] = value;
+				stream.set(param, value);
+			}
 		}
+	}
+
+	keepOnly { | keysToKeep |
+		var keys, values, newParams;
+		#keys, values = params.clump(2).flop;
+		params keysValuesDo: { | key value |
+			if (keysToKeep includes: key) { newParams = newParams ++ [key, value] };
+		};
+		params = newParams;
 	}
 
 	asPatternPlayer { | durations | ^params.asPatternPlayer(durations); }
@@ -129,6 +156,7 @@ SynthStream {
 	}
 	next { | dur | ^params.asEvent(dur); }
 	set { | param, pattern | params.set(param, pattern); }
+	keepOnly { | keys | params.keepOnly(keys) }
 }
 
 ParamStream {
@@ -157,6 +185,19 @@ ParamStream {
 		}{
 			values[index] = value.asStream;
 		}
+	}
+
+	keepOnly { | keysToKeep |
+		var index, newKeys, newValues;
+		keysToKeep do: { | key |
+			index = keys indexOf: key;
+			if (index.notNil) {
+				newKeys = newKeys add: key;
+				newValues = newValues add: values[index];
+			};
+		};
+		keys = newKeys;
+		values = newValues;
 	}
 }
 
