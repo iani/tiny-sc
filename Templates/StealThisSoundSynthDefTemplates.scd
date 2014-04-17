@@ -198,74 +198,49 @@ SynthDef(\moogbasstone2, { | out = 0 freq = 440 amp = 0.1 gate = 1 attackTime = 
 SynthDef(\mrostinato, { | out = 0 freq = 440 amp = 0.1 gate = 1 lforate = 10 lfowidth = 0.5 pan = 0.0 | 
 
 	var lfo, pulse, filter, env;
-
 	lfo = LFTri.kr(lforate, Rand(0, 2.0)!3);
-
 	pulse = Pulse.ar(freq * [1, 1.01, 0.5], lfo * lfowidth+0.5);
-
 	env = EnvGen.ar(Env.adsr(0.01, 0.05, 0.5, 0.1), gate, doneAction:2);
-
 	Out.ar(out, Pan2.ar(Mix(pulse) * env * amp, pan));
-
 }), 
 SynthDef(\sampleplay, { | out = 0 bufnum = 0 amp = 0.1 gate = 1 pan = 0.0 | 
 
 	var playbuf, env;
-
 	playbuf = PlayBuf.ar(1, bufnum);
-
 	env = EnvGen.ar(Env.adsr(0.0, 0.0, 1.0, 0.1), gate, doneAction:2);
-
 	Out.ar(out, Pan2.ar(playbuf * env * amp, pan));
-
 }), 
 SynthDef(\plastickystrings, { | out = 0 freq = 440 amp = 0.1 gate = 1 lforate = 5900 lfowidth = 0.01 cutoff = 12000 rq = 0.5 pan = 0.0 | 
 
 	var lfo, saw, filter, env;
-
 	lfo = LFTri.ar(lforate, Rand(0, 2.0));
-
 	saw = Saw.ar(freq * (1.0+(lfowidth * lfo)), 0.5);
-
 	//filter = BBandPass.ar(saw, freq, 4);
 	filter = BHiPass.ar(saw, freq, rq); 	//or using cutoff
-
 	env = EnvGen.ar(Env.adsr(0.4, 0.0, 1.0, 1.0), gate, doneAction:2);
-
 	Out.ar(out, Pan2.ar(filter * env * amp, pan));
-
 }), 
 SynthDef(\handclapsmash, { | out = 0 amp = 0.1 gate = 1 cutoff = 12000 rq = 0.5 releaseTime = 0.5 pan = 0.0 | 
 
 	var noise, filter, filterenv, env;
-
 	noise = WhiteNoise.ar;
-
 	filterenv = EnvGen.ar(Env([0.0, 1.0, 0.3, 0.0], [0.0, 0.3, 0.3]));
 	//this involves a gate control, less use here
 	//filterenv = EnvGen.ar(Env.adsr(0.0, 0.3, 0.3, 0.3), gate);
-
 	filter = BHiPass.ar(RLPF.ar(noise, cutoff * filterenv, rq), 150);
-
 	//body
 	filter = BPeakEQ.ar(filter, 440, 1.0, 8);
 	//snap
 	filter = BPeakEQ.ar(filter, 1200, 1.0, 14);
-
 	//no gate, fixed percussion sound
 	env = EnvGen.ar(Env.perc(0.005, releaseTime), doneAction:2);
-
 	Out.ar(out, Pan2.ar(filter * env * amp, pan));
-
 }), 
 SynthDef(\handclapsmash2, { | out = 0 amp = 0.1 gate = 1 cutoff = 12000 cutoff2 = 10000 rq = 0.5 modamount = 0.0 modrate = 50 releaseTime = 0.7 pan = 0.0 | 
 
 	var noise, filter, filterenv, modulation, env;
-
 	noise = WhiteNoise.ar;
-
 	filterenv = EnvGen.ar(Env([0.0, 1.0, 0.3, 0.0], [0.0, 0.3, 0.3]));
-
 	modulation = (LFSaw.ar(modrate).range(0.0, 1.0)) * EnvGen.ar(Env([1, 1, 0, 0], [0.1, 0.0, 1.0]));
 
 	//filter = BHiPass.ar(RLPF.ar(noise, cutoff * filterenv * (1.0+(modamount * modulation)), rq), 150); //alternative
@@ -285,18 +260,12 @@ SynthDef(\handclapsmash2, { | out = 0 amp = 0.1 gate = 1 cutoff = 12000 cutoff2 
 }), 
 SynthDef(\bassfoundation, { | out = 0 freq = 440 amp = 0.1 gate = 1 /* cutoff = 1000 */
 			rq = 0.5 pan = 0.0 | 
-
 	var osc, filter, env, filterenv;
-
 	osc = Saw.ar(freq);
-
 	filterenv = EnvGen.ar(Env.adsr(0.0, 0.5, 0.2, 0.2), gate, doneAction:2);
 	filter =  RLPF.ar(osc, \cutoff.cr(\freq) * filterenv + 100, rq);
-
 	env = EnvGen.ar(Env.adsr(0.01, 0.0, 0.9, 0.05), gate, doneAction:2);
-
 	Out.ar(out, Pan2.ar(filter * env * amp * 2, pan));
-
 }),
 SynthDef(\bassfoundationdebug, { | out = 0 freq = 440 
 	/* amp = 0.1 */ gate = 1 /*cutoff= 1000 */
@@ -304,14 +273,10 @@ SynthDef(\bassfoundationdebug, { | out = 0 freq = 440
 	|
 	
 	var osc, filter, env, filterenv;
-	
 	osc = Saw.ar(freq);
-	
 	filterenv = EnvGen.ar(Env.adsr(0.0,0.5,0.2,0.2),gate,doneAction:2);
 	filter =  RLPF.ar(osc, \cutoff.cr(\freq) * filterenv + 100, rq);
-	
 	env = EnvGen.ar(Env.adsr(0.01,0.0,0.9,0.05),gate,doneAction:2);
-	
 	//	Out.ar(out,Pan2.ar(filter*env*amp*2,pan));
 	filter.ladsrOut;
 }), 
@@ -333,19 +298,14 @@ SynthDef(\basshighend, {
 
  	//distortion
  	//filter = filter.distort.softclip;
-
 	ab = abs(filter);
  	filter = (filter * (ab + drive)/(filter ** 2 + (drive - 1) * ab + 1));
-
 	//remove low end
 	filter = BLowShelf.ar(filter, 300, 1.0, -12);
 	//dip at 1600Hz
 	filter = BPeakEQ.ar(filter, 1600, 1.0, -6);
-
 	env = EnvGen.ar(Env.adsr(0.01, 0.0, 0.9, 0.05), gate, doneAction:2);
-
 	Out.ar(out, Pan2.ar(filter * env * amp * 2, pan));
-
 }), 
 SynthDef(\winwoodlead, { | out = 0 freq = 440 amp = 0.1 gate = 1 cutoff = 8000 rq = 0.8 lfowidth = 0.01 lforate = 8 lagamount = 0.01 pan = 0.0 | 
 
