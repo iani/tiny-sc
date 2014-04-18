@@ -7,12 +7,10 @@
 		^PatternInstrument(PatternPlayer([], Pfunc({ ~dur.next })), this);
 	}
 
-	patternParams { | paramArray, adverb |
-		if (adverb === 'i') {
-			^PatternInstrument(PatternEventPlayer(paramArray), this);
-		}{
-			^this.asSynthTree.chuckPatternParams(paramArray)
-		};
+	patternParams { | paramArray | ^this.asSynthTree.chuckPatternParams(paramArray) }
+	
+	clearChuckPatternParams { | paramArray |
+		^this.asSynthTree.clear.patternParams(paramArray);
 	}
 
 	receiveNumberChuck { | number |

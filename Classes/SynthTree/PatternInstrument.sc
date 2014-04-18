@@ -1,15 +1,25 @@
 /*
-IZ Fri, Apr  4 2014, 12:46 EEST
+A PatternInstrument lives as a template inside a SynthTree and 
+It holdes a PatternEventPlayer and responds to its changed messages 
+by creating synths that play into a separate bus.  
 
+A PatternInstrument can only play in one single SynthTree. 
+To share data control amongst synthtrees, different instances of PatternInstrument
+can be made to respond to changed messages from the same PatternEventPlayer. 
+
+The different PatternInstrument instances can vary the way in which they
+interpret the messages from the PatternEventPlayer by setting different synthEventActions.
+
+IZ Fri, Apr  4 2014, 12:46 EEST
 */
 
 PatternInstrument {
-	var <pattern; // A PatternPlayer
+	var <pattern; // A PatternEventPlayer
 	var <name;
 	var <numChannels;
 	var <>inputSpecs;   // for controls. May be replaced by method
 	// that gets the input specs from the pattern.
-	var <>synthEventAction; // NEW: can act as filter, copy/changing the event
+	var <>synthEventActionMaker; // NEW: can act as filter, copy/changing the event
 	var <>eventFilter; // array of params with patterns modifying received event
 	var bus, busIndex, group;
 
@@ -19,12 +29,8 @@ PatternInstrument {
 		.init;
 	}
 
-	init { 
-		numChannels ?? { numChannels = ~numChans; };
-	}
-
+	init { numChannels ?? { numChannels = ~numChans; } }
 	set { | params | pattern.set(params); }
-
 	instrument_ { | argInstrument = \default | pattern.set([\instrument, argInstrument]) }
 	legato_ { | argLegato | pattern.set([\legato, argLegato]) }
 	durations_ { | argDurations |
@@ -39,7 +45,7 @@ PatternInstrument {
 	asSynthTemplate { | argName | name = argName; }
 	templateArgs { ^[ControlName(\amp, nil, \control, 1)] }
 
-	asSynth { | synthTree, fadeTime |
+	asSynth { | synthTree fadeTime |
 		var patternSynth;
 		bus = Bus.audio(synthTree.server, numChannels);
 		busIndex = bus.index;
@@ -52,34 +58,39 @@ PatternInstrument {
 			args: [in: busIndex, fadeIn: synthTree.getFadeTime, 
 				amp: synthTree.getParamValue(\amp), out: synthTree.getOutputBusIndex]
 		);
-		this.addNotifier(this.pattern, \value, { | synthEvent |
+		/*
+		this.addNotifier(pattern, \value, { | synthEvent |
 			synthEvent
 			.out_(busIndex)
 			.target_(group)
 			.addAction_(\addToHead)
 			.play;
-		});		
+		});
+		*/
 		//		this.setSynthEventAction(SynthEventAction(busIndex, group, addAction, ));
-		//		this.setSynthEventAction;
+		this.setSynthEventAction;
 		patternSynth.onEnd(this, { this.objectClosed });
 		patternSynth.init(synthTree, bus);
 		pattern.start;
 		^patternSynth;
 	}
 
-	setSynthEventAction {
-		// primitive solution:
-		var theAction;
-		if (synthEventAction.notNil) {
-			theAction = synthEventAction
+	clear {
+		this.removeNotifier(this.pattern, \value);
+		pattern 
+	}
+
+	setSynthEventAction { | actionMaker |
+		/* TODO: use synthEventActionMaker to create the action 
+			Here we can for example make the pattern play Pmono-style.
+		*/
+		var action;
+		if (synthEventActionMaker.isNil) {
+			action = this.defaultSynthEventAction;
 		}{
-			if (eventFilter.notNil) {
-				theAction = SynthEventAction(busIndex, group, \addToHead, eventFilter);
-			}{
-				theAction = { this.defaultSynthEventAction }
-			}
+			action = synthEventActionMaker.(busIndex, group);
 		};
-		this.addNotifier(this.pattern, \value, theAction);
+		this.addNotifier(pattern, \value, action);
 	}
 
 	defaultSynthEventAction {

@@ -568,6 +568,10 @@ SynthTree : IdentityTree {
 		};
 	}
 
+	// Replace pattern controlling your PatternInstrument
+	// by a new PatternEventPlayer.
+	clear { template.clear }
+
 	/*
 	// under development
 	map { | param, curve | 

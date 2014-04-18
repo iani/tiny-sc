@@ -2,136 +2,35 @@
 
 * Currently working on
 
-** PatternInstrument plays event, custom action
+
+** New operator =!> clear synthtree before chucking new pattern
 :PROPERTIES:
-:DATE:     <2014-04-14 Mon 21:59>
+:DATE:     <2014-04-18 Fri 10:46>
 :END:
 
-** Mdef: Named PatternPlayer Model
+** Fix PatternInstrument to inherit global ~fadeTime.
 :PROPERTIES:
-:DATE:     <2014-04-16 Wed 04:58>
+:DATE:     <2014-04-18 Fri 16:24>
 :END:
 
-To consider:
-Mdef subclass of PatternPlayer?
+** Both single-synth and synth-stream should play with PatternInstrument
+:PROPERTIES:
+:DATE:     <2014-04-18 Fri 16:24>
+:END:
 
-Maybe try first with Ndef as independent class, containing a PatternPlayer or subclass as instance var player.
+ - SynthTree.legato (SynthTree.l) :: play with Pmono-like event.play function
+ - SynthTree.nonLegato (SynthTree.nl) :: play with usual event.play function
 
-This could be a practical coding pattern, and is compatible with the details of the following sections:
+To consider: Should legato also play in bus like non-legato?  That would provide consistent fadein-fadeout and simplify coding, but waste bus...
 
-: \pattern1 => [instrument: \bass] => \synthtree1;
+** fix ref chuck to synthtree symbol
+:PROPERTIES:
+:DATE:     <2014-04-18 Fri 16:39>
+:END:
 
-Alternative to:
-
-: Mdef(\pattern1, [instrument: \bass]) => \synthtree1;
-
-Alternatively this plays with a PatternPlayer, not an Mdef:
-: [instrument: \bass] => \synthtree1;
-
-The advantage of Mdef over PatternPlayer is that it is accessible through its name for further modifications, and that it can be cloned to other Mdefs which then inherit its contents but also subsequent changes.
-
-The ability to filter the event data broadcast by a PatternPlayer is implemented in PatternInstrument, and is available both to PatternPlayer and its subclass Mdef.
-
-*** How Mdef clone inherits
-
-Care must be taken not to overwrite the params that are set for the clone when the params of the prototype change.
-
-Therefore, Mdef should have separate vars for the data from the parent Mdef, and for its own data. So it is something like:
-
-var <parent;
-var <valuePattern; // this is the currently existing variable, remains unchanged.
-
-There is no need to store the full merged *pattern* array of the prototype with the parent *patterns*.   We only need the valueStream to be merged, since this is used to produce the event for playing.  So when a cloned Mdef receives a notification from the parnent Mdef, it goes something like this:
-
+If the instrument is a single synthdef, one may chuck it directly in the tree:
 #+BEGIN_EXAMPLE
-var keys;
-keys = valuePattern.clump(2).flop[0];
-parent.valuePattern keysValuesDo: { | param, pattern |
-    if (keys.inclueds(param).not) { ... add only those to stream }
-};
-valuePattern keysValuesDo: { | param, pattern |
-    ... add all params of self to own stream
-}
-#+END_EXAMPLE
-
-
-
-*** Creating, chucking to synthtree
-
-#+BEGIN_EXAMPLE
-Mdef(\p1).play;  // create PatternInstrument named p1, play
-\p1 => \synthtree1; // send it to \synthtree
-#+END_EXAMPLE
-
-This is no longer possible:
-\instrument => \synthtree;
-
-But this will serve as substitute:
-
-`\instrument => \synthtree;
-
-More examples:
-
-Mdef(\p1, [degree: 5]); // Always (re-) initializes contents!
-
-To not clear, but merge contents:
-
-Mdef(\p1) set: [amp: { 0.01 rrand: 0.1 }.pfunc];
-
-*** Modifying an Mdef: alternative shortcut =>
-
-Mdef(\p1) set: [degree: (1..3).pseq];
-
-or alternative shortcut:
-
-\p1 => [degree: [1, 2, 3].pseq];
-
-*** Modifying the received event:
-
-**** Rejected first tries
-#+BEGIN_EXAMPLE
-// here we have a problem: how to indicate getting the degree:
-[degree: [1, 2].pseq + ~degree] %> \synthree3;
-// maybe it has to be:
-{ [degree: [1, 2].pseq + ~degree] } %> \synthree3;
-// or use a new type of pattern to access parent:
-[degree: [1, 2].pseq + \degree.parent] %> \synthree3;
-#+END_EXAMPLE
-
-**** Solution
-
-#+BEGIN_EXAMPLE
-// alternative method name: pget
-[degree: [1, 2].pseq + \degree.pget] %> \synthree3;
-#+END_EXAMPLE
-
-: \degree.pget
-
-would translate to:
-
-: Pfunc({ ~degree })
-
-and that would be evaluated in the parent environment using =use:=.
-
-#+BEGIN_EXAMPLE
-parentEnvir use: {
-   params keysValuesDo: { | param, stream |
-      childEnvir[param] = stream.next;
-   }
-};
-#+END_EXAMPLE
-
-*** Cloning an Mdef (quasi Pbindf)
-
-#+BEGIN_EXAMPLE
-Mdef(\p1, [degree: [1, 2, 3].pseq]) => \player1;
-Mdef(\p2).clone(\p1, [dur: 0.1]) => \player2;
-#+END_EXAMPLE
-
-Then to add further filters to a player:
-
-#+BEGIN_EXAMPLE
-[degree: 3 + \degree.pget] %> \player1;
+`\sine => \test2;
 #+END_EXAMPLE
 
 ** play data streams
@@ -861,6 +760,138 @@ Examples:
 **** Implementing =<
 
 
+
+** PatternInstrument plays event, custom action
+:PROPERTIES:
+:DATE:     <2014-04-14 Mon 21:59>
+:END:
+
+** Mdef: Named PatternPlayer Model
+:PROPERTIES:
+:DATE:     <2014-04-16 Wed 04:58>
+:END:
+
+To consider:
+Mdef subclass of PatternPlayer?
+
+Maybe try first with Ndef as independent class, containing a PatternPlayer or subclass as instance var player.
+
+This could be a practical coding pattern, and is compatible with the details of the following sections:
+
+: \pattern1 => [instrument: \bass] => \synthtree1;
+
+Alternative to:
+
+: Mdef(\pattern1, [instrument: \bass]) => \synthtree1;
+
+Alternatively this plays with a PatternPlayer, not an Mdef:
+: [instrument: \bass] => \synthtree1;
+
+The advantage of Mdef over PatternPlayer is that it is accessible through its name for further modifications, and that it can be cloned to other Mdefs which then inherit its contents but also subsequent changes.
+
+The ability to filter the event data broadcast by a PatternPlayer is implemented in PatternInstrument, and is available both to PatternPlayer and its subclass Mdef.
+
+*** How Mdef clone inherits
+
+Care must be taken not to overwrite the params that are set for the clone when the params of the prototype change.
+
+Therefore, Mdef should have separate vars for the data from the parent Mdef, and for its own data. So it is something like:
+
+var <parent;
+var <valuePattern; // this is the currently existing variable, remains unchanged.
+
+There is no need to store the full merged *pattern* array of the prototype with the parent *patterns*.   We only need the valueStream to be merged, since this is used to produce the event for playing.  So when a cloned Mdef receives a notification from the parnent Mdef, it goes something like this:
+
+#+BEGIN_EXAMPLE
+var keys;
+keys = valuePattern.clump(2).flop[0];
+parent.valuePattern keysValuesDo: { | param, pattern |
+    if (keys.inclueds(param).not) { ... add only those to stream }
+};
+valuePattern keysValuesDo: { | param, pattern |
+    ... add all params of self to own stream
+}
+#+END_EXAMPLE
+
+
+
+*** Creating, chucking to synthtree
+
+#+BEGIN_EXAMPLE
+Mdef(\p1).play;  // create PatternInstrument named p1, play
+\p1 => \synthtree1; // send it to \synthtree
+#+END_EXAMPLE
+
+This is no longer possible:
+\instrument => \synthtree;
+
+But this will serve as substitute:
+
+`\instrument => \synthtree;
+
+More examples:
+
+Mdef(\p1, [degree: 5]); // Always (re-) initializes contents!
+
+To not clear, but merge contents:
+
+Mdef(\p1) set: [amp: { 0.01 rrand: 0.1 }.pfunc];
+
+*** Modifying an Mdef: alternative shortcut =>
+
+Mdef(\p1) set: [degree: (1..3).pseq];
+
+or alternative shortcut:
+
+\p1 => [degree: [1, 2, 3].pseq];
+
+*** Modifying the received event:
+
+**** Rejected first tries
+#+BEGIN_EXAMPLE
+// here we have a problem: how to indicate getting the degree:
+[degree: [1, 2].pseq + ~degree] %> \synthree3;
+// maybe it has to be:
+{ [degree: [1, 2].pseq + ~degree] } %> \synthree3;
+// or use a new type of pattern to access parent:
+[degree: [1, 2].pseq + \degree.parent] %> \synthree3;
+#+END_EXAMPLE
+
+**** Solution
+
+#+BEGIN_EXAMPLE
+// alternative method name: pget
+[degree: [1, 2].pseq + \degree.pget] %> \synthree3;
+#+END_EXAMPLE
+
+: \degree.pget
+
+would translate to:
+
+: Pfunc({ ~degree })
+
+and that would be evaluated in the parent environment using =use:=.
+
+#+BEGIN_EXAMPLE
+parentEnvir use: {
+   params keysValuesDo: { | param, stream |
+      childEnvir[param] = stream.next;
+   }
+};
+#+END_EXAMPLE
+
+*** Cloning an Mdef (quasi Pbindf)
+
+#+BEGIN_EXAMPLE
+Mdef(\p1, [degree: [1, 2, 3].pseq]) => \player1;
+Mdef(\p2).clone(\p1, [dur: 0.1]) => \player2;
+#+END_EXAMPLE
+
+Then to add further filters to a player:
+
+#+BEGIN_EXAMPLE
+[degree: 3 + \degree.pget] %> \player1;
+#+END_EXAMPLE
 
 * Undergoing tests
 

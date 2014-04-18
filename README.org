@@ -202,61 +202,20 @@ Defaults are provide for durations and instruments, so one may omit these.  Foll
 // Just a pattern, with default durations and instrument:
 [freq: Pwhite(40, 90, inf).midicps] => \test;
 
-// Set the duration:
-[freq: Pwhite(40, 90, inf).midicps] => 0.1 => \test;
+// Set dur parameter of the pattern of the last chucked SynthTree
+0.1 *> \dur;
 
-// Set the duration to a pattern:
-[freq: Pwhite(40, 90, inf).midicps] => [0.2, 0.6].pseq => \test;
+// Again, this time a pattern:
+[0.2, 0.6].pseq *> \dur;
 
-// Set the instrument, using default duration.
-// The reference (`) backquote indicates that this is an instrument, and
-// not a SynthTree name:
-[freq: Pwhite(40, 90, inf).midicps] => `\sine => \test;
+// Set the instrument:
+\sine *> \instrument;
 
-// Set the instrument to a pattern.  Here the adverb .i is needed
-// to indicate that the pattern is not for durations but for the instrument:
-[freq: Pwhite(60, 70, inf).midicps] =>.i [\lpfsaw, \sine].pseq => \test
+// Set the instrument to a pattern.
+[\lpfsaw, \sine].pseq *> \instrument;
 
-// Durations-first order is best when specifying both duration and instrument:
-[freq: Pwhite(30, 50, inf).midicps] => 0.21 => `\lpfsaw => \test;
-
-// Instrument as pattern
-[freq: Pwhite(60, 70, inf).midicps] => 0.1 => [\lpfsaw, \sine].pseq => \test;
-
-// If instrument-first order is used and the instrument is a pattern,
-// then the adverb .i must be used:
-[freq: Pwhite(30, 70, inf).midicps] =>.i [\lpfsaw, \lpfpulse].prand => 0.05 => \test;
-
-// Or pass the instrument pattern as reference:
-[freq: Pwhite(70, 90, inf).midicps] => `([\lpfpulse, \werkitd].prand) => 0.15 => \test;
-#+END_EXAMPLE
-
-*** Setting the instrument of a pattern in a SynthTree
-
-If the instrument is a single synthdef, one may chuck it directly in the tree:
-#+BEGIN_EXAMPLE
-\sine => \test2;
-#+END_EXAMPLE
-
-Otherwise use the *> operator to set the \instr parameter (synonym: \instrument):
-#+BEGIN_EXAMPLE
-[\sine, \werkitd].prand *> \instr;
-#+END_EXAMPLE
-
-Setting legato:
-
-#+BEGIN_EXAMPLE
-{ 0.1 exprand: 1.5 }.pfunc *> \legato;
-#+END_EXAMPLE
-
-To set the instrument parameter to a named tree, use -> to associate the patttern with the parameter:
-#+BEGIN_EXAMPLE
-[\sine, \werkitd, \spacetheremin].prand -> \instr => \test2;
-#+END_EXAMPLE
-
-Setting other parameters of the synthree pattern merges these into the existing instrument pattern, leaving the instrument, duration or other parameters as they were:
-#+BEGIN_EXAMPLE
-[freq: [400, 500].prand, amp: { 0.01 exprand: 0.1 }.pfunc] => \test2;
+// Also possible to address the SynthTree explicitly:
+[instrument: [\lpfpulse, \werkitd].prand] => \test;
 #+END_EXAMPLE
 
 *** Note: SynthDef as Instrument
