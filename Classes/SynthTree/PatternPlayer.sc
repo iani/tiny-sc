@@ -179,14 +179,16 @@ ParamStream {
 	}
 
 	asEvent { | duration |
-		var event, nextValue, sawNil = true;
+		var event, nextValue; // , sawNil = true;
+		if (keys.size == 0) { ^nil };
 		event = (dur: duration);
 		keys do: { | key, index |
 			nextValue = values[index].next;
-			if (sawNil = nextValue.isNil) { ^nil };
+			if (/* sawNil = */ nextValue.isNil) { ^nil };
 			event[key] = nextValue
 		};
-		^if (sawNil) { ^nil } { ^event };
+		//		^if (sawNil) { ^nil } { ^event };
+		^event;
 	}
 
 	set { | param, value |

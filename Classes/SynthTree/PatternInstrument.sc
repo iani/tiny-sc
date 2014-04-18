@@ -80,7 +80,7 @@ PatternInstrument {
 		remove: Remove all connections to other objects. Ready for GC.
 		reset: remove + return new empty instance to play 
 	*/
-	clear { player.clear; }  // TODO: TEST THESE
+	clear { pattern.clear; }  // TODO: TEST THESE
 	reset {  // TODO: TEST THESE
 		this.remove;
 		^this.class.new;
@@ -98,6 +98,10 @@ PatternInstrument {
 			action = synthEventActionMaker.(busIndex, group);
 		};
 		this.addNotifier(pattern, \value, action);
+		this.addNotifier(pattern, \taskStopped, {
+			[this, thisMethod.name, "is now left dangling because \taskStopped is not caught"].postln;
+			[this, thisMethod.name, "PLEASE implement this action ... "].postln
+		});
 	}
 
 	defaultSynthEventAction {

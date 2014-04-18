@@ -23,7 +23,9 @@
 }
 
 + SynthTree {
-	chuckPatternParams { | paramArray | template.chuckPatternParams(paramArray, this) }
+	chuckPatternParams { | paramArray | 
+				[this, thisMethod.name, paramArray].postln;
+		template.chuckPatternParams(paramArray, this) }
 }
 
 + Object {
@@ -36,6 +38,7 @@
 
 + SynthDef {
 	chuckPatternParams { | paramArray, synthTree |
+				[this, thisMethod.name, paramArray].postln;
 		synthTree.chuck(paramArray.asPatternInstrument(name.asSymbol))
 	}
 }
