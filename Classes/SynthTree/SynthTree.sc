@@ -568,9 +568,14 @@ SynthTree : IdentityTree {
 		};
 	}
 
-	// Replace pattern controlling your PatternInstrument
-	// by a new PatternEventPlayer.
-	clear { template.clear }
+	/*
+		clear: clear PatternEventPlayer
+		reset: replace template with a new, empty PatternEventPlayer
+	*/
+	clear { template = template.clear(this); } // TODO: TEST THESE
+	reset { // TODO: TEST THESE
+		template = template.reset(this);
+	}
 
 	/*
 	// under development

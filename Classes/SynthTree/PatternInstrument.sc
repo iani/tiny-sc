@@ -77,10 +77,16 @@ PatternInstrument {
 
 	/*
 		clear: clear PatternEventPlayer 
-		reset: replace template with a new, empty PatternEventPlayer
+		remove: Remove all connections to other objects. Ready for GC.
+		reset: remove + return new empty instance to play 
 	*/
-	clear { template.clear(this); }
-
+	clear { player.clear; }  // TODO: TEST THESE
+	reset {  // TODO: TEST THESE
+		this.remove;
+		^this.class.new;
+	}
+	remove { this.objectClosed; } // TODO: TEST THESE
+	
 	setSynthEventAction { | actionMaker |
 		/* TODO: use synthEventActionMaker to create the action 
 			Here we can for example make the pattern play Pmono-style.
