@@ -94,6 +94,8 @@ PatternEventPlayer : PatternPlayer {
 		valueStream.keepOnly(keys);
 	}
 
+	clear { this.values = [] }
+
 	values_ { | values |
 		// reset pattern/stream if new values are provided
 		if (values.notNil or: { valuePattern.isNil }) {
@@ -177,10 +179,14 @@ ParamStream {
 	}
 
 	asEvent { | duration |
-		var event;
+		var event, nextValue, sawNil = true;
 		event = (dur: duration);
-		keys do: { | key, index | event[key] = values[index].next };
-		^event;
+		keys do: { | key, index |
+			nextValue = values[index].next;
+			if (sawNil = nextValue.isNil) { ^nil };
+			event[key] = nextValue
+		};
+		^if (sawNil) { ^nil } { ^event };
 	}
 
 	set { | param, value |

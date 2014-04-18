@@ -75,10 +75,11 @@ PatternInstrument {
 		^patternSynth;
 	}
 
-	clear {
-		this.removeNotifier(this.pattern, \value);
-		pattern 
-	}
+	/*
+		clear: clear PatternEventPlayer 
+		reset: replace template with a new, empty PatternEventPlayer
+	*/
+	clear { template.clear(this); }
 
 	setSynthEventAction { | actionMaker |
 		/* TODO: use synthEventActionMaker to create the action 
