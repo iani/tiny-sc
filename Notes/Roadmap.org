@@ -3,11 +3,6 @@
 * Currently working on
 
 
-** New operator =!> clear synthtree before chucking new pattern
-:PROPERTIES:
-:DATE:     <2014-04-18 Fri 10:46>
-:END:
-
 ** Both single-synth and synth-stream should play with PatternInstrument
 :PROPERTIES:
 :DATE:     <2014-04-18 Fri 16:24>
@@ -891,6 +886,11 @@ Then to add further filters to a player:
 ** Fix PatternInstrument to inherit global ~fadeTime.
 :PROPERTIES:
 :DATE:     <2014-04-18 Fri 16:24>
+:END:
+
+** New operator =!> clear synthtree before chucking new pattern
+:PROPERTIES:
+:DATE:     <2014-04-18 Fri 10:46>
 :END:
 
 * Undergoing tests
