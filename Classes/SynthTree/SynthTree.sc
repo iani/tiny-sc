@@ -299,7 +299,10 @@ SynthTree : IdentityTree {
 		// guarantee that moveBefore happens AFTER the synth has really started!
 		synth !? {
 			synth.onEnd(this, { // This also registers on NodeWatcher:
-				if (this.isPlaying.not) { this.changed(\stopped) };
+				if (this.isPlaying.not) {
+					this.changed(\stopped);
+					synth = nil;
+				};
 			}); 
 			this.addNotifierOneShot(synth, 'n_go', {
 				this do: _.moveBefore(synth);
@@ -378,8 +381,7 @@ SynthTree : IdentityTree {
 
 	fadeOut { | argFadeTime |
 		if (synth.isPlaying) {
-			synth.set(\timeScale, this.getFadeTime(argFadeTime), \gate, 0);
-			// synth.isPlaying = false;
+			synth release: this.getFadeTime(argFadeTime);
 			this.changed(\fadeOut);
 		};
 		notStopped = false;
@@ -572,6 +574,11 @@ SynthTree : IdentityTree {
 		clear: clear PatternEventPlayer
 		reset: replace template with a new, empty PatternEventPlayer
 	*/
+	clearChuckPatternParams { | paramArray |
+		this.clear;
+		this.chuckPatternParams(paramArray);
+	}
+
 	clear { template = template.clear(this); } // TODO: TEST THESE
 	reset { // TODO: TEST THESE
 		template = template.reset(this);

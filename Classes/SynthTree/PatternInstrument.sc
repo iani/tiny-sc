@@ -58,18 +58,8 @@ PatternInstrument {
 			args: [in: busIndex, fadeIn: synthTree.getFadeTime, 
 				amp: synthTree.getParamValue(\amp), out: synthTree.getOutputBusIndex]
 		);
-		/*
-		this.addNotifier(pattern, \value, { | synthEvent |
-			synthEvent
-			.out_(busIndex)
-			.target_(group)
-			.addAction_(\addToHead)
-			.play;
-		});
-		*/
-		//		this.setSynthEventAction(SynthEventAction(busIndex, group, addAction, ));
 		this.setSynthEventAction;
-		patternSynth.onEnd(this, { this.objectClosed });
+		this.addNotifier(pattern, \taskStopped, { synthTree.fadeOut; });
 		patternSynth.init(synthTree, bus);
 		pattern.start;
 		^patternSynth;
@@ -98,10 +88,6 @@ PatternInstrument {
 			action = synthEventActionMaker.(busIndex, group);
 		};
 		this.addNotifier(pattern, \value, action);
-		this.addNotifier(pattern, \taskStopped, {
-			[this, thisMethod.name, "is now left dangling because \taskStopped is not caught"].postln;
-			[this, thisMethod.name, "PLEASE implement this action ... "].postln
-		});
 	}
 
 	defaultSynthEventAction {

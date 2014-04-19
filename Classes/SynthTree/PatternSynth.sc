@@ -20,19 +20,6 @@ PatternSynth : Synth {
 		})
 	}
 
-	/*
-	addSynth { | instrument = \default, args |
-		^Synth(instrument, args ++ [out: busIndex], group, \addToHead)
-	}
-
-	addPattern { | pattern |
-		synthTree.addNotifier(pattern, \value, { | synthEvent |
-			var synth;
-			synth = this.addSynth(\default, synthEvent.params);
-			pattern.clock.sched(synthEvent.dur, { synth.release });
-		});
-	}
-	*/
 	moveAfter { | argNode | group.moveAfter(argNode); }
 	moveBefore { | argNode | group.moveBefore(argNode); }
 	moveToHead { | argNode | group.moveToHead(argNode); }

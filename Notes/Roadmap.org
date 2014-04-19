@@ -8,11 +8,6 @@
 :DATE:     <2014-04-18 Fri 10:46>
 :END:
 
-** Fix PatternInstrument to inherit global ~fadeTime.
-:PROPERTIES:
-:DATE:     <2014-04-18 Fri 16:24>
-:END:
-
 ** Both single-synth and synth-stream should play with PatternInstrument
 :PROPERTIES:
 :DATE:     <2014-04-18 Fri 16:24>
@@ -892,6 +887,11 @@ Then to add further filters to a player:
 #+BEGIN_EXAMPLE
 [degree: 3 + \degree.pget] %> \player1;
 #+END_EXAMPLE
+
+** Fix PatternInstrument to inherit global ~fadeTime.
+:PROPERTIES:
+:DATE:     <2014-04-18 Fri 16:24>
+:END:
 
 * Undergoing tests
 
