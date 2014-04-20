@@ -3,6 +3,25 @@
 * Currently working on
 
 
+** Use embed in stream to chain (=embed) PatternPlayers?
+:PROPERTIES:
+:DATE:     <2014-04-20 Sun 18:32>
+:END:
+
+Mdef/PatternPlayer/PatternEventPlayer should be able to embed themselves in patterns like Pdef does:
+
+(From the Pdef help entry:)
+
+#+BEGIN_EXAMPLE
+x = Pseq([Pdef(\a), Pdef(\b), Pdef(\c)], inf).play;
+
+Pdef(\a, Pbind(\instrument, \Pdefhelp, \dur, 0.25, \degree, Pseq(#[0, 5, 4, 3])));
+Pdef(\b, Pbind(\instrument, \Pdefhelp, \dur, 0.125, \degree, Pseq(#[7, 8, 7, 8])));
+Pdef(\c, Pbind(\instrument, \Pdefhelp, \dur, 0.25, \degree, Pseq(#[0, 1, 2], 2)));
+#+END_EXAMPLE
+
+This will be a major coding effort ...
+
 ** Both single-synth and synth-stream should play with PatternInstrument
 :PROPERTIES:
 :DATE:     <2014-04-18 Fri 16:24>
