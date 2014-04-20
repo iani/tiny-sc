@@ -85,8 +85,10 @@ PatternEventPlayer : PatternPlayer {
 		/*  values set by Mdef. 
 			Change only patterns that are not identical, initializing their Streams.
 			Do not notify changed since this comes from Mdef. */
-		this.keepOnly(values.keys.asArray);
-		this.set(values, false);
+		values !? {
+			this.keepOnly(values.keys.asArray);
+			this.set(values, false)
+		};
 	}
 
 	keepOnly { | keys |
@@ -112,7 +114,7 @@ PatternEventPlayer : PatternPlayer {
 	set { | values, notify = true |
 		// add all key-value pairs - except for dur.
 		// dur sets durationPattern/durationStream instead.
-		values keysValuesDo: { | param, value |
+		values ?? { [] } keysValuesDo: { | param, value |
 			if (param === \dur) {
 				this.durations = value;
 			}{
@@ -126,13 +128,14 @@ PatternEventPlayer : PatternPlayer {
 SynthPattern {
 	var <params;
 
-	*new { | params | ^this.newCopyArgs ( params); }
+	*new { | params | ^this.newCopyArgs (params ?? { [] }); }
 	asStream { ^SynthStream(params) }
 
 	set { | param, value, stream |
 		var index;
 		// Only change streams if the patterns are also changed:
 		// Do not reset running streams if their pattern has not changed!
+		params ?? { params = [] };
 		index = params indexOf: param;
 		if (index.isNil) {
 			params = params ++ [param, value];
@@ -143,6 +146,7 @@ SynthPattern {
 				stream.set(param, value);
 			}
 		}
+
 	}
 
 	keepOnly { | keysToKeep |
@@ -158,10 +162,10 @@ SynthPattern {
 }
 
 SynthStream {
-	var <params; // , <legato;
+	var <params;
 
-	*new { | params /* , legato = 1 */ |
-		^this.newCopyArgs(ParamStream(params) /* , legato.asStream */ );
+	*new { | params |
+		^this.newCopyArgs(ParamStream(params));
 	}
 	next { | dur | ^params.asEvent(dur); }
 	set { | param, pattern | params.set(param, pattern); }
@@ -211,8 +215,8 @@ ParamStream {
 				newValues = newValues add: values[index];
 			};
 		};
-		keys = newKeys;
-		values = newValues;
+		keys = newKeys ?? { [] };
+		values = newValues ?? { [] };
 	}
 }
 

@@ -19,11 +19,12 @@ Mdef {
 			instance = this.newCopyArgs(name, PatternEventPlayer()).initMdef;
 			all[name] = instance;
 		};
-		patterns ?? { instance.setClear(patterns) };
+		patterns !? { instance.setClear(patterns) };
 		^instance;
 	}
 
 	initMdef {
+		patterns = ();
 		this.addNotifier(player, \values, { | values | this.updateFromPlayer(values) });
 	}
 
@@ -43,7 +44,7 @@ Mdef {
 			^patterns;
 		}{
 			^parent.patterns.copy make: { | event |
-				patterns keysValuesDo: { | param filter | event[param] = filter.value }
+				patterns ?? { [] } keysValuesDo: { | par val | event[par] = val.value }
 			}
 		}
 	}
@@ -80,4 +81,6 @@ Mdef {
 			this.removeNotifier(player, \value)
 		}
 	}
+
+	asSynthTemplate { ^PatternInstrument(player, name) }
 }

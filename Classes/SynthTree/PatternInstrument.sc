@@ -23,7 +23,7 @@ PatternInstrument {
 	var <>eventFilter; // array of params with patterns modifying received event
 	var bus, busIndex, group;
 
-	*new { | pattern, instrument = \default, name = \pattern, numChannels,
+	*new { | pattern, name = \pattern, numChannels,
 		synthEventAction |
 		^this.newCopyArgs(pattern, name, numChannels, synthEventAction)
 		.init;
