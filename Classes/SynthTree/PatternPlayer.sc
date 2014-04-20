@@ -57,9 +57,15 @@ PatternPlayer {
 			task = nil;
 		}
 	}
-    start {
-		task ?? { this.makeTask }; 
-		task.play(clock);
+    start { | synchOnBeat = true |
+		if (this.isPlaying.not) {
+			task ?? { this.makeTask };
+			if (synchOnBeat) {
+				clock.schedAbs(clock.beats.ceil, { task.play(clock) });
+			}{
+				task.play(clock)
+			} 
+		};
 	}
     stop { task.stop; }
 	reset { task.reset; }

@@ -1,26 +1,25 @@
 // Wed, Apr 16 2014, 06:15 EEST
 
-Mdef(\x, (freq: [60, 64].midicps.pseq, dur: 1));
-Mdef(\x).clone(\y);
-Mdef(\x).monitor;
-Mdef(\x).start;
+Mdef(\x, (freq: [60, 64].midicps.pseq, dur: 1)) => \test;
 
-Mdef(\x) => \test;
+Mdef(\x, (freq: [50, 54].midicps.pseq, dur: 1));
 
-Mdef(\x).inspect;
-//:
 Mdef(\x).clone(\y);
-// Mdef(\y).inspect;
+
 Mdef(\y).monitor.start;
 
-Mdef(\y).monitor;
-
-Mdef(\x).patterns;
-Mdef(\y).patterns;
-
-Mdef(\y).set((freq: { ~freq * (5/4) }))
+Mdef(\y).set((freq: { ~freq * (6/2) }))
 
 Mdef(\y) => \test2;
+
+Mdef(\y).set((dur: 1/3));
+
+\test2.fadeOut;
+
+\test2.start;
+
+TempoClock.tempo = 2;
+
 Mdef(\x).durations = 0.1;
 
 Mdef(\y).durations = 2;
