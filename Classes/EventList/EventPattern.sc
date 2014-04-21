@@ -20,7 +20,7 @@ EventStreamPlayer
 */
 
 EventPattern : Pattern {
-	var <event; // holds patterns
+	var <event; // contains patterns
 
 	*new { | event | ^this.newCopyArgs(event ?? { () }) }
 
@@ -29,7 +29,7 @@ EventPattern : Pattern {
 }
 
 EventStream : Stream {
-	var <event; // holds streams
+	var <event; // contains streams
 
 	*new { | event |
 		^super.new.initEventStream(event);

@@ -33,7 +33,8 @@ b = Ppar(
 
 		Pseq([
 			EventPattern((degree: (-20..25).pseq(1), dur: 0.15)),
-			EventPattern((note: Pseq([20, 21], 20), dur: 0.05))
+			EventPattern((note: Pseq([20, 21], 20), dur: 0.05)),
+			EventPattern((degree: Pn((0, 2 .. 12), 1), dur: 0.3))
 		]),
 	]
 
