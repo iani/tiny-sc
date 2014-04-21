@@ -20,7 +20,108 @@ Pdef(\b, Pbind(\instrument, \Pdefhelp, \dur, 0.125, \degree, Pseq(#[7, 8, 7, 8])
 Pdef(\c, Pbind(\instrument, \Pdefhelp, \dur, 0.25, \degree, Pseq(#[0, 1, 2], 2)));
 #+END_EXAMPLE
 
-This will be a major coding effort ...
+*** QUOTE embedInStream mechanism
+
+
+Look at following methods in Pattern:
+
+#+BEGIN_EXAMPLE
+play { arg clock, protoEvent, quant;
+		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)
+	}
+
+	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
+	iter { ^this.asStream }
+
+	asEventStreamPlayer { arg protoEvent;
+		^EventStreamPlayer(this.asStream, protoEvent);
+	}
+	embedInStream { arg inval;
+		^this.asStream.embedInStream(inval);
+	}
+#+END_EXAMPLE
+
+And in Stream:
+
+#+BEGIN_EXAMPLE
+	embedInStream { arg inval;
+		var outval;
+		while {
+			outval = this.value(inval);
+			outval.notNil
+		}{
+			inval = outval.yield;
+		};
+		^inval
+	}
+
+	asEventStreamPlayer { arg protoEvent;
+		^EventStreamPlayer(this, protoEvent);
+	}
+
+	play { arg clock, quant;
+		clock = clock ? TempoClock.default;
+		clock.play(this, quant.asQuant);
+	}
+#+END_EXAMPLE
+
+And in EventStreamPlayer:
+
+#+BEGIN_EXAMPLE
+	play { arg argClock, doReset = (false), quant;
+		if (stream.notNil, { "already playing".postln; ^this });
+		if (doReset, { this.reset });
+		clock = argClock ? clock ? TempoClock.default;
+		streamHasEnded = false;
+		stream = originalStream;
+		isWaiting = true;	// make sure that accidental play/stop/play sequences
+						// don't cause memory leaks
+		era = CmdPeriod.era;
+		quant = quant.asQuant;
+		event = event.synchWithQuant(quant);
+
+		clock.play({
+			if(isWaiting and: { nextBeat.isNil }) {
+				clock.sched(0, this );
+				isWaiting = false;
+				this.changed(\playing)
+			};
+			nil
+		}, quant);
+		this.changed(\userPlayed);
+		^this
+	}
+#+END_EXAMPLE
+
+And also in EventStreamPlayer this:
+
+#+BEGIN_EXAMPLE
+	prNext { arg inTime;
+		var nextTime;
+		var outEvent = stream.next(event.copy);
+		if (outEvent.isNil) {
+			streamHasEnded = stream.notNil;
+			cleanup.clear;
+			this.removedFromScheduler;
+			^nil
+		}{
+			nextTime = outEvent.playAndDelta(cleanup, muteCount > 0);
+			if (nextTime.isNil) { this.removedFromScheduler; ^nil };
+			nextBeat = inTime + nextTime;	// inval is current logical beat
+			^nextTime
+		};
+	}
+#+END_EXAMPLE
+
+*** Comments / Hints
+
+The stream must return the event to play with next
+
+role of embedInStream not clear yet.
+
+*** First implementation proto-draft
+
+See class SideEffectStream.
 
 ** Both single-synth and synth-stream should play with PatternInstrument
 :PROPERTIES:
