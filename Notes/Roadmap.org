@@ -104,15 +104,6 @@ Bdef(\y) => \player2;
 `y => \player2;
 #+END_EXAMPLE
 
-
-
-
-
-
-
-
-
-
 ** Both single-synth and synth-stream should play with PatternInstrument
 :PROPERTIES:
 :DATE:     <2014-04-18 Fri 16:24>

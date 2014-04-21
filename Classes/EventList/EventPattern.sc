@@ -1,22 +1,8 @@
 /*
-Redo of EventStreamPlayer as stream with side effects, 
-holding the pattern from which it is created.  
-
-This should make it possible to embed an EventPattern in another Pattern, 
+EventPattern can be embedded in another Pattern, 
 in similar way as Pdef can be embedded in a Pseq (see Pdef help entry).
 
 IZ Mon, Apr 21 2014, 09:58 EEST
-
-EventPattern((degree: [1, 2, 3].pseq(2), dur: 0.1)).play;
-
-Pseq([EventPattern((degree: [1, 2, 3].pseq(2), dur: 0.1))]).play;
-
-EventPattern((degree: (1..8).pseq(2), dur: 0.1)).play;
-
-EventPattern
-
-EventStreamPlayer
-
 */
 
 EventPattern : Pattern {
