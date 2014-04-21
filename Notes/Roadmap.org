@@ -14,6 +14,105 @@ Next:
 
 Make Mdef (or new class: Edef) and SynthTree play with EventPattern instead of PatternEventPlayer.
 
+Note: All inheritance should be done with Mdef or SynthTree.  Keep EventPattern, EventStream as simple as possible.
+
+*** Next things in this matter
+:PROPERTIES:
+:DATE:     <2014-04-21 Mon 18:47>
+:END:
+
+Possible candidate to play inside SynthTree as template?
+
+Or a variant of PatternInstrument that listens to updates from Mdef, coupled with a different kind of Event that broadcasts itself on "play" instead of playing?  The advantage is that the PatternInstrument can then apply "filters" on the incoming event to permit playing the same event stream in different ways.
+
+The broadcasting technique has the advantage that one can attach additional behaviors such as monitoring, sending as osc or midi, updating views etc.  to the playing event stream easily.
+
+Furthermore, since we can nest EventPatterns, we will also want to nest Mdefs.  So an Mdef cannot be the one who plays a stream, because multiple streams may be spawned from it.  So the playing should be done exclusively inside SynthTree (also for simplicity's sake).  So the template var inside the SynthTree that is playing the event stream spawned from an Mdef is something else than an Mdef.  It looks as if it could be a variant of the current PatternInstrument with a new implementation as far as Pattern playing is concerned.
+
+The new PatternInstrument should have:
+
+- The Mdef it was created from (to respawn).
+- The EventStreamPlayer that it is playing (so that it can start it or stop it).
+- Any other synth/group/bus/SynthTree related stuff (derived from as it is now).
+- The facilities for varying the way that the received events are played ("filter").
+
+**** How to do the broadcasting
+
+Use a subclass of EventStreamPlayer, called EventStreamBroadcaster that uses a variant of prPlay as follows:
+
+#+BEGIN_EXAMPLE
+prNext { arg inTime;
+	var nextTime;
+	var outEvent = stream.next(event.copy);
+	if (outEvent.isNil) {
+		streamHasEnded = stream.notNil;
+		cleanup.clear;
+		this.removedFromScheduler;
+		^nil
+	}{
+// Instead of playAndDelta, use broadcastAndDelta.
+		nextTime = outEvent.broadcastAndDelta(cleanup, muteCount > 0, this);
+		if (nextTime.isNil) { this.removedFromScheduler; ^nil };
+		nextBeat = inTime + nextTime;	// inval is current logical beat
+		^nextTime
+	};
+}
+#+END_EXAMPLE
+
+And in Event, add =broadcastAndDelta=, keeping all all code, and changing only the line =this.play= to streamPlayer.changed(this), so that receivers may optionally play a modified version of the event, or otherwise react in different ways.
+
+#+BEGIN_EXAMPLE
+broadcastAndDelta { | cleanup, mute, streamPlayer |
+	if (mute) { this.put(\type, \rest) };
+	cleanup.update(this);
+	// this.play;  // instead of this, use "changed".
+        // instead of playing, broadcast, with "changed":
+        streamPlayer.changed(\event, this);
+	^this.delta;
+}
+#+END_EXAMPLE
+
+**** Runtime modifications apply to EventStreamBroadcasters, not Mdefs (!?)
+
+
+**** Coding examples
+
+Playing an Mdef: Always creates a Bdef.
+
+#+BEGIN_EXAMPLE
+Mdef(\x).play; // plays into EventStreamBroadcaster (Bdef) of same name
+Mdef(\x).play(\y) // plays into EventStreamBroadcaster named \y
+
+// Possible shortcut:
+\x => `\y;
+#+END_EXAMPLE
+
+Play into Bdef(\x) and chuck into \player1 SynthTree
+
+#+BEGIN_EXAMPLE
+Mdef(\x) => \player1;
+// Equivalent to:
+Mdef(\x).play => \player1;
+// Possible shortcut:
+\x => \player1;
+#+END_EXAMPLE
+
+Play Bdef(\y) into \player2 SynthTree
+#+BEGIN_EXAMPLE
+Bdef(\y) => \player2;
+// Possible shortcut:
+`y => \player2;
+#+END_EXAMPLE
+
+
+
+
+
+
+
+
+
+
 ** Both single-synth and synth-stream should play with PatternInstrument
 :PROPERTIES:
 :DATE:     <2014-04-18 Fri 16:24>
@@ -1021,7 +1120,7 @@ role of embedInStream not clear yet.
 
 *** First implementation proto-draft
 
-See class SideEffectStream.
+See class EventPattern, EventStream.
 
 * Undergoing tests
 

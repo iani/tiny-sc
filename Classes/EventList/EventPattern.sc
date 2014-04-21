@@ -30,7 +30,6 @@ EventPattern : Pattern {
 
 EventStream : Stream {
 	var <event; // contains streams
-
 	*new { | event |
 		^super.new.initEventStream(event);
 	}
