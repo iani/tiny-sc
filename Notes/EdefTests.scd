@@ -49,4 +49,32 @@ b.set((degree: (-10..10).pseq);
 Edef(\y).set((degree: [0, 2, 4, 0, 8, 7, 8, 5].pseq));
 
 //: ================================================================ 
-// Older stuff: 
+/*
+
+Next: 
+
+Edef().setClear(...)
+
+Edef(\y).clone(\z)
+
+Furthermore:
+*/
+
+Edef(\parallelDrunkard, (degree: Pbrown(-5, 10, 1, inf)) => \synthtree1
+
+\parallelDrunkard => parralelTree;
+
+// The %> operator applies the filter to the event received from the stream player
+(degree: { ~degree + 2 }) %> \parallelTree;
+
+//: More sophisticated stuff is possible: 
+(degree: { if (~degree.odd) {[0, 2] + ~degree },  { [-1, 3, 5] + ~degree }},
+strum: { if (~degree.odd) { 0 } { 0.05 }}) 
+%> \parallelTree;
+
+//: ================================================================
+// Next: =<, =<< etc. operators.
+
+\pat1 =< (degree: Pbrown(-5, 10, 1, inf)) => \synthtree3;
+
+
