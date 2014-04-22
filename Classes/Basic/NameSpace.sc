@@ -20,7 +20,9 @@ NameSpace {
 
 	*new { | type, name, makeFunc |
 		var instance;
-		makeFunc ?? { makeFunc = { type.new }};
+		makeFunc ?? { makeFunc = { type.asClass.new }};
+		// if no name is given, return nameless instance:
+		name ?? { ^makeFunc.value };
 		instance = Library.at(type, name);
 		if (instance.isNil) {
 			instance = makeFunc.value;

@@ -6,7 +6,7 @@ IZ Mon, Apr 21 2014, 09:58 EEST
 */
 
 EventPattern : Pattern {
-	var <event; // contains patterns
+	var <>event; // contains patterns
 
 	*new { | event | ^this.newCopyArgs(event ?? { () }) }
 
@@ -15,7 +15,7 @@ EventPattern : Pattern {
 }
 
 EventStream : Stream {
-	var <event; // contains streams
+	var <>event; // contains streams
 	*new { | event |
 		^super.new.initEventStream(event);
 	}

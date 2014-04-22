@@ -114,17 +114,16 @@ It also propagates the resulting pattern to all inheritors.
 */
 
 Edef { // NamedEventPattern
-	classvar <all; // TODO: Use Library instead of this, thus enabling subclassing
-	var <name;     // Could be delegated to NameSpace class
+	classvar <all; // TODO: Use Library instead of this, with NameSpace class
+	var <name;     // Can be nil
 	var <eventPattern;
-	var <inheritors;
+	var <children;
 
 	*initClass { all = IdentityDictionary() }
 
 	*new { | name, argPattern, propagate = false |
 		var instance;
-		instance = all[name];
-		if (instance.isNil) { instance = this.newCopyArgs(name, EventPattern()) };
+		instance = NameSpace(\Edef, name, { this.newCopyArgs(name, EventPattern()) });
 		argPattern !? { instance.replace(argPattern, propagate) };
 		^instance;
 	}
@@ -139,30 +138,40 @@ Edef { // NamedEventPattern
 		if (propagate) { this.propagate };
 	}
 
-	clone { | name | ^Cdef(name, this) }
-
 	propagate {
-		inheritors do: _.inherit(eventPattern);
+		children do: _.inherit(eventPattern);
 	}
 
 	play { | name |
-		/* Creates Bdef */
+		/* Creates Idef */
 		var player;
 		player = Idef(name, this);
-		inheritors = inheritors add: player;
+		children = children add: player;
 		^player;
 	}
+
+	=> { | chuckee |
+		// play into named Idef (if chuckee is Ref or Idef)
+		// or into SynthTree (if chuckee is Symbol or SynthTree)
+		^chuckee.receiveEdef(this);
+	}
+
+	=>> { | symbol |
+		// clone into Cdef named after symbol
+		this.clone(symbol);
+	}
+
+	clone { | name | ^Cdef(name, this) }
 
 }
 
 Cdef : Edef { // NamedEventPatternClone
 	// clone of an Edef.  Inherits changes propagated by parent
-	var <parent;
+	var <parent; // only for removing from parent upon request
 	var <mods; // locally modified elements: apply these on inherited pattern
 
 	*new { | name, parent | ^super.new(name, parent.eventPattern).initCdef(parent); }
 	initCdef { | argParent | parent = argParent; }
-
 
 	// uses new Event.merge method.  Other types of mods may 
 	// do intelligent merging of patterns - as distinct from Events
@@ -171,15 +180,32 @@ Cdef : Edef { // NamedEventPatternClone
 		eventPattern = argPattern.merge(mods);
 		this.propagate;
 	}
+	
+	// TODO: Add methods for changing the EventPattern + Mods
+
 }
 
+/*
+
+Idef and Bdef operate on the eventStream's event.  
+Prototype: 
+//:
+a = EventPattern((degree: [1, 2, 3].pseq(inf))).play;
+//:
+a.originalStream.event[\degree] = Pbrown(-5, 5, 3, inf).asStream;
+//:
+a.originalStream.event[\dur] = 0.1;
+
+*/
 Idef { // NamedInheritingEventStream
-	classvar <all;
 	var <name;
-	var <edef;
-	var <eventStream;
+	var <parent;
+	var <children;
 	var <mods; // locally modified elements: apply these on inherited pattern
+	var <eventStream;
 	
+
+
 }
 
 Bdef : Idef { // NamedBroadcastingEventStream
