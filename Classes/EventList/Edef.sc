@@ -56,22 +56,34 @@ Using symbols references to explicitly name spawned streams:
 */
 
 /*
-TODO: Write abstract superclass implementing nameing and Inheritance + Propagation.
-Store named instances in Library[Class, name].
+TODO: Write abstract superclass implementing Inheritance + Propagation.
+Elss use Inheritor as a mixin instead of as a superclass.
+
+Also maybe use generator class NameSpace for named instances, instead of subclassing.
 
 Hierarchy: 
+Inheritor
+	Edef  Named Inheriting EventPattern holder
 
-NamedInheritor
-   Edef  EventPattern holder
-      Cdef  cloned EventPattern holder
-   Idef  Simple EventStream holder
-	  Bdef  Broadcasting EventStream holder
+   Istream Inheriting EventStream holder (result of Ndef.play)
+	  Nstream Named Inheriting EventStream holder (result of Ndef => `\streamname)
+	    Bstream  Broadcasting EventStream holder (result of Ndef => \synthtree)
 */
+
+Inheritor {
+	var <parent;
+	var <contents;
+	var <mods;
+	var <inheritors;
+
+}
+
 
 Edef { // NamedEventPattern
 	classvar <all; // TODO: Use Library instead of this, thus enabling subclassing
+	var <name;     // Could be delegated to NameSpace class
 	var <eventPattern;
-	var <inheritors;
+	var <inheritors; // could be inheritor (not inheritors) as a mixin
 
 	*initClass { all = IdentityDictionary() }
 
