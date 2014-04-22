@@ -3,6 +3,9 @@
 * Currently working on
 
 
+** New README opening examples, starting with Mdef.
+
+See file MdefTests.scd
 ** Use embed in stream to chain (=embed) PatternPlayers?
 :PROPERTIES:
 :DATE:     <2014-04-20 Sun 18:32>
