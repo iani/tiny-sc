@@ -51,6 +51,10 @@ Stream's event is not modified.  Durations of the stream cannot be modified.
 Using symbols references to explicitly name spawned streams:
 \edef => `estream // create Bdef named `estream from edef.
 \edef => `estream => \synthree // play named stream (Bdef) into synthree
+
+event => `estream // modify estream 
+{ function } => `estream // modify estream 
+
 // name is explicitly given by `estream ref, and overrides synthree name.
 
 */
@@ -65,25 +69,55 @@ Hierarchy:
 Inheritor
 	Edef  Named Inheriting EventPattern holder
 
-   Istream Inheriting EventStream holder (result of Ndef.play)
-	  Nstream Named Inheriting EventStream holder (result of Ndef => `\streamname)
+	Following 2 Can be one class.  Difference is that the second one is made using 
+	NameSpace to access by name.
+	[
+	Istream Inheriting EventStream holder (result of Ndef.play)
+	Nstream Named Inheriting EventStream holder (result of Ndef => `\streamname)
+	]
 	    Bstream  Broadcasting EventStream holder (result of Ndef => \synthtree)
+
+Modes of mods?
+
+1. Replace
+2. Modify
+
+How they coincide and how they differ: 
+
+- Both optionally propagate the RESULTING new pattern/stream to inheritors
+- Replace / modify needs more analysis, here: 
+
+Possible actions: 
+
+- Replace mods
+- Merge mods
+- Cut inheritance???
+
+Analysis of mod possibilities 
+
+Possibilities 1 - 2 can coexist in any combination.
+Possibilities 3 and 4 are exclusive of any other possibility.
+
+1a. Replace a param pattern of the parent by a different pattern (possibly remove)
+1b. Replace a param pattern of the parent by a pattern modifying the parent pattern
+2.  Add a param pattern. 
+3a. Replace the entire pattern of the parent by a different pattern.
+3b. Replace the entire pattern of the parent by a different pattern derived from the parent.
+4. Replace nothing.
+
+Inheriting process: 
+
+Inheriting takes the pattern from the parent and combines it with 
+the mods to produce the pattern that will be used by the Edef/Idef that uses it.
+It also propagates the resulting pattern to all inheritors. 
+
 */
-
-Inheritor {
-	var <parent;
-	var <contents;
-	var <mods;
-	var <inheritors;
-
-}
-
 
 Edef { // NamedEventPattern
 	classvar <all; // TODO: Use Library instead of this, thus enabling subclassing
 	var <name;     // Could be delegated to NameSpace class
 	var <eventPattern;
-	var <inheritors; // could be inheritor (not inheritors) as a mixin
+	var <inheritors;
 
 	*initClass { all = IdentityDictionary() }
 
@@ -96,27 +130,24 @@ Edef { // NamedEventPattern
 	}
 
 	replace { | argPattern, propagate = false |
-		eventPattern = EventPattern(argPattern);
+		eventPattern =  argPattern.asPattern; // event returns:  EventPattern(argPattern);
 		if (propagate) { this.propagate };
 	}
 
 	merge { | argPattern, propagate = false |
-		[this, thisMethod.name, "not implemented"].postln;
+		eventPattern = eventPattern.merge(argPattern);
 		if (propagate) { this.propagate };
 	}
 
 	clone { | name | ^Cdef(name, this) }
 
 	propagate {
-		[this, thisMethod.name, "not implemented"].postln;
-		// this.changed(eventPattern);
-		inheritors do: _.propagate;
+		inheritors do: _.inherit(eventPattern);
 	}
 
 	play { | name |
 		/* Creates Bdef */
 		var player;
-		[this, thisMethod.name, "not implemented"].postln;
 		player = Idef(name, this);
 		inheritors = inheritors add: player;
 		^player;
@@ -132,15 +163,14 @@ Cdef : Edef { // NamedEventPatternClone
 	*new { | name, parent | ^super.new(name, parent.eventPattern).initCdef(parent); }
 	initCdef { | argParent | parent = argParent; }
 
-	propagate {
-		this.inherit;
-		inheritors do: _.propagate;
-	}
 
 	// uses new Event.merge method.  Other types of mods may 
 	// do intelligent merging of patterns - as distinct from Events
 	// Other types, as in: A function applied on the parent pattern.
-	inherit { eventPattern = mods.merge(parent.eventPattern); }
+	inherit { | argPattern |
+		eventPattern = argPattern.merge(mods);
+		this.propagate;
+	}
 }
 
 Idef { // NamedInheritingEventStream
