@@ -3,7 +3,132 @@
 * Currently working on
 
 
+
+** Designing Edef, Cdef, Istream, Bstream
+:PROPERTIES:
+:DATE:     <2014-04-22 Tue 15:26>
+:END:
+
+Edef: Associate an EventPattern with a symbol and implement propagation
+of later modifications of the pattern to streams played from it.
+
+IZ Tue, Apr 22 2014, 00:42 EEST
+
+*** Operators:
+
+**** Creating and modifying Edefs
+\edef =< event; // create/add event contents to edef, do not propagate
+\edef =!< event; // create/ replace old event contents by new event, do not propagate
+\edef =<< event; // add event contents and propagate
+\edef =!<< event; // replace event contents and propagate
+
+\edef =>> \cdef; // clone edef into cdef.  cdef inherits future changes from edef.
+
+If a function instead of an event is passed as second argument in the above,
+then the function is evaluated with ~pattern as environment variable, and the
+result becomes the new pattern of the Mdef.
+
+**** Playing edefs in SynthTrees
+Furthermore, the above may be chained with a chuck to a synthtree:
+
+\edef =< event => \synthtree
+\edef =!< event => \synthtree
+\edef =<< event => \synthtree
+\edef =!<< event => \synthtree
+
+Going directly to SynthTree:
+
+\edef => \synthtree; // play a new stream into a synthtree
+// Stream is named after synthtree.
+// Stream replaces previous stream
+
+**** Chucking events directly into synthtrees
+event => \synthree // chuck event to synthree's stream and play.
+// Stream is named after synthtree.
+// New stream contents replace previous contents (no merge).
+
+event =>> \synthree // add event contents into synthree (merge).
+// Stream's event is modified
+
+{ function } =>> \synthtree // produce new stream from existing stream
+// and substitute new stream in the stream player.
+// Stream's event is modified
+
+event =%> \synthtree
+{ function } =%> \synthree
+add filter - without altering contents of event stream
+This is for playing multiple synthrees with one stream, while varying the way of playing
+on a synthree basis.
+Stream's event is not modified.  Durations of the stream cannot be modified.
+
+**** Named spawned stream players (Idefs)
+
+Using symbols references to explicitly name spawned streams
+
+***** Creating Idefs
+
+\edef => `istream // create Idef named `istream from edef.
+
+***** Creating Bdefs
+
+Association is used to defer the creation of the Bdef until it is chucked to a synthtsream.  Otherwise it would become an Idef.
+
+\edef -> `stream => \synthree // play named stream as Bdef into synthree
+
+***** Modifying Idefs or Bdefs
+
+event => `estream // modify estream Idef or Bdef
+{ function } => `estream // modify estream
+
+
+***** NameSpace
+
+Use generator class NameSpace for named instances, instead of subclassing.
+
+***** Modifying the eventstream or pattern with "mods"
+
+A mod takes the event inherited from the parent and applies modifications to it in order to generate a modified Event that is used by the EventPattern or EventStream.
+
+Analysis of mod possibilities
+
+Possibilities 1 - 2 can coexist in any combination.
+Possibilities 3 and 4 are exclusive of any other possibility.
+
+1a. Replace a param pattern of the parent by a different pattern (possibly remove)
+1b. Replace a param pattern of the parent by a pattern modifying the parent pattern
+2.  Add a param pattern.
+3a. Replace the entire pattern of the parent by a different pattern.
+3b. Replace the entire pattern of the parent by a different pattern derived from the parent.
+4. Replace nothing.
+
+***** Inheriting process
+
+Inheriting takes the event (pattern?) from the parent and combines it with
+the mods to produce the pattern that will be used by the Edef/Idef that uses it.
+It also propagates the resulting event to all inheritors.
+
+***** How mods are modified
+
+The mod stores the modifications to be applied for obtaining the current players event from the parent.  But when we add a modification, we change the mod itself.  In principle there are many possibilities to change a mod:
+
+1. Replace the mod entirely
+2. Remove the mod entirely
+3. Remove part of the mod
+4. Replace part of the mod
+5. Add a new item to the mod
+6. Modify an item of the mod
+
+For the sake of simplicity, the present implementation will only handle two cases:
+
+1. add: add the new items to the mod, replacing any items of the same name.
+2. addClear: Remove all previous items of the mod, and then add the new ones.
+
+Other operations may be added later as needed.
+
 ** New README opening examples, starting with Mdef.
+:PROPERTIES:
+:DATE:     <2014-04-22 Tue 15:26>
+:END:
 
 See file MdefTests.scd
 ** Use embed in stream to chain (=embed) PatternPlayers?
@@ -15,9 +140,9 @@ Embedding of event-patterns done.  See EventPattern.
 
 Next:
 
-Make Mdef (or new class: Edef) and SynthTree play with EventPattern instead of PatternEventPlayer.
+Make Edef and SynthTree play with EventPattern instead of PatternEventPlayer.
 
-Note: All inheritance should be done with Mdef or SynthTree.  Keep EventPattern, EventStream as simple as possible.
+Note: All inheritance/modifications should be done with Edef, its related classes Cdef (inheriting clone of Edef), Istream (inheriting named wrapper around EventStreamPlayer), Bstream (subclass of Istream that makes the streamplayer broadcast instead of playing) or SynthTree.  Keep EventPattern, EventStream as simple as possible.
 
 *** Next things in this matter
 :PROPERTIES:

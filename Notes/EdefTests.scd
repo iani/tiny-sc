@@ -3,10 +3,10 @@
 // Tue, Apr 22 2014, 13:27 EEST
 
 
-// 1. Modify the initial pattern
-
+// 0. Play a pattern
 Edef(\x, (degree: (0..8).pseq)).play;
 
+// 1. Modify the initial pattern
 // Modify degree
 Edef(\x).set((degree: (0..4).pseq);
 
@@ -15,7 +15,7 @@ Edef(\x).set((degree: (5..1).pseq, dur: 0.1));
 
 // ================================================================
 
-// 2. Modify the initial pattern based on itself
+// 2. Modify the initial pattern based on its previous contents
 
 Edef(\x).set((degree: { ~degree * 2 }));
 
@@ -60,9 +60,9 @@ Edef(\y).clone(\z)
 Furthermore:
 */
 
-Edef(\parallelDrunkard, (degree: Pbrown(-5, 10, 1, inf)) => \synthtree1
+Edef(\parallelDrunkard, (degree: Pbrown(-5, 10, 1, inf)) => \anotherSynthtree;
 
-\parallelDrunkard => parralelTree;
+\parallelDrunkard => \parralelTree;
 
 // The %> operator applies the filter to the event received from the stream player
 (degree: { ~degree + 2 }) %> \parallelTree;
