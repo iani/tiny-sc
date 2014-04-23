@@ -1,21 +1,21 @@
 // Possibly for  README opening examples
-// Demonstrating Mdef capabilities incrementally
+// Demonstrating Edef capabilities incrementally
 // Tue, Apr 22 2014, 13:27 EEST
 
 
 // 0. Play a pattern
 Edef(\x, (degree: (0..8).pseq)).play;
 
-// 1. Modify the initial pattern
-// Modify degree
+// 1. Madify contents by replacing or adding patterns.
+// Modify degree.  The new pattern for degree replaces the previous one.
 Edef(\x).set((degree: (0..4).pseq);
 
-// Modify degree and add pattern for dur.
+// Replace degree pattern and add pattern for dur.
 Edef(\x).set((degree: (5..1).pseq, dur: 0.1));
 
 // ================================================================
 
-// 2. Modify the initial pattern based on its previous contents
+// 2. Modify a pattern based on its previous contents
 
 Edef(\x).set((degree: { ~degree * 2 }));
 

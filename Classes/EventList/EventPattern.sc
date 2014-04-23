@@ -43,12 +43,14 @@ EventStream : Stream {
 	*/
 	embedInStream { arg inval;
 		var outval;
+		// this.changed(\started); // we'll put these in when we come to need them.
 		while {
 			outval = this.next;
 			outval.notNil;
 		}{
 			outval.yield;
 		};
+		// this.changed(\stopped); // we'll put these in when we come to need them.
 		nil;
 	}	
 }

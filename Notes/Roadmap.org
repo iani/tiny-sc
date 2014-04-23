@@ -4,7 +4,7 @@
 
 
 
-** Designing Edef, Cdef, Istream, Bstream
+** Designing Edef, Cdef, Idef, Bdef
 :PROPERTIES:
 :DATE:     <2014-04-22 Tue 15:26>
 :END:
@@ -14,9 +14,24 @@ of later modifications of the pattern to streams played from it.
 
 IZ Tue, Apr 22 2014, 00:42 EEST
 
+*** QUOTE Making Edef, Idef, Bdef play
+:PROPERTIES:
+:DATE:     <2014-04-23 Wed 16:50>
+:END:
+
+Try making Edef subclass of EventPattern and Idef subclass of EventStream.  The reason is to implement the alternative asStream and embedInStream methods without having to add exra wrappers in a different class to handle them.
+
 *** Operators:
+:PROPERTIES:
+:DATE:     <2014-04-23 Wed 16:49>
+:END:
+
+Note: here \edef and \synthree are example names.  Any symbol can be used instead to name an Edef or SynthTree.
 
 **** Creating and modifying Edefs
+
+Note: "propagate" means to send the changed contents of the edef to all of its "children".  Children are Cdefs cloned from the Edef or Idefs, Bdefs (EventPattern players) spawned from them.  The
+
 \edef =< event; // create/add event contents to edef, do not propagate
 \edef =!< event; // create/ replace old event contents by new event, do not propagate
 \edef =<< event; // add event contents and propagate
@@ -31,16 +46,18 @@ result becomes the new pattern of the Mdef.
 **** Playing edefs in SynthTrees
 Furthermore, the above may be chained with a chuck to a synthtree:
 
-\edef =< event => \synthtree
-\edef =!< event => \synthtree
-\edef =<< event => \synthtree
-\edef =!<< event => \synthtree
-
 Going directly to SynthTree:
 
 \edef => \synthtree; // play a new stream into a synthtree
 // Stream is named after synthtree.
 // Stream replaces previous stream
+
+Initializing or modifying contents with an event, and then chucking to SynthTree:
+
+\edef =< event => \synthtree
+\edef =!< event => \synthtree
+\edef =<< event => \synthtree
+\edef =!<< event => \synthtree
 
 **** Chucking events directly into synthtrees
 event => \synthree // chuck event to synthree's stream and play.
@@ -125,29 +142,16 @@ For the sake of simplicity, the present implementation will only handle two case
 
 Other operations may be added later as needed.
 
-** New README opening examples, starting with Mdef.
-:PROPERTIES:
-:DATE:     <2014-04-22 Tue 15:26>
-:END:
+** Make Edef and SynthTree play with EventPattern instead of PatternEventPlayer.
 
-See file MdefTests.scd
-** Use embed in stream to chain (=embed) PatternPlayers?
-:PROPERTIES:
-:DATE:     <2014-04-20 Sun 18:32>
-:END:
-
-Embedding of event-patterns done.  See EventPattern.
-
-Next:
-
-Make Edef and SynthTree play with EventPattern instead of PatternEventPlayer.
-
-Note: All inheritance/modifications should be done with Edef, its related classes Cdef (inheriting clone of Edef), Istream (inheriting named wrapper around EventStreamPlayer), Bstream (subclass of Istream that makes the streamplayer broadcast instead of playing) or SynthTree.  Keep EventPattern, EventStream as simple as possible.
+Note: All inheritance/modifications should be done with Edef, its related classes Cdef (inheriting clone of Edef), Idef (inheriting named wrapper around EventStreamPlayer), Bdef (subclass of Istream that makes the streamplayer broadcast instead of playing) or SynthTree.  Keep EventPattern, EventStream as simple as possible.
 
 *** Next things in this matter
 :PROPERTIES:
 :DATE:     <2014-04-21 Mon 18:47>
 :END:
+
+Wed, Apr 23 2014, 16:23 EEST: The following have been implemented by Idef, Bdef.
 
 Possible candidate to play inside SynthTree as template?
 
@@ -164,7 +168,7 @@ The new PatternInstrument should have:
 - Any other synth/group/bus/SynthTree related stuff (derived from as it is now).
 - The facilities for varying the way that the received events are played ("filter").
 
-**** How to do the broadcasting
+**** QUOTE How to do the broadcasting
 
 Use a subclass of EventStreamPlayer, called EventStreamBroadcaster that uses a variant of prPlay as follows:
 
@@ -187,7 +191,7 @@ prNext { arg inTime;
 }
 #+END_EXAMPLE
 
-And in Event, add =broadcastAndDelta=, keeping all all code, and changing only the line =this.play= to streamPlayer.changed(this), so that receivers may optionally play a modified version of the event, or otherwise react in different ways.
+And in Event, add =broadcastAndDelta=, keeping all code, and changing only the line =this.play= to streamPlayer.changed(this), so that receivers may optionally play a modified version of the event, or otherwise react in different ways.
 
 #+BEGIN_EXAMPLE
 broadcastAndDelta { | cleanup, mute, streamPlayer |
@@ -1241,6 +1245,21 @@ role of embedInStream not clear yet.
 
 See class EventPattern, EventStream.
 
+** Use embed in stream to chain (=embed) PatternPlayers?
+:PROPERTIES:
+:DATE:     <2014-04-20 Sun 18:32>
+:END:
+
+Embedding of event-patterns done.  See EventPattern, EventStream.
+For playing in SynthTree see Edef, Idef, Bdef.
+
+
+** New README opening examples, starting with Edef.
+:PROPERTIES:
+:DATE:     <2014-04-22 Tue 15:26>
+:END:
+
+See file EdefTests.scd
 * Undergoing tests
 
 ** =SynthTree=: Storing/interconnecting Synths

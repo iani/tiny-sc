@@ -16,19 +16,18 @@ b = Pn(EventPattern((degree: [1, 2, 3].pseq(2), dur: 0.1)), 2).play;
 
 //:
 b = Pseq(
-	[EventPattern((degree: [1, 2, [3, 1, -1, -4, -1, 1, 3, 5, 7, 9, 11, 13]].pseq(1), 
-		dur: 2, strum: 0.05)),
-
+	[
+		EventPattern((degree: [1, 2, [3, 1, -1, -4, -1, 1, 3, 5, 7, 9, 11, 13]].pseq(1), 
+			dur: 2, strum: 0.05)),
 		EventPattern((degree: (-2..15).pseq(1), dur: 0.05)),
 	]
-
 ).play;
 
 //:
 //:
 b = Ppar(
-	[EventPattern((degree: [20, -8,
-		{ (0, 2 .. 14).scramble + (0 rrand: 4) }.pfuncn(1)].prand(12), 
+	[EventPattern((degree: [20, 21, 25,
+		{ (0, 2 .. 14).scramble + (0 rrand: 4) }.pfuncn(1)].prand(15), 
 		dur: 1, strum: 0.05)),
 
 		Pseq([

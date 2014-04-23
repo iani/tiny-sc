@@ -1,46 +1,69 @@
 /*
 Edef: Associate an EventPattern with a symbol and implement propagation 
 of later modifications of the pattern to streams played from it. 
+Cdef: clone of an Edef, inherits subsequent changes to father.
+Idef: subclass of EventStreamPlayer, with inheritance.
+Bdef: subclass of Idef, broadcasting instead of playing
+
+These subclass of EventPattern and Idef subclass of EventStream.  
+The reason is to implement the alternative asStream and embedInStream methods 
+without having to add exra wrappers in a different class to handle them.
+
+Note: Edef plays as Idef playing or broadcasting 
+depending on whether it is chucking into a SynthTree or not. 
+
 
 IZ Tue, Apr 22 2014, 00:42 EEST
 
+a = Edef(\x, (degree: 20, dur: 1));
+b = a.play;
+b.inspect;
+a.inspect;
+c = a.broadcast;
+c addDependant: { | ... args | args.postln; };
+c.inspect;
+delta
+
 */
 
-Edef { // NamedEventPattern
-	classvar <all; // TODO: Use Library instead of this, with NameSpace class
+Edef : EventPattern { // NamedEventPattern
 	var <name;     // Can be nil
-	var <eventPattern;
 	var <children;
 
-	*initClass { all = IdentityDictionary() }
+	//	*initClass { all = IdentityDictionary() }
 
 	*new { | name, argPattern, propagate = false |
 		var instance;
-		instance = NameSpace(\Edef, name, { this.newCopyArgs(name, EventPattern()) });
+		instance = NameSpace(\Edef, name, { this.newCopyArgs((), name) });
 		argPattern !? { instance.replace(argPattern, propagate) };
 		^instance;
 	}
 
 	replace { | argPattern, propagate = false |
-		eventPattern =  argPattern.asPattern; // event returns:  EventPattern(argPattern);
+		event = argPattern;
 		if (propagate) { this.propagate };
 	}
 
 	merge { | argPattern, propagate = false |
-		eventPattern = eventPattern.merge(argPattern);
+		// eventPattern = eventPattern.merge(argPattern);
 		if (propagate) { this.propagate };
 	}
 
 	propagate {
-		children do: _.inherit(eventPattern);
+		//		children do: _.inherit(eventPattern);
 	}
 
-	play { | name |
+	broadcast { | name |
+		^this.play(name, true);
+	}
+
+	play { | name, broadcast = false |
 		/* Creates Idef */
 		var player;
 		player = Idef(name, this);
 		children = children add: player;
-		^player;
+		if (broadcast) { player.initBroadcast };
+		^player.play;
 	}
 
 	=> { | chuckee |
@@ -63,48 +86,20 @@ Cdef : Edef { // NamedEventPatternClone
 	var <parent; // only for removing from parent upon request
 	var <mods; // locally modified elements: apply these on inherited pattern
 
-	*new { | name, parent | ^super.new(name, parent.eventPattern).initCdef(parent); }
+	//	*new { | name, parent | ^super.new(name, parent.eventPattern).initCdef(parent); }
 	initCdef { | argParent | parent = argParent; }
 
 	// uses new Event.merge method.  Other types of mods may 
 	// do intelligent merging of patterns - as distinct from Events
 	// Other types, as in: A function applied on the parent pattern.
 	inherit { | argPattern |
-		eventPattern = argPattern.merge(mods);
+		//	eventPattern = argPattern.merge(mods);
 		this.propagate;
 	}
 	
 	// TODO: Add methods for changing the EventPattern + Mods
 
 }
-
-/*
-
-Idef and Bdef operate on the eventStream's event.  
-Prototype: 
-//:
-a = EventPattern((degree: [1, 2, 3].pseq(inf))).play;
-//:
-a.originalStream.event[\degree] = Pbrown(-5, 5, 3, inf).asStream;
-//:
-a.originalStream.event[\dur] = 0.1;
-
-*/
-Idef { // NamedInheritingEventStream
-	var <name;
-	var <parent;
-	var <children;
-	var <mods; // locally modified elements: apply these on inherited pattern
-	var <eventStream;
-	
-
-
-}
-
-Bdef : Idef { // NamedBroadcastingEventStream
-
-}
-
 
 + Nil { merge { | parentPattern | ^parentPattern } }
 + Event {

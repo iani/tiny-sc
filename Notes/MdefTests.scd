@@ -1,5 +1,18 @@
 // Wed, Apr 16 2014, 06:15 EEST
 
+// !!!!!!!!!!!!!!!! OBSOLETE !!!!!!!!!!!!!!!!
+
+/*
+Note Wed, Apr 23 2014, 13:55 EEST
+Mdef is already obsolete, replaced by Edef. 
+The API of the 2 classes is very similar. 
+This file will be replaced with one about Edef.
+
+See EdefTests.scd.  (Better organised than this one). 
+
+*/
+
+
 Mdef(\x, (freq: [60, 64].midicps.pseq, dur: 1)) => \test;
 
 Mdef(\x, (freq: [50, 54].midicps.pseq, dur: 1));
