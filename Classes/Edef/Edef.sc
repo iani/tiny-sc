@@ -15,7 +15,7 @@ depending on whether it is chucking into a SynthTree or not.
 
 IZ Tue, Apr 22 2014, 00:42 EEST
 
-a = Edef(\x, (degree: 20, dur: 1));
+a = Edef(\x, (degree: 20));
 b = a.play;
 b.inspect;
 a.inspect;
@@ -60,10 +60,9 @@ Edef : EventPattern { // NamedEventPattern
 	play { | name, broadcast = false |
 		/* Creates Idef */
 		var player;
-		player = Idef(name, this);
+		player = if (broadcast) { Bdef(name, this) } { Idef(name, this).play };
 		children = children add: player;
-		if (broadcast) { player.initBroadcast };
-		^player.play;
+		^player;
 	}
 
 	=> { | chuckee |

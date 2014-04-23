@@ -2,8 +2,7 @@
 
 Idef applies inheritance/modification operations on the originalStream event.
 
-To broadcast instead of playing, it should be sent the message
-initBroadcast right after creation (and before playing).
+Bdef plays inside SynthDef by broadcasting its event and letting 
 
 Prototype: 
 //:
@@ -26,12 +25,16 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 		});
 	}
 
-	initBroadcast {
+}
+
+Bdef : Idef {
+
+	init {
 		if (originalStream.event.dur.isNil) { originalStream.event.dur = 1 };
-		routine = Routine{ | inTime | loop { inTime = this.prBroadcastNext(inTime).yield } }
+		super.init;
 	}
 
-	prBroadcastNext { arg inTime;
+	prNext { arg inTime;
 		var nextTime;
 		var outEvent = stream.next(event.copy);
 		if (outEvent.isNil) {
@@ -47,6 +50,7 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 			^nextTime
 		};
 	}
+
 }
 
 + Event {
