@@ -15,16 +15,18 @@ a.originalStream.event[\dur] = 0.1;
 
 a = Idef.fromEvent((degree: [10, 12].pseq, dur: 0.2));
 a.play;
+
+a.inspect;
 */
 Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 	var <>name;
-	var <parent;
+	var <>parent;
 	var <children;
 	var <mods; // locally modified elements: apply these on inherited pattern
 	
 	*new { | name, parent, protoEvent |
 		^NameSpace(\Idef, name, { 
-			super.new(parent.asStream, protoEvent).name_(name);
+			super.new(parent.asStream, protoEvent).name_(name).parent_(parent);
 		});
 	}
 
@@ -32,28 +34,51 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 		^this.new(nil, EventPattern(event), protoEvent)
 	}
 
-	addEvent { | event |
+	addEvent{ | event, fromPattern = false |
 		var newEvent;
-		mods ?? { mods = () }; 
-		mods make: { event keysValuesDo: { | key value | mods[key] = value.value } };
-		this.applyMods;
+		newEvent = if (fromPattern) { 
+			this.originalPatternEvent;
+		}{
+			originalStream.event.copy;
+		};
+		event keysValuesDo: { | key value | newEvent[key] = value.asStream; };
+		this.applyMods(newEvent);
 	}
+
+	replaceEvent { | event |
+		event = event.copy;
+		this.applyMods(
+			event keysValuesDo: { | key value | event[key] = value.asStream; }
+		);
+	}
+
+	replacePlayerMods { | event |
+		// replace mods with event, apply to stream from original pattern
+		mods = event;
+		this.applyMods(this.pattern.asStream.event);
+	}
+
+	addPlayerMods { | event, reset = false |
+		var newEvent;
+		mods ?? { mods = () };
+		event keysValuesDo: { | key value | mods[key] = value };
+		this.applyMods(if (reset) { this.originalPatternEvent }  { nil });
+	}
+
+	originalPatternEvent { ^this.pattern.asStream.event.copy }
+	pattern { ^parent.pattern }
 
 	applyMods { | inEvent |
 		inEvent ?? { inEvent = originalStream.event.copy; };
-		mods !? { mods keysValuesDo: { | key value | inEvent[key] = value } };
+		mods !? { 
+			inEvent use: {
+				mods keysValuesDo: { | key value | inEvent[key] = value.value } 
+			};
+		};
 		inEvent keysValuesDo: { | key value | inEvent[key] = value.asStream };
 		inEvent[\dur] ?? { inEvent[\dur] = 1 };
 		originalStream.event = inEvent;
 		this.propagate(inEvent);
-	}
-
-	replaceEvent { | event |
-		// TODO: review this to make it really replace?
-		// I.e. remove from original events those keys which are not present
-		// in new event, after having applied the mods. ?
-		mods = event;
-		this.applyMods(());
 	}
 
 	propagate { | inEvent | children do: _.inherit(inEvent) }

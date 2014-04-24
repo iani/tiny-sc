@@ -12,6 +12,7 @@ EventPattern : Pattern {
 
 	asStream { ^EventStream(event) }
 
+	pattern { ^this }
 }
 
 EventStream : Stream {

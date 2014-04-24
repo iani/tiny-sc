@@ -282,13 +282,13 @@ SynthDef(\bassfoundationdebug, { | out = 0 freq = 440
 }), 
 SynthDef(\basshighend, { 
 	| out = 0 freq = 440 amp = 0.1 gate = 1 /* cutoff = 3000 */
-	rq = 0.1 /* drive = 2.0 */ pan = 0.0 |
+	rq = 0.2 /* drive = 2.0 */ pan = 0.0 |
 
 	var osc, filter, env, filterenv;
 	var ab, drive, cutoff;
 
-	drive = \drive.cr([0, 10, 'linear', 0, 2]);
-	cutoff = \cutoff.cr(\freq);
+	drive = \drive.cr([0, 10, 'linear', 0, 1.0]);
+	cutoff = \cutoff.kr(3000);
 
 	//osc = Mix(VarSaw.ar(freq * [0.25, 1, 1.5], Rand(0.0, 1.0)!3, 0.9, [0.5, 0.4, 0.1]));
 	osc = Mix(Saw.ar(freq * [0.25, 1, 1.5], [0.5, 0.4, 0.1]));

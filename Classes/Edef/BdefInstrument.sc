@@ -41,7 +41,7 @@ BdefInstrument {
 	stop { bdef.stop; }
 	isPlaying { ^bdef.isPlaying }
 	asSynthTemplate { /* ^this */ }
-	templateArgs { ^[ControlName(\amp, nil, \control, 1)] }
+	templateArgs { ^[ControlName(\amp, nil, \control, 0.3)] }
 
 	asSynth { | synthTree fadeTime |
 		var bdefSynth;
@@ -110,8 +110,8 @@ BdefInstrument {
 		}
 	}
 
-	addEvent { | event | bdef.addEvent(event); }
-	replaceEvent { | event | bdef.replaceEvent(event); }
+	addPlayerMods { | event | bdef.addEvent(event); }
+	replacePlayerMods { | event | bdef.replaceEvent(event); }
 	addMods { | event | mods = mods addStreamMods: event; }
 	replaceMods { | event | mods = nil addStreamMods: event }	
 }

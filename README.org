@@ -131,15 +131,23 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 //: Change the pattern on the fly
 (degree: [10, 11].pseq) => \test;
 //: Modify a parameter in the SynthTree
-(amp: [0.05, 0.05, 0.1].pseq) %> \test;
+(amp: [0.04, 0.04, 0.1].pseq) %> \test;
 //: And nother parameter
-(instrument: [\lpfsawr, \lpfpulser, \bassfoundation].prand) %> \test;
+(instrument: [\sine, \bassfoundation].prand) %> \test;
 //: Change tempo, modifying the stream's event
 (dur: 0.05) +> \test;
-//: Again
+//: Wander about
+(degree: Pbrown(10, 15, 1, inf)) +> \test
+//: Wander about differently
+(degree: Pstutter(2, Pbrown(-15, 15, 1, inf)) + [10, 11].pseq) +> \test;
+//: Insert some held notes
+(legato: [0.5 ! 15, 20].flat.prand) +> \test;
+//: And silences
+(amp: [Pfuncn({ 0 }, 40), [0.04, 0.04, 0.1].pseq(1) ! 10].flat.prand) %> \test;
+//: Vary the pulse
 (dur: Pbrown(0.02, 0.15, 0.01, inf)) +> \test;
 //: Modify amplitude
-(amp: { 0.01 exprand: 1.2 }.pfunc) %> \test;
+(amp: { 0.001 exprand: 0.3 }.pfunc) %> \test;
 //: Modify degree
 (degree: (-20..20).prand) %> \test;
 //: Use note instead of degree (non-diatonic)
@@ -151,20 +159,24 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 #+END_EXAMPLE
 
 ** Cloning patterns and streams, propagating changes
+:PROPERTIES:
+:ID:       3072F115-DC86-4F66-B10E-1EB66A99A6CF
+:eval-id:  2
+:END:
 
 #+BEGIN_EXAMPLE
 //: Start a named pattern reference in a SynthTree
 Edef(\simple, (degree: [1, 2, 3].pseq)) => \wander;
 
-//: Change the named pattern.  (Edef(\simple) =< ... also possible)
+//: Change the named pattern Edef.  (Edef(\simple) =< ... also possible)
 \simple =< (degree: Pbrown(-5, 5, 3, inf));
 //: Modify some more
-\simple =< (dur: 0.125);
+\simple =< (dur: 0.125, amp: 0.01);
 //: And more
-\simple =< (instrument: [\bassfoundation, \lpfpulser].prand);
+\simple =< (instrument: [\bassfoundation, \sine].prand);
 
 //: Many keys in event OK
-\simple =< (legato: { 0.2 exprand: 1.5 }.pfunc, amp: [Pn(0.05, 3), 0.3, 0.1, 0.1].pseq);
+\simple =< (legato: { 0.4 exprand: 1.5 }.pfunc, amp: [Pn(0.01, 3), 0.05, 0.02, 0.02].pseq);
 
 //: Modify how the synthtree interprets the stream
 (degree:{if(~degree%3==0){~degree+(0..2)*[2,3].choose}{~degree}})%>\wander;
@@ -179,10 +191,10 @@ Edef(\simple, (degree: [1, 2, 3].pseq)) => \wander;
 (degree: { (17, 19 .. 23) + ~degree }) %> \other;
 
 //: Hm, up there a little louder:
-(amp: { Pbrown(0.5, 3, 0.1, inf).asStream * (~amp ? 0.1) }) %> \other;
+(amp: { Pbrown(0.5, 2, 0.1, inf).asStream * (~amp ? 0.01) }) %> \other;
 
 //: Or maybe try playing inverse amplitude:
-(amp: { 1 - (~amp ? 0.1) / 3 }) %> \other;
+(amp: { 1 - (~amp ? 0.01) / 10 }) %> \other;
 
 //: See if propagation works
 Edef(\simple) =< (degree: Pwhite(-10.1, -12, inf));
@@ -192,15 +204,20 @@ Edef(\simple) =< (degree: (-10..10).pyramid(5).pseq);
 Edef(\simple) =< (degree: (10..-10).pyramid(5).pseq);
 
 //: Pauses? Suddenly a whiff of baroque.
+(
 (amp: [0, 0, 0.1, 0.2, 0.05].pseq, degree: { ~degree }) %> \wander;
-(amp: [0, 0.2].pseq, degree: { 2 + ~degree }) %> \other;
-
+(amp: [0, 0.1].pseq, degree: { 2 + ~degree }) %> \other;
+)
 //: Try some modulation
-\simple =< (
-    mtranspose: Pstutter(12, (-4..2).pseq),
+(
+\simple =< (mtranspose: Pstutter(12, (-4..2).pseq),
 	ctranspose: Pstutter(24, ((0..5) * 5 % 12).pseq),
 	scale: Scale.harmonicMinor
 );
+)
+//: Fade out
+\wander.fadeOut(5);
+\other.fadeOut(10);
 #+END_EXAMPLE
 
 * Restart synths after Command-.
