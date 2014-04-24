@@ -41,9 +41,11 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 
 	applyMods { | inEvent |
 		inEvent ?? { inEvent = originalStream.event.copy; };
-		mods keysValuesDo: { | key value | inEvent[key] = value.asStream };
+		mods !? { mods keysValuesDo: { | key value | inEvent[key] = value } };
+		inEvent keysValuesDo: { | key value | inEvent[key] = value.asStream };
+		inEvent[\dur] ?? { inEvent[\dur] = 1 };
 		originalStream.event = inEvent;
-		this.propagate;
+		this.propagate(inEvent);
 	}
 
 	replaceEvent { | event |
@@ -54,9 +56,9 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 		this.applyMods(());
 	}
 
-	propagate {
-		[this, thisMethod.name, "not yet implemented"].postln;
-	}
+	propagate { | inEvent | children do: _.inherit(inEvent) }
+
+	inherit { | inEvent | this.applyMods(inEvent); }
 }
 
 Bdef : Idef {

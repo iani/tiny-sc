@@ -58,7 +58,7 @@ BdefInstrument {
 		);
 		bdefSynth.onEnd(this, {
 			this.removeNotifier(bdef, \event);
-			if (stopBdefOnSynthEnd) { bdef.stop; [this, thisMethod.name].postln; };
+			if (stopBdefOnSynthEnd) { bdef.stop; };
 		});
 		this.setSynthEventAction;
 		this.addNotifier(bdef, \taskStopped, { 
@@ -112,9 +112,7 @@ BdefInstrument {
 
 	addEvent { | event | bdef.addEvent(event); }
 	replaceEvent { | event | bdef.replaceEvent(event); }
-	addMods { | event | mods = mods addStreamMods: event; 
-		[this, thisMethod.name, mods].postln;
-	}
+	addMods { | event | mods = mods addStreamMods: event; }
 	replaceMods { | event | mods = nil addStreamMods: event }	
 }
 
@@ -127,20 +125,16 @@ BdefInstrument {
 + Event {
 	
 	addPatternMods { | event |
-		^event make: {
-			event keysValuesDo: { | key value | this[key] = value.value }
-		}
+		event keysValuesDo: { | key value | event[key] = value }
 	}
 
 	addStreamMods { | event |
-		^this make: {
-			event keysValuesDo: { | key value | this[key] = value.value.asStream }
-		}
+		event keysValuesDo: { | key value | this[key] = value.asStream }			
 	}
 
 	applyMods { | event |
-		event use: {
-			this keysValuesDo: { | key value | event[key] = value.next };
+		event use: { // accepts functions as well as streams
+			this keysValuesDo: { | key value | event[key] = value.value };
 		};
 		^event;
 	}

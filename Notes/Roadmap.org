@@ -32,10 +32,10 @@ Note: here \edef and \synthree are example names.  Any symbol can be used instea
 
 Note: "propagate" means to send the changed contents of the edef to all of its "children".  Children are Cdefs cloned from the Edef or Idefs, Bdefs (EventPattern players) spawned from them.  The
 
-\edef =< event; // create/add event contents to edef, do not propagate
-\edef =!< event; // create/ replace old event contents by new event, do not propagate
-\edef =<< event; // add event contents and propagate
-\edef =!<< event; // replace event contents and propagate
+\edef =< event; // add event contents and propagate
+\edef =!< event; // replace event contents and propagate
+\edef =<| event; // create/add event contents to edef, do not propagate
+\edef =!<| event; // create/ replace old event contents by new event, do not propagate
 
 \edef =>> \cdef; // clone edef into cdef.  cdef inherits future changes from edef.
 

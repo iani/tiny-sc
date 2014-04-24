@@ -1,7 +1,7 @@
 
 + Symbol {
 
-	=> { | params | ^this.asMdef set: params }
+	=> { | chuckee | ^this.asEdef => chuckee }
 
 	asPatternInstrument {
 		^PatternInstrument(PatternPlayer([], Pfunc({ ~dur.next })), this);

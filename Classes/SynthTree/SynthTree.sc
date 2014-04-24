@@ -375,8 +375,8 @@ SynthTree : IdentityTree {
 
 	fadeOut { | argFadeTime |
 		if (synth.isPlaying) {
-			//			synth release: this.getFadeTime(argFadeTime);
-			synth.set(\timeScale, this.getFadeTime(argFadeTime), \gate, 0);
+			synth release: this.getFadeTime(argFadeTime);
+			//			synth.set(\timeScale, this.getFadeTime(argFadeTime), \gate, 0);
 			this.changed(\fadeOut);
 		};
 		notStopped = false;

@@ -32,7 +32,7 @@ Edef : EventPattern { // NamedEventPattern
 
 	//	*initClass { all = IdentityDictionary() }
 
-	*new { | name, argPattern, propagate = false |
+	*new { | name, argPattern, propagate = true |
 		var instance;
 		instance = NameSpace(\Edef, name, { this.newCopyArgs((), name) });
 		argPattern !? { instance.replace(argPattern, propagate) };
@@ -49,31 +49,42 @@ Edef : EventPattern { // NamedEventPattern
 		if (propagate) { this.propagate };
 	}
 
-	propagate {
-		//		children do: _.inherit(eventPattern);
-	}
+	propagate { children do: _.inherit(event) }
 
-	broadcast { | name |
-		^this.play(name, true);
-	}
+	broadcast { | name | ^this.play(name, true) }
 
 	play { | name, broadcast = false |
-		/* Creates Idef */
+		/* If broadcast, make Bdef, else make Idef+play it */
 		var player;
 		player = if (broadcast) { Bdef(name, this) } { Idef(name, this).play };
 		children = children add: player;
-		^player;
+		^player
 	}
 
 	=> { | chuckee |
 		// play into named Idef (if chuckee is Ref or Idef)
 		// or into SynthTree (if chuckee is Symbol or SynthTree)
-		^chuckee.receiveEdef(this);
+		^chuckee.receiveEdef(this)
 	}
 
 	=>> { | symbol |
 		// clone into Cdef named after symbol
-		this.clone(symbol);
+		this.clone(symbol)
+	}
+
+	=< { | inEvent | this.addEvent(inEvent, true) }
+	=!< { | inEvent | this.replaceEvent(inEvent, true) }
+	=<| { | inEvent | this.addEvent(inEvent, false) }
+	=!<| { | inEvent | this.replaceEvent(inEvent, false) }
+
+	addEvent { | inEvent, propagate = true |
+		inEvent keysValuesDo: { | key value | event[key] = value };
+		if (propagate) { this.propagate }
+	}
+
+	replaceEvent { | inEvent, propagate = true |
+		event = inEvent;
+		if (propagate) { this.propagate }
 	}
 
 	clone { | name | ^Cdef(name, this) }
@@ -125,6 +136,14 @@ Cdef : Edef { // NamedEventPatternClone
 		// this always cross-fades.
 		this.chuck(BdefInstrument(Bdef.fromEvent(event)));
 	}
+	cloneInto { | chuckee |
+		^chuckee.chuck(
+			BdefInstrument(
+				template.stopBdefOnSynthEnd_(false).bdef
+			).stopBdefOnSynthEnd_(false)
+		);
+	}
+
 	addEvent { | event | template.addEvent(event); }
 	replaceEvent { | event | template.replaceEvent(event); }
 	addMods { | event | template.addMods(event); }
@@ -144,6 +163,18 @@ Cdef : Edef { // NamedEventPatternClone
 	replaceEvent { | event | ^this.asSynthTree.replaceEvent(event); }
 	addMods { | event | ^this.asSynthTree.addMods(event); }
 	replaceMods { | event | ^this.asSynthTree.replaceMods(event); }
+
+	=< { | event | this.asEdef =< event}
+	=!< { | event | this.asEdef =!< event}
+	=<| { | event | this.asEdef =<| event}
+	=!<| { | event | this.asEdef =!<| event}
+	=>> { | symbol | this.asEdef =>> symbol }
+	asEdef { ^Edef(this) }
+
+	cloneInto { | chuckee |
+		^this.asSynthTree cloneInto: chuckee.asSynthTree;
+	}
+
 }
 
 + Nil { merge { | parentPattern | ^parentPattern } }

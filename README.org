@@ -120,114 +120,80 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 
 * Play patterns in SynthTree
 
-** Setting and adding parameter patterns
+** Event => \Symbol: Play as pattern
 
-First reset the global duration to a constant value:
 #+BEGIN_EXAMPLE
-0.3 =!> \dur;
+//: Playing events directly in SynthTree
+//: Set a longish fade time to observe cross-fading
+3 =!> \fadeTime;
+//: Start playing an EventPattern in a SynthTree (similar to Pbind)
+(degree: [20, 22].pseq, dur: 0.5) => \test;
+//: Change the pattern on the fly
+(degree: [10, 11].pseq) => \test;
+//: Modify a parameter in the SynthTree
+(amp: [0.05, 0.05, 0.1].pseq) %> \test;
+//: And nother parameter
+(instrument: [\lpfsawr, \lpfpulser, \bassfoundation].prand) %> \test;
+//: Change tempo, modifying the stream's event
+(dur: 0.05) +> \test;
+//: Again
+(dur: Pbrown(0.02, 0.15, 0.01, inf)) +> \test;
+//: Modify amplitude
+(amp: { 0.01 exprand: 1.2 }.pfunc) %> \test;
+//: Modify degree
+(degree: (-20..20).prand) %> \test;
+//: Use note instead of degree (non-diatonic)
+(note: (-10, -9 .. 12).prand) %> \test
+//: Modify duration again
+(dur: 0.1) +> \test;
+//: Fade-out
+\test fadeOut: 5;
 #+END_EXAMPLE
 
-Play a pattern with a constant frequency into a new SynthTree:
+** Cloning patterns and streams, propagating changes
 
 #+BEGIN_EXAMPLE
-[freq: 440] => \pattern1;
-#+END_EXAMPLE
+//: Start a named pattern reference in a SynthTree
+Edef(\simple, (degree: [1, 2, 3].pseq)) => \wander;
 
-Add a pattern for the amplitude parameter to the SynthTree
-#+BEGIN_EXAMPLE
-{ 0.01 exprand: 0.1 }.pfunc -> \amp => \pattern1;
-#+END_EXAMPLE
+//: Change the named pattern.  (Edef(\simple) =< ... also possible)
+\simple =< (degree: Pbrown(-5, 5, 3, inf));
+//: Modify some more
+\simple =< (dur: 0.125);
+//: And more
+\simple =< (instrument: [\bassfoundation, \lpfpulser].prand);
 
-One can omit the SynthTree name to set the parameter in the current tree:
-#+BEGIN_EXAMPLE
-[0.02, 0.03, 0.07].pseq *> \amp;
-#+END_EXAMPLE
+//: Many keys in event OK
+\simple =< (legato: { 0.2 exprand: 1.5 }.pfunc, amp: [Pn(0.05, 3), 0.3, 0.1, 0.1].pseq);
 
-Change the pattern played in the freq parameter
-#+BEGIN_EXAMPLE
-[440, 550].pseq *> \freq;
-#+END_EXAMPLE
+//: Modify how the synthtree interprets the stream
+(degree:{if(~degree%3==0){~degree+(0..2)*[2,3].choose}{~degree}})%>\wander;
 
-Set a shorter global duration
-#+BEGIN_EXAMPLE
-0.1 =!> \dur;
-#+END_EXAMPLE
+//: Add another SynthTree playing from the same stream as \wander
+\wander cloneInto: \other;
 
-Change the pattern of the freq parameter again.
-Optional feature: Use ~st to address the last synthTree that was chucked.
-#+BEGIN_EXAMPLE
-[440, 550, 660].prand *> \freq;
-#+END_EXAMPLE
+//: Modify how the second SynthTree plays the stream
+(degree: { 20 + ~degree }, ratio: 0.5) %> \other;
 
-Another example for amplitude pattern.
-#+BEGIN_EXAMPLE
-[0.1, Pstutter([4, 6].prand, Pn(0.04, 1))].pseq *> \amp;
-#+END_EXAMPLE
+//: Like it? Lets have more:
+(degree: { (17, 19 .. 23) + ~degree }) %> \other;
 
-** Setting duration patterns
+//: Hm, up there a little louder:
+(amp: { Pbrown(0.5, 3, 0.1, inf).asStream * (~amp ? 0.1) }) %> \other;
 
-Change both the frequency and the duration pattern.
-Chucking a pattern array into a pattern sets the duration of the resulting PlayerPattern.
-#+BEGIN_EXAMPLE
-[freq: (40..50).midicps.prand] => Pstutter(3, Pbrown(0.05, 0.15, 0.05)) => \pattern1;
-#+END_EXAMPLE
+//: Or maybe try playing inverse amplitude:
+(amp: { 1 - (~amp ? 0.1) / 3 }) %> \other;
 
-Play a different pattern in frequency.
-#+BEGIN_EXAMPLE
-//:
-[
-	([500, 600, 550]).prand(15) * Pstutter(12, [0.5, 0.75, 0.8, 0.9, 1, 1.1].prand),
-	[700, 800, 900].prand(10)
-].prand *> \freq;
-//:
-#+END_EXAMPLE
+//: See if propagation works
+Edef(\simple) =< (degree: Pwhite(-10.1, -12, inf));
+//: OK
+Edef(\simple) =< (degree: (-10..10).pyramid(5).pseq);
+//: OK
+Edef(\simple) =< (degree: (10..-10).pyramid(5).pseq);
 
-** Setting instrument patterns
-
-There are 4 elements to specify for playing a pattern in a synthtree:
-
-1. The pattern
-2. The duration stream for timing individual events of the pattern
-3. The stream of instruments to play each event
-4. The SynthTree where this should be played.
-
-These can be written in the order:
-
-<pattern> => <durations> => instrument => synthree.
-
-Defaults are provide for durations and instruments, so one may omit these.  Following exampleas show how to code the 4 elements.  The examples should be executed one-line-at-a-time.
-
-#+BEGIN_EXAMPLE
-
-// Just a pattern, with default durations and instrument:
-[freq: Pwhite(40, 90, inf).midicps] => \test;
-
-// Set dur parameter of the pattern of the last chucked SynthTree
-0.1 *> \dur;
-
-// Again, this time a pattern:
-[0.2, 0.6].pseq *> \dur;
-
-// Set the instrument:
-\sine *> \instrument;
-
-// Set the instrument to a pattern.
-[\lpfsaw, \sine].pseq *> \instrument;
-
-// Also possible to address the SynthTree explicitly:
-[instrument: [\lpfpulse, \werkitd].prand] => \test;
-#+END_EXAMPLE
-
-*** Note: SynthDef as Instrument
-
-Chucking an array of parameters to a SynthTree that is not playing an InstrumentPattern will create an instrument pattern, keeping the existing instrument, if the template is a SynthDef:
-
-#+BEGIN_EXAMPLE
-SynthDef("saw", { LFSaw.ar(\freq.kr(400)).adsrOut }).add => \instrumentTest;
-#+END_EXAMPLE
-
-#+BEGIN_EXAMPLE
-[freq: [400, 500].prand, amp: { 0.01 exprand: 0.1 }.pfunc] => \instrumentTest;
+//: Pauses? Suddenly a whiff of baroque.
+(amp: [0, 0, 0.1, 0.2, 0.05].pseq, degree: { ~degree }) %> \wander;
+(amp: [0, 0.2].pseq, degree: { 2 + ~degree }) %> \other;
 #+END_EXAMPLE
 
 * Restart synths after Command-.
