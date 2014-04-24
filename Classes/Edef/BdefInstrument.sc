@@ -109,18 +109,38 @@ BdefInstrument {
 			})).play;
 		}
 	}
+
+	addEvent { | event | bdef.addEvent(event); }
+	replaceEvent { | event | bdef.replaceEvent(event); }
+	addMods { | event | mods = mods addStreamMods: event; 
+		[this, thisMethod.name, mods].postln;
+	}
+	replaceMods { | event | mods = nil addStreamMods: event }	
 }
 
 + Nil {
+	addPatternMods { | event | ^() addPatternMods: event; }
+	addStreamMods { | event | ^() addStreamMods: event; }
 	applyMods { | event | ^event }
 }
 
 + Event {
+	
+	addPatternMods { | event |
+		^event make: {
+			event keysValuesDo: { | key value | this[key] = value.value }
+		}
+	}
+
+	addStreamMods { | event |
+		^this make: {
+			event keysValuesDo: { | key value | this[key] = value.value.asStream }
+		}
+	}
+
 	applyMods { | event |
 		event use: {
-			this keysValuesDo: { | key value |
-			event[key] = value.value.asStream;
-			};
+			this keysValuesDo: { | key value | event[key] = value.next };
 		};
 		^event;
 	}

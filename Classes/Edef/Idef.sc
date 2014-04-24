@@ -31,6 +31,32 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 	*fromEvent { | event, protoEvent |
 		^this.new(nil, EventPattern(event), protoEvent)
 	}
+
+	addEvent { | event |
+		var newEvent;
+		mods ?? { mods = () }; 
+		mods make: { event keysValuesDo: { | key value | mods[key] = value } };
+		this.applyMods;
+	}
+
+	applyMods { | inEvent |
+		inEvent ?? { inEvent = originalStream.event.copy; };
+		mods keysValuesDo: { | key value | inEvent[key] = value.asStream };
+		originalStream.event = inEvent;
+		this.propagate;
+	}
+
+	replaceEvent { | event |
+		// TODO: review this to make it really replace?
+		// I.e. remove from original events those keys which are not present
+		// in new event, after having applied the mods. ?
+		mods = event;
+		this.applyMods(());
+	}
+
+	propagate {
+		[this, thisMethod.name, "not yet implemented"].postln;
+	}
 }
 
 Bdef : Idef {

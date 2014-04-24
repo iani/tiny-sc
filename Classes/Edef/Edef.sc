@@ -100,29 +100,6 @@ Cdef : Edef { // NamedEventPatternClone
 
 }
 
-+ SynthTree {
-	receiveEdef { | edef |
-		this.chuck(BdefInstrument(edef.broadcast))
-	}
-
-	chuckEvent { | event |
-		// this always cross-fades.
-		this.chuck(BdefInstrument(Bdef.fromEvent(event)));
-	}
-}
-+ BdefInstrument {
-	chuckEvent { | event |
-		bdef.chuckEvent(event);
-	}
-}
-
-+ Symbol {
-	receiveEdef { | edef | ^this.asSynthTree.chuck(BdefInstrument(edef.broadcast)) }
-	chuckEvent { | event | ^this.asSynthTree.chuckEvent(event); }
-}
-
-+ Nil { merge { | parentPattern | ^parentPattern } }
-
 + Event {
 	=> { | chuckee | ^chuckee.chuckEvent(this);	}
 	+> { | chuckee | ^chuckee.addEvent(this);	}
@@ -141,6 +118,35 @@ Cdef : Edef { // NamedEventPatternClone
 
 	}
 }
+
++ SynthTree {
+	receiveEdef { | edef | this.chuck(BdefInstrument(edef.broadcast)) }
+	chuckEvent { | event |
+		// this always cross-fades.
+		this.chuck(BdefInstrument(Bdef.fromEvent(event)));
+	}
+	addEvent { | event | template.addEvent(event); }
+	replaceEvent { | event | template.replaceEvent(event); }
+	addMods { | event | template.addMods(event); }
+	replaceMods { | event | template.replaceMods(event); }
+}
+
++ BdefInstrument {
+	chuckEvent { | event |
+		bdef.chuckEvent(event);
+	}
+}
+
++ Symbol {
+	receiveEdef { | edef | ^this.asSynthTree.chuck(BdefInstrument(edef.broadcast)) }
+	chuckEvent { | event | ^this.asSynthTree.chuckEvent(event); }
+	addEvent { | event | ^this.asSynthTree.addEvent(event); }
+	replaceEvent { | event | ^this.asSynthTree.replaceEvent(event); }
+	addMods { | event | ^this.asSynthTree.addMods(event); }
+	replaceMods { | event | ^this.asSynthTree.replaceMods(event); }
+}
+
++ Nil { merge { | parentPattern | ^parentPattern } }
 
 + Function {
 	merge { | parentPattern |
