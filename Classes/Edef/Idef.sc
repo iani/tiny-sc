@@ -35,7 +35,7 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 	addEvent { | event |
 		var newEvent;
 		mods ?? { mods = () }; 
-		mods make: { event keysValuesDo: { | key value | mods[key] = value } };
+		mods make: { event keysValuesDo: { | key value | mods[key] = value.value } };
 		this.applyMods;
 	}
 

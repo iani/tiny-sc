@@ -69,6 +69,12 @@ Edef(\simple) =< (degree: (10..-10).pyramid(5).pseq);
 //: Pauses? Suddenly a whiff of baroque.
 (amp: [0, 0, 0.1, 0.2, 0.05].pseq, degree: { ~degree }) %> \wander;
 (amp: [0, 0.1].pseq, degree: { 2 + ~degree }) %> \other;
+//: Try some modulation
+\simple =< (mtranspose: Pstutter(12, (-4..2).pseq), 
+	ctranspose: Pstutter(24, ((0..5) * 5 % 12).pseq),
+	scale: Scale.harmonicMinor
+);
+
 //:
-TempoClock.default.tempo = 0.5;
+TempoClock.default.tempo = 1;
 
