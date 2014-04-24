@@ -100,8 +100,36 @@ Cdef : Edef { // NamedEventPatternClone
 
 }
 
++ SynthTree {
+	receiveEdef { | edef |
+		this.chuck(BdefInstrument(edef.broadcast))
+	}
+
+	chuckEvent { | event |
+		// this always cross-fades.
+		this.chuck(BdefInstrument(Bdef.fromEvent(event)));
+	}
+}
++ BdefInstrument {
+	chuckEvent { | event |
+		bdef.chuckEvent(event);
+	}
+}
+
++ Symbol {
+	receiveEdef { | edef | ^this.asSynthTree.chuck(BdefInstrument(edef.broadcast)) }
+	chuckEvent { | event | ^this.asSynthTree.chuckEvent(event); }
+}
+
 + Nil { merge { | parentPattern | ^parentPattern } }
+
 + Event {
+	=> { | chuckee | ^chuckee.chuckEvent(this);	}
+	+> { | chuckee | ^chuckee.addEvent(this);	}
+	+!> { | chuckee | ^chuckee.replaceEvent(this);	}
+	%> { | chuckee | ^chuckee.addMods(this); }
+	%!> { | chuckee | ^chuckee.replaceMods(this); }
+
 	merge { | parentPattern |
 		^parentPattern.mergeEvent(this);
 	}

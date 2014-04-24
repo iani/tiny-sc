@@ -296,7 +296,6 @@ SynthTree : IdentityTree {
 
     makeSynth { | attackTime |
 		synth = template.asSynth(this, attackTime);
-		// guarantee that moveBefore happens AFTER the synth has really started!
 		synth !? {
 			synth.onEnd(this, { // This also registers on NodeWatcher:
 				if (this.isPlaying.not) {
@@ -304,6 +303,7 @@ SynthTree : IdentityTree {
 					synth = nil;
 				};
 			}); 
+		// guarantee that moveBefore happens AFTER the synth has really started!
 			this.addNotifierOneShot(synth, 'n_go', {
 				this do: _.moveBefore(synth);
 				this.changed(\started);
@@ -321,10 +321,12 @@ SynthTree : IdentityTree {
 
 	endSynth { | argReplaceAction = \fadeOut, argFadeTime |
 		if (argReplaceAction isKindOf: SimpleNumber) {
-			synth.fadeOut(argReplaceAction);
+			// synth.fadeOut(argReplaceAction);
+			synth.release(argReplaceAction);
 		}{
 			switch (argReplaceAction,
-				\fadeOut, { synth.fadeOut(this getFadeTime: argFadeTime) },
+				//				\fadeOut, { synth.fadeOut(this getFadeTime: argFadeTime) },
+				\fadeOut, { synth.release(this getFadeTime: argFadeTime) },
 				\free, { synth.free }
 			)
 		}
@@ -381,7 +383,8 @@ SynthTree : IdentityTree {
 
 	fadeOut { | argFadeTime |
 		if (synth.isPlaying) {
-			synth release: this.getFadeTime(argFadeTime);
+			//			synth release: this.getFadeTime(argFadeTime);
+			synth.set(\timeScale, this.getFadeTime(argFadeTime), \gate, 0);
 			this.changed(\fadeOut);
 		};
 		notStopped = false;

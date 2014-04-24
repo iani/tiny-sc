@@ -3,22 +3,26 @@
 Enables the playing of the same Bdef in multiple SynthTrees, 
 optionally applying modifications on the events created by the Bdef, before playing.
 
-A separate insrance resides as template inside a SynthTree.
+A different instance resides as template inside each SynthTree.
 
 */
 
 BdefInstrument {
 	var <bdef; // A BdefEventPlayer
-	Var: <numChannels;
+	var <numChannels;
 	var <>inputSpecs;   // for controls. May be replaced by method
 	// that gets the input specs from the bdef.
-	var <>synthEventActionMaker; // NEW: can act as filter, copy/changing the event
 	var <>eventFilter; // array of params with bdefs modifying received event
 	var bus, busIndex, group;
+	var <>mods; // optional local modifiations to event
+	var <>stopBdefOnSynthEnd = true;
+
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// maybe this is too much complexity/power/flexibility. Maybe just use mods:
+	var <>synthEventActionMaker; // ??? can act as filter, copy/changing the event
 
 	*new { | bdef, numChannels, synthEventAction |
-		^this.newCopyArgs(bdef, numChannels, synthEventAction)
-		.init;
+		^this.newCopyArgs(bdef, numChannels, synthEventAction).init;
 	}
 
 	name { ^bdef.name ? "a bdef" }
@@ -33,10 +37,10 @@ BdefInstrument {
 		bdef.durations = argDurations;
 		bdef.set([\dur, argDurations]);
 	}
-	start { bdef.start }
-	stop { bdef.stop }
+	start { bdef.play; }
+	stop { bdef.stop; }
 	isPlaying { ^bdef.isPlaying }
-	asSynthTemplate { | argName | name = argName; }
+	asSynthTemplate { /* ^this */ }
 	templateArgs { ^[ControlName(\amp, nil, \control, 1)] }
 
 	asSynth { | synthTree fadeTime |
@@ -52,10 +56,16 @@ BdefInstrument {
 			args: [in: busIndex, fadeIn: synthTree.getFadeTime, 
 				amp: synthTree.getParamValue(\amp), out: synthTree.getOutputBusIndex]
 		);
+		bdefSynth.onEnd(this, {
+			this.removeNotifier(bdef, \event);
+			if (stopBdefOnSynthEnd) { bdef.stop; [this, thisMethod.name].postln; };
+		});
 		this.setSynthEventAction;
-		this.addNotifier(bdef, \taskStopped, { synthTree.fadeOut; });
+		this.addNotifier(bdef, \taskStopped, { 
+			if (synthTree.template === this) { synthTree.fadeOut };
+		});
 		bdefSynth.init(synthTree, bus);
-		bdef.start;
+		bdef.play;
 		^bdefSynth;
 	}
 
@@ -81,7 +91,7 @@ BdefInstrument {
 		}{
 			action = synthEventActionMaker.(busIndex, group);
 		};
-		this.addNotifier(bdef, \value, action);
+		this.addNotifier(bdef, \event, action);
 	}
 
 	defaultSynthEventAction {
@@ -92,11 +102,56 @@ BdefInstrument {
 			Thus subclassing or also composition of the action could be possible.
 		*/
 		^{ | synthEvent |
-			synthEvent
-			.out_(busIndex)
-			.target_(group)
-			.addAction_(\addToHead)
-			.play;
+			mods.applyMods(synthEvent.copy.make({
+				~out = busIndex;
+				~target = group;
+				~addAction = \addToHead
+			})).play;
 		}
+	}
+}
+
++ Nil {
+	applyMods { | event | ^event }
+}
+
++ Event {
+	applyMods { | event |
+		event use: {
+			this keysValuesDo: { | key value |
+			event[key] = value.value.asStream;
+			};
+		};
+		^event;
+	}
+}
+
++ Function {
+
+	applyMods { | event | ^this.(event) }
+
+	asBdefSynth { | target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args |
+		var def, synth, server, bytes, synthMsg;
+		target = target.asTarget;
+		server = target.server;
+		if(server.serverRunning.not) {
+			("server '" ++ server.name ++ "' not running.").warn; ^nil
+		};
+		def = this.asSynthDef(
+			fadeTime:fadeTime,
+			name: SystemSynthDefs.generateTempName
+		);
+		synth = PatternSynth.basicNew(def.name, server);
+		// if notifications are enabled on the server,
+		// use the n_end signal to remove the temp synthdef
+		if(server.notified) {
+			OSCpathResponder(server.addr, ['/n_end', synth.nodeID], { |time, resp, msg|
+				server.sendMsg(\d_free, def.name);
+				resp.remove;
+			}).add;
+		};
+		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus] ++ args, addAction);
+		def.doSend(server, synthMsg);
+		^synth
 	}
 }

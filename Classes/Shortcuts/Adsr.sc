@@ -67,9 +67,13 @@ Inp {
 		^In.kr(inputName.kr(channelNum), numChannels);
 	}
 }
- 
+
+/*
 + Node {
 	fadeOut { | fadeOut = 0.2 |
-		this.set(\timeScale, fadeOut, \gate, 0)
+		[this, thisMethod.name, "fadeOut:", fadeOut].postln;
+		//		this.set(\timeScale, fadeOut, \gate, 0)
+		this.release(fadeOut);
 	}
 }
+*/

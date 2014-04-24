@@ -11,7 +11,10 @@ a = EventPattern((degree: [1, 2, 3].pseq(inf))).play;
 a.originalStream.event[\degree] = Pbrown(-5, 5, 3, inf).asStream;
 //:
 a.originalStream.event[\dur] = 0.1;
+//: Testing play into synthtree:
 
+a = Idef.fromEvent((degree: [10, 12].pseq, dur: 0.2));
+a.play;
 */
 Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 	var <>name;
@@ -25,6 +28,9 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 		});
 	}
 
+	*fromEvent { | event, protoEvent |
+		^this.new(nil, EventPattern(event), protoEvent)
+	}
 }
 
 Bdef : Idef {
@@ -41,6 +47,7 @@ Bdef : Idef {
 			streamHasEnded = stream.notNil;
 			cleanup.clear;
 			this.removedFromScheduler;
+			this.changed(\taskStopped);
 			^nil
 		}{
 			// Instead of playAndDelta, use broadcastAndDelta.

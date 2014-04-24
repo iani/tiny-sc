@@ -14,7 +14,7 @@ of later modifications of the pattern to streams played from it.
 
 IZ Tue, Apr 22 2014, 00:42 EEST
 
-*** QUOTE Making Edef, Idef, Bdef play
+*** Making Edef, Idef, Bdef play
 :PROPERTIES:
 :DATE:     <2014-04-23 Wed 16:50>
 :END:
@@ -60,23 +60,57 @@ Initializing or modifying contents with an event, and then chucking to SynthTree
 \edef =!<< event => \synthtree
 
 **** Chucking events directly into synthtrees
-event => \synthree // chuck event to synthree's stream and play.
-// Stream is named after synthtree.
-// New stream contents replace previous contents (no merge).
 
-event =>> \synthree // add event contents into synthree (merge).
-// Stream's event is modified
+***** event => \synthree
 
-{ function } =>> \synthtree // produce new stream from existing stream
-// and substitute new stream in the stream player.
-// Stream's event is modified
+Chuck event to synthree's stream and play.
 
-event =%> \synthtree
-{ function } =%> \synthree
-add filter - without altering contents of event stream
-This is for playing multiple synthrees with one stream, while varying the way of playing
-on a synthree basis.
-Stream's event is not modified.  Durations of the stream cannot be modified.
+Always create new unnamed Bdef.
+
+Always cross-fade.
+
+***** event +> \synthree
+
+Add event contents into synthree (merge).
+
+Playing stream's event is modified.  Modifications are inherited, and overshadow (block) future modifications inherited from changes in parent Idefs or Edefs.
+
+The values of the chucked event are evaluated in the environment of the stream's event, which means that they can be functions which access the entire event as environment.
+
+Also accepted:
+
+{ function } +> \synthtree
+
+Produce new stream from existing stream and substitute new stream in the stream player.
+
+Playing stream's event is modified
+
+***** event +!> \synthtree
+
+Replace event contents of synthtree's stream.  Like +>, except that the contents of the event of the playing stream are fully removed before adding the contents of the new event.
+
+***** event %> \synthtree
+
+Add "mod" filter - without altering contents of event stream.
+
+A mod filter is an event contained in instance variable =mods= of BdefInstrument and whose key-value pairs are always added to each event produced by the playing stream.
+
+This is for playing multiple synthrees with one stream, while varying the way of playing on a synthree basis.
+
+Each key - value pair of the chucked event overrides previous values in the event produced by the playing stream.
+
+The values of the chucked event are evaluated in the environment of the stream's event, which means that they can be functions which access the entire event as environment.
+
+The stream's event is not modified.  These changes are strictly local to the playing SynthTree.
+
+Durations of the stream cannot be modified by %>.
+
+// Maybe this not!: { function } %> \synthree
+// Perhaps later.
+
+***** event %!> synthtree
+
+Replace current "mod" filter by the chucked event.  See %> for explanation of mod.
 
 **** Named spawned stream players (Idefs)
 
