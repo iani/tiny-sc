@@ -77,7 +77,7 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 \sound2.fadeOut;
 #+END_EXAMPLE
 
-* Synth parameters are environment variables
+* Setting synth parameters
 
 When a synth template gets chucked to a synthtree with =>, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.
 
@@ -92,7 +92,7 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 { 50 do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; \sound3.fadeOut(3); }.fork;
 #+END_EXAMPLE
 
-* Play patterns in parameters
+* Playing patterns in single parameters
 
 #+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(400)) } => \sound4;
@@ -118,7 +118,42 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 \sound4.fadeOut;
 #+END_EXAMPLE
 
-* Play patterns in SynthTree
+* Playing patterns in multiple parameters
+
+Sending an Event to a Symbol plays patterns to all parameters of the corresponding SynthTree with the same duration pattern.   Here is a sequence that also shows how to chuck SynthDef templates into the SynthTree to change the playing synth.
+
+#+BEGIN_EXAMPLE
+//: Sending patterns to parameters of synths in SynthTree.
+`\basshighend => \funnyStuff;
+//: Play a single parameter with a duration pattern
+{ 60.rrand(90).midicps }.pfunc => [0.1, 0.1, 0.2].pseq *> \freq;
+//: You can change the instrument, the pattern keeps changing
+`\bassfoundation => \funnyStuff;
+//:
+`\werkitd => \funnyStuff;
+//: The pattern can be also set to play a single value
+1000 *> \freq;
+//: An event sets both the duration and the parameter
+(dur: 0.1, freq: [1, 2, 3].pseq * 1000) *> \funnyStuff;
+//: Multiple parameters can be set
+(dur: 0.05, freq: (1..13).pseq * 100, amp: [0.01, 0.01, 0.2, 0.03].pseq) *> \funnyStuff
+
+//: Change the instrument again
+`\bassfoundation => \funnyStuff;
+//: And again
+`\organdonor => \funnyStuff;
+//: And again
+`\everythingrhodes => \funnyStuff;
+//: Funny effects
+(
+(dur: [0.1 pn: 15, 0.05 pn: 30, 0.01 pn: 100].prand,
+freq: (1..13).pseq * 100,
+amp: [0.01, 0.01, 0.2, 0.03].pseq) *> \funnyStuff;
+)
+#+END_EXAMPLE
+
+
+* Playing patterns in SynthTree
 
 ** Event => \Symbol: Play as pattern
 

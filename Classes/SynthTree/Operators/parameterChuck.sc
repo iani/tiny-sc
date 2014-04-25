@@ -23,9 +23,31 @@ Here all methods that are needed to handle -> and *>
 	}
 }
 
+
+
 + Ref {
 	starChuck { | object |
 		^~st.setParamPatternDuration(value, object);
+	}
+}
+
++ Event {
+	*> { | st |
+		var durations, paramPatterns;
+		st = st.asSynthTree;
+		this keysValuesDo: { | key value |
+			if (key === \dur) { 
+				durations = value;
+			}{
+				paramPatterns = paramPatterns ++ [key, value]; 
+			};
+		};
+		paramPatterns keysValuesDo: { | parameter, pattern |
+			st.asSynthTree.chuckIntoParameter(
+				parameter,
+				PatternPlayer(pattern, durations),
+			);
+		}
 	}
 }
 
@@ -65,4 +87,12 @@ Here all methods that are needed to handle -> and *>
 
 + Function {
 	asPatternPlayer { | durations = 1 | ^PatternPlayer(Pfunc(this), durations) }
+}
+
++ Integer {
+	asPatternPlayer { | durations = 1 | ^[this] asPatternPlayer: durations }
+}
+
++ SequenceableCollection  { 
+	asPatternPlayer { | durations = 1 | ^PatternPlayer(this.pseq, durations) }
 }

@@ -8,7 +8,7 @@ See AboutTemplates.org
 IZ Wed, Mar 26 2014, 17:32 EET
 SynthTemplate.gui;
 
-Library.at(SynthTemplate);
+Library.at(SynthTemplate, '---ALL---', 'auco01');
 
 */
 
@@ -148,6 +148,7 @@ Template {
 
 SynthTemplate : Template {
 	*gui { ^super.gui.shiftTo(200, 600) }
+	asSynthTemplate { ^template }
 }
 
 /*
