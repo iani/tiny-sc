@@ -1,0 +1,176 @@
+#+STARTUP: showall
+* sine adsr
+** sine adsr synthdef                                              :AUTOLOAD:
+:PROPERTIES:
+:AUTOLOAD: t
+:ID:       D08DBD21-2F34-47B3-BA17-3BECF7B6AC28
+:eval-id:  4
+:END:
+
+SynthDef(\adsrsine, {
+    var source;
+    source = SinOsc.ar(\freq.kr(400));
+    source = source * Adsr(\attack.kr(0.1));
+    source.out;
+}).add;
+
+** sine adsr try1
+:PROPERTIES:
+:ID:       3D462B11-D7F9-41D5-B8AC-8E5C199203A0
+:eval-id:  6
+:END:
+
+~a = Syn("adsrsine");
+1.wait;
+~a release: 1;
+
+** sine adsr cluster
+:PROPERTIES:
+:ID:       96BDA051-5E05-45FA-B78C-AB4FD02F40B0
+:eval-id:  20
+:END:
+
+var synths, fwalk, swalk, synth;
+synths = List();
+fwalk = (Pbrown(30, 90, 0.75, inf) + Pfunc({ 0.01.exprand(1.5)})).asStream;
+swalk = Pbrown(0, 30, 1, inf).asStream;
+loop {
+	if (swalk.next > synths.size) {
+		synths add: Syn("adsrsine", [\freq, fwalk.next.midicps]);
+	}{
+		synth = synths.choose;
+		synth.release(1.0.exprand(5.0));
+		synths remove: synth;
+	};
+	0.05.wait;
+};
+
+** Test
+:PROPERTIES:
+:ID:       3DC5EB2D-6A1C-484F-83EF-384F22E9AAFA
+:eval-id:  3
+:END:
+Syn("adsrsine");
+
+* ringz noise adsr
+** ringz noise adsr synthdef                                      :AUTOLOAD:
+:PROPERTIES:
+:AUTOLOAD: t
+:ID:       76813E41-EF3E-4990-84FB-305847543C4B
+:eval-id:  10
+:END:
+
+SynthDef(\adsrringz, {
+    var source;
+    source = WhiteNoise.ar(0.05);
+    source = Ringz.ar(source, \freq.kr(440), \decayTime.kr(1));
+    source = source * Adsr(\attack.kr(0.1));
+    source.out;
+}).add;
+** ringz noise adsr test
+:PROPERTIES:
+:ID:       2D99216F-22B3-421D-8524-B8DCFA68A83E
+:eval-id:  10
+:END:
+
+~a = Syn("adsrringz");
+1.wait;
+~a.set(\decayTime, 0.1);
+1.wait;
+~a.release(5);
+
+** ringz noise adsr cluster
+:PROPERTIES:
+:eval-id:  30
+:ID:       197D3D93-FE56-4BC1-B290-C62EED1B252E
+:END:
+
+var synths, fwalk, swalk, synth;
+synths = List();
+fwalk = (Pbrown(30, 90, 0.75, inf) + Pfunc({ 0.01.exprand(1.5)})).asStream;
+swalk = Pbrown(0, 30, 1, inf).asStream;
+loop {
+	if (swalk.next > synths.size) {
+		synths add: Syn("adsrringz", [\freq, fwalk.next.midicps, \decayTime, 0.95, \amp, 0.02]);
+	}{
+		synth = synths.choose;
+		synth.release(1.0.exprand(5.0));
+		synths remove: synth;
+	};
+	0.05.wait;
+};
+
+
+* sine perc
+** sine perc synthdef                                             :AUTOLOAD:
+:PROPERTIES:
+:AUTOLOAD: t
+:ID:       1ABA58CA-9BC1-424D-B24B-4314A7823AA3
+:eval-id:  2
+:END:
+
+SynthDef(\percsine, {
+    var source;
+    source = SinOsc.ar(\freq.kr(400));
+    source = source * Perc();
+    source.out;
+}).add;
+
+** sine perc try
+:PROPERTIES:
+:ID:       3D462B11-D7F9-41D5-B8AC-8E5C199203A0
+:eval-id:  4
+:END:
+
+~a = Syn("percsine");
+
+* Biquad = SOS test
+:PROPERTIES:
+:ID:       33ACAB93-B12B-473D-A14F-3C4FE87C49A3
+:eval-id:  2
+:END:
+// From: http://comments.gmane.org/gmane.comp.audio.supercollider.user/16087
+{
+
+t = Impulse.ar(1);
+
+SOS.ar(t, 0.1, 0.02, 0.02, MouseY.kr(1.5, 1.9999, 1),  -1 * MouseX.kr(0.999, 0.9998, 1)) ! 2
+
+}.play
+
+* Biquad = SOS test 2
+:PROPERTIES:
+:ID:       33ACAB93-B12B-473D-A14F-3C4FE87C49A3
+:eval-id:  10
+:END:
+// From: http://comments.gmane.org/gmane.comp.audio.supercollider.user/16087
+{
+	var t = Impulse.ar(10);
+	SOS.ar(t, 0.1, 0.02, 0.02, Line.kr(1.8, 1.1, 10),  -0.9)
+
+}.play
+* Biquad = SOS test 2
+:PROPERTIES:
+:eval-id:  21
+:ID:       36FCE8E2-69C1-4837-A7BB-897772C93C8E
+:END:
+// From: http://comments.gmane.org/gmane.comp.audio.supercollider.user/16087
+{
+	var t = WhiteNoise.ar(0.1);
+	SOS.ar(t, 0.1, 0.02, 0.02, MouseX.kr(1.9, 1.1, 0.1),  -0.9)
+}.play
+* Biquad = SOS from help file 2
+:PROPERTIES:
+:ID:       DA114C57-B48E-4772-9D15-E5291B269D7D
+:eval-id:  2
+:END:
+// from: http://doc.sccode.org/Classes/SOS.html
+
+{
+    var rho, theta, b1, b2;
+    theta = MouseX.kr(0.2pi, pi);
+    rho = MouseY.kr(0.6, 0.99);
+    b1 = 2.0 * rho * cos(theta);
+    b2 = rho.squared.neg;
+    SOS.ar(WhiteNoise.ar(0.1 ! 2), 1.0, 0.0, 0.0, b1, b2)
+}.play
