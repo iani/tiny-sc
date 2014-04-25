@@ -94,6 +94,8 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 
 * Playing patterns in single parameters
 
+
+
 #+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(400)) } => \sound4;
 // Play a pattern into ~freq:
