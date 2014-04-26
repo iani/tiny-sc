@@ -206,11 +206,8 @@ MultiControl : IdentityDictionary {
 		// stop a control's process, if appropriate
 	}
 
-	reset { | controlName, start = false |
-		// reset a control's process, if appropriate
-		// If start is true, then also start a control's process
-
-	}
+	// reset a control's value to specs default
+	reset { this.set(spec.default) }
 
 	// adding specific kinds of objects
 	addMIDI { | name, spec, func |

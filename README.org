@@ -208,7 +208,7 @@ Edef(\simple, (degree: [1, 2, 3].pseq)) => \wander;
 //: Change the named pattern Edef.  (Edef(\simple) =< ... also possible)
 \simple =< (degree: Pbrown(-5, 5, 3, inf));
 //: Modify some more
-\simple =< (dur: 0.125, amp: 0.01);
+\simple =< (dur: 0.125, amp: 0.1);
 //: And more
 \simple =< (instrument: [\bassfoundation, \sine].prand);
 

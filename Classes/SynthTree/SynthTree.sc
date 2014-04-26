@@ -258,6 +258,20 @@ SynthTree : IdentityTree {
 		postf("~st set to: %\n", this);
 	}
 
+	clearPatterns {
+		var pfunc;
+		args do: { | multiparam |
+			pfunc = multiparam[\pattern];
+			pfunc !? {
+				pfunc.pattern.stop;
+				pfunc.remove;
+				multiparam[\pattern] = nil;
+			}
+		}
+	}
+
+	resetParams { args do: _.reset }
+
 	*pushIfDifferent { | synthTreeName |
 		synthTreeName = (synthTreeName ? 'st0').asSymbol;
 		if (~st.notNil and: { ~st.name === synthTreeName }) {} { 

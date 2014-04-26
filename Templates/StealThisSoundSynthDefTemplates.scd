@@ -118,7 +118,7 @@ SynthDef(\werkitd, { | out = 0 freq = 440 amp = 0.1 gate = 1 cutoff = 100 rq = 0
 
 	source = WhiteNoise.ar;
 
-	filter = BLowPass4.ar(source, freq, rq) * 0.3;
+	filter = BLowPass4.ar(source, freq, rq); // * 0.3;
 
 	//env = EnvGen.ar(Env.adsr(0.01, 0.0, 1.0, 0.1), gate, doneAction:2);
 	// release note added:

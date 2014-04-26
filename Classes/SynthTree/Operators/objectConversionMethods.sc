@@ -17,6 +17,11 @@
 		//		^[this].asSynth(synthTree);
         ^Synth.new(this, synthTree.synthArgs, synthTree.group, \addToHead);
     }
+	
+	clearPatterns { ^this.asSynthTree.clearPatterns }
+
+	resetParams { ^this.asSynthTree.resetParams }
+
 	fadeOut { | fadeTime |
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.fadeOut(fadeTime) };

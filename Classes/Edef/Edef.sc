@@ -112,6 +112,7 @@ Cdef : Edef { // NamedEventPatternClone
 }
 
 + Event {
+	chuckInto { | object | object.asEdef.addEvent(this, true) }
 	=> { | chuckee | ^chuckee.chuckEvent(this);	}
 	+> { | chuckee | ^chuckee.addPlayerMods(this); }
 	+!> { | chuckee | ^chuckee.replacePlayerMods(this);	}
@@ -168,7 +169,9 @@ Cdef : Edef { // NamedEventPatternClone
 	addPlayerMods { | event | ^this.asSynthTree.addPlayerMods(event); }
 	replacePlayerMods { | event | ^this.asSynthTree.replacePlayerMods(event); }
 
-	=< { | event | this.asEdef =< event}
+	=< { | chucker | ^chucker chuckInto: this }
+	chuckInto { | object | object.asSynthTree addInputSynth: this.asSynthTree }
+
 	=!< { | event | this.asEdef =!< event}
 	=<| { | event | this.asEdef =<| event}
 	=!<| { | event | this.asEdef =!<| event}

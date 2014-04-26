@@ -49,9 +49,17 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
-** Make PatternPlayer/Instrument fully compatible to Event
+** PatternPlayer: Retain because more lightweight? Rename to PatternTask to avoid conflict with Conductor Quark.
+:PROPERTIES:
+:DATE:     <2014-04-25 Fri 19:29>
+:END:
 
-incorporate legato, dur, and instrument in PatternPlayer's pattern.
+PatterPlayer is still used to play single parameters of a synth in a synthree, but it could be replaced by a Bdef/BdefInstrument which also sends values, and allows greater flexibility.
+
+But note: Bdef/BdefInstrument are much heavier.
+
+Maybe rename PatternPlayer to PatternTask!!!
+
 
 ** Implement @> for mapping control busses to synthtree params
 
