@@ -2,7 +2,10 @@
 
 * Currently working on
 
-
+** New approach to try: Implement the current operators for synths and patterns using Ndef, Pdef and related JITlib classes, to locate overlaps and possible differences.
+:PROPERTIES:
+:DATE:     <2014-04-28 Mon 22:12>
+:END:
 
 
 ** TODO Make it possible to compose patterns with +> and %>
