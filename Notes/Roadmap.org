@@ -8,14 +8,10 @@
 :END:
 
 
-** TODO Make it possible to compose patterns with +> and %>
+** TODO Make it possible to compose patterns with %>
 :PROPERTIES:
-:DATE:     <2014-04-24 Thu 18:09>
+:DATE:     <2014-04-29 Tue 13:49>
 :END:
-
-Currently only functions are possible.
-
-Must see previous solution in Mdef and correct the methods related to this.
 
 ** Both single-synth and synth-stream should play with PatternInstrument
 :PROPERTIES:
@@ -1313,6 +1309,34 @@ Play Bdef(\y) into \player2 SynthTree
 Bdef(\y) => \player2;
 // Possible shortcut:
 `y => \player2;
+#+END_EXAMPLE
+
+** DONE Make it possible to compose patterns with +>
+CLOSED: [2014-04-29 Tue 13:40]
+:PROPERTIES:
+:DATE:     <2014-04-24 Thu 18:09>
+:END:
+
+Done in Idef addEvent.  Example:
+
+#+BEGIN_EXAMPLE
+(degree: (0..7).pseq, dur: 0.25) => \test;
+//:
+(degree: { Pstutter(3, ~degree) - [2, 1, 0].pseq }) +> \test;
+#+END_EXAMPLE
+
+** DONE Make it possible to compose patterns with +>
+CLOSED: [2014-04-29 Tue 13:40]
+:PROPERTIES:
+:DATE:     <2014-04-24 Thu 18:09>
+:END:
+
+Done in Idef addEvent.  Example:
+
+#+BEGIN_EXAMPLE
+(degree: (0..7).pseq, dur: 0.25) => \test;
+//:
+(degree: { Pstutter(3, ~degree) - [2, 1, 0].pseq }) +> \test;
 #+END_EXAMPLE
 
 * Undergoing tests

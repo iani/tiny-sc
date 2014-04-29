@@ -34,14 +34,16 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 		^this.new(nil, EventPattern(event), protoEvent)
 	}
 
-	addEvent{ | event, fromPattern = false |
+	addEvent { | event, fromPattern = false |
 		var newEvent;
 		newEvent = if (fromPattern) { 
 			this.originalPatternEvent;
 		}{
 			originalStream.event.copy;
 		};
-		event keysValuesDo: { | key value | newEvent[key] = value.asStream; };
+		newEvent use: {
+			event keysValuesDo: { | key value | newEvent[key] = value.value.asStream; };
+		};
 		this.applyMods(newEvent);
 	}
 

@@ -46,7 +46,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		};
 	}
 
-	%> { | params |  ^SynthPattern (this, params) }
+	%> { | params |  ^SynthPattern (this, params) } // 20140429: obsolete?
 	hasInputs { ^false }
 	push {}
 	globDur { currentEnvironment.parent[\dur] = this.asStream } 
