@@ -23,9 +23,7 @@ EventStream : Stream {
 
 	initEventStream { | inEvent |
 		event = ();
-		inEvent keysValuesDo: { | key, value |
-			event[key] = value.asStream(this);
-		}
+		inEvent keysValuesDo: { | key, value | event[key] = value.asStream(this); };
 	}
 
 	next {

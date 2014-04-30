@@ -1,4 +1,7 @@
 /*
+This version does not work correctly when cloning multiple Idefs from same Edef. 
+Fix is underway in Idef2.  Wed, Apr 30 2014, 19:04 EEST
+
 
 Idef applies inheritance/modification operations on the originalStream event.
 
@@ -20,15 +23,28 @@ a.inspect;
 */
 Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 	var <>name;
-	var <>parent;
+	var <parent;
 	var <children;
 	var <mods; // locally modified elements: apply these on inherited pattern
 	
 	*new { | name, parent, protoEvent |
-		^NameSpace(\Idef, name, { 
-			super.new(parent.asStream, protoEvent).name_(name).parent_(parent);
+		^NameSpace(\Idef, name, {
+			super.new(parent.asStream, protoEvent).initIdef(name, parent);
 		});
 	}
+
+	initIdef { | argName argParent |
+		name = argName;
+		this.parent = argParent;
+		children = Set();
+	}
+
+	parent_ { | argParent |
+		parent = argParent;
+		parent.addChild(this);
+	}
+
+	addChild { | child | children = children add: child }
 
 	*fromEvent { | event, protoEvent |
 		^this.new(nil, EventPattern(event), protoEvent)
@@ -70,6 +86,9 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 	originalPatternEvent { ^this.pattern.asStream.event.copy }
 	pattern { ^parent.pattern }
 
+	propagate { | inEvent | children do: _.inherit(inEvent) }
+	inherit { | inEvent | this.applyMods(inEvent); }
+
 	applyMods { | inEvent |
 		inEvent ?? { inEvent = originalStream.event.copy; };
 		mods !? { 
@@ -82,10 +101,6 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 		originalStream.event = inEvent;
 		this.propagate(inEvent);
 	}
-
-	propagate { | inEvent | children do: _.inherit(inEvent) }
-
-	inherit { | inEvent | this.applyMods(inEvent); }
 }
 
 Bdef : Idef {

@@ -34,7 +34,7 @@ Edef : EventPattern { // NamedEventPattern
 
 	*new { | name, argPattern, propagate = true |
 		var instance;
-		instance = NameSpace(\Edef, name, { this.newCopyArgs((), name) });
+		instance = NameSpace(\Edef, name, { this.newCopyArgs((), name, Set()) });
 		argPattern !? { instance.replace(argPattern, propagate) };
 		^instance;
 	}
@@ -56,9 +56,24 @@ Edef : EventPattern { // NamedEventPattern
 	play { | name, broadcast = false |
 		/* If broadcast, make Bdef, else make Idef+play it */
 		var player;
+		// TODO: Check this. Bdef/Idef new not correct - uses same stream
 		player = if (broadcast) { Bdef(name, this) } { Idef(name, this).play };
-		children = children add: player;
+		// children = children add: player;
 		^player
+	}
+
+	addChild { | child | children = children add: child }
+
+	// Under development: For playing in Pdef
+	asEventStreamPlayer { | argName, broadcast = false |
+		// Here trying again:
+				^Idef2(argName, this);
+		//		^Idef(argName, this); // Still not!
+
+
+		//		^this.asStream.asEventStreamPlayer; // This works correctly for Edef
+		/// TODO: Needs debugging!
+		//		^if (broadcast) { Bdef(argName, this) } { Idef(argName, this) };
 	}
 
 	=> { | chuckee |
@@ -96,8 +111,12 @@ Cdef : Edef { // NamedEventPatternClone
 	var <parent; // only for removing from parent upon request
 	var <mods; // locally modified elements: apply these on inherited pattern
 
-	//	*new { | name, parent | ^super.new(name, parent.eventPattern).initCdef(parent); }
-	initCdef { | argParent | parent = argParent; }
+	*new { | name, parent | ^super.new(name, parent.eventPattern).parent_(parent); }
+
+	parent_ { | argParent |
+		parent = argParent;
+		parent.addChild(this);
+	}
 
 	// uses new Event.merge method.  Other types of mods may 
 	// do intelligent merging of patterns - as distinct from Events
