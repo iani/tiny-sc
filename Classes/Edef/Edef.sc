@@ -67,12 +67,12 @@ Edef : EventPattern { // NamedEventPattern
 	// Under development: For playing in Pdef
 	asEventStreamPlayer { | argName, broadcast = false |
 		// Here trying again:
-				^Idef2(argName, this);
-		//		^Idef(argName, this); // Still not!
+		//				^Idef2(argName, this);
+		^Idef(argName, this); // Debugged!???
 
 
 		//		^this.asStream.asEventStreamPlayer; // This works correctly for Edef
-		/// TODO: Needs debugging!
+
 		//		^if (broadcast) { Bdef(argName, this) } { Idef(argName, this) };
 	}
 

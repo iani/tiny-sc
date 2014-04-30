@@ -37,7 +37,7 @@ Idef2 : EventStreamPlayer {
 	}
 
 	applyMods { | inEvent |
-		inEvent ?? { inEvent = originalStream.event.copy; };
+		inEvent = (inEvent ?? { originalStream.event.copy; }).copy;
 		mods !? { 
 			inEvent use: {
 				mods keysValuesDo: { | key value | inEvent[key] = value.value } 

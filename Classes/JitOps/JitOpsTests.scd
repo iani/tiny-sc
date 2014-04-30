@@ -1,3 +1,30 @@
+/*
+Edef is compatible with Ndef
+Wed, Apr 30 2014, 20:04 EEST
+
+Examples:
+*/
+
+//: Edef inheritance of changes in Ndef OK: 
+
+
+Edef(\n, (dur: 1, degree: 1)) =>@ \test;
+
+Edef(\n) =>@ \test2;
+
+\n =< (dur: 1, degree: [1, 2, 3, 2].prand);
+
+\n =< (dur: 1, degree: [1, 2, 3, 2].pseq);
+
+\n =< (dur: 0.1);
+
+\n =< (legato: 0.5);
+
+\n =< (instrument: \bassfoundation);
+
+\n =< (degree: Pbrown(-10, 20, 5, inf));
+
+
 
 { WhiteNoise.ar(0.01) } =>@ \test;
 
@@ -85,14 +112,6 @@ a.inspect;
 
 Ndef(\test).inspect;
 
-//: Edef inheritance of changes in Ndef OK: 
-
-
-Edef(\n, (dur: 1, degree: 1)) =>@ \test;
-
-\n =< (dur: 1, degree: [1, 2, 3, 2].pseq);
-
-Edef(\n) =>@ \test2;
 
 Ndef(\test).clear;
 

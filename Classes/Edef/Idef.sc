@@ -90,7 +90,7 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 	inherit { | inEvent | this.applyMods(inEvent); }
 
 	applyMods { | inEvent |
-		inEvent ?? { inEvent = originalStream.event.copy; };
+		inEvent = (inEvent ?? { originalStream.event.copy; }).copy;
 		mods !? { 
 			inEvent use: {
 				mods keysValuesDo: { | key value | inEvent[key] = value.value } 
