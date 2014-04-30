@@ -8,22 +8,20 @@ To be converterd to tiny-sc operators, replacing the earlier tiny-sc framework, 
 */
 
 + Object {
-
-	=>@ { | chuckee |
-		^chuckee jchuck: this;
-	}
-
+	=>@ { | chuckee | ^chuckee jchuck: this; }
 	asNdefSource { }
 }
 
 
 + Symbol {
-	jchuck { | chucker |
-		^Ndef(this, chucker.asNdefSource).play;
-	}
+	jchuck { | chucker | ^Ndef(this, chucker.asNdefSource).play }
+	asNdefSource { ^Mdef(this) }
 }
 
-+ SequenceableCollection { 
-
++ SequenceableCollection {
 	asNdefSource { ^Pbind(*this) }
+}
+
++ Event {
+	asNdefSource { ^EventPattern(this) }
 }

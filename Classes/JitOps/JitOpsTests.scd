@@ -24,8 +24,6 @@ Edef(\n) =>@ \test2;
 
 \n =< (degree: Pbrown(-10, 20, 5, inf));
 
-
-
 { WhiteNoise.ar(0.01) } =>@ \test;
 
 (degree: 1, dur: 0.1) =>@ \test;
