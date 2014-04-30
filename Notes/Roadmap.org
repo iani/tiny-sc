@@ -8,11 +8,6 @@
 :END:
 
 
-** TODO Make it possible to compose patterns with %>
-:PROPERTIES:
-:DATE:     <2014-04-29 Tue 13:49>
-:END:
-
 ** Both single-synth and synth-stream should play with PatternInstrument
 :PROPERTIES:
 :DATE:     <2014-04-18 Fri 16:24>
@@ -1337,6 +1332,19 @@ Done in Idef addEvent.  Example:
 (degree: (0..7).pseq, dur: 0.25) => \test;
 //:
 (degree: { Pstutter(3, ~degree) - [2, 1, 0].pseq }) +> \test;
+#+END_EXAMPLE
+
+** CANCELLED Make it possible to compose patterns with %>
+:PROPERTIES:
+:DATE:     <2014-04-30 Wed 00:14>
+:END:
+
+Not applicable, because the values received from the playing EventStream are final ones - the result of playing the Stream.  It is however possible to use a preexisting stream to compute new values and combine them with the value from the event.
+
+#+BEGIN_EXAMPLE
+(degree: (0..7).pseq, dur: 0.25) => \test;
+a = [0, 3].pseq.asStream;
+(degree: { ~degree + a.next }) %> \test;
 #+END_EXAMPLE
 
 * Undergoing tests
