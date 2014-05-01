@@ -15,15 +15,12 @@ To be converterd to tiny-sc operators, replacing the earlier tiny-sc framework, 
 
 + Symbol {
 	jchuck { | chucker | ^Ndef(this, chucker.asNdefSource).play }
-	asNdefSource { ^Mdef(this) }
-
-	asProxy { ^Ndef(this) }
-	
+	asNdefSource { ^Mdef(this) }	
 	<<> { | proxy, key = \in |
 		^this.asProxy.perform('<<>', proxy.asProxy, key);
 	}
 	
-
+	asProxy { ^Ndef(this) }
 }
 
 + SequenceableCollection {

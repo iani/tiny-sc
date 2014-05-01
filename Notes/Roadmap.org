@@ -43,6 +43,26 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
+
+** \in.ar -> In.ar(\in)
+:PROPERTIES:
+:DATE:     <2014-05-01 Thu 11:04>
+:END:
+
+See JITlib
+
+** amp default should be 1. Use 'level' instead? Range 0-2, db?
+:PROPERTIES:
+:DATE:     <2014-05-01 Thu 11:06>
+:END:
+
+** \symbol.kr default lag 0.2?
+:PROPERTIES:
+:DATE:     <2014-05-01 Thu 11:08>
+:END:
+
+To avoid zippering.
+
 ** PatternPlayer: Retain because more lightweight? Rename to PatternTask to avoid conflict with Conductor Quark.
 :PROPERTIES:
 :DATE:     <2014-04-25 Fri 19:29>
