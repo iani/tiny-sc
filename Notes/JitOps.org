@@ -7,8 +7,6 @@ Tiny-sc addresses many of the same problems as JITlib.  Consequently, some of ap
 
 The operators introduced here are not designed for the end user or for "public distribution.".  This is an internal experiment of the tiny-sc project.  The operator rationale is to make it possible to port all of tiny-sc on to JITLib: Just add @ at the end of every operator in tiny-sc, to make the corresponding experimental jit-op.  So when the time is ready, the JitOps will be converted to the current tiny-sc operators by query replacing >@ with > in order to remove the @ added in JitOps. i.e. =>@ becomes =>, etc.
 
-Note: Already at the initial stage (Thu, May  1 2014, 11:09 EEST) some basic differences between Ndef and SynthTree were observed.  Ndef cannot hot-swap a running input source between hardware output and a Ndef, while SynthTree can.  So the planned replament of SynthTree by Ndef may take longer.  For the moment it is stalled.
-
 * Observations
 :PROPERTIES:
 :DATE:     <2014-05-01 Thu 11:13>

@@ -44,16 +44,6 @@ Try these with arrays loaded from data analysed through SCMIR.
 * Immediate TODOs
 
 
-** DONE Fix bug: Restarting an ST in Fader view cancels its output routing.
-CLOSED: [2014-05-02 Fri 15:36]
-:PROPERTIES:
-:DATE:     <2014-05-02 Fri 11:14>
-:END:
-
-It was not a bug, but a deeper problem that also concerns Ndef:
-
-Use of \symbol.ar inside a source Ndef / SynthTree breaks the linking to the fx once the source has been started.
-
 ** Add jcuck method to Ndef
 :PROPERTIES:
 :DATE:     <2014-05-01 Thu 12:05>
@@ -1381,6 +1371,16 @@ Not applicable, because the values received from the playing EventStream are fin
 a = [0, 3].pseq.asStream;
 (degree: { ~degree + a.next }) %> \test;
 #+END_EXAMPLE
+
+** UNSOLVEABLE \symbol.ar breaks audio routing in Ndef/SynthTree
+CLOSED: [2014-05-02 Fri 15:36]
+:PROPERTIES:
+:DATE:     <2014-05-02 Fri 11:14>
+:END:
+
+It was not a bug, but a deeper problem that also concerns Ndef:
+
+Use of \symbol.ar inside a source Ndef / SynthTree breaks the linking to the fx once the source has been started.
 
 * Undergoing tests
 
