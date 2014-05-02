@@ -8,7 +8,7 @@
 :END:
 
 
-** Both single-synth and synth-stream should play with PatternInstrument
+** Both single-synth andβ synth-stream should play with PatternInstrument
 :PROPERTIES:
 :DATE:     <2014-04-18 Fri 16:24>
 :END:
@@ -43,6 +43,21 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
+
+** DONE Fix bug: Restarting an ST in Fader view cancels its output routing.
+CLOSED: [2014-05-02 Fri 15:36]
+:PROPERTIES:
+:DATE:     <2014-05-02 Fri 11:14>
+:END:
+
+It was not a bug, but a deeper problem that also concerns Ndef:
+
+Use of \symbol.ar inside a source Ndef / SynthTree breaks the linking to the fx once the source has been started.
+
+** Add jcuck method to Ndef
+:PROPERTIES:
+:DATE:     <2014-05-01 Thu 12:05>
+:END:
 
 ** \in.ar -> In.ar(\in)
 :PROPERTIES:

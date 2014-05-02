@@ -3,7 +3,7 @@
 :DATE:     <2014-04-30 Wed 12:06>
 :END:
 
-Tiny-sc has addressed many of the same problems as JITlib.  Consequently, some of approaches and solutions of tiny-sc have come to resemble to some degree those of JITlib.  The aim of "JitOps" (operators for JITlib) is to explore the differences and commonalities through code.  To start with, it emulates the coding approach of tiny-sc using JITlib classes, in order to see which parts overlap completely and which differ.
+Tiny-sc addresses many of the same problems as JITlib.  Consequently, some of approaches and solutions of tiny-sc have come to resemble to some degree those of JITlib.  The aim of "JitOps" (operators for JITlib) is to explore the differences and commonalities through code.  To start with, it emulates the coding approach of tiny-sc using JITlib classes, in order to see which parts overlap completely and which differ.
 
 The operators introduced here are not designed for the end user or for "public distribution.".  This is an internal experiment of the tiny-sc project.  The operator rationale is to make it possible to port all of tiny-sc on to JITLib: Just add @ at the end of every operator in tiny-sc, to make the corresponding experimental jit-op.  So when the time is ready, the JitOps will be converted to the current tiny-sc operators by query replacing >@ with > in order to remove the @ added in JitOps. i.e. =>@ becomes =>, etc.
 

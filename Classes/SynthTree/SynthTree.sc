@@ -316,6 +316,7 @@ SynthTree : IdentityTree {
 			});
 		};
 		notStopped = true;
+		^synth; // used for debugging
 	}
 
 	addPatternSynth { | instrument = \default, args |

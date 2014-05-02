@@ -40,10 +40,7 @@ Pdef(\z, Pbind(\degree, [10, 11].pseq, \dur, 0.05));
 
 Pdef(\z) =>@ \test;
 
-
-
 ////////////////////////////////////////////////////////////////
-
 
 // EventPattern is compatible with Pdef:
 
