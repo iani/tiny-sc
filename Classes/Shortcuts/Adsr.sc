@@ -68,6 +68,15 @@ Inp {
 	}
 }
 
+/* Note: 
+Use instead of \symbol.ar, which breaks audio linking in SynthTree and Ndef.
+*/
++ Symbol {
+	in { | channelNum, numChannels = 1 |
+		^Inp.ar(this, channelNum, numChannels)
+	}
+}
+
 /*
 + Node {
 	fadeOut { | fadeOut = 0.2 |
