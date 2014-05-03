@@ -33,19 +33,19 @@ Try the following, one line at a time:
 
 #+BEGIN_EXAMPLE
 // Start a synth and store it in a name
-{ WhiteNoise.ar } => \sound;
+{ WhiteNoise.ar(0.1) } => \sound;
 // Stop The sound with the default fade-out duration
 \sound.fadeOut;
 // Restart the stored sound - remake the synth.
 \sound.start;
 // Replace the synth at \sound with another one
-{ SinOsc.ar(440) } => \sound;
+{ SinOsc.ar(440, 0, 0.1) } => \sound;
 // Set the fade-in fade-out time to 0.5 seconds
 \sound.fadeTime = 5;
 // Replace again, fading-out the previous sound in 0.5 seconds
-{ PinkNoise.ar } => \sound;
+{ PinkNoise.ar(0.1) } => \sound;
 // Change the fade-time of the SynthTree in the same line:
-{ LPF.ar(GrayNoise.ar(Decay.kr(Dust.kr(10))), \freq.kr(5000)) } => \sound.fadeTime_(0.5);
+{ LPF.ar(GrayNoise.ar(0.1*Decay.kr(Dust.kr(10))), \freq.kr(5000)) } => \sound.fadeTime_(0.5);
 // Output channel can be set
 1 => ~out;
 // So can the freq or any other parameter
@@ -62,27 +62,27 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 // Set global fade time to 3 seconds
 10 =!> \fadeTime;
 // Fade in a synth.
-{ WhiteNoise.ar } => \sound2;
+{ WhiteNoise.ar(0.1) } => \sound2;
 // Cross-fade another synth in its place
-{ SinOsc.ar(LFNoise0.kr(5).range(400, 4000)) } => \sound2;
+{ SinOsc.ar(0.1 * LFNoise0.kr(5).range(400, 4000)) } => \sound2;
 // And a third synth
-{ LPF.ar(GrayNoise.ar, LFNoise0.kr(5).range(400, 4000)) } => \sound2;
+{ LPF.ar(0.1 * GrayNoise.ar, LFNoise0.kr(5).range(400, 4000)) } => \sound2;
 // Set global fade time to 0.01 seconds
 0.01 =!> \fadeTime;
 // Notice difference in cross-fading duration
-{ LFDNoise3.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound2;
+{ LFDNoise3.ar(LFNoise0.kr(15).range(400, 4000), 0.1) } => \sound2;
 // One more time
-{ SinOsc.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound2;
+{ 0.1 * SinOsc.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound2;
 // Fadeout also uses the global default
 \sound2.fadeOut;
 #+END_EXAMPLE
 
-* Setting synth parameters
+* QUOTE Setting synth parameters
 
 When a synth template gets chucked to a synthtree with =>, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.
 
 #+BEGIN_EXAMPLE
-{ LPF.ar(LFSaw.ar(\freq.kr(440)), \filterFreq.kr(1000)) } => \sound3;
+{ 0.1 * LPF.ar(LFSaw.ar(\freq.kr(440)), \filterFreq.kr(1000)) } => \sound3;
 // Parameters of last chucked SynthTree are in the environment.
 // Change the filter frequency:
 400 => ~filterFreq;
@@ -97,7 +97,7 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 
 
 #+BEGIN_EXAMPLE
-{ SinOsc.ar(\freq.kr(400)) } => \sound4;
+{ SinOsc.ar(\freq.kr(400), 0, 0.1) } => \sound4;
 // Play a pattern into ~freq:
 { 50.rrand(80).midicps } *> \freq;
 // Alternative formulation:
@@ -109,7 +109,7 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 //: Shorter formulation of the above (with different paremeter values):
 [70, 72, 76, 77].midicps.prand => [0.2, 0.4, 0.8].prand *> \freq;
 // Pattern keeps playing when new synth is chucked into tree:
-{ LPF.ar(LFPulse.ar(\freq.kr(440)), 1000) } => \sound4;
+{ 0.1 * LPF.ar(LFPulse.ar(\freq.kr(440)), 1000) } => \sound4;
 // Open knobs interface to watch how freq changes
 ~st.knobs;
 //  Play with global duration stored in ~dur:

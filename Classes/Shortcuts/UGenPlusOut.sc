@@ -50,7 +50,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 		attackTime = 0.02, decayTime = 0.0, sustainLevel = 1, releaseTime = 0.02, 
 		peakLevel = 1, curve = -4, bias = 0,
 		gateName = \gate, gateValue = 1,
-		ampName = \amp, ampValue = 0.1, doneAction = 2, fadeIn = 0 |
+		ampName = \amp, ampValue = 1, doneAction = 2, fadeIn = 0 |
 		^(
 			Line.kr(0, 1, \fadeIn.kr(fadeIn)) *
 			this *
@@ -65,7 +65,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 		attackTime = 0.02, decayTime = 0.0, sustainLevel = 1, releaseTime = 0.02, 
 		peakLevel = 1, curve = -4, bias = 0,
 		gateName = \gate, gateValue = 1,
-		ampName = \amp, ampValue = 0.1, doneAction = 2 |
+		ampName = \amp, ampValue = 1, doneAction = 2 |
 		^(
 			this * Adsr(attackTime, decayTime, sustainLevel, releaseTime, 
 				peakLevel, curve, bias, gateName, gateValue,
@@ -107,7 +107,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 		attackTime = 0.02, decayTime = 0.0, sustainLevel = 1, releaseTime = 0.02, 
 		peakLevel = 1, curve = -4, bias = 0,
 		gateName = \gate, gateValue = 1,
-		ampName = \amp, ampValue = 0.1, doneAction = 2, fadeIn = 0 |
+		ampName = \amp, ampValue = 1, doneAction = 2, fadeIn = 0 |
 		^(
 			Line.kr(0, 1, \fadeIn.kr(fadeIn)) *
 			this *
@@ -126,7 +126,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 		attackTime = 0.02, decayTime = 0.0, sustainLevel = 1, releaseTime = 0.02, 
 		peakLevel = 1, curve = -4, bias = 0,
 		gateName = \gate, gateValue = 1,
-		ampName = \amp, ampValue = 0.1, doneAction = 2 |
+		ampName = \amp, ampValue = 1, doneAction = 2 |
 		^(
 			this * Adsr(attackTime, decayTime, sustainLevel, releaseTime, 
 				peakLevel, curve, bias, gateName, gateValue,
@@ -159,7 +159,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 		attackTime = 0.02, decayTime = 0.0, sustainLevel = 1, releaseTime = 0.02, 
 		peakLevel = 1, curve = -4, bias = 0,
 		gateName = \gate, gateValue = 1,
-		ampName = \amp, ampValue = 0.1, doneAction = 2, fadeIn = 0 |
+		ampName = \amp, ampValue = 1, doneAction = 2, fadeIn = 0 |
 		^Silent.ar.ladsrOut(
 			outName, outValue, attackTime, decayTime, sustainLevel, releaseTime, 
 			peakLevel, curve, bias, gateName, gateValue, ampName, ampValue, doneAction, fadeIn

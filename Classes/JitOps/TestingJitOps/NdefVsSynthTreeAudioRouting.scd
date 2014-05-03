@@ -42,16 +42,3 @@ Ndef(\fx).set(\freq, 1000);
 //:
 { SinOsc.ar([1, 1.2] * 400, In.ar(0, 2) * 0.2) } => \src3;
 //:
-
-
-\fx3 =< \src3;
-
-\fx3.asSynthTree.set(\amp, 1);
-\src3.asSynthTree.set(\amp, 1);
-
-\fx3.asSynthTree.set(\freq, 7000);
-
-\fx3.set(\amp, 1);
-\src3.set(\amp, 1);
-
-

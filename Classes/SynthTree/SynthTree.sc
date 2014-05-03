@@ -622,7 +622,7 @@ SynthTree : IdentityTree {
 							this.stop;
 						}{
 							{ \buf.playBuf } => this.buf(view.item)
-							.set(\amp, 1)
+							// .set(\amp, 1)
 							.set(\loop, if (modifiers == 0) { 0 } { 1 });
 						}
 					},

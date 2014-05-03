@@ -41,13 +41,13 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 
 	parent_ { | argParent |
 		parent = argParent;
-		parent.addChild(this);
+		parent !? { parent.addChild(this); };
 	}
 
 	addChild { | child | children = children add: child }
 
 	*fromEvent { | event, protoEvent |
-		^this.new(nil, EventPattern(event), protoEvent)
+		^this.new(nil, Edef(nil, event), protoEvent)
 	}
 
 	addEvent { | event, fromPattern = false |
