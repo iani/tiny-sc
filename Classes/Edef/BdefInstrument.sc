@@ -41,7 +41,7 @@ BdefInstrument {
 	stop { bdef.stop; }
 	isPlaying { ^bdef.isPlaying }
 	asSynthTemplate { /* ^this */ }
-	templateArgs { ^[ControlName(\amp, nil, \control, 0.3)] }
+	templateArgs { ^[ControlName(\amp, nil, \control, 1.0)] }
 
 	asSynth { | synthTree fadeTime |
 		var bdefSynth;

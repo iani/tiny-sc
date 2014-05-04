@@ -77,7 +77,7 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 \sound2.fadeOut;
 #+END_EXAMPLE
 
-* QUOTE Setting synth parameters
+* Setting synth parameters
 
 When a synth template gets chucked to a synthtree with =>, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.
 
@@ -93,8 +93,6 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 #+END_EXAMPLE
 
 * Playing patterns in single parameters
-
-
 
 #+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(400), 0, 0.1) } => \sound4;
@@ -675,7 +673,6 @@ loop {
 - C-H-r :: sclang-process-registry-gui
 - C-c l :: sclang-recompile
 - M-C :: sclang-clear-post-buffer
-
 
 * Triggering synths in routines
 :PROPERTIES:
