@@ -1,10 +1,16 @@
 * Preamble
+:PROPERTIES:
+:DATE:     <2014-05-06 Tue 21:42>
+:END:
 
-This file/text could also be called: Rationale, Architecture, Paradigm, Narrative, BasicScenario, Fundamentals, Principles, WorkPrinciples, WorkingPrinciples.  Well, BasicIdeas will do, I hope.
+The initial idea for tiny-sc was given by Mini-Audicle in ChucK.  http://audicle.cs.princeton.edu/mini/.  The Mini-Audicle includes a window for the Virtual Machine of ChucK, which displays running processes (shreds).  Through this GUI the user can at any point view which processes are running and stop any one of them.  Thus the idea arose to emulate such a functionality in SuperCollider.  This was implemented here with a new class ProcessRegistry in conjunction with some ancilliary methods.  From then on, the tiny-sc project developed without plan, as a series of spontaneous experiments with alternative approaches to common tasks in SuperColllider.
 
-IZ Wed, Mar 26 2014, 13:10 EET
+* Some objectives
+:PROPERTIES:
+:DATE:     <2014-05-05 Mon 11:25>
+:END:
 
-* Objectives overview
+(To be rewritten...):
 
 1. Track the state of the Server and of Synths.
 
@@ -23,6 +29,8 @@ IZ Wed, Mar 26 2014, 13:10 EET
 5. Simplify and unify the mechanism for listening to control events broadcasts, by extending the mechanism of AbstractResponderFunc (eg. OSCFunc, MIDIFunc) to Views and Patterns.
 
 * Tracking Server/Synth state
+
+
 
 * UGen shortcuts
 
