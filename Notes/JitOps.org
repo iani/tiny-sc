@@ -20,6 +20,11 @@ The implementation of method =<>>= in =NodeProxy= shows that it is equivalent to
 
 The task here is to make the above operators, or variants of these, work with arguments other than Ndefs in order to allow shorter coding styles of expressions involving Ndefs.  In general, Ndefs should be replaced by their symbol names.  Additionally, Events could be used instead of Pdefs or Pbinds (in which case the generated objects should be Idefs which permit inheritance and on-the-fly changing of the Pattern of Stream while playing).
 
+To avoid confusion with the functionality of <>> and <<>, and for better clarity, the operators chosen for Ndef are:
+
+- ->> ::  chuck pattern, function, ref (synthdef) to Ndef named with symbol (instead of writing Ndef(\symbol)).
+- <<> :: The standard input routing operator of JITlib, but extended to work with symbols instead of having to write Ndef(\symbol)
+
 ** Earlier operator draft (to be replaced)
 :PROPERTIES:
 :DATE:     <2014-05-06 Tue 21:43>
