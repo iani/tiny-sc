@@ -42,6 +42,8 @@ The operators introduced here are not designed for the end user or for "public d
 :DATE:     <2014-05-01 Thu 11:13>
 :END:
 
+See examples in Classes/JitOps/TestingJitOps/
+
 #+BEGIN_EXAMPLE
 Pdef(\y, EventPattern((dur: 0.1, degree: [1, 2].pseq)));
 Pdef(\y).play;
