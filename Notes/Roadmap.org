@@ -44,29 +44,27 @@ Try these with arrays loaded from data analysed through SCMIR.
 * Immediate TODOs
 
 
-** Add jcuck method to Ndef
+
+** debug SythTree initTree
+:PROPERTIES:
+:DATE:     <2014-05-09 Fri 18:18>
+:END:
+
+When monitoring with
+: Server.default.plotTree;
+
+The following will create an extra, third, synth when restarting the tree with initTree:
+
+#+BEGIN_EXAMPLE
+{ LPF.ar(\in.in, \freq.kr(4000)) } => \fx;
+{ WhiteNoise.ar(0.1) } => \test;
+\fx =< \test;
+#+END_EXAMPLE
+
+** Add jchuck method to Ndef
 :PROPERTIES:
 :DATE:     <2014-05-01 Thu 12:05>
 :END:
-
-** \in.ar -> In.ar(\in)
-:PROPERTIES:
-:DATE:     <2014-05-01 Thu 11:04>
-:END:
-
-See JITlib
-
-** amp default should be 1. Use 'level' instead? Range 0-2, db?
-:PROPERTIES:
-:DATE:     <2014-05-01 Thu 11:06>
-:END:
-
-** \symbol.kr default lag 0.2?
-:PROPERTIES:
-:DATE:     <2014-05-01 Thu 11:08>
-:END:
-
-To avoid zippering.
 
 ** PatternPlayer: Retain because more lightweight? Rename to PatternTask to avoid conflict with Conductor Quark.
 :PROPERTIES:
@@ -1381,6 +1379,25 @@ CLOSED: [2014-05-02 Fri 15:36]
 It was not a bug, but a deeper problem that also concerns Ndef:
 
 Use of \symbol.ar inside a source Ndef / SynthTree breaks the linking to the fx once the source has been started.
+
+** amp default should be 1. Use 'level' instead? Range 0-2, db?
+:PROPERTIES:
+:DATE:     <2014-05-01 Thu 11:06>
+:END:
+
+** \in.ar -> \in.in
+:PROPERTIES:
+:DATE:     <2014-05-01 Thu 11:04>
+:END:
+
+See JitOps
+
+** CANCELLED \symbol.kr default lag 0.2?
+:PROPERTIES:
+:DATE:     <2014-05-01 Thu 11:08>
+:END:
+
+To avoid zippering.
 
 * Undergoing tests
 
