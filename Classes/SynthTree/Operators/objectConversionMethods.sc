@@ -140,7 +140,6 @@
     asSynth { | synthTree, fadeTime |
 		var outputBus;
 		outputBus = synthTree.getOutputBusIndex;
-		[this, thisMethod.name, "outputBus", outputBus].postln;
         ^this.xplay(
             synthTree.group,
             outbus: outputBus, 
@@ -155,7 +154,6 @@
 	}
 	*/
 	xplay { | target, outbus = 0, fadeTime = 0.02, addAction = 'addToHead', args |
-		[this, thisMethod.name, "outbus", outbus].postln;
 		^{ this.value.ladsrOut(fadeIn: fadeTime) }
 		.play(target, outbus, fadeTime, addAction, args);
 	}
