@@ -9,7 +9,7 @@ UNDER CONSTRUCTION
 IZ Wed, Mar  5 2014, 10:47 EET
 */
 
-PatternPlayer {
+PatternTask {
 	
 	var <>initialDelay;
 	var <>clock;
@@ -80,7 +80,7 @@ PatternPlayer {
 	}
 }
 
-PatternEventPlayer : PatternPlayer {
+PatternEventPlayer : PatternTask {
 
 	*new { | values, delay = 0, clock |
 		^this.newCopyArgs(delay, clock ?? { TempoClock /*() */ })
@@ -164,7 +164,7 @@ SynthPattern {
 		params = newParams;
 	}
 
-	asPatternPlayer { | durations | ^params.asPatternPlayer(durations); }
+	asPatternTask { | durations | ^params.asPatternTask(durations); }
 }
 
 SynthStream {

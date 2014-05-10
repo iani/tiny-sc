@@ -56,7 +56,7 @@ MultiControl : IdentityDictionary {
 	// var <>controls; // dictionary holding any control objects 
 	//	(MIDIFuncs, OSCFuncs, ViewFuncs, Busses etc.)
 	/* Note: Other sources, such as: 
-		Patterns, StreamPatterns and PatternPlayers should be stored globally
+		Patterns, StreamPatterns and PatternTasks should be stored globally
 		each in its own dict, and added to any number of SynthTrees.
 		One SynthTree might want to compose the stream source
 		used by another SynthTree with a second stream source!
@@ -125,7 +125,7 @@ MultiControl : IdentityDictionary {
 	receivePatternChuck { | pattern |
 		// TODO: fix this to work with [100, 200].pseq => ~freq;
 		// should be like this: 
-		// this.playPattern(pattern.asPatternPlayer);
+		// this.playPattern(pattern.asPatternTask);
 		this.playPattern (pattern); // not like this!
 	}
 

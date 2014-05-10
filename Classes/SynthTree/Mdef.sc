@@ -1,5 +1,5 @@
 /*
-Named container for PatternPlayer, PatternEventPlayer
+Named container for PatternTask, PatternEventPlayer
 
 IZ Wed, Apr 16 2014, 04:59 EEST
 */
@@ -50,7 +50,7 @@ Mdef {
 	}
 
 	updateFromPlayer { | values |
-		// update values when EventPatternPlayer is changed from another source
+		// update values when EventPatternTask is changed from another source
 		values keysValuesDo: { | param, value | patterns[param] = value; };
 		// do not update to player, since this came from it
 		this.changed(\values);

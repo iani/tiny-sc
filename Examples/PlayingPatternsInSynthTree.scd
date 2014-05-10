@@ -1,5 +1,5 @@
 /*
-Stydying PatternPlayer in order to develop the version for playing
+Stydying PatternTask in order to develop the version for playing
 paterns in SynthTree, pbind-like. 
 Tue, Apr  1 2014, 21:19 EEST
 */

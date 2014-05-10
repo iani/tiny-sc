@@ -187,5 +187,5 @@ PatternTemplates : Templates {
 }
 
 + Association {
-	asTemplate { ^PatternPlayer(key, value) }
+	asTemplate { ^PatternTask(key, value) }
 }

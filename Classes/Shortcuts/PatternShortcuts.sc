@@ -1,6 +1,6 @@
 /* create a patterns and its stream in one step from an object 
 
-Wed, Mar  5 2014, 16:20 EET: Since PatternPlayer takes patterns, 
+Wed, Mar  5 2014, 16:20 EET: Since PatternTask takes patterns, 
 no longer needed to get the Stream here.
 (It is more convenient to work with the pattern, to be able to restart it.)
 

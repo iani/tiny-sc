@@ -4,7 +4,7 @@
 	=> { | chuckee | ^this.asEdef => chuckee }
 
 	asPatternInstrument {
-		^PatternInstrument(PatternPlayer([], Pfunc({ ~dur.next })), this);
+		^PatternInstrument(PatternTask([], Pfunc({ ~dur.next })), this);
 	}
 
 	patternParams { | paramArray | ^this.asSynthTree.chuckPatternParams(paramArray) }

@@ -1,7 +1,7 @@
 TITLE::PatternInstrument
-summary::play a PatternPlayer with an instrument stream
+summary::play a PatternTask with an instrument stream
 categories::Libraries>TinySC>Classes
-related:: Classes/PatternPlayer
+related:: Classes/PatternTask
 
 DESCRIPTION::
 
@@ -40,7 +40,7 @@ IZ Tue, Apr  1 2014, 02:58 EEST
 
 ================ PatternInstrument: ================
 
-Hold the instrument for playing a PatternPlayer. 
+Hold the instrument for playing a PatternTask. 
 
 Is placed as template in SynthTree.
 
@@ -51,13 +51,13 @@ Why separate the instrument from the pattern?  In order to play a pattern with d
 
 code:: this.changed(\value). ::
 
-Any number of objects can set a function to play with the values produced by the PatternPlayer by using the Notification class. 
+Any number of objects can set a function to play with the values produced by the PatternTask by using the Notification class. 
 
-To create a PatternPlayer, one may use the %> operator.  For example: . 
+To create a PatternTask, one may use the %> operator.  For example: . 
 
 code:: [freq: Pseq((30..90).midicps, inf)] %> 0.02; ::
 
-To add an object to play with a PatternPlayer use the method play, or chuck the pattern with the chuck operator (=>).  Examples 
+To add an object to play with a PatternTask use the method play, or chuck the pattern with the chuck operator (=>).  Examples 
 
 code:: [freq: Pseq((30..90).midicps, inf)] %> 0.02 => \default; ::
 

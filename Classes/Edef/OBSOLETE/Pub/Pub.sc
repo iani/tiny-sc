@@ -93,7 +93,7 @@ Pub {
     asPub { ^Pub(this); }
 
     makePubAction { | source |
-        ^PatternPlayer(this).makePubAction(source);
+        ^PatternTask(this).makePubAction(source);
     }
     /*
     makePubAction { | source |

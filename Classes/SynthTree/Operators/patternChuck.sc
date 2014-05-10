@@ -8,7 +8,7 @@
 	}
 
 	receivePatternChuck { | pattern |
-		^PatternPlayer(pattern, this);
+		^PatternTask(pattern, this);
 	}
 
 	receivePatternInstrument { | patternInstrument |
@@ -23,10 +23,10 @@
 		}
 	}
 
-	asPatternPlayer {
+	asPatternTask {
 		// TODO: Test this
-		^PatternPlayer(this);
+		^PatternTask(this);
 	}
 }
 
-+ PatternPlayer { asPatternPlayer { ^this } }
++ PatternTask { asPatternTask { ^this } }

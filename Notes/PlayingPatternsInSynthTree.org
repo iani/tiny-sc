@@ -4,7 +4,7 @@ You want to play a pattern in a SynthTree.  Pbind-like.
 
 Why re-invent the wheel:
 
-- Make it easy to change parts of a pattern (patterns that play individual parameters in the pattern).  This is already possible in dewDrop lib and in JITLib, but it is even easier in PatternPlayer.
+- Make it easy to change parts of a pattern (patterns that play individual parameters in the pattern).  This is already possible in dewDrop lib and in JITLib, but it is even easier in PatternTask.
 - Make it possible to play the same pattern in different synthtrees, with different synths/instruments, at the same time.
 
 * Scenario / Basic principles
@@ -16,10 +16,10 @@ In addition to the array of streams, two more items of information are needed to
 1. The stream of durations separating each successive event of the pattern (i.e. the timing of the events of the pattern).
 2. The stream of instruments (synthdef names or possibly other types of objects) used to play each successive event.
 
-Pbind incorporates the duration and the instrument stream in the parameter array.  PatternPlayer separates these two, for ease of handling.  Separating durations makes it easier to code the Function of the Task that plays the pattern.   Separating the instrument makes it possible to play the same stream of parameters with different instruments.
+Pbind incorporates the duration and the instrument stream in the parameter array.  PatternTask separates these two, for ease of handling.  Separating durations makes it easier to code the Function of the Task that plays the pattern.   Separating the instrument makes it possible to play the same stream of parameters with different instruments.
 
 * Class overview
-PatternPlayer is put inside a PatternInstrument.
+PatternTask is put inside a PatternInstrument.
 
 The PatternInstrument is the template for playing.
 
@@ -46,7 +46,7 @@ A simple way to create and play a pattern is through a chain of binary operation
 
 1. Start with an array of key-pattern pairs:
    =~params = [freq: 440, amp: Prand([1, 2], inf)]=
-2. Add the duration stream to create a PatternPlayer:
+2. Add the duration stream to create a PatternTask:
    =~player = ~params %> Pseq([0.1, 0.1, 0.2],inf );=
 3. Add the instrument stream to create a PatternInstrument:
    =~patternInstrument = ~player %> \default;=
@@ -93,9 +93,9 @@ To indicate that a pattern is intendet for instrument and not durations, use the
 
 ** Pattern =>
 
-Pattern => (something) creates a PatternPlayer, with a single pattern.  This is for playing in a single argument of a SynthTree (not a pattern array to create events in a SynthTree).
+Pattern => (something) creates a PatternTask, with a single pattern.  This is for playing in a single argument of a SynthTree (not a pattern array to create events in a SynthTree).
 
-- Pattern => num :: PatternPlayer (single pattern!)
+- Pattern => num :: PatternTask (single pattern!)
 
 #+BEGIN_EXAMPLE
 // start sound
@@ -113,11 +113,11 @@ Prand([60, 62, 63, 64, 67].midicps, inf) => 0.1 => ~freq;
 Prand([50, 51.5, 53, 53.8, 57].midicps, inf) => Pfunc({ 0.01 exprand: 1.5 }) => ~freq;
 #+END_EXAMPLE
 
-** PatternPlayer =>
+** PatternTask =>
 
 A pattern player when sent to a MultiControl plays in a single argument of a SynthTree (not a pattern array to create events in a SynthTree).
 
-- PatternPlayer => MultiControl :: play / PatternFunc
+- PatternTask => MultiControl :: play / PatternFunc
 
 Example:
 
@@ -171,29 +171,29 @@ Pstutter(2, Prand([60, 62, 63, 64, 67], inf)).midicps
 :eval-id:  2
 :END:
 
-- [] => num :: PatternInstrument(PatternPlayer([], num), nil)
+- [] => num :: PatternInstrument(PatternTask([], num), nil)
 
 #+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(400)) } => \sound;
 [freq: 400, amp: 0.1] => 1.2345 => \sound;
 #+END_EXAMPLE
 
-- [] => pattern :: PatternInstrument(PatternPlayer([], pattern), nil)
+- [] => pattern :: PatternInstrument(PatternTask([], pattern), nil)
 
 #+BEGIN_EXAMPLE
 [freq: (400 * (1..2)).pseq, amp: 0.1] => [1, 2].pseq;
 #+END_EXAMPLE
 
-- [] =>.i symbol / pattern :: PatternInstrument(PatternPlayer([], nil), pattern)
-- [] => Symbol / SynthTree :: PatternInstrument(PatternPlayer([], nil), nil)
+- [] =>.i symbol / pattern :: PatternInstrument(PatternTask([], nil), pattern)
+- [] => Symbol / SynthTree :: PatternInstrument(PatternTask([], nil), nil)
   => [replace params template:] SynthTree
 - [] =>.m Symbol / SynthTree :: or =%> Symbol / SynthTree :
-  PatternInstrument(PatternPlayer([], nil), nil)
+  PatternInstrument(PatternTask([], nil), nil)
   => [merge params template if PatternInstrument:] SynthTree
 
 ** PatternInstrument =>
-- PatternInstrument => Pattern :: Pattern becomes instrument of PatternPlayer
-- PatternInstrument => `Symbol :: value of `Symbol ref becomes instrument of PatternPlayer
+- PatternInstrument => Pattern :: Pattern becomes instrument of PatternTask
+- PatternInstrument => `Symbol :: value of `Symbol ref becomes instrument of PatternTask
 - PatternInstrument => Symbol / SynthTree :: play in synthtree.
   Nil parameters are replaced by defaults or by preexisting patterns
 

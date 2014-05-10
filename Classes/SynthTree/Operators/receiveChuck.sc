@@ -24,29 +24,29 @@
 
 + Ref {
 	receiveChuck { | chucker |
-		^PatternInstrument(chucker.asPatternPlayer, value.asPattern)
+		^PatternInstrument(chucker.asPatternTask, value.asPattern)
 	}
 }
 
 + Function {
-	receiveChuck { | chucker | ^PatternPlayer(chucker.asPattern, this.asPattern) }
+	receiveChuck { | chucker | ^PatternTask(chucker.asPattern, this.asPattern) }
 	asPattern { ^Pfunc(this) }
 }
 
 + SimpleNumber {
 	receiveChuck { | chucker |
-		^PatternPlayer(chucker.asPattern, this)
+		^PatternTask(chucker.asPattern, this)
 	}
 	
 	asPattern { ^this }
 }
 
 + Pattern {
-	receiveChuck { | chucker | ^PatternPlayer(chucker.asPattern, this) }
+	receiveChuck { | chucker | ^PatternTask(chucker.asPattern, this) }
 	asPattern { ^this }
 }
 
-+ PatternPlayer { asPattern { ^this } }
++ PatternTask { asPattern { ^this } }
 
 + SequenceableCollection { asPattern { ^Pseq(this, inf) } }
 

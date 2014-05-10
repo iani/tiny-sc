@@ -66,7 +66,7 @@ The following will create an extra, third, synth when restarting the tree with i
 :DATE:     <2014-05-01 Thu 12:05>
 :END:
 
-** PatternPlayer: Retain because more lightweight? Rename to PatternTask to avoid conflict with Conductor Quark.
+** PatternTask: Retain because more lightweight? Rename to PatternTask to avoid conflict with Conductor Quark.
 :PROPERTIES:
 :DATE:     <2014-04-25 Fri 19:29>
 :END:
@@ -75,7 +75,7 @@ PatterPlayer is still used to play single parameters of a synth in a synthree, b
 
 But note: Bdef/BdefInstrument are much heavier.
 
-Maybe rename PatternPlayer to PatternTask!!!
+Maybe rename PatternTask to PatternTask!!!
 
 
 ** Implement @> for mapping control busses to synthtree params
@@ -155,9 +155,9 @@ Finally, better use message style, because clearer, and also chainable:
   - Pattern.play(durationPattern);
   - SequenceableCollection.play(durationPattern);
 
-** Global Streams, StreamPatterns, Patterns, PatternPlayers
+** Global Streams, StreamPatterns, Patterns, PatternTasks
 
-Patterns, Streams, StreamPatterns and PatternPlayers should be stored globally each in its own dict, and added to any number of SynthTrees.  One SynthTree might want to compose the stream source used by another SynthTree with a second stream source!
+Patterns, Streams, StreamPatterns and PatternTasks should be stored globally each in its own dict, and added to any number of SynthTrees.  One SynthTree might want to compose the stream source used by another SynthTree with a second stream source!
 
 They could be stored in / accessed from the global Library.
 
@@ -166,7 +166,7 @@ How many categories should exist?
 - Patterns :: Used to spawn streams that go directly in a MultiControl stream, privately
 - Streams :: Used to store streams for global access.  Cannot respawn. Note: sharing streams as sources of values in different SynthTrees problematic (cannot call next twice - who calls first? See note below: "Important:", and next section, StreamFunc for solution of this problem).
 - StreamPatterns :: Like streams, but can respawn their stream when ended.  Multiple access problem of Streams also apply here.
-- PatternPlayers :: Play patterns in time.  Can be distributed to multiple patterns via Notification.  Play independently of Synth start, therefore no synchronization problem.
+- PatternTasks :: Play patterns in time.  Can be distributed to multiple patterns via Notification.  Play independently of Synth start, therefore no synchronization problem.
 
 Important:  Calling "next" on demand at synth start: Cannot ask the same stream to share with multiple events.  How to synchronize/distribute?  Common pattern player for many synth-trees?  The solution is to broadcast a stream's values with 'changed' method calls, and catch them in similar manner as a ViewFunc does (i.e. like an Responder).  Call this StreamFunc.  One can define FilterStreamFunc as a subclass of StreamFunc, to process the incoming values of with either a function or a FilterPattern, also creating BinOp trees for composing different operations on the incoming value.
 
@@ -174,8 +174,8 @@ Important:  Calling "next" on demand at synth start: Cannot ask the same stream 
 
 see above.  (more to come)
 
-*** PatternPlayers vs SynthPlayers
-PatternPlayers play a single stream
+*** PatternTasks vs SynthPlayers
+PatternTasks play a single stream
 
 SynthPlayers play a SynthTree in Pbind-like manner.  They enclose the created synth events in a single group private to the SynthTree, divert the synths to a private bus, which is then processed by a synth that provides amplitude and fadein/out control.
 
@@ -190,7 +190,7 @@ Map synths playing envelopes, any function, lines to input controls of other syn
 
 * More TODOs
 
-** Review / remove use of changed(\value) in PatternPlayer
+** Review / remove use of changed(\value) in PatternTask
 Could a function be called directly instead, to save CPU cycles?
 
 ** EventList class
@@ -321,7 +321,7 @@ multiparam.pattern(<template or name> <operator> <filter>);
 alternatively with messages:
 multiparam.pattern(<template or name>.add|mul|map|unmap|select|reject(<filter>));
 
-**** Playing SynthTree events with PatternPlayer/PatternFunc
+**** Playing SynthTree events with PatternTask/PatternFunc
 Important: Alternatively, a PatternFunc may store as currentValue an event with many parameters, and SynthTrees receiving notifications from it could play that event each in its own way.
 
 One could thus bind a whole SynthTree to a PatternFunc with the same operator:
@@ -341,10 +341,10 @@ shorter form:
 
 Possible class group for playing patterns in SynthTrees, in Pbind-like manner:
 
-- PatternPlayer: generates and broadcasts event values for any listener
+- PatternTask: generates and broadcasts event values for any listener
 - PatternFunc: Listens to and filters event values for a SynthTree.
 	Is stored in the template var of SynthTree
-	holds: The PatternPlayer ...
+	holds: The PatternTask ...
 - PatternSynth: Encapsulates synths generated by patternfunc. Holds:
 	- the synths
 	- possibly a group and bus to fade/adjust gain of the whole output signal
@@ -356,7 +356,7 @@ See also: BasicIdeas.org, Extending AbstractResponderFunc paradigm -> Generalizi
 - Should work as a template and as a synth (same instance?) in SynthTree.
 - Should keep its synths in own variable, allowing for playing of multiple synths at the same time.
 
-See also PatternPlayer ...
+See also PatternTask ...
 
 
 * Done
@@ -489,7 +489,7 @@ To be stored in dicts with symbols, from which guis are created to use these wit
 
 ** Templates
 
-Predefined SynthDefs or Synth Functions and PatternPlayers, stored under names, for use in SynthTree, selectable from SC GUI with drag-and-drop or Emacs-ido-completion.
+Predefined SynthDefs or Synth Functions and PatternTasks, stored under names, for use in SynthTree, selectable from SC GUI with drag-and-drop or Emacs-ido-completion.
 
 Maybe Templates should be taggable!
 
@@ -595,7 +595,7 @@ These three are converted to streams and put into a SynthStream, which creates S
 2. SynthStream - contains the stream producing the event
 3. SynthEvent - contains the parameters for creating the Synth
 
-We can make these work with PatternPlayer.
+We can make these work with PatternTask.
 
 ** Fix H-M-p and H-p going backwards for org-mode
 
@@ -605,7 +605,7 @@ Mix (SinOsc.ar(LFNoise0.kr (11).range (50, 70).midicps * [1, 3, 5, 7], 0, 0.2 / 
 *** Lower 1, 3, 5, 7
 Mix (SinOsc.ar(LFNoise0.kr (12).range (30, 50).midicps * [1, 3, 5, 7], 0, 0.2 / (1..4)) )
 
-** Extend PatternPlayer to play SynthTrees
+** Extend PatternTask to play SynthTrees
 :PROPERTIES:
 :DATE:     <2014-04-02 Wed 11:16>
 :END:
@@ -692,7 +692,7 @@ Check these, and their further combinations:
 
 Overview / list of operators in alternative 2:
 
-1. => chuck things to SynthTrees, create or modify PatternPlayers, PatternInstruments.
+1. => chuck things to SynthTrees, create or modify PatternTasks, PatternInstruments.
 2. -> associate patterns to parameters.
 3. *> chuck something to a parameter of a SynthTree.
 4. =< send output of a synth to the input of another synth.
@@ -721,15 +721,15 @@ Examples:
 - anything *> symbol :: chuck to parameter of current synth.  Special parameters:
   - duration :: duration of PatternInstrument
   - dur :: synonym of dur
-  - legato :: legato (not a parameter of the PatternPlayer)
+  - legato :: legato (not a parameter of the PatternTask)
   - leg :: synonym of legato
   - instrument :: Instrument (of PatternInstrument)
   - instr :: synonym of Instrument
 
-- anything *> `paramname :: chuck to duration of PatternPlayer of parameter `paramname.
+- anything *> `paramname :: chuck to duration of PatternTask of parameter `paramname.
 
-**** anything => [not symbol, not ref]: make PatternPlayer
-- anything => [not symbol, not ref] :: make/set duration of PatternPlayer
+**** anything => [not symbol, not ref]: make PatternTask
+- anything => [not symbol, not ref] :: make/set duration of PatternTask
 
 Examples:
 
@@ -742,10 +742,10 @@ Examples:
 *** [Rejected:] Alternative 1 (without *>)
 
 - pattern => symbol :: play pattern in parameter named by symbol, in current SynthTree ~st.
-- pattern => number :: PatternPlayer(pattern, number).  Number is duration
-- pattern => pattern2 :: PatternPlayer(pattern, pattern).  Pattern2 is duration
-- pattern => `symbol / `pattern :: PatternInstrument(PatternPlayer(pattern), symbol/pattern).  symbol/pattern is instrument
-- THIS MAY NOT BE NEEDED: pattern =>.i (|>) pattern2 or => `pattern :: PatternInstrument(PatternPlayer(pattern), pattern2).  Pattern2 is instrument
+- pattern => number :: PatternTask(pattern, number).  Number is duration
+- pattern => pattern2 :: PatternTask(pattern, pattern).  Pattern2 is duration
+- pattern => `symbol / `pattern :: PatternInstrument(PatternTask(pattern), symbol/pattern).  symbol/pattern is instrument
+- THIS MAY NOT BE NEEDED: pattern =>.i (|>) pattern2 or => `pattern :: PatternInstrument(PatternTask(pattern), pattern2).  Pattern2 is instrument
 - pattern =>.d (*>) symbol / SynthTree ::  (Synonym:) Pattern is duration pattern for SynthTree's PatternInstrument
 - pattern =>.l (**>) symbol SynthTree ::  Pattern is legato pattern for SynthTree's PatternInstrument
 - pattern =>.i (|>) symbol / SynthTree ::  Pattern is instrument pattern for SynthTree's PatternInstrument
@@ -792,15 +792,15 @@ Examples:
 :DATE:     <2014-04-14 Mon 21:59>
 :END:
 
-** Mdef: Named PatternPlayer Model
+** Mdef: Named PatternTask Model
 :PROPERTIES:
 :DATE:     <2014-04-16 Wed 04:58>
 :END:
 
 To consider:
-Mdef subclass of PatternPlayer?
+Mdef subclass of PatternTask?
 
-Maybe try first with Ndef as independent class, containing a PatternPlayer or subclass as instance var player.
+Maybe try first with Ndef as independent class, containing a PatternTask or subclass as instance var player.
 
 This could be a practical coding pattern, and is compatible with the details of the following sections:
 
@@ -810,12 +810,12 @@ Alternative to:
 
 : Mdef(\pattern1, [instrument: \bass]) => \synthtree1;
 
-Alternatively this plays with a PatternPlayer, not an Mdef:
+Alternatively this plays with a PatternTask, not an Mdef:
 : [instrument: \bass] => \synthtree1;
 
-The advantage of Mdef over PatternPlayer is that it is accessible through its name for further modifications, and that it can be cloned to other Mdefs which then inherit its contents but also subsequent changes.
+The advantage of Mdef over PatternTask is that it is accessible through its name for further modifications, and that it can be cloned to other Mdefs which then inherit its contents but also subsequent changes.
 
-The ability to filter the event data broadcast by a PatternPlayer is implemented in PatternInstrument, and is available both to PatternPlayer and its subclass Mdef.
+The ability to filter the event data broadcast by a PatternTask is implemented in PatternInstrument, and is available both to PatternTask and its subclass Mdef.
 
 *** How Mdef clone inherits
 
@@ -933,7 +933,7 @@ Then to add further filters to a player:
 :PROPERTIES:
 :DATE:     <2014-04-21 Mon 17:55>
 :END:
-Mdef/PatternPlayer/PatternEventPlayer should be able to embed themselves in patterns like Pdef does:
+Mdef/PatternTask/PatternEventPlayer should be able to embed themselves in patterns like Pdef does:
 
 (From the Pdef help entry:)
 
@@ -1048,7 +1048,7 @@ role of embedInStream not clear yet.
 
 See class EventPattern, EventStream.
 
-** Use embed in stream to chain (=embed) PatternPlayers?
+** Use embed in stream to chain (=embed) PatternTasks?
 :PROPERTIES:
 :DATE:     <2014-04-20 Sun 18:32>
 :END:
@@ -1407,7 +1407,7 @@ ChucK-style operators: =>, variants: =<>, ==>, =<, =^.
 
 ** =Pub= (previously defined as =Source=) Flexibly connect objects to data sources
 
-Publish data received from a source (PatternPlayer, OSCFunc, MIDIFunc, GUI) to any object that is concerned. Able to:
+Publish data received from a source (PatternTask, OSCFunc, MIDIFunc, GUI) to any object that is concerned. Able to:
 - Replace the origin of the data source at any time.
 - Work interchangeably with Patterns/Streams, Views, OSCFuncs, MIDIFuncs, constant values.
 - Customize, map and/or filter the messages and values sent to listening objects.
@@ -1540,7 +1540,7 @@ Seletive action constructors could be defined:
 : vselect(source).select()
 : vreject(source).reject()
 
-** PatternPlayer: Play a pattern, as stream, getting durations from another pattern
+** PatternTask: Play a pattern, as stream, getting durations from another pattern
 
 The timing of successive value requests from the stream is defined by another stream,
 that produces the dt (time intervals) to wait for the next call of "next".
@@ -1561,7 +1561,7 @@ But they could also store streams.  In this case, each time the synth starts, it
 
 In order to be able to reset the streams from the patterns, store each stream together with its pattern in a new Class: StreamPattern.
 
-Each StreamPattern can play with its own Task (see PatternPlayer).  The latest value produced by =next= on the stream is stored in var =next=, so that it can be accessed each time that a synth is created, without asking the stream itself to produce a next value.  When asked next, the StreamPattern decides whether to use the already produced next (if its Task is running), or to return the next value in the stream (if no Task is running).
+Each StreamPattern can play with its own Task (see PatternTask).  The latest value produced by =next= on the stream is stored in var =next=, so that it can be accessed each time that a synth is created, without asking the stream itself to produce a next value.  When asked next, the StreamPattern decides whether to use the already produced next (if its Task is running), or to return the next value in the stream (if no Task is running).
 
 Or they could be busses instead - in which case they map the synths arguments.
 
@@ -1570,7 +1570,7 @@ They could also be substituted by or combined (BinOp) with controllers (GUI, MID
 *** Idea 2: =SynthStream=: Alternative to Pbind
  Pluggable inside a SynthTree instead of a Synth.
 
- Allows exchange of data-streams for parameters on-the fly (JitLib style, but without the busses and possibly simpler). SynthStream should be visible to the SynthTree like a Synth (interface-wise).  It could be a subclass or variant of PatternPlayer.  Its valueStream would be an environment (or even event) from which the arguments of the next synth are collected.  Fade-in and -out can be implemented by hijacking the ~amp stream, and setting it to poll a control-rate env or line synth on bus private to the stream.  Optionally, additionally, at the same time mapping the amp of each synth, after creating it, to the same amp bus.
+ Allows exchange of data-streams for parameters on-the fly (JitLib style, but without the busses and possibly simpler). SynthStream should be visible to the SynthTree like a Synth (interface-wise).  It could be a subclass or variant of PatternTask.  Its valueStream would be an environment (or even event) from which the arguments of the next synth are collected.  Fade-in and -out can be implemented by hijacking the ~amp stream, and setting it to poll a control-rate env or line synth on bus private to the stream.  Optionally, additionally, at the same time mapping the amp of each synth, after creating it, to the same amp bus.
 
 ** CBoard
 

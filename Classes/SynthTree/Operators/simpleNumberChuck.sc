@@ -1,7 +1,7 @@
 + SimpleNumber {
 	=> { | chuckee | ^chuckee receiveNumberChuck: this }
 	receivePatternChuck { | pattern |
-		^PatternPlayer(pattern, this);
+		^PatternTask(pattern, this);
 	}
 	patternParams { | paramArray, adverb |
 		^PatternEventPlayer(paramArray, this);

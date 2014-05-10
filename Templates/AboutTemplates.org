@@ -32,16 +32,16 @@ func2: { SinOsc.ar(\freq.kr(440)) },
 ]);
 #+END_EXAMPLE
 
-** PatternPlayer templates
+** PatternTask templates
 
 (Note: these could be fragments building-blocks for scores of pieces).
 
-Each pattern player can be written as an association of one value pattern and a duration pattern or with PatternPlayer():
+Each pattern player can be written as an association of one value pattern and a duration pattern or with PatternTask():
 
 #+BEGIN_EXAMPLE
 PatternTemplates([
 pat1: Pseq(...)->1,
-pat2: PatternPlayer(
+pat2: PatternTask(
      Pwhite(...),
      Pbrown(...)
 ),

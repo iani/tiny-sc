@@ -1,25 +1,25 @@
-TITLE::PatternPlayer
+TITLE::PatternTask
 summary::play a pattern in time
 categories::Libraries>TinySC>Classes
 related:: Classes/SynthPattern, Classes/SynthStream, Classes/ParamStream, Classes/SynthEvent
 
 DESCRIPTION::
-PatternPlayer holds 2 patterns: 
+PatternTask holds 2 patterns: 
 
 1. valuePattern: This produces values to play. 
 2. durationPattern:  This produces durations for timing the production of the next value. 
 
-Each time that the PatternPlayer produces a new value, it broadcasts this value through 
+Each time that the PatternTask produces a new value, it broadcasts this value through 
 
 code:: this.changed(\value). ::
 
-Any number of objects can set a function to play with the values produced by the PatternPlayer by using the Notification class. 
+Any number of objects can set a function to play with the values produced by the PatternTask by using the Notification class. 
 
-To create a PatternPlayer, one may use the %> operator.  For example: . 
+To create a PatternTask, one may use the %> operator.  For example: . 
 
 code:: [freq: Pseq((30..90).midicps, inf)] %> 0.02; ::
 
-To add an object to play with a PatternPlayer use the method play, or chuck the pattern with the chuck operator (=>).  Examples 
+To add an object to play with a PatternTask use the method play, or chuck the pattern with the chuck operator (=>).  Examples 
 
 code:: [freq: Pseq((30..90).midicps, inf)] %> 0.02 => \default; ::
 

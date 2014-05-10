@@ -35,7 +35,7 @@ PatternInstrument {
 	legato_ { | argLegato | pattern.set([\legato, argLegato]) }
 	durations_ { | argDurations |
 		// TODO: fix this.  One source only!
-		// PatternPlayer should get its durations from the pattern array
+		// PatternTask should get its durations from the pattern array
 		pattern.durations = argDurations;
 		pattern.set([\dur, argDurations]);
 	}

@@ -45,7 +45,7 @@ Here all methods that are needed to handle -> and *>
 		paramPatterns keysValuesDo: { | parameter, pattern |
 			st.asSynthTree.chuckIntoParameter(
 				parameter,
-				PatternPlayer(pattern, durations),
+				PatternTask(pattern, durations),
 			);
 		}
 	}
@@ -67,7 +67,7 @@ Here all methods that are needed to handle -> and *>
 + Object {
 	// FunctionSynthTemplate, SynthDef use this:
 	chuckPattern { | param, pattern, synthTree |
-		synthTree.getParam(param).playPattern(pattern.asPatternPlayer);
+		synthTree.getParam(param).playPattern(pattern.asPatternTask);
 	}
 }
 
@@ -86,13 +86,13 @@ Here all methods that are needed to handle -> and *>
 }
 
 + Function {
-	asPatternPlayer { | durations = 1 | ^PatternPlayer(Pfunc(this), durations) }
+	asPatternTask { | durations = 1 | ^PatternTask(Pfunc(this), durations) }
 }
 
 + Integer {
-	asPatternPlayer { | durations = 1 | ^[this] asPatternPlayer: durations }
+	asPatternTask { | durations = 1 | ^[this] asPatternTask: durations }
 }
 
 + SequenceableCollection  { 
-	asPatternPlayer { | durations = 1 | ^PatternPlayer(this.pseq, durations) }
+	asPatternTask { | durations = 1 | ^PatternTask(this.pseq, durations) }
 }
