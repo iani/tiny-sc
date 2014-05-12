@@ -31,8 +31,8 @@ ChucKinator : UniqueWindow {
 			knobs do: { | knob, i |
 				knob.action = { | me |
 					[messages[i], me.value].postln;
-					lose.sendKnobs;
-					// netAddr.sendMsg(messages[i], me.value);
+					// lose.sendKnobs;
+					netAddr.sendMsg(messages[i], me.value);
 				};
 			};
 			lose.window.view.keyDownAction = { | view, char |
@@ -58,7 +58,9 @@ ChucKinator : UniqueWindow {
 		netAddr = argNetaddr;
 	}
 
+	/*
 	sendKnobs {
 		netAddr.sendMsg('/knobs', *(knobs collect: _.value).postln);
 	}
+	*/
 }
