@@ -23,15 +23,14 @@ ChucKinator : UniqueWindow {
 			labels = { | i | 
 				StaticText().string_(messages[i].asString[1].asString).align_(\center)
 			} ! 24;
-			lose.window.view.layout = HLayout(*
-				(knobs collect: { | knob, i | 
-					VLayout([knob, s: 4], labels[i])
-				})
+			lose.window.view.layout = VLayout(
+				[HLayout(*knobs), s: 4],
+				HLayout(*labels)
 			);
 			knobs do: { | knob, i |
 				knob.action = { | me |
 					[messages[i], me.value].postln;
-					// lose.sendKnobs;
+					//lose.sendKnobs;
 					netAddr.sendMsg(messages[i], me.value);
 				};
 			};

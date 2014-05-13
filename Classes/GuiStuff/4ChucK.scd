@@ -1,7 +1,7 @@
 /*
 A very simple interface for triggering and controlling objects in ChucK via SC.
 For Kostas Koukoudis, Sun, May 11 2014, 18:00 EEST.
-
+s
 More to follow.
 */
 
@@ -16,10 +16,11 @@ UniqueWindow.for(\chuck, \knobs, { | lose | // lose instead of winning.
 	labels = { | i | 
 		StaticText().string_(messages[i].asString[1].asString).align_(\center)
 	} ! 24;
-	lose.window.view.layout = HLayout(*
-		(knobs collect: { | knob, i | 
-			VLayout([knob, s: 4], labels[i])
-		})
+	lose.window.view.layout = VLayout(
+		View().background_(Color.red.alpha_(0.05))
+		.layout_(HLayout(*knobs)),
+		View().background_(Color.blue.alpha_(0.05))
+		.layout_(HLayout(*labels))
 	);
 	knobs do: { | knob, i |
 		knob.action = { | me |
