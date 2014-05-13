@@ -1,10 +1,23 @@
 /*
-	A very simple interface for triggering and controlling objects in ChucK via SC.
+	A very simple interface for triggering and controlling objects in ChucK from a GUI
+	made in SC, over OSC. 
+
 	For Kostas Koukoudis, Sun, May 11 2014, 18:00 EEST.
 
 	Here as class.
 
 	More to follow.
+
+Keyboard commands: 
+
+Anywhere: <space> : switch between last selected knob and button
+
+Switching from knob to last selected button does not send the button's message. 
+
+In button row: letters a - z: select one of the buttons between A and Z, and send. 
+
+Mouse click on button: Selects and send.
+ 
 */
 
 ChucKinator : UniqueWindow {
@@ -14,21 +27,21 @@ ChucKinator : UniqueWindow {
 	var <selectedKnob, <selectedButton;
 	var netAddr, selected;
 
-	*new {
+	*new { | numItems = 26 |
 		instance = this.for(\chuck, \knobs, { | lose | // lose instead of winning.
-			lose.initLoser;
+			lose.initLoser(numItems);
 		});
 	}
 	
-	initLoser {
+	initLoser { | numItems = 26 |
 		netAddr = NetAddr("127.0.0.1", 6449);
 		this.bottom(100);
-		knobs = { Knob() } ! 24;
-		messages = { | i | format("/%", (i + 65).asAscii).asSymbol } ! 24;
+		knobs = { Knob() } ! numItems;
+		messages = { | i | format("/%", (i + 65).asAscii).asSymbol } ! numItems;
 		buttons = { | i | 
 			Button().fixedWidth_(40)
 			.states_([[messages[i].asString[1].asString]]) // .align_(\center)
-		} ! 24;
+		} ! numItems;
 		window.view.layout = VLayout(
 			View().background_(Color.red.alpha_(0.05))
 			.layout_(HLayout(*knobs)),
@@ -41,7 +54,7 @@ ChucKinator : UniqueWindow {
 				netAddr.sendMsg(messages[i], me.value);
 			};
 			knob.keyDownAction = { | view, char |
-				if (char === $ ) { this.selectButton; };
+				if (char === $ ) { this.switch2Buttons; };
 			};
 			knob.focusGainedAction = { selectedKnob = knob };
 		};
@@ -53,8 +66,10 @@ ChucKinator : UniqueWindow {
 					this selectButton: buttons[char.ascii - 97];
 				}
 			};
+			b.action = { this selectButton: b };
 		};
 		this.focusKnob;
+		selectedButton = buttons[0];
 	}
 		
 	focusKnob {
@@ -62,12 +77,14 @@ ChucKinator : UniqueWindow {
 		selectedKnob focus: true;
 	}
 
+	switch2Buttons { selectedButton focus: true; }
+
 	selectButton { | newButton |
 		var buttonNum;
-		newButton ?? { newButton = selectedButton ?? { buttons.first} };
+		if (newButton.isNil) { ^this };
 		buttonNum = newButton.states.first.first.first.ascii - 65;
 		netAddr.sendMsg("/key", buttonNum);
-		["/key", buttonNum].postln;
+		postf("/key % ('%')\n", buttonNum, newButton.states.first.first);
 		newButton.background = Color.red;
 		selectedButton !? { selectedButton.background = Color.grey(0.9); };
 		selectedButton = newButton;
