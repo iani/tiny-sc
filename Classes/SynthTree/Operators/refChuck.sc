@@ -1,6 +1,8 @@
 
 + Ref {
-	=> { | st | ^st.asSynthTree chuck: value.asSynthTemplate }
+	=> { | st |
+		[this, thisMethod.name, value, value.asSynthTemplate].postln;
+ ^st.asSynthTree chuck: value.asSynthTemplate }
 }
 
 + Symbol {

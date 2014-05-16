@@ -124,7 +124,7 @@ Cdef : Edef { // NamedEventPatternClone
 }
 
 + Event {
-	chuckInto { | object | object.asEdef.addEvent(this, true) }
+	chuckInto { | object | ^object.asEdef.addEvent(this, true) }
 	=> { | chuckee | ^chuckee.chuckEvent(this);	}
 	+> { | chuckee | ^chuckee.addPlayerMods(this); }
 	+!> { | chuckee | ^chuckee.replacePlayerMods(this);	}

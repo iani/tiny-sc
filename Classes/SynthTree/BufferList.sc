@@ -96,6 +96,7 @@ BufferList {
 					},
 					Char.space, { this.chuckBuffer(view.item, modifiers != 0) },
 					$n, { this.newStChuckBuffer(view.item, modifiers != 0) },
+					$x, { this.setCurrentStBuffer(view.item) },
 					$f, { SynthTree.faders; },
 					$l, { this.loadBufferDialog; },
 					$s, { this.saveListDialog; },
@@ -125,6 +126,10 @@ BufferList {
 		{ \buf.playBuf } asSynthTemplate: bufName => synthTree.buf(bufName)
 		.set(\amp, 1)
 		.set(\loop, if (loop) { 1 } { 0 });
+	}
+
+	setCurrentStBuffer { | bufName |
+		~st.buf(bufName);
 	}
 
 	toggleBuffer { | bufName, loop = true |
@@ -208,6 +213,10 @@ BufferList {
 		Dialog.openPanel({ | path | this loadBuffer: path })
 	}
 
+	*loadBuffer { | path server |
+		^this.new(server ?? { SynthTree.server }).loadBuffer(path);
+	}
+
 	loadBuffer { | path |
 		var newBuffer, bufName;
 		bufName = PathName(path).fileNameWithoutExtension.asSymbol;
@@ -217,7 +226,8 @@ BufferList {
 				postf("Loaded: %\n", newBuffer);
 				this.changed(\buffers, server);
 			})
-		}
+		};
+		^newBuffer;
 	}
 
 	asString {

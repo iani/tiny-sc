@@ -23,7 +23,8 @@ BufRd  *ar { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
 		buf = this.kr(bufnum);
 		^PlayBuf.ar(numChannels, buf, rateName.kr(rate) * BufRateScale.kr(bufnum),
 			triggerName.kr(trigger), 
-			startPosName.kr(startPos) * BufFrames.kr(bufnum),
+			//			startPosName.kr(startPos) * BufFrames.kr(bufnum),
+			startPosName.kr(startPos) * SampleRate.ir * BufRateScale.kr(bufnum),
 			loopName.kr(loop),
 			doneAction
 		)
