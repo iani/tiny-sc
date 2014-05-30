@@ -27,10 +27,10 @@ Sliders : UniqueWindow {
 	var <layout, <sliders;
 	var <selection;  // currently selected slider/label widget
  
-	init {
+	initUniqueWindow {
 		layout = VLayout();
 		sliders = IdentityDictionary();
-		super.init;
+		super.initUniqueWindow;
 	}
 
 	*getPanel { | model, panelName |
