@@ -28,7 +28,7 @@ UniqueWindow {
 		var window;
 		window = all.at(object, key);
 		if (window.isNil) {
-			window = this.newCopyArgs(object, key, initFunc).init;
+			window = this.newCopyArgs(object, key, initFunc).initUniqueWindow;
 			all.put(object, key, window);
 		};
 		^window.front;
@@ -36,7 +36,7 @@ UniqueWindow {
 
 	front { window.front }
 	
-	init {
+	initUniqueWindow {
 		window = Window(format("%:%", object, key));
 		initFunc.(this);
 		window.onClose = { window.objectClosed };
@@ -46,6 +46,10 @@ UniqueWindow {
 		});
 		all.put(object, key, this);
 	}
+
+	width_ { | width = 200 | window.bounds = window.bounds.width = width }
+
+	height_ { | height = 200 | window.bounds = window.bounds.height = height }
 
 	top { | height = 20 |
 		var available;

@@ -54,10 +54,11 @@ Knobs {
 	}
 
 	init {
-		var width;
-		width = Window.screenBounds.width;
-		window = Window(name.asString, Rect(0, 0, width, 100));
-		knobs = { KnobWithLabel() } ! (width - 50 / 70);
+		var margin = 200, width;
+		width = Window.screenBounds.width - margin;
+		window = Window(name.asString, 
+			Rect(margin, Window.availableBounds.height - 80, width, 80));
+		knobs = { KnobWithLabel() } ! (width - 50 / 60);
 		window.view.layout = HLayout(
 			*knobs.collect(_.layout)
 		);

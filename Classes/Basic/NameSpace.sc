@@ -30,4 +30,14 @@ NameSpace {
 		};
 		^instance;
 	}
+
+	*doIfFound { | type, name, action |
+		var instance;
+		instance = Library.at(type, name);
+		instance !? { action.(instance) };
+	}
+
+	*remove { | type, name |
+		Library.global.removeEmptyAt(type, name);
+	}
 }

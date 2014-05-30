@@ -37,8 +37,8 @@ Sliders : UniqueWindow {
 		^this.for(model ?? { SynthTree.server }, panelName ? \faders, { | self |
 			var scroll, canvas, layout, window;
 			window = self.window;
-			window.bounds = Rect(0, 200, 200, Window.availableBounds.height - 200);
-			scroll = ScrollView(window, window.view.bounds).canFocus_(false);
+			window.bounds = Rect(0, 500, 200, Window.availableBounds.height - 500);
+			scroll = ScrollView(window, window.view.bounds).canFocus_(false).resize_(5);
 			canvas = View();
 			canvas.layout = self.layout;
 			scroll.canvas = canvas;
