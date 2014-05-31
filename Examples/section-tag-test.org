@@ -1,8 +1,0 @@
-* QUOTE teaasdf                                                        :test:a:b:c:
-:PROPERTIES:
-:NODE:     st2
-:END:
-
-asdf asdf asdf
-** subsub
-b

@@ -2,9 +2,10 @@
 Use a Dict as a Model, connect gui elements to that model. 
 
 Fri, May 30 2014, 08:34 EEST
+
 */
 
-DictModel : Event {
+EventModel : Event {
 
 	put { | key, value |
 		super.put(key, value);
@@ -14,7 +15,7 @@ DictModel : Event {
 	gui { | initFunc, key = \gui |
 		var window;
 		this.push;
-		window = UniqueWindow.for(this, key, initFunc);
+		window = Window.for(this, key, initFunc);
 		this.pop;
 		^window;
 	}

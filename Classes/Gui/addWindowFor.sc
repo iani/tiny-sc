@@ -9,13 +9,51 @@ Fri, May 30 2014, 14:20 EEST
 */
 
 + Window {
-
 	*for { | object key = \gui, initFunc |
 		^NameSpace(object, key, {
 			var window;
 			window = Window(format("%:%", object, key));
 			initFunc.(window, object, key);
-			window;
+			window.onClose = {
+				NameSpace.remove(object, key);
+				window.objectClosed;
+			};
 		}).front;
 	}
+
+	width_ { | width = 200 | this.bounds = this.bounds.width = width }
+
+	height_ { | height = 200 | this.bounds = this.bounds.height = height }
+
+	top { | height = 20 |
+		var available;
+		available = Window.availableBounds;
+		this.bounds = Rect(0, available.height - height, available.width, height);
+	}
+
+	left { | width = 200 |
+		var available;
+		available = Window.availableBounds;
+		this.bounds = Rect(0, 0, width, available.height);
+	}
+
+	bottom { | height = 100 |
+		var available;
+		available = Window.availableBounds;
+		this.bounds = Rect(0, 0, available.width, height);
+	}
+
+	right { | width = 200 |
+		var available;
+		available = Window.availableBounds;
+		this.bounds = Rect(available.width - width, 0, width, available.height);
+	}
+
+	topRight { | width = 400, height = 400 |
+		var available;
+		available = Window.availableBounds;
+		this.bounds = 
+		Rect(available.width - width, available.height - height, width, height);
+	}
+
 }

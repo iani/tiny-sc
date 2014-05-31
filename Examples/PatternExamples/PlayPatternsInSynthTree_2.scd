@@ -1,10 +1,19 @@
 /*
-Stydying PatternTask in order to develop the version for playing
-paterns in SynthTree, pbind-like. 
+More examples of patterns in SynthTree.
+
+Note: To replace the pattern of a single parameter in a synthree chosen by name, use 
+
+pattern -> parameterName => \synthTreeName
+
+For example: 
+
+500 -> \freq => \pattern1
+means: 
+Set the parameter \freq in synthree named \pattern1 to 500. 
+
 Tue, Apr  1 2014, 21:19 EEST
 */
 
-//: Let the SynthTree create the PatternSynth and put it in its synth
 [freq: (75..90).midicps.prand, dur: pseq([Pseries(0.3, -0.01, 25), Pseries(0.01, 0.01, 25)])]
 => \pattern1;
 //: Test pyramid
@@ -81,3 +90,5 @@ instrument: Pwrand([\lpfpulse, \sine, \lpfsaw],
 Pwhite(0.05, 0.15, inf) *> \amp;
 //:
 pser(((0..20)/200).pyramid) *> \amp;
+
+//: 
