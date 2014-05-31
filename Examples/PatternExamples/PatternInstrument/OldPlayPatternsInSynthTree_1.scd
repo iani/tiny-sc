@@ -1,6 +1,12 @@
 /*
 Note: 
 
+The syntax described here, using Array => Symbol, employs PatternInstrument
+as a source that plays patterns inside a SynthTree.  This is an older technique, 
+and may be deprecated in the future.  A newer technique uses Event => Symbol
+to create Idef as player and has features such inheritance, cloning and filtering.
+The other, newer technique is preferable. 
+
 1. Playing a Pbind-like pattern in a SynthTree
 
 Array => \symbol : 

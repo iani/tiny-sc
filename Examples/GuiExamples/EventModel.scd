@@ -14,7 +14,7 @@ a.gui({ | w |
 });
 
 //:
-{ LFNoise2.ar(\freq.kr(1000), \vol.kr(0.1)) } => \test;
+{ LFNoise2.ar(\freq.kr(1000) } => \test;
 //:
 \test.addNotifier(a, \freq, { | freq |
 	\test.set(\freq, freq)

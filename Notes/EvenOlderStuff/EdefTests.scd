@@ -8,7 +8,7 @@ Edef(\x, (degree: (0..8).pseq)).play;
 
 // 1. Madify contents by replacing or adding patterns.
 // Modify degree.  The new pattern for degree replaces the previous one.
-Edef(\x).set((degree: (0..4).pseq);
+Edef(\x).set(\degree, (0..4).pseq);
 
 // Replace degree pattern and add pattern for dur.
 Edef(\x).set((degree: (5..1).pseq, dur: 0.1));
@@ -25,7 +25,7 @@ Edef(\x).set((degree: { ~degree * 2 }));
 Edef(\x).play;  // spawn new player process
 
 // Both processes inherit changes:
-Edef(\x).set((degree: { Pstutter(3 ~degree) + [0, 1, 0].pseq }));
+Edef(\x).set((degree: { Pstutter(3, ~degree) + [0, 1, 0].pseq }));
 
 // ================================================================
 

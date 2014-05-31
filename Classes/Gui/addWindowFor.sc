@@ -56,4 +56,14 @@ Fri, May 30 2014, 14:20 EEST
 		Rect(available.width - width, available.height - height, width, height);
 	}
 
+	shift { | x = 0, y = 0 |
+		var bounds;
+		bounds = this.bounds;
+		this.bounds = bounds.left_(bounds.left + x).top_(bounds.top + y);
+	}
+	shiftTo { | x, y |
+		var bounds;
+		bounds = this.bounds;
+		this.bounds = bounds.left_(x ?? { bounds.left }).top_(y ?? { bounds.top });
+	}
 }
