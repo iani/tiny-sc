@@ -15,4 +15,6 @@ Sun, Jun  1 2014, 17:22 EEST
 
 { Inp.ar } => \mix;
 
+[\whitenoise, \greynoise] do: { | s | \mix =< s };
+
 
