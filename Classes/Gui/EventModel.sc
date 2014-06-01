@@ -23,9 +23,34 @@ EventModel : Event {
 
 
 + QView {
+	// Connecting to SynthTree
+	stConnect { | synthTree, parameter |
+		// Connect to SynthTree parameter
+		parameter = synthTree.getParam(parameter);
+		this.connect(
+			parameter,
+			\value,
+			this.stSetAction(parameter),
+			this.stUpdateAction
+		);
+	}
+
+	stSetAction { | parameter | ^{ parameter.set(this.value) } }
+
+	stUpdateAction { ^{ | value | this.value = value } }
+
+	connect { | model, key, setAction, updateAction |
+		// General method with custom set and update actions
+		this.action = setAction;
+		this.addNotifier(model, key, updateAction);
+		this.onClose = { this.objectClosed };		
+	}
+
+
+	// Connecting to EventModel
 	setter { | key, spec, model |
 		model ?? { model = currentEnvironment };
-		this.perform(this.connectToModelMethod.postln, model, key, spec);
+		this.perform(this.connectToModelMethod, model, key, spec);
 		this.onClose = { this.objectClosed };
 	}
 

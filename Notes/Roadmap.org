@@ -43,7 +43,10 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
-
+** Implement %!> to *remove* a filter from BdefInstrument in SynthTree
+:PROPERTIES:
+:DATE:     <2014-05-31 Sat 16:46>
+:END:
 
 ** debug SythTree initTree
 :PROPERTIES:
@@ -60,7 +63,6 @@ The following will create an extra, third, synth when restarting the tree with i
 { WhiteNoise.ar(0.1) } => \test;
 \fx =< \test;
 #+END_EXAMPLE
-
 ** Add jchuck method to Ndef
 :PROPERTIES:
 :DATE:     <2014-05-01 Thu 12:05>
@@ -1168,8 +1170,13 @@ Durations of the stream cannot be modified by %>.
 // Perhaps later.
 
 ***** event %!> synthtree
+:PROPERTIES:
+:DATE:     <2014-05-31 Sat 16:47>
+:END:
 
-Replace current "mod" filter by the chucked event.  See %> for explanation of mod.
+Note: Originally this was: "Replace current "mod" filter by the chucked event.  See %> for explanation of mod."
+
+However filters do not combine.  So it only makes sense to use this operator to *remove* a filter from a key, as also noted above in immediate TODOs.
 
 **** Named spawned stream players (Idefs)
 

@@ -10,7 +10,7 @@ IZ Thu, Mar  6 2014, 21:51 EET
 
 SynthTree : IdentityTree {
 
-	classvar <>showGuiAtStartup = true;
+	classvar <>showGuiAtStartup = false;
 	classvar <default;
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
 	classvar parentEvents; // contains parent events for each server. 

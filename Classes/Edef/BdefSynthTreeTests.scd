@@ -8,9 +8,9 @@
 //:
 (degree: [10, 11].pseq, dur: 0.5) => \test;
 //:
-(amp: [0.04, 0.04, 0.1].pseq) %> \test;
+(amp: [0.04, 0.04, 0.1].pseq) +> \test;
 //:
-(instrument: [\sine, \bassfoundation].prand) %> \test;
+(instrument: [\sine, \bassfoundation].prand) +> \test;
 //:
 (dur: 0.05) +> \test;
 //:
@@ -18,13 +18,15 @@
 //:
 (legato: [0.5 ! 15, 20].flat.prand) +> \test;
 //:
+(dur: [Pgeom(0.02, 1.1, 30), Pgeom(1, 0.9, 30)].pseq, legato: 0.5, amp: 0.1) +> \test;
+//:
 (dur: Pbrown(0.02, 0.15, 0.01, inf)) +> \test;
 //:
-(amp: { 0.001 exprand: 0.2 }.pfunc) %> \test;
+(amp: { 0.001 exprand: 0.2 }.pfunc) +> \test;
 //:
-(degree: (-20..20).prand) %> \test;
+(degree: (-20..20).prand) +> \test;
 //:
-(note: (-10, -9 .. 12).prand) %> \test
+(note: (-10, -9 .. 12).prand) +> \test
 //:
 (dur: 0.1) +> \test;
 //:

@@ -17,8 +17,8 @@ The source can be:
 { WhiteNoise.ar(0.1) } => \sound1;
 //: 1.2. A reference to the name of a template holding a SynthDef
 `\boombah => \sound1;
-//: 1.3. An array of key-pattern values (as in the arguments of Pbind). 
-[degree: Pseq([0, 2, 4, 7], inf), dur: 0.1] => \sound1;
+//: 1.3. An event plays like a pattern:
+(degree: Pseq([0, 2, 4, 7], inf), dur: 0.1) => \sound1;
 
 //: 2. To stop a named sound (SynthTree), send it the message fadeOut.
 \sound1.fadeOut;
@@ -28,7 +28,7 @@ The source can be:
 
 //: 4. To change a parameter of the sound, use the 'set' message
 // New sound to test: 
-{ Formant.ar(\fundfreq.kr(440), \formfreq.kr(1760), 880, \mul.kr(0.1)) } => \sound1
+{ Formant.ar(\fundfreq.kr(440), \formfreq.kr(1760), 880) } => \sound1
 
 //: Changing the formant frequency
 \sound1.set(\formfreq, 200);
@@ -38,14 +38,14 @@ The source can be:
 \sound1.set(\fundfreq, 220);
 
 /* 
-5. If the playing sound is a pattern, you can change the pattern on the fly
-in several ways:
+5. If the playing sound is a pattern, you can add or ovewrite exisitng 
+key-pattern pairs on the fly with the operator 
 */
 
 //: 5.1 Chuck a new key-pattern array to the sound
 //  The patterns included in the array replace the ones with the
 //  same name in the SynthTree, or are added to it.
-[dur: Prand([0.01, 0.2], inf), amp: Pseq([0.01, 0.1], inf)] => \sound1;
+(dur: Prand([0.01, 0.2], inf), amp: Pseq([0.01, 0.1], inf)) => \sound1;
 
 
 // Replace the synth at \sound with another one
@@ -63,7 +63,6 @@ in several ways:
 // Fadeout with custom duration
 \sound.fadeOut(12);
 #+END_EXAMPLE
-
 
 The environment variable ~fadeTime stores the global default duration for fade-in and fade-out of synths.  It is stored in the parent environment of the current environment.  The =!> operator is used to set environment variables of the parent environment.  Examples:
 
@@ -154,19 +153,13 @@ Sending an Event to a Symbol plays patterns to all parameters of the correspondi
 //: And again
 `\everythingrhodes => \funnyStuff;
 //: Funny effects
-(
+
 (dur: [0.1 pn: 15, 0.05 pn: 30, 0.01 pn: 100].prand,
 freq: (1..13).pseq * 100,
 amp: [0.01, 0.01, 0.2, 0.03].pseq) *> \funnyStuff;
-)
-#+END_EXAMPLE
 
+//:
 
-* Playing patterns in SynthTree
-
-** Event => \Symbol: Play as pattern
-
-#+BEGIN_EXAMPLE
 //: Playing events directly in SynthTree
 //: Set a longish fade time to observe cross-fading
 3 =!> \fadeTime;
@@ -175,9 +168,9 @@ amp: [0.01, 0.01, 0.2, 0.03].pseq) *> \funnyStuff;
 //: Change the pattern on the fly
 (degree: [10, 11].pseq) => \test;
 //: Modify a parameter in the SynthTree
-(amp: [0.04, 0.04, 0.1].pseq) %> \test;
+(amp: [0.04, 0.04, 0.1].pseq) +> \test;
 //: And nother parameter
-(instrument: [\sine, \bassfoundation].prand) %> \test;
+(instrument: [\sine, \bassfoundation].prand) +> \test;
 //: Change tempo, modifying the stream's event
 (dur: 0.05) +> \test;
 //: Wander about
@@ -187,28 +180,22 @@ amp: [0.01, 0.01, 0.2, 0.03].pseq) *> \funnyStuff;
 //: Insert some held notes
 (legato: [0.5 ! 15, 20].flat.prand) +> \test;
 //: And silences
-(amp: [Pfuncn({ 0 }, 40), [0.04, 0.04, 0.1].pseq(1) ! 10].flat.prand) %> \test;
+(amp: [Pfuncn({ 0 }, 40), [0.04, 0.04, 0.1].pseq(1) ! 10].flat.prand) +> \test;
 //: Vary the pulse
 (dur: Pbrown(0.02, 0.15, 0.01, inf)) +> \test;
 //: Modify amplitude
-(amp: { 0.001 exprand: 0.3 }.pfunc) %> \test;
+(amp: { 0.001 exprand: 0.3 }.pfunc) +> \test;
 //: Modify degree
-(degree: (-20..20).prand) %> \test;
+(degree: (-20..20).prand) +> \test;
 //: Use note instead of degree (non-diatonic)
-(note: (-10, -9 .. 12).prand) %> \test
+(note: (-10, -9 .. 12).prand) +> \test
 //: Modify duration again
 (dur: 0.1) +> \test;
 //: Fade-out
 \test fadeOut: 5;
 #+END_EXAMPLE
 
-** Cloning patterns and streams, propagating changes
-:PROPERTIES:
-:ID:       3072F115-DC86-4F66-B10E-1EB66A99A6CF
-:eval-id:  2
-:END:
-
-#+BEGIN_EXAMPLE
+//: ** Cloning patterns and streams, propagating changes
 //: Start a named pattern reference in a SynthTree
 Edef(\simple, (degree: [1, 2, 3].pseq)) => \wander;
 
@@ -298,7 +285,7 @@ After this, no synths will be restarted with =SynthTree.initTree=.
 
 * Patching Audio Synth I/O
 
-Example 1:  Simple patching of one source to one effect:
+// Example 1:  Simple patching of one source to one effect:
 
 #+BEGIN_EXAMPLE
 // Start an effects synth with a low-pass filter

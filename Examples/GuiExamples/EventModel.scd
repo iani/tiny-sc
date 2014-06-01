@@ -1,6 +1,23 @@
+//:
+{ LFNoise2.ar(\freq.kr(1000)) } => \test;
 
+//:
+
+\test.
+
+
+//:
+
+
+/*
+
+Test 1.
+
+Result: EventModel not needed. Attach then new GUI directly to args of SynthTree. 
+*/
 a = EventModel();
 
+//: 
 a.gui({ | w |
 	w.view.layout = VLayout(
 		NumberBox().setter(\x),
@@ -14,8 +31,32 @@ a.gui({ | w |
 });
 
 //:
-{ LFNoise2.ar(\freq.kr(1000) } => \test;
+{ LFNoise2.ar(\freq.kr(1000)) } => \test;
 //:
 \test.addNotifier(a, \freq, { | freq |
-	\test.set(\freq, freq)
+	\test.set(\freq, freq);
 });
+
+//:
+
+a.addNotifier(\test.asSynthTree.args[\freq], \value, { | unscaled, scaled, notification |
+	notification.notifier.postln;
+	// a.put(\freq, value);
+}) 
+
+
+
+//:
+
+Server.killAll
+
+//:
+
+\test.asSynthTree;
+
+
+
+\test.asSynthTree.args[\freq]  addDependant: { | ... args | args.postln; };
+
+
+\test.asSynthTree.args.class;
