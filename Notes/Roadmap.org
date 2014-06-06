@@ -43,6 +43,29 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
+
+** Revise Edef to simplify spawning/playing behavior
+:PROPERTIES:
+:DATE:     <2014-06-06 Fri 11:33>
+:END:
+
+This:
+
+: \pattern1 =< (degree: 1)
+
+Should create Edef =\pattern1= if it does not exist, else add the keys of the event to the existing Edef, and finally it should start playing the Edef if it is not playing.
+
+This:
+
+: \pattern1 ==< (degree: 1)
+
+Should prevent starting to play if the edef is not already playing.
+
+*** Should Edefs also have a gui like synthrees?
+
+*** \edef.clone? \synthree.clone?
+
+
 ** Implement %!> to *remove* a filter from BdefInstrument in SynthTree
 :PROPERTIES:
 :DATE:     <2014-05-31 Sat 16:46>

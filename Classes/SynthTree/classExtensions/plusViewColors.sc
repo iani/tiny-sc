@@ -1,4 +1,5 @@
 
+//: SC 3.7 version
 + Knob {
 
 	setPlaying {
