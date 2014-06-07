@@ -29,6 +29,56 @@ https://github.com/iani/tiny-sc/releases/tag/chuckLib01
 
 Extensions of tiny-sc that make use other libraries are stored in a separate repository https://github.com/iani/tiny-sc-addons/
 
+* Main features
+:PROPERTIES:
+:DATE:     <2014-06-07 Sat 13:09>
+:END:
+
+=tiny-sc= provides facilities for handling of synths and patterns that are similar to those of JITlib.  Two basic classes have parallels in JITlib.  These are: =SynthTree= (similar to =Ndef=) and =Edef= (similar to =Pdef=).  A main difference from JITlib is the use of a new class =EventPattern= to play patterns, instead of =Pbind=.  This, together with new class =Edef= provide several important advantages regarding nesting and on-the-fly modification (see below).
+
+To make coding more compact and direct, instead of instantiating classes in the standard manner of SuperCollider (=SomeClass()= or =SomeClass.new(...)=), =tiny-sc= uses binary operators, and accesses named objects directly by their name as a symbol.  The default behavior of these operators is to start the playing object when applied.  So, instead of writing:
+
+#+BEGIN_EXAMPLE
+Ndef(\a, { SinOsc.ar([350, 351.3], 0, 0.2) });
+Ndef(\a).play;
+#+END_EXAMPLE
+
+one writes:
+
+: { SinOsc.ar([350, 351.3], 0, 0.2) } => \a;
+
+The meaning of operators in =tiny-sc= depends on the class of the operands in the expression.  The general rule of thumb is that when one of the operands is an event, then the operation applies to playing a pattern.  This will become clear in the following examples.
+
+** SynthTrees (similar to Ndef)
+#+BEGIN_EXAMPLE
+//: Play a Synth function in a SynthTree
+{ SinOsc.ar([350, 351.3], 0, 0.2) } => \a;
+
+//: Change the source of the SynthTree to another function
+{ SinOsc.ar(\freq.kr(440) * [1, 1.25], 0, 0.1) } => \a;
+
+//: Change the value of a control parameter
+\a.set(\freq, 550);
+
+//: Change the source again: the parameter's value is still there:
+{ LFSaw.ar(\freq.kr(440) * [1, 1.25], 0, 0.025) } => \a;
+
+//: Change again
+{ LFNoise2.ar(\freq.kr(440), 0.25) } => \a;
+
+//: An event plays a pattern
+(degree: (0..7).pseq, dur: 0.1) => \a;
+
+//: To overwrite the previous pattern, just send another pattern
+(note: (0..11).prand / 3, dur: 0.125) => \a;
+
+//: Use operator +> to modify an existing pattern:
+(dur: Pfunc({ (0.001 exprand: 0.5).round(0.1) }), legato: 1.5) +> \a;
+
+//: Fade out
+\a.fadeOut(5);
+#+END_EXAMPLE
+
 * Basic synth handling
 
 Associating symbols with synths, starting, stopping with fadeout, replacing the stored synth in the same symbol:

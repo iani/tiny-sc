@@ -53,11 +53,12 @@ Edef : EventPattern { // NamedEventPattern
 
 	broadcast { | name | ^this.play(name, true) }
 
-	play { | name, broadcast = false |
+	play { | argName, broadcast = false |
 		/* If broadcast, make Bdef, else make Idef+play it */
 		var player;
 		// TODO: Check this. Bdef/Idef new not correct - uses same stream
-		player = if (broadcast) { Bdef(name, this) } { Idef(name, this).play };
+		argName ?? { argName = name };
+		player = if (broadcast) { Bdef(argName, this) } { Idef(argName, this).play };
 		// children = children add: player;
 		^player
 	}
@@ -99,6 +100,8 @@ Edef : EventPattern { // NamedEventPattern
 	}
 
 	clone { | name | ^Cdef(name, this) }
+
+	stopAll { children do: _.stop }
 
 }
 

@@ -43,6 +43,19 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
+** Revise restart-after-cmd-. scheme
+:PROPERTIES:
+:DATE:     <2014-06-07 Sat 17:04>
+:END:
+
+Instead of using a flag (i.e. SynthTree notStopped var):  On Command-period, add any running SynthTrees or Idefs or Bdefs to a set of objects, and use this set to restart any objects that were stopped by Command-period when running SynthTree.initTree.  Details:
+
+The function triggered in Emacs by C-c C-x C-/ (sclang-init-synth-tree), should run the folliwing (in this order):
+
+- init SynthTree : restart playing all SynthTree instances in set runningSynthTrees
+- init Edef: restart playing all Idef, Bdef or Cdef instances in set runningEdefs
+
+This will not cause any double-restarts, as long as Idef etc. check if they are already running before they start playing.
 
 ** Implement %!> to *remove* a filter from BdefInstrument in SynthTree
 :PROPERTIES:

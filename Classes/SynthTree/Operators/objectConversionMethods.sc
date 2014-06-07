@@ -39,6 +39,10 @@
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.set(*args) }
 	}
 
+	st { | createIfMissing = true, defaultChuck |
+		^this.asSynthTree(createIfMissing, defaultChuck);
+	}
+
 	asSynthTree { | createIfMissing = true, defaultChuck |
 		^SynthTree.at(this, createIfMissing, defaultChuck);
 	}
@@ -54,12 +58,11 @@
 		*/
 		^this doIfSynthTree: { | st | st.start };
 	}
-	stop {
+	stopAll {
 		/*
-		var synthTree;
-		^(synthTree = this.asSynthTree(false)) !? { synthTree.stop };		
+			Stop Edef's children, if it exists.
 		*/
-		^this doIfSynthTree: { | st | st.stop };
+		^NameSpace.doIfFound(\Edef, this, _.stopAll);
 	}
 	free {
 		^this doIfSynthTree: { | st | st.free };

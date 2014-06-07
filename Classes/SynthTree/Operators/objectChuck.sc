@@ -46,6 +46,13 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		};
 	}
 
+	doIfEdef { | action |
+		var synthTree;
+		^(synthTree = this.asSynthTree(false)) !? {
+			action.(synthTree, this);
+		}
+	}
+
 	%> { | params |  ^SynthPattern (this, params) } // 20140429: obsolete?
 	hasInputs { ^false }
 	push {}
