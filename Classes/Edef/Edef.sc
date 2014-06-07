@@ -80,12 +80,15 @@ Edef : EventPattern { // NamedEventPattern
 		this.clone(symbol)
 	}
 
-	=< { | inEvent | this.addEvent(inEvent, true) }
+	=< { | inEvent |
+		this.addEvent(inEvent, true);
+	}
 	=!< { | inEvent | this.replaceEvent(inEvent, true) }
 	=<| { | inEvent | this.addEvent(inEvent, false) }
 	=!<| { | inEvent | this.replaceEvent(inEvent, false) }
 
 	addEvent { | inEvent, propagate = true |
+		if (children.size == 0) { this.play };
 		inEvent keysValuesDo: { | key value | event[key] = value };
 		if (propagate) { this.propagate }
 	}
