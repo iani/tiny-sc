@@ -58,11 +58,23 @@ SynthTree : IdentityTree {
 			server);
 		nameSpaces[server, \root] = default;
 		ServerBootCheck add: { // most reliable way to check server boot
-				default.group = server.asTarget;
-				BufferFunc.initBuffers(server);
-				{ BufferFunc.postBufNames }.defer(1);
-				default.initTree(true);
-				this.changed(\serverBooted, server);
+			var fixNodeWatcher;
+			default.group = server.asTarget;
+			BufferFunc.initBuffers(server);
+			{ BufferFunc.postBufNames }.defer(1);
+			default.initTree(true);
+			// workaround for NodeWatcher bug reported in: 
+			// ./Notes/BugReports/NodeWatcherSkips1stRegister.scd
+			{
+				fixNodeWatcher = { Silent.ar }.play;
+				NodeWatcher.register(fixNodeWatcher);
+				0.1.wait;
+				fixNodeWatcher.free;
+				"================================================================".postln;
+				"Skipped defective first NodeWatcher register.  SynthTree ready.".postln;
+				"================================================================".postln;
+			}.fork;
+			this.changed(\serverBooted, server);
 		};
 		^server;
 	}
@@ -366,7 +378,7 @@ SynthTree : IdentityTree {
 		}
 	}
 
-	toggle { | argFadeTime | 
+	toggle { | argFadeTime |
 		if (this.isPlaying) {
 			this.fadeOut(this getFadeTime: argFadeTime)
 		}{

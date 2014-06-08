@@ -146,6 +146,7 @@ NamedProcess {
 		(processRegistry ?? { ProcessRegistry.default }).add(this, \n_end);
 		NodeWatcher.register(this);
 	}
+
 	stop { this.free }
 
 	onEnd { | listener, action |

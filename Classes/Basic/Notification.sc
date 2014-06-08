@@ -164,6 +164,9 @@ Notification {
     addNotifier { | notifier, message, action |
         super.addNotifier(notifier, message, action);
         NodeWatcher.register(this);
-        this.addNotifierOneShot(this, 'n_end', { this.objectClosed });
+        this.addNotifierOneShot(this, 'n_end', {
+			// remove notifiers only *after* all notifications have been issued!
+			{ this.objectClosed; }.defer(0.001);
+		});
     }
 }
