@@ -60,7 +60,7 @@ The meaning of operators in =tiny-sc= depends on the class of the operands in th
 //: Change the value of a control parameter
 \a.set(\freq, 550);
 
-//: Change the source again: the parameter's value is still there:
+//: Change the source again: the parameter's value is used for the new Synth:
 { LFSaw.ar(\freq.kr(440) * [1, 1.25], 0, 0.025) } => \a;
 
 //: Change again

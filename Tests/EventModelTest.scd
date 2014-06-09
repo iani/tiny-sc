@@ -35,15 +35,15 @@ c = EventModel();
 //:
 c.gui({ | w |
 	c.stCtl(\test, \freq);
-	w.bottom;
+	w.bottom.width_(650);
 	w.view.layout = HLayout(
 		VLayout(
 		StaticText().string_("SynthTree control"),
 		StaticText().string_("Press 'space' at the slider to switch synthree on/off"),
 		StaticText().string_("Slide the slider to control frequency"),
 		),
-		c.slider(\freq).st(\test),
-		c.numberBox(\freq).maxWidth_(100).st(\test),
+		c.slider(\freq).maxWidth_(180).orientation_(\horizontal).st(\test),
+		c.numberBox(\freq).maxWidth_(70).st(\test),
 	);
 });
 

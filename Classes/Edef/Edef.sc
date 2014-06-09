@@ -34,7 +34,7 @@ Edef : EventPattern { // NamedEventPattern
 
 	*new { | name, argPattern, propagate = true |
 		var instance;
-		instance = NameSpace(\Edef, name, { this.newCopyArgs((), name, Set()) });
+		instance = NameSpace(\Edef, name, { this.newCopyArgs((degree: \rest), name, Set()) });
 		argPattern !? { instance.replace(argPattern, propagate) };
 		^instance;
 	}
