@@ -2,13 +2,29 @@
 
 * Currently working on
 
+** Review Edef operator behavior
+:PROPERTIES:
+:DATE:     <2014-06-10 Tue 18:37>
+:END:
+
+Draft:
+
+- \edef => \synthtree :: play new Bdef from edef into synthree.
+  - Question: hat if the same edef's bdef is already playing in this synthtree?  Start a new Bdef, or do nothing?
+- (event) => \synthtree :: play event as Bdef in synthree / or modify existing Bdef
+- \edef =< (event) :: Create new edef if needed.  If the Edef has no children, then create a new Idef child and play it.  Else modify existing edef.
+- (event) +> \edef :: Is this operator now obsolete given the meaning of =< above?
+
+[... more to come].
+
+
 ** New approach to try: Implement the current operators for synths and patterns using Ndef, Pdef and related JITlib classes, to locate overlaps and possible differences.
 :PROPERTIES:
 :DATE:     <2014-04-28 Mon 22:12>
 :END:
 
 
-** Both single-synth andβ synth-stream should play with PatternInstrument
+** Both single-synth and synth-stream should play with PatternInstrument
 :PROPERTIES:
 :DATE:     <2014-04-18 Fri 16:24>
 :END:
