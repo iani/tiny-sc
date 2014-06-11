@@ -9,13 +9,47 @@
 
 Draft:
 
+*** Part 1: Playing into SynthTree (pass 1 completed)
+
 - \edef => \synthtree :: play new Bdef from edef into synthree.
-  - Question: hat if the same edef's bdef is already playing in this synthtree?  Start a new Bdef, or do nothing?
-- (event) => \synthtree :: play event as Bdef in synthree / or modify existing Bdef
-- \edef =< (event) :: Create new edef if needed.  If the Edef has no children, then create a new Idef child and play it.  Else modify existing edef.
-- (event) +> \edef :: Is this operator now obsolete given the meaning of =< above?
+  - Question: What if the same edef's bdef is already playing in this synthtree?  Start a new Bdef, or do nothing?
+  - STATUS: Pass 1 completed.
+- (event) => \synthtree :: play event as Bdef in synthree / replace if exists
+  - STATUS: Pass 1 completed.
+- (event) +> \synthtree :: modify previous Bdef if existing
+  - TODO: If not existing, create new one.
+- \edef =< (event) :: Create new edef if needed.  If edef has no children, then create a new SynthTree and play edef into it.  Else modify existing edef.
+  - STATUS: Pass 1 completed.
+
+*** Part 2: Playing Idefs without SynthTree (INCOMPLETE)
+
+- \edef => `\idef :: play \edef into Idef named \idef.
+  - STATUS: Pass 1 done.
+  - QUESTION: Perhaps use different operator instead of `?
+    Answer: Using the same operator is probably simpler to remember, and ` as "not a SynthTree" may be also easy to remember.  So for the moment, keep the ` syntax.
+  - PROBLEM: What if a different edef is chucked into the same idef?
+    Change idef's parent?  Perhaps yes.
+- (event) => `\idef :: Play event as source of idef's EventStream.  Create Idef if it does not exist.  In any case, idef becomes parentless (!).
+  - STATUS: TODO.
+- (event) +> `\idef :: Modify (or create if not existing) idef.
+  + STATUS: TODO.
 
 [... more to come].
+
+*** Testing:
+
+#+BEGIN_EXAMPLE
+\edef => \est; // replaces
+\edef =< (degree: [0, 7].pwhite); // creates or modifies
+\edef =< (dur: [0.2, 0.1].prand); // creates or modifies
+(dur: 0.1) => \est; // also replaces
+(degree: [0, 7].pwhite) +> \est;  // creates or modifies
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+\edef => `\idef;
+#+END_EXAMPLE
+
 
 
 ** New approach to try: Implement the current operators for synths and patterns using Ndef, Pdef and related JITlib classes, to locate overlaps and possible differences.

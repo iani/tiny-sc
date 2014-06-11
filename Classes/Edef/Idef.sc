@@ -101,6 +101,11 @@ Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 		originalStream.event = inEvent;
 		this.propagate(inEvent);
 	}
+
+	asIdef { | edef |
+		// ignore edef: no switching parent edefs!
+		^this
+	}
 }
 
 Bdef : Idef {

@@ -89,7 +89,7 @@ Edef : EventPattern { // NamedEventPattern
 	=!<| { | inEvent | this.replaceEvent(inEvent, false) }
 
 	addEvent { | inEvent, propagate = true |
-		if (children.size == 0) { this.play };
+		if (children.size == 0) { this => name.asSynthTree };
 		inEvent keysValuesDo: { | key value | event[key] = value };
 		if (propagate) { this.propagate }
 	}
@@ -102,7 +102,7 @@ Edef : EventPattern { // NamedEventPattern
 	clone { | name | ^Cdef(name, this) }
 
 	stopAll { children do: _.stop }
-
+	asEdef { ^this }
 }
 
 Cdef : Edef { // NamedEventPatternClone
@@ -195,11 +195,15 @@ Cdef : Edef { // NamedEventPatternClone
 	=!<| { | event | this.asEdef =!<| event}
 	=>> { | symbol | this.asEdef =>> symbol }
 	asEdef { ^Edef(this) }
+	asIdef { | edef | ^Idef(this, edef.asEdef) }
 
 	cloneInto { | chuckee |
 		^this.asSynthTree cloneInto: chuckee.asSynthTree;
 	}
+}
 
++ Ref {
+	receiveEdef { | edef | ^value.asIdef(edef.asEdef).play; }
 }
 
 + Nil { merge { | parentPattern | ^parentPattern } }
