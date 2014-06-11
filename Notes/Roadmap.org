@@ -28,9 +28,28 @@ Or:
 
 Or to map to busses!
 
-Or to play a pattern in a parameter!  Note:  One could play these as EventStreams (even Edefs or Idefs), using a custom function for eventType, that does synth.set(param, val) as its action.
+Or to play a pattern in a parameter!  Note:  One could play these as EventStreams (even Edefs or Idefs), using a set eventType, that does synth.set(param, val) as its action.  See SC Help, =Event types=:
+
+#+BEGIN_EXAMPLE
+set
+   used to set parameters of some already-running node(s).
+#+END_EXAMPLE
+
+But note: The set event should be modified to set the SynthTree's param instead of the Synth directly.  This because we may want to continue playing the pattern into the SynthTree while its synth changes.
 
 Or to play a control rate synth func into a parameter! (easy: create the synth, chuck it into a bus, and then map the param to the bus.  Possibly register the bus with NameSpace(synthtree, param), or use a BusFunc in a MultiCtl.)
+
+*** stSet event type
+:PROPERTIES:
+:ID:       0D38B0AD-9FFC-4206-8529-A50953D37046
+:eval-id:  2
+:END:
+
+#+BEGIN_EXAMPLE
+stSet: #{
+    ~stParam.set(~param.value)
+}
+#+END_EXAMPLE
 
 ** TODO Review Edef operator behavior
 :PROPERTIES:
