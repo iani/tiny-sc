@@ -132,7 +132,7 @@ Cdef : Edef { // NamedEventPatternClone
 + Event {
 	chuckInto { | object | ^object.asEdef.addEvent(this, true) }
 	=> { | chuckee | ^chuckee.chuckEvent(this);	}
-	+> { | chuckee | ^chuckee.addPlayerMods(this); }
+	+> { | chuckee adverb | ^chuckee.addPlayerMods(this, adverb); }
 	+!> { | chuckee | ^chuckee.replacePlayerMods(this);	}
 	%> { | chuckee | ^chuckee.addMods(this); }
 	%!> { | chuckee | ^chuckee.replaceMods(this); }
@@ -167,7 +167,9 @@ Cdef : Edef { // NamedEventPatternClone
 	replaceEvent { | event | template.replaceEvent(event); }
 	addMods { | event | template.addMods(event); }
 	replaceMods { | event | template.replaceMods(event); }
-	addPlayerMods { | event | template.addPlayerMods(event); }
+	addPlayerMods { | object, adverb |
+		object.add2SynthTree(object, adverb)
+	}
 	replacePlayerMods { | event | template.replacePlayerMods(event); }
 }
 

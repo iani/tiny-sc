@@ -73,7 +73,7 @@ The meaning of operators in =tiny-sc= depends on the class of the operands in th
 (note: (0..11).prand / 3, dur: 0.125) => \a;
 
 //: Use operator +> to modify an existing pattern:
-(dur: Pfunc({ (0.001 exprand: 0.5).round(0.1) }), legato: 1.5) +> \a;
+(dur: Pfunc({ (0.001 exprand: 0.5).round(0.1) }), legato: 0.15) +> \a;
 
 //: Fade out
 \a.fadeOut(5);

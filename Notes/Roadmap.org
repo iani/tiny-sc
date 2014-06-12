@@ -3,7 +3,10 @@
 * Currently working on
 
 
-** TODO Make +> work on synth arguments
+** QUOTE TODO Make +> work on synth arguments
+:PROPERTIES:
+:DATE:     <2014-06-11 Wed 22:40>
+:END:
 
 Rationale:  Since (event) +> \synthtree modifies the event of an EventStream playing in synthtree, (anything else) +>.ctlname \synthtree should modify control named ctlname in the synth of synthtree.  This is synonymous to =\synthree.set(\ctlname, value)=.  In other words:
 
