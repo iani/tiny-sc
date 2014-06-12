@@ -23,11 +23,16 @@ Thu, Jun 12 2014, 08:11 EEST
 	}
 }
 
+/* // implemented in simpleNumberChuck, under +> method directly
+
 + SimpleNumber {
 	add2SynthTree {  | synthTree paramName |
-
+		[this, thisMethod.name, synthTree, paramName].postln;
+		synthTree.set(paramName, this);
 	}
 }
+
+*/
 
 + Symbol {
 	add2SynthTree {  | synthTree paramName |

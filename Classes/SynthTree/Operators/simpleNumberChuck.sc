@@ -9,4 +9,9 @@
 	receivePatternInstrument { | patternInstrument |
 		^patternInstrument.durations = this;
 	}
+
+	+> { | chuckee paramName |
+		^chuckee.asSynthTree.set(paramName, this);
+	}
+
 }
