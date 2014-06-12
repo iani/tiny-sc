@@ -18,6 +18,7 @@ Thu, Jun 12 2014, 08:11 EEST
 
 + Event {
 	add2SynthTree {  | synthTree |
+		// TODO: if template is not BdefInstrument, make one!
 		synthTree.template addPlayerMods: this;
 	}
 }

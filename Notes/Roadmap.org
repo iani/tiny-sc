@@ -145,6 +145,13 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
+** TODO Fix Event:add2SynthTree
+:PROPERTIES:
+:DATE:     <2014-06-12 Thu 08:34>
+:END:
+
+		// TODO: if template is not BdefInstrument, make one!
+
 ** Revise restart-after-cmd-. scheme
 :PROPERTIES:
 :DATE:     <2014-06-07 Sat 17:04>
