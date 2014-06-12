@@ -168,7 +168,7 @@ Cdef : Edef { // NamedEventPatternClone
 	addMods { | event | template.addMods(event); }
 	replaceMods { | event | template.replaceMods(event); }
 	addPlayerMods { | object, adverb |
-		object.add2SynthTree(object, adverb)
+		object.add2SynthTree(this, adverb)
 	}
 	replacePlayerMods { | event | template.replacePlayerMods(event); }
 }

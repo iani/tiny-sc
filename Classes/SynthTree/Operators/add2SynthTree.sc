@@ -16,6 +16,12 @@ Bus: map to parameter
 Thu, Jun 12 2014, 08:11 EEST
 */
 
++ Event {
+	add2SynthTree {  | synthTree |
+		synthTree.template addPlayerMods: this;
+	}
+}
+
 + SimpleNumber {
 	add2SynthTree {  | synthTree paramName |
 
