@@ -1,6 +1,8 @@
 /*
 Named container for PatternTask, PatternEventPlayer
 
+NOTE Fri, Jun 13 2014, 10:10 EEST: IS THIS REPLACED BY Edef?
+
 IZ Wed, Apr 16 2014, 04:59 EEST
 */
 

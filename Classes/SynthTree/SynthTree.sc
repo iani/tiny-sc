@@ -32,7 +32,7 @@ SynthTree : IdentityTree {
 	// on chuck/replace
     var <>fadeTime;
 	var <>name;
-	var <>args; // TODO: args sent to synth at creation time
+	var <>args; // args sent to synth at creation time
 	var <>replaceAction = \fadeOut; // only used by addInputSynth
 
 	*initClass {
@@ -324,6 +324,7 @@ SynthTree : IdentityTree {
 		// guarantee that moveBefore happens AFTER the synth has really started!
 			this.addNotifierOneShot(synth, 'n_go', {
 				this do: _.moveBefore(synth);
+				args do: _.mapIfNeeded;
 				this.changed(\started);
 			});
 		};

@@ -3,7 +3,7 @@ A generalized version of NameSpace that accepts any number of keys.
 
 Should replace NameSpace.
 
-Uses Library: Branches under one first key must have the same number of nodes.
+Uses Library: Branches under one first key must have the same number of keys.
 
 Thu, Jun 12 2014, 19:53 EEST
 */

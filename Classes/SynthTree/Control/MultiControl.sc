@@ -62,7 +62,7 @@ MultiControl : IdentityDictionary {
 		used by another SynthTree with a second stream source!
 	*/
 	var unmappedValue; // cache of unmappedValue for views
-	
+
 	*new { | synthTree, name, spec, initialValue, stream |
 		^super.new.init(synthTree, name, spec, initialValue, stream);
 	}
@@ -149,24 +149,6 @@ MultiControl : IdentityDictionary {
 
 	getPattern { | patternName = \pattern | ^this[patternName].pattern }
 
-	// USED??? :
-	/*
-	valuePattern { | pattern, controlName = \pattern |
-		// get the valuepattern. Can be used for adding further patterns
-		
-	}
-	valuePattern_ { | pattern, controlName = \pattern |
-		// replace the valuepattern 
-	}
-
-
-	durPattern { | pattern, controlName = \pattern |
-		// get the duration pattern. Can be used for adding further patterns
-	}
-	durPattern_ { | pattern, controlName = \pattern |
-		// replace the duration pattern 
-	}
-	*/
 	add { | controlName, control |
 
 	}
@@ -274,6 +256,13 @@ MultiControl : IdentityDictionary {
 		^view;
 	}
 
+	// ================================================================
+	// Controls.  Redoing: Fri, Jun 13 2014, 08:51 EEST
+
+	mapIfNeeded {
+
+	}
+
 	// NOT YET TESTED!
 	setBuffer { | bufName, action |		
 		/* Different handling:
@@ -294,11 +283,18 @@ MultiControl : IdentityDictionary {
 	}
 
 	addSynth { | name, template |
-
+		var bus;
+		bus = this.addBus;
 	}
 
-	addBus { | name, bus |
-		
+	addBus { | bus |
+		bus ?? { bus = Bus.control(this.server, 1) };
+		// TODO: Map here
+		^bus;
+	}
+
+	addPatternn {
+
 	}
 
 	//

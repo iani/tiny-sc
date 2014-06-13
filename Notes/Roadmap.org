@@ -2,8 +2,70 @@
 
 * Currently working on
 
+** TODO Control Sources (+MultiControl: Single control source)
+:PROPERTIES:
+:DATE:     <2014-06-13 Fri 09:24>
+:END:
 
-** QUOTE TODO Make +> work on synth arguments
+Simplify the way in which diverse controls are added to a MultiControl instance.
+Possibly make MultiControl a base Class - not an IdentityDictionary.
+
+*** two types of control sources:
+
+**** =ControlSource= unnamed, not-shared control sources
+
+- added to a synth's parameter by object:
+
+#+BEGIN_EXAMPLE
+{ function } +>.paramname \synthtree;
+
+number +>.paramname \synthtree;
+
+buffer +>.paramname \synthtree;
+
+`\bufname +>.paramname \synthtree;
+
+MIDIfunc +>.paramname \synthtree;
+
+OSCfunc +>.paramname \synthtree;
+
+Event +>.paramname \synthree;
+
+#+END_EXAMPLE
+
+- when a new control source is added, the previous one is freed.
+
+- starting and stopping or freeing of the control source is independent of the starting and stopping of the controlled parameter's synthtree.   However, there are explicit messages / operators for starting, stopping or freeing or removing of a control of a parameter.
+
+- implementations for starting, stopping, freeing and for initializing (reconnecting) when controlled synth restarts are coded by subclassing.
+
+**** =SharedControlSource= named, registered, shared control sources
+
+- added to a synthtree's parameter by name:
+
+: \controlsource +>.paramname \synthtree;
+
+- created and registered in global register, using Registry
+
+- Connected to listeners through =Notification=, broadcast their changes through the =changed= message mechanism.
+
+
+*** instance var control:
+
+may contain one of:
+- MIDIfunc
+- EventStream
+- OSCfunc
+- Bus
+- A protean kind of broadcasting control source of yet undefined class (not yet implemented).
+
+when setting control:
+
+1. Disconnect previous control.
+2.
+
+
+** TODO Make +> work on synth arguments
 :PROPERTIES:
 :DATE:     <2014-06-11 Wed 22:40>
 :END:
@@ -145,7 +207,7 @@ Try these with arrays loaded from data analysed through SCMIR.
 
 * Immediate TODOs
 
-** TODO Fix Event:add2SynthTree
+** TODO Fix Event:add2SynthTree - when template is not BdefInstrument
 :PROPERTIES:
 :DATE:     <2014-06-12 Thu 08:34>
 :END:
@@ -210,7 +272,7 @@ Maybe rename PatternTask to PatternTask!!!
 adsrOut => linOut;
 
 Adsr is superfluous.
-
+y
 ** SynthTree:
 
 *** fix ==> n_free Node not found when =< to fx
@@ -1839,4 +1901,4 @@ The eval id is stored as property in the org-section.
 
 ** Process trees?
 
-To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EventStreamPlayer) and notify the children when the thread stops.  Similarly for EventStreamPlayer.  Registering processes under a snippet/org-section id is a simpler alternative. However process-tree based stopping is a different thing, because one may want to kill a parent-process through the gui, independent fom the snippet grouping which may contain also other processes.
+To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EventStreamPlayer) and notify the children when the thread stops.  Similarly for EventStreamPlayer.  Registering processes under a snippet/org-section id is a simpler alternative. However process-tree based stopping is a different thing, because one may want to kill a parent-process through the gui, independent fom the snippet grouping which may contain also other processe
