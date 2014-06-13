@@ -6,6 +6,76 @@ Fri, Jun 13 2014, 10:11 EEST
 */
 
 ControlSource {
+	var parameter; // parameter being controlled
+	var template; // template from which the source is created
+	var source;   // source of the control
+
+	*new { | parameter template |
+		// create new instance
+		^this.newCopyArgs(parameter, template);
+	}
+
+	start {
+		// start the control's process
+	}
+
+	stop {
+		// stop the control's process
+	}
+
+	free {
+		// stop and free all resources
+		this.objectClosed;
+		// subclasses add more stuff as needed.
+	}
+}
+
+ControlSynth : ControlSource {
+	var <bus;
+
+	*new { | parameter, template |
+		^super.new(parameter, template).initControlSynth;
+	}
+
+	initControlSynth {
+		bus = Bus.control(parameter.server, 1);
+		this.addNotifier(parameter.synthTree, \started, { this.mapParameter });
+		this.start;
+	}
+
+	start { 
+		if (this.isPlaying.not) {
+			source = template.makeControlSynth(bus.index);
+			source.onEnd(this, { source = nil });
+			source.onStart(this, { this.mapParameter });
+		}
+	}
+
+	mapParameter { parameter.map(bus.index) }
+	stop { if (this.isPlaying) { source.free } }
+	isPlaying { ^source.notNil }
+
+	free {
+		this.stop;
+		bus.free;
+		super.free;
+	}
+
+}
+
+ControlPattern : ControlSource {
+
+}
+
+ControlMapper : ControlSource {
+	var inMap, outMap;
+}
+
+ControlMIDI : ControlMapper {
+
+}
+
+ControlOSC : ControlMapper {
 
 }
 
@@ -14,7 +84,7 @@ ControlSource {
 :PROPERTIES:
 :DATE:     <2014-06-13 Fri 09:24>
 :END:
-
+source
 Simplify the way in which diverse controls are added to a MultiControl instance.
 Possibly make MultiControl a base Class - not an IdentityDictionary.
 
@@ -22,36 +92,36 @@ Possibly make MultiControl a base Class - not an IdentityDictionary.
 
 **** =ControlSource= unnamed, not-shared control sources
 
-- added to a synth's parameter by object:
+- added to a source's parameter by object:
 
 #+BEGIN_EXAMPLE
-{ function } +>.paramname \synthtree;
+{ function } +>.paramname \sourcetree;
 
-number +>.paramname \synthtree;
+number +>.paramname \sourcetree;
 
-buffer +>.paramname \synthtree;
+buffer +>.paramname \sourcetree;
 
-`\bufname +>.paramname \synthtree;
+`\bufname +>.paramname \sourcetree;
 
-MIDIfunc +>.paramname \synthtree;
+MIDIfunc +>.paramname \sourcetree;
 
-OSCfunc +>.paramname \synthtree;
+OSCfunc +>.paramname \sourcetree;
 
-Event +>.paramname \synthree;
+Event +>.paramname \sourceree;
 
 #+END_EXAMPLE
 
 - when a new control source is added, the previous one is freed.
 
-- starting and stopping or freeing of the control source is independent of the starting and stopping of the controlled parameter's synthtree.   However, there are explicit messages / operators for starting, stopping or freeing or removing of a control of a parameter.
+- starting and stopping or freeing of the control source is independent of the starting and stopping of the controlled parameter's sourcetree.   However, there are explicit messages / operators for starting, stopping or freeing or removing of a control of a parameter.
 
-- implementations for starting, stopping, freeing and for initializing (reconnecting) when controlled synth restarts are coded by subclassing.
+- implementations for starting, stopping, freeing and for initializing (reconnecting) when controlled source restarts are coded by subclassing.
 
 **** =SharedControlSource= named, registered, shared control sources
 
-- added to a synthtree's parameter by name:
+- added to a sourcetree's parameter by name:
 
-: \controlsource +>.paramname \synthtree;
+: \controlsource +>.paramname \sourcetree;
 
 - created and registered in global register, using Registry
 
