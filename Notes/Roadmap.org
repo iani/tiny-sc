@@ -2,7 +2,7 @@
 
 * Currently working on
 
-** TODO Control Sources (+MultiControl: Single control source)
+** STARTED Control Sources (+MultiControl: Single control source)
 :PROPERTIES:
 :DATE:     <2014-06-13 Fri 09:24>
 :END:
@@ -13,6 +13,10 @@ Possibly make MultiControl a base Class - not an IdentityDictionary.
 *** two types of control sources:
 
 **** =ControlSource= unnamed, not-shared control sources
+:PROPERTIES:
+:ID:       50E3FCA9-FC85-4E87-9C95-74B57A09BF51
+:eval-id:  2
+:END:
 
 - added to a synth's parameter by object:
 
@@ -25,9 +29,21 @@ buffer +>.paramname \synthtree;
 
 `\bufname +>.paramname \synthtree;
 
-MIDIfunc +>.paramname \synthtree;
+NoteOn(...) +>.paramname \synthtree;
+NoteOff(...) +>.paramname \synthtree;
+Cc(...) +>.paramname \synthtree;
+AfterTouch(...) +>.paramname \synthtree;
+PitchBend(...) +>.paramname \synthtree;
 
-OSCfunc +>.paramname \synthtree;
+Where the args for the above midi objects are as in MIDIFunc, with the addition of a map spec or func:
+
+: spec, ccNum, chan, srcID, argTemplate
+
+OSCctl +>.paramname \synthtree;
+
+Where =OSCctl= encapsulates the arguments for creating the OSCFunc, with the addition of a map spec or func:
+
+: spec, path, srcID, recvPort, argTemplate
 
 Event +>.paramname \synthree;
 
@@ -376,6 +392,10 @@ Map synths playing envelopes, any function, lines to input controls of other syn
 ** Improve keyboard commands for setting fadeTime
 
 * More TODOs
+
+** TODO \symbol.play
+
+- If synthtree of same name not found: search in synthtemplates, if found, create ST with same name and play.  If not found, search in buffers and play buffer in ST with simple playbuf template.  If not found, search in patterntemplates, and
 
 ** Review / remove use of changed(\value) in PatternTask
 Could a function be called directly instead, to save CPU cycles?

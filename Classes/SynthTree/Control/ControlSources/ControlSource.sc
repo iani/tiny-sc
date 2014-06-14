@@ -5,7 +5,7 @@
 Fri, Jun 13 2014, 10:11 EEST
 */
 
-ControlSource {
+ControlSource { // Abstract class
 	var parameter; // parameter being controlled
 	var template; // template from which the source is created
 	var source;   // source of the control
@@ -30,7 +30,7 @@ ControlSource {
 	}
 }
 
-ControlSynth : ControlSource {
+ControlSynth : ControlSource { // kr Synth sending to bus mapped to parameter
 	var <bus;
 
 	*new { | parameter, template |
@@ -60,23 +60,22 @@ ControlSynth : ControlSource {
 		bus.free;
 		super.free;
 	}
-
 }
 
-ControlPattern : ControlSource {
 
+ControlMIDI : ControlSource { // set parameter based on MIDI input
+	*new { | parameter specs |
+		// Store specs as template.
+		// Create MIDIFunc from specs as source; 
+	}
 }
 
-ControlMapper : ControlSource {
-	var inMap, outMap;
-}
+ControlOSC : ControlSource { // set parameter based on OSC input
 
-ControlMIDI : ControlMapper {
-
-}
-
-ControlOSC : ControlMapper {
-
+	*new { | parameter specs |
+		// Store specs as template.
+		// Create OSCFunc from specs as source; 
+	}	
 }
 
 /*
