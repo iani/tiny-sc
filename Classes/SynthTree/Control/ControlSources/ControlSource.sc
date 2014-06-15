@@ -2,6 +2,10 @@
 
 ================ ControlSource ================
 
+Source for controlling parameters of a SynthTree. Does one of these 2:
+- Sends set messages to the parameter
+- Maps the parameter to a control bus that receives input from a Synth.
+
 Fri, Jun 13 2014, 10:11 EEST
 */
 
