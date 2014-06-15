@@ -1,6 +1,15 @@
+#+TODO: TODO STARTED DONE
+
 (Copied here on: Sun, Mar  9 2014, 20:37 EET)
 
 * Currently working on
+
+** TODO NEW: possibly get rid of +> for mods.
+
+When using an adverb, => can act as a modifier to the parameter given by the argument.
+So there is no need to use +>
+
+: \source =>.param \target
 
 ** STARTED Control Sources (+MultiControl: Single control source)
 :PROPERTIES:
@@ -80,8 +89,7 @@ when setting control:
 1. Disconnect previous control.
 2.
 
-
-** TODO Make +> work on synth arguments
+** STARTED Make +> work on synth arguments
 :PROPERTIES:
 :DATE:     <2014-06-11 Wed 22:40>
 :END:
