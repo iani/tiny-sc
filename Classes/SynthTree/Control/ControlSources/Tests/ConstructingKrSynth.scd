@@ -37,6 +37,10 @@ Server.killAll;
 
 { SinOsc.ar(\freq.kr(400), 0, 0.1) } => \krtest;
 
-{ SinOsc.ar(4).range(400, 500) } +>.freq \krtest;
+{ SinOsc.kr(4).range(400, 500) } +>.freq \krtest;
+
+{ LFNoise0.kr(40).range(400, 500) } +>.freq \krtest;
+
+{ LFNoise1.kr(12).range(400, 500) } +>.freq \krtest;
 
 (dustrate: [1, 2].pseq, dur: [0.1, 0.2].prand) +> \synthtree;

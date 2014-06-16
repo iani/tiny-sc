@@ -37,28 +37,26 @@ ControlSource { // Abstract class
 ControlSynth : ControlSource { // kr Synth sending to bus mapped to parameter
 	var <bus;
 
-	// TODO: free previous control synth in same param
-
 	*new { | parameter, template |
 		^super.new(parameter, template).initControlSynth;
 	}
 
 	initControlSynth {
 		bus = Bus.control(parameter.server, 1);
-		this.addNotifier(parameter.synthTree, \started, { this.mapParameter });
+		this.addNotifier(parameter.synthTree, \started, { parameter map: bus });
+		parameter.changed(\controlSynth, this);
+		this.addNotifier(parameter, \controlSynth, { this.free; });
 		this.start;
 	}
 
 	start { 
 		if (this.isPlaying.not) {
-			//			source = template.makeControlSynth(bus.index);
 			source = template.kr(bus.index);
 			source.onEnd(this, { source = nil });
-			source.onStart(this, { this.mapParameter });
+			source.onStart(this, { parameter map: bus });
 		}
 	}
 
-	mapParameter { parameter.map(bus.index) }
 	stop { if (this.isPlaying) { source.free } }
 	isPlaying { ^source.notNil }
 
@@ -86,6 +84,20 @@ ControlOSC : ControlSource { // set parameter based on OSC input
 		// Store specs as template.
 		// Create OSCFunc from specs as source; 
 	}	
+}
+
++ Function {
+	makeControlSynth { | busIndex = 0 server |
+		^this.kr(busIndex, server)
+	}
+
+	kr { | outBus = 0 outName = \out server |
+		^{ Out.kr(outName.kr(0), this.value) }.play(server, args: [outName, outBus]);
+	}
+
+	+> { | st, param |
+		^ControlSynth(st.asSynthTree.getParam(param), this);
+	}
 }
 
 /*
