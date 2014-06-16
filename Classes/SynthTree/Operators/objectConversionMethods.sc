@@ -123,7 +123,8 @@
 
 	buf { | bufName, paramName = \buf |
 		bufName = bufName ? this;
-		^this.asSynthTree.buf(bufName, paramName);
+		
+		//		^this.asSynthTree.buf(bufName, paramName);
 	}
 
 	fader {

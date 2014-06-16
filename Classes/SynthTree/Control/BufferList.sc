@@ -233,6 +233,10 @@ BufferList {
 	asString {
 		^format("BufferList(%)", server);
 	}
+
+	*getBuffer { | name, server |
+		^Library.global.at(server ?? { SynthTree.server }, name);
+	}
 }
 
 BufferDummy {

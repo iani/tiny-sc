@@ -462,6 +462,10 @@ SynthTree : IdentityTree {
 
 	get { | paramName | ^this.getParamValue(paramName) }
 
+	hasParam { | paramName |
+		^args[paramName].notNil;
+	}
+
 	getParamValue { | paramName | ^args.getParamValue(paramName) }
 	// Controls
 	/*
