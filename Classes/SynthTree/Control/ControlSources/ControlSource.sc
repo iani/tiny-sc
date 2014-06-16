@@ -60,9 +60,12 @@ ControlSynth : ControlSource { // kr Synth sending to bus mapped to parameter
 	isPlaying { ^source.notNil }
 
 	free {
-		this.stop;
-		bus.free;
-		super.free;
+		bus !? {
+			this.stop;
+			bus.free;
+			bus = nil;
+			super.free;
+		};
 	}
 }
 
