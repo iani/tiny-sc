@@ -110,22 +110,25 @@ BufferList {
 	}
 
 	newStChuckBuffer { | bufName, loop = true |
-		{ \buf.playBuf } asSynthTemplate: bufName
-		=> format("%%", bufName, UniqueID.next - 1001).asSymbol.asSynthTree
-		.buf(bufName)
+		//		BufferList.getBuffer(bufName).postln;
+		
+		`bufName
+		+> format("%%", bufName, UniqueID.next - 1001).asSymbol.asSynthTree
 		.set(\amp, 1)
 		.set(\loop, if (loop) { 1 } { 0 });
 	}
 
  	chuckBuffer { | bufName, loop = true |
 		var synthTree;
-		synthTree = ~st;
+		//		BufferList.getBuffer(bufName).postln;
+				synthTree = ~st;
 		if (synthTree.isNil) {
 			synthTree = format("buf%", UniqueID.next - 1001).asSymbol.asSynthTree;
 		};
-		{ \buf.playBuf } asSynthTemplate: bufName => synthTree.buf(bufName)
+		`bufName +> synthTree
 		.set(\amp, 1)
 		.set(\loop, if (loop) { 1 } { 0 });
+		
 	}
 
 	setCurrentStBuffer { | bufName |
@@ -136,7 +139,7 @@ BufferList {
 		if (bufName.asSynthTree.isPlaying) {
 			bufName.asSynthTree.stop;
 		}{
-			{ \buf.playBuf } => bufName.buf
+			`bufName +> bufName
 			.set(\amp, 1)
 			.set(\loop, if (loop) { 1 } { 0 });
 		}

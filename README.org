@@ -476,25 +476,13 @@ SynthTree.faders;
 
 * Buffers and samples
 
-Play a sample loaded from disk with PlayBuf (If no name is specified, the name of the receiver of =.buf= is used to find a buffer of the same name.  If no such buffer exists, then a Dialog window is opened for choosing a file to load into a buffer):
-
-#+BEGIN_EXAMPLE
-{ \buf.playBuf } => \chimes.buf.set(\amp, 1);
-#+END_EXAMPLE
-
-Play the same sample in a different synth, with different rate
-
-#+BEGIN_EXAMPLE
-{ \buf.playBuf(rate: 1.2) } => \different.buf(\chimes).set(\amp, 1);
-#+END_EXAMPLE
-
 ** BufferList autoload
 
 Setting classvar autoload of =BufferList= to =true= will make SuperCollider load all =.aiff= and =.wav= files that are found under folder =sounds= in the SuperCollider user support directory (=Platform.userAppSupportDir=) whenever the default server boots.
 
 ** Buffer list view
 
-Following opens a Buffer List view with all buffers loaded through selecting from a SynthTree as shown above, or put in the default "sounds" folder in User App Support Dir/SuperCollider
+Open a List view with all buffers loaded in BufferList:
 
 #+BEGIN_EXAMPLE
 BufferList.showList;
@@ -506,7 +494,7 @@ Keyboard commands on the Buffer List list view:
 | Key                | Action                                                       |
 |--------------------+--------------------------------------------------------------|
 | return             | play/stop selected buffer in a SynthTree named as the buffer |
-| shift-return       | like return, but set loop to 1 (loop buffer)                 |
+| shift-return       | like return, but set loop to 0 (do not loop buffer)          |
 | space, shift-space | like return, but always create new SynthTree to play in      |
 | l                  | load a new buffer from file                                  |
 | s                  | save list of loaded buffers to file                          |
