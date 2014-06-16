@@ -37,6 +37,8 @@ ControlSource { // Abstract class
 ControlSynth : ControlSource { // kr Synth sending to bus mapped to parameter
 	var <bus;
 
+	// TODO: free previous control synth in same param
+
 	*new { | parameter, template |
 		^super.new(parameter, template).initControlSynth;
 	}
@@ -49,7 +51,8 @@ ControlSynth : ControlSource { // kr Synth sending to bus mapped to parameter
 
 	start { 
 		if (this.isPlaying.not) {
-			source = template.makeControlSynth(bus.index);
+			//			source = template.makeControlSynth(bus.index);
+			source = template.kr(bus.index);
 			source.onEnd(this, { source = nil });
 			source.onStart(this, { this.mapParameter });
 		}

@@ -259,6 +259,8 @@ MultiControl : IdentityDictionary {
 	// ================================================================
 	// Controls.  Redoing: Fri, Jun 13 2014, 08:51 EEST
 
+	server { ^synthTree.server }
+
 	mapIfNeeded {
 
 	}
