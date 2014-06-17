@@ -64,7 +64,7 @@ much later
 - event +> \symbol :: modify existing pattern
 - array +> \symbol[\patname] :: modify existing pattern stored under \patname
 
-**** TODO =< ?
+**** STARTED replace =< by => for ST linking
 :PROPERTIES:
 :DATE:     <2014-06-17 Tue 12:33>
 :END:
@@ -75,6 +75,22 @@ Examine if this works:
 
 instead of
 \st2 =< \st1
+
+Previously the order was reverse, to permit starting the receiving fx before the sending source, because the fx must be started first to set its group, to be ready for the source.  However, this can also be coded in reverse order through following mechanism:
+
+: { source } |> \st1 => ({ source } |> \st2) => ({ source } => st3)
+
+Where:
+
+: { source } |> \st1
+
+... sets the SynthTree up to play source, but does not start it
+
+: => ({ source } |> \st2)
+
+... also sets up st2 but does not start it, but additionally => tells the receiver (\st1) now to wait for \st2 to start (through notification changed(\started)), and then to start!  And so on for st2 to st3.
+
+
 
 
 *** implementation note: can be done on top of curent scheme... using adverb presence to distinguish
