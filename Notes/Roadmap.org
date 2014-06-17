@@ -55,6 +55,9 @@ much later
 - array +> \symbol[\patname] :: modify existing pattern stored under \patname
 
 **** TODO =< ?
+:PROPERTIES:
+:DATE:     <2014-06-17 Tue 12:33>
+:END:
 
 Examine if this works:
 
