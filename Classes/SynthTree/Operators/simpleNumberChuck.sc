@@ -1,5 +1,5 @@
 + SimpleNumber {
-	=> { | chuckee | ^chuckee receiveNumberChuck: this }
+
 	receivePatternChuck { | pattern |
 		^PatternTask(pattern, this);
 	}

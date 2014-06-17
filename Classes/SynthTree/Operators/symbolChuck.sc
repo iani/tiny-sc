@@ -12,11 +12,11 @@
 	clearChuckPatternParams { | paramArray |
 		^this.asSynthTree.clearChuckPatternParams(paramArray);
 	}
-
+	/*
 	receiveNumberChuck { | number |
 		^this.asSynthTree setPatternDuration: number;
 	}
-
+	*/
 	receivePatternChuck { | pattern |
 		^this.asSynthTree chuck: pattern.asPatternInstrument;
 	}

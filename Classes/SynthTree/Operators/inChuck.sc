@@ -5,6 +5,7 @@ Here all methods that are needed to handle =<
 */
 
 + Object {
+	// DEPRECATED!
 	=< { | synthTree, inputName = \in |
 		// add synthTree to the input synths of the receiver
 		this.asSynthTree.addInputSynth(synthTree.asSynthTree, inputName)
