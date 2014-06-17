@@ -5,7 +5,15 @@ Mon, Jun 16 2014, 22:11 EEST
 
 */
 
-BufferList.getBuffer(\bell)
+BufferList.loadFolder;
+
+BufferList.autoload = true;
+
+Server.default.reboot;
+
+BufferList.getBuffer(\bell);
+
+\bell.b;
 
 //:
 a = {
@@ -22,8 +30,7 @@ a.set(\buf1, \bell.bufnum);
 
 
 a.set(\rate, -0.3);
-//:
-f.(10, 10) / 123;
+
 //:
 \boat.bufnum;
 
@@ -62,7 +69,18 @@ a = {
 } => \fftfun;
 
 //:
-3 +>.thresh \fftfun;
+5 +>.thresh \fftfun;
+
+//:
+10 +>.amp \fftfun;
+
+//:
+
+1.5 +>.thresh \fftfun;
+
+0.5 +>.thresh \fftfun;
+
+0 +>.thresh \fftfun;
 
 //: MagBelow
 {
@@ -97,6 +115,13 @@ a = {
 25 +>.freezerate \fftfun;
 //:
 0.15 +>.freezerate \fftfun;
+
+//:
+({ myfilter.kr ..... } ==> \magabove) 
+=< 
+(	\magbelow) =< \magfreeze =< \bufplayer1;
+
+
 //: 
 5 +>.rate  \fftfun;
 //: Dust ...

@@ -16,7 +16,7 @@
 (dur: [0.1, 0.1, 0.2].pseq, amp: { 0.01 exprand: 0.1 }.pfunc) +> \epat1;
 
 //: 4. Add filter modifying the existing pattern for degree
-(degree:  { ~degree + [0, 2] }) %> \epat1;
+(degree:  { ~degree + [0, 2, 5, 7, 8] }) %> \epat1;
 
 
 // More examples

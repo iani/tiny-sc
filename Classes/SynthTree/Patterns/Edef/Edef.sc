@@ -163,6 +163,10 @@ Cdef : Edef { // NamedEventPatternClone
 		);
 	}
 
+	chuckInto { | chuckee, inputName = \in |
+		chuckee.asSynthTree.addInputSynth(this, inputName);
+	}
+
 	addEvent { | event | template.addEvent(event); }
 	replaceEvent { | event | template.replaceEvent(event); }
 	addMods { | event | template.addMods(event); }

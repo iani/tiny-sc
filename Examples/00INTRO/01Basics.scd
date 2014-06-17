@@ -21,14 +21,14 @@ The source can be:
 (degree: Pseq([0, 2, 4, 7], inf), dur: 0.1) => \sound1;
 
 //: 2. To stop a named sound (SynthTree), send it the message fadeOut.
-\sound1.fadeOut;
+\sound1.fadeOut(0.05);
 
 //: 3. To restart a sound, send it the message start
 \sound1.start;
 
 //: 4. To change a parameter of the sound, use the 'set' message
 // New sound to test: 
-{ Formant.ar(\fundfreq.kr(440), \formfreq.kr(1760), 880) } => \sound1
+{ Formant.ar(\fundfreq.kr(440), \formfreq.kr(1760), 880) } => \sound1;
 
 //: Changing the formant frequency
 \sound1.set(\formfreq, 200);

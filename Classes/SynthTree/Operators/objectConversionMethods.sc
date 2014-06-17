@@ -10,6 +10,10 @@
 
 + Symbol {
 
+	asSynthTree { | createIfMissing = true, defaultChuck |
+		^SynthTree.at(this, createIfMissing, defaultChuck);
+	}
+
 	asSynthTemplate { ^SynthDescLib.global[this].def }
 	inputSpecs { ^[] }
 
@@ -37,14 +41,6 @@
 		*/
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.set(*args) }
-	}
-
-	st { | createIfMissing = true, defaultChuck |
-		^this.asSynthTree(createIfMissing, defaultChuck);
-	}
-
-	asSynthTree { | createIfMissing = true, defaultChuck |
-		^SynthTree.at(this, createIfMissing, defaultChuck);
 	}
 
 	toggle { | fadeTime |
