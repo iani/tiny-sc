@@ -4,12 +4,74 @@
 
 * Currently working on
 
-** TODO NEW: possibly get rid of +> for mods.
+** STARTED Operator review: possibly get rid of +> for mods.
+:PROPERTIES:
+:DATE:     <2014-06-15 Sun 09:14>
+:END:
 
 When using an adverb, => can act as a modifier to the parameter given by the argument.
 So there is no need to use +>
 
 : \source =>.param \target
+
+Trying new scheme
+
+*** operators
+
+=>
+
+much later
++>
+
+*** qualifiers: (1) .adverb, (2) [index]
+
+- =>.adverb :: names parameter to be targeted
+- control => \synthtree[\name] :: stores control under a name in synthree so that it can be later accessed or replaced.
+
+*** list of cases
+
+**** => Send source to synthtree or part of synthtree
+- { function } => \symbol :: play func into synthtree
+- { function } =>.paramame \symbol :: play func into parameter of synthtree. The name used to store the control instance defaults to parameter's name.
+- { function } =>.paramame \symbol[\sourcename] :: play func into parameter of synthtree, storing under \sourcename.
+- number =>.paramname \symbol :: set parameter of synthtree to number value
+- event => \symbol :: play event as pattern in synthree
+- array => \symbol :: play array as event in parameters of synthtree.  Replaces previous pattern under that name. Name defaults to 'pattern'.
+- array => \symbol[\patname] :: play array as event in parameters of synthtree, naming the pattern, so that multiple patterns can be played.
+- \sourcename => \symbol :: play named source into synthree, in manner depending on type of source.  Adverb and index specifications apply.  Use shortcut methods to specify type of sourcename to be accessed:
+  - b :: buffer
+  - p :: pattern, single, cloned from Edef
+  - pm :: pattern, shared from Bdef
+  - f :: function (for kr synth)
+  - t :: template (synthdef)
+  - o :: osc
+  - m :: midi
+  - v :: view
+
+
+**** +> Modify pattern playing as source of synthree or part of synthree
+
+- event +> \symbol :: modify existing pattern
+- array +> \symbol[\patname] :: modify existing pattern stored under \patname
+
+**** =< ?
+
+*** mix (shortcut): play multiple sythtrees into one synthree, mixing their signals
+
+: \synthree mix: [synthree array]
+
+or:
+
+: \synthree.mix(st1, st2, st3 ...)
+
+Shortcut for:
+
+({ Inp.ar } => \synthtree)
+=< st1
+=< st2
+...
+
+
 
 ** STARTED Control Sources (+MultiControl: Single control source)
 :PROPERTIES:
