@@ -28,6 +28,13 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		};
 	}
 
+	|> { | synthTree, replaceAction = \fadeOut |
+		// Just set the synthTree's template.
+		synthTree = synthTree.asSynthTree;
+		^synthTree.setTemplate(this);
+	}
+
+	// deprecated: 
 	=|> { | synthTree, replaceAction = \fadeOut |
 		// Just set the synthTree's template.
 		synthTree = synthTree.asSynthTree;

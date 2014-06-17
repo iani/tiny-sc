@@ -13,7 +13,7 @@ Here all methods that are needed to handle =<
 
 + SynthTree {
 
-	addInputSynth{ | synthTree, inputName = \in, startWhen = \now |
+	addInputSynth{ | synthTree, inputName = \in |
 		/*  Add another synthTree as an input to myself. (I am an "fx" synth).
 			Add synthTree to my inputs and make it output its signal to my input.
 			Add synthTree to your dictionary under its name,
@@ -32,7 +32,11 @@ Here all methods that are needed to handle =<
 		};
 		this[synthTree.name] = synthTree;
 		synthTree.setOutput(this, inputName);
-		if (startWhen === \now) { synthTree.start };
+		if (this.isPlaying) {
+			synthTree.start
+		}{
+			synthTree.addNotifierOneShot(this, \started, { synthTree.start });
+		};
 	}
 
 	outputsTo { | synthTree |

@@ -64,7 +64,8 @@ much later
 - event +> \symbol :: modify existing pattern
 - array +> \symbol[\patname] :: modify existing pattern stored under \patname
 
-**** STARTED replace =< by => for ST linking
+**** DONE replace =< by => for ST linking
+CLOSED: [2014-06-18 Wed 01:34]
 :PROPERTIES:
 :DATE:     <2014-06-17 Tue 12:33>
 :END:
