@@ -66,6 +66,14 @@ BufferList {
 					BufferDummy(filePath);
 				);
 			}
+		};
+		if (server.serverRunning) {
+			BufferFunc.initBuffers(server);
+			{
+				"=================== LOADED BUFFERS ARE: =================".postln;
+				Library.at(server).keys.asArray.sort do: _.postln;
+				"=================== END OF LOADED BUFFER LIST =================".postln;
+			} defer: 1;
 		}
 	}
 

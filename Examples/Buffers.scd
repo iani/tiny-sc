@@ -5,7 +5,11 @@ Mon, Jun 16 2014, 22:11 EEST
 
 */
 
+Server.default.quit;
+
 BufferList.loadFolder;
+
+Server.default.boot;
 
 BufferList.autoload = true;
 
@@ -14,6 +18,8 @@ Server.default.reboot;
 BufferList.getBuffer(\bell);
 
 \bell.b;
+
+\crash.b.play;
 
 //:
 a = {
@@ -26,10 +32,8 @@ a = {
 //:
 
 a.set(\buf2, \conga.bufnum);
-a.set(\buf1, \bell.bufnum);
-
-
-a.set(\rate, -0.3);
+a.set(\buf1, \crash.bufnum);
+a.set(\rate, 10.33);
 
 //:
 \boat.bufnum;
