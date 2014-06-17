@@ -37,7 +37,7 @@ much later
 - number =>.paramname \symbol :: set parameter of synthtree to number value
 - event => \symbol :: play event as pattern in synthree
 - array => \symbol :: play array as event in parameters of synthtree.  Replaces previous pattern under that name. Name defaults to 'pattern'.
-- array => \symbol[\patname] :: play array as event in parameters of synthtree, naming the pattern, so that multiple patterns can be played.
+- array => \symbol[\patternname] :: play array as event in parameters of synthtree, naming the pattern, so that multiple patterns can be played.
 - \sourcename => \symbol :: play named source into synthree, in manner depending on type of source.  Adverb and index specifications apply.  Use shortcut methods to specify type of sourcename to be accessed:
   - b :: buffer
   - p :: pattern, single, cloned from Edef
@@ -54,7 +54,15 @@ much later
 - event +> \symbol :: modify existing pattern
 - array +> \symbol[\patname] :: modify existing pattern stored under \patname
 
-**** =< ?
+**** TODO =< ?
+
+Examine if this works:
+
+\st1.st => \st2
+
+instead of
+\st2 =< \st1
+
 
 *** mix (shortcut): play multiple sythtrees into one synthree, mixing their signals
 
