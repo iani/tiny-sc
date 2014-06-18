@@ -62,12 +62,16 @@ MultiControl : IdentityDictionary {
 		used by another SynthTree with a second stream source!
 	*/
 	var unmappedValue; // cache of unmappedValue for views
+	/* New.  Will replace dictionary entry. MultiControl to become base class.: */
+	// Wed, Jun 18 2014, 17:44 EEST
+	var <krSource; // only one kr Source at any moment
+	var <scalarSources; // any number of scaler (number) sources
 
 	*new { | synthTree, name, spec, initialValue, stream |
-		^super.new.init(synthTree, name, spec, initialValue, stream);
+		^super.new.initMultiControl(synthTree, name, spec, initialValue, stream);
 	}
 
-	init { | argSynthTree, argName, argSpec, initialValue, argStream |
+	initMultiControl { | argSynthTree, argName, argSpec, initialValue, argStream |
 		synthTree = argSynthTree;
 		name = argName;
 		spec = (argSpec ? name).asSpec ? NullSpec;
@@ -260,48 +264,18 @@ MultiControl : IdentityDictionary {
 	// Controls.  Redoing: Fri, Jun 13 2014, 08:51 EEST
 
 	server { ^synthTree.server }
-
-	mapIfNeeded {
-
+	
+	addKr { | argSource |
+		// add a kr control bus.  Removes previous bus!
+		argSource = argSource.asKrSource(this);
+		if (krSource === argSource) { ^this };
+		this.removeKr;
+		krSource = argSource;
+		krSource addTo: this;
 	}
 
-	// NOT YET TESTED!
-	setBuffer { | bufName, action |		
-		/* Different handling:
-			buffer multicontrol instances only have a single item in their dict,
-			which is a BufferFunc. 
-			Setting a new buffer disconnects the previous one. 
-		*/
-		var bufferFunc;
-		bufName = bufName ? name;
-		bufferFunc = this[\buffer];
-		if (bufferFunc.notNil) { bufferFunc.objectClosed };
-		bufferFunc = BufferFunc(synthTree.server,
-			bufName,
-			action ?? {{ | argBufferFunc | this.set(argBufferFunc.bufnum); }},
-		);
-		this[\buffer] = bufferFunc;
-		this.set(bufferFunc.bufnum);
-	}
-
-	addSynth { | name, template |
-		var bus;
-		bus = this.addBus;
-	}
-
-	addBus { | bus |
-		bus ?? { bus = Bus.control(this.server, 1) };
-		// TODO: Map here
-		^bus;
-	}
-
-	addPatternn {
-
-	}
-
-	//
-	senderClosed { | sender |
-		// find sender from values of dict and remove it
-
+	removeKr {
+		krSource removeFrom: this;
+		krSource = nil;
 	}
 }

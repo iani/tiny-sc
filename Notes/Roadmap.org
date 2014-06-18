@@ -1,10 +1,14 @@
-#+TODO: TODO STARTED DONE
+#+TODO: TODO STARTED DONE REJECTED
 
 (Copied here on: Sun, Mar  9 2014, 20:37 EET)
 
 * Currently working on
 
 
+** TODO
+:PROPERTIES:
+:DATE:     <2014-06-18 Wed 17:33>
+:END:
 ** STARTED Redoing kr control sources
 :PROPERTIES:
 :DATE:     <2014-06-18 Wed 11:32>
@@ -28,17 +32,15 @@ Map \f1.k control bus source to =freq= parameter of st \sound1:
 
 Start new source in \vibrato1.k and then map to \freq parameter of \sound3;
 
-{ source } => \vibrato1.k =>.freq \sound3;
+: { source } => \vibrato1.k =>.freq \sound3;
 
-Add new source in \vibrato1.k under vibrato2 and then map to \freq parameter of \sound3;
+Add new source in \vibrato1.k under key \vibrato2 and then map to \freq parameter of \sound3;
 
-{ source } =>.vibrato2 \vibrato1.k =>.freq \sound3;
+: { source } =>.vibrato2 \vibrato1.k =>.freq \sound3;
 
 Implicitly create \freq.k and start new source under \source in \freq and map \freq.k into \sound2:
 
 : { source } =>.freq \sound2;
-
-
 
 ** STARTED Operator review: possibly get rid of +> for mods.
 :PROPERTIES:
@@ -63,6 +65,10 @@ much later
 
 - =>.adverb :: names parameter to be targeted
 - control => \synthtree[\name] :: stores control under a name in synthree so that it can be later accessed or replaced.
+**** REJECTED [index]
+CLOSED: [2014-06-18 Wed 20:36]
+
+Access per [index] is a slightly unnecessary feature.  Always access source per name from symbol.
 
 *** list of cases
 
