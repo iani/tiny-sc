@@ -4,6 +4,42 @@
 
 * Currently working on
 
+
+** STARTED Redoing kr control sources
+:PROPERTIES:
+:DATE:     <2014-06-18 Wed 11:32>
+:END:
+
+Based on scheme for OSCMap, MIDISource etc.
+
+a kr bus (similar to BusPlug of JITLib), optionally accessible from symbol via registry.
+
+Start new source into \f1, in key \source of \f1.  Replace previous source in key \source of \f1 if it exists:
+
+: { ... ugen code ... } => \f1.k
+
+Start new source into \f1, in key \source2 of \f1.  Replace previous source in key \source2 of \f1 if it exists:
+
+: { ... ugen code ... } =>.source2 \f1.k
+
+Map \f1.k control bus source to =freq= parameter of st \sound1:
+
+: \f1.k =>.freq \sound1;
+
+Start new source in \vibrato1.k and then map to \freq parameter of \sound3;
+
+{ source } => \vibrato1.k =>.freq \sound3;
+
+Add new source in \vibrato1.k under vibrato2 and then map to \freq parameter of \sound3;
+
+{ source } =>.vibrato2 \vibrato1.k =>.freq \sound3;
+
+Implicitly create \freq.k and start new source under \source in \freq and map \freq.k into \sound2:
+
+: { source } =>.freq \sound2;
+
+
+
 ** STARTED Operator review: possibly get rid of +> for mods.
 :PROPERTIES:
 :DATE:     <2014-06-15 Sun 09:14>
@@ -63,36 +99,6 @@ much later
 
 - event +> \symbol :: modify existing pattern
 - array +> \symbol[\patname] :: modify existing pattern stored under \patname
-
-**** DONE replace =< by => for ST linking
-CLOSED: [2014-06-18 Wed 01:34]
-:PROPERTIES:
-:DATE:     <2014-06-17 Tue 12:33>
-:END:
-
-Examine if this works:
-
-\st1.st => \st2
-
-instead of
-\st2 =< \st1
-
-Previously the order was reverse, to permit starting the receiving fx before the sending source, because the fx must be started first to set its group, to be ready for the source.  However, this can also be coded in reverse order through following mechanism:
-
-: { source } |> \st1 => ({ source } |> \st2) => ({ source } => st3)
-
-Where:
-
-: { source } |> \st1
-
-... sets the SynthTree up to play source, but does not start it
-
-: => ({ source } |> \st2)
-
-... also sets up st2 but does not start it, but additionally => tells the receiver (\st1) now to wait for \st2 to start (through notification changed(\started)), and then to start!  And so on for st2 to st3.
-
-
-
 
 *** implementation note: can be done on top of curent scheme... using adverb presence to distinguish
 :PROPERTIES:
@@ -1745,6 +1751,41 @@ Should prevent starting to play if the edef is not already playing.
 *** Should Edefs also have a gui like synthrees?
 
 *** \edef.clone? \synthree.clone?
+
+** DONE replace =< by => for ST linking
+CLOSED: [2014-06-18 Wed 01:34]
+:PROPERTIES:
+:DATE:     <2014-06-17 Tue 12:33>
+:END:
+
+Examine if this works:
+
+\st1.st => \st2
+
+instead of
+\st2 =< \st1
+
+Previously the order was reverse, to permit starting the receiving fx before the sending source, because the fx must be started first to set its group, to be ready for the source.  However, this can also be coded in reverse order through following mechanism:
+
+: { source } |> \st1 => ({ source } |> \st2) => ({ source } => st3)
+
+Where:
+
+: { source } |> \st1
+
+... sets the SynthTree up to play source, but does not start it
+
+: => ({ source } |> \st2)
+
+... also sets up st2 but does not start it, but additionally => tells the receiver (\st1) now to wait for \st2 to start (through notification changed(\started)), and then to start!  And so on for st2 to st3.
+
+** DONE Draft of OSCMap
+CLOSED: [2014-06-18 Wed 11:33]
+:PROPERTIES:
+:DATE:     <2014-06-18 Wed 11:33>
+:END:
+
+
 
 
 * Undergoing tests

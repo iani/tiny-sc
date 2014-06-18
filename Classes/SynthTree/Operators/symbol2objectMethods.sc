@@ -29,10 +29,10 @@ Tue, Jun 17 2014, 17:09 EEST
 	p { ^Library.at(\patterns, this) }
 	pm { ^Library.at(\bdefs, this) }
 	f { ^Library.at(\krFuncs, this) }
-	k { ^Library.at(\krSources, this) }
+	//	k { ^Library.at(\krSources, this) } // see KrMap
 	t { ^Library.at(\synthTemplates, this) }
 	m { ^Library.at(\midiSources, this) }
-	o { ^Library.at(\oscSources, this) }
+	o { ^Library.at(\oscSources, this) } // see also: OSCMap, Symbol:osc
 	v { ^Library.at(\views, this) }
 	s { | createIfMissing = true, defaultChuck |
 		^this.st(createIfMissing, defaultChuck)
