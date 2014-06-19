@@ -324,7 +324,7 @@ SynthTree : IdentityTree {
 		// guarantee that moveBefore happens AFTER the synth has really started!
 			this.addNotifierOneShot(synth, 'n_go', {
 				this do: _.moveBefore(synth);
-				args do: _.mapIfNeeded;
+				// args do: _.mapIfNeeded;
 				this.changed(\started);
 			});
 		};

@@ -18,6 +18,9 @@ Registry {
 		if (instance.isNil) {
 			instance = makeFunc.value;
 			Library.global.putAtPath(path, instance);
+			instance.onObjectClosed(this, {
+				this.remove(*path)
+			});
 		};
 		^instance;
 	}

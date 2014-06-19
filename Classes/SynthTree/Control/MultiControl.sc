@@ -61,7 +61,7 @@ MultiControl : IdentityDictionary {
 		One SynthTree might want to compose the stream source
 		used by another SynthTree with a second stream source!
 	*/
-	var unmappedValue; // cache of unmappedValue for views
+	var <unmappedValue = 0; // cache of unmappedValue for views
 	/* New.  Will replace dictionary entry. MultiControl to become base class.: */
 	// Wed, Jun 18 2014, 17:44 EEST
 	var <krSource; // only one kr Source at any moment

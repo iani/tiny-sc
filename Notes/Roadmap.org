@@ -1,4 +1,4 @@
-#+TODO: TODO STARTED DONE REJECTED
+#+TODO: TODO STARTED REJECTED OBSOLETE DONE
 
 (Copied here on: Sun, Mar  9 2014, 20:37 EET)
 
@@ -206,14 +206,12 @@ when setting control:
 1. Disconnect previous control.
 2.
 
-** STARTED Make +> work on synth arguments
+** DONE Make => work on synth arguments
 :PROPERTIES:
 :DATE:     <2014-06-11 Wed 22:40>
 :END:
 
-Rationale:  Since (event) +> \synthtree modifies the event of an EventStream playing in synthtree, (anything else) +>.ctlname \synthtree should modify control named ctlname in the synth of synthtree.  This is synonymous to =\synthree.set(\ctlname, value)=.  In other words:
-
-: 500 +>.freq \st;
+: 500 =>.freq \st;
 
 Is the same as:
 
@@ -221,16 +219,16 @@ Is the same as:
 
 Considerations:
 
-One could use +> to set params to Buffers, (getting index from buffer),
+One could use => to set params to Buffers, (getting index from buffer),
 
-: \buffername.buf +>.buf1 => \st;
+: \buffername.buf =>.buf1 => \st;
 
 Or
-: ~abuffer +>.buf1 => \st;
+: ~abuffer =>.buf1 => \st;
 
 Or:
 
-: \buffername.buf +> => \st;  // ctlname defaults to \buf
+: \buffername.b => \st;  // ctlname defaults to \buf
 
 Or to map to busses!
 
@@ -245,7 +243,7 @@ But note: The set event should be modified to set the SynthTree's param instead 
 
 Or to play a control rate synth func into a parameter! (easy: create the synth, chuck it into a bus, and then map the param to the bus.  Possibly register the bus with NameSpace(synthtree, param), or use a BusFunc in a MultiCtl.)
 
-*** stSet event type
+** TODO stSet event type
 :PROPERTIES:
 :ID:       0D38B0AD-9FFC-4206-8529-A50953D37046
 :eval-id:  2
@@ -517,6 +515,15 @@ Map synths playing envelopes, any function, lines to input controls of other syn
 ** Improve keyboard commands for setting fadeTime
 
 * More TODOs
+
+** TODO windows for all objects
+
+Any object should be able to register a window in Registry.
+
+The window may have a default layout that allows to add or remove widgets
+horizontally or vertically.
+
+See draft of this Classes/Gui/GenericWindow.scd
 
 ** TODO \symbol.play
 
@@ -1791,8 +1798,21 @@ CLOSED: [2014-06-18 Wed 11:33]
 :DATE:     <2014-06-18 Wed 11:33>
 :END:
 
+** DONE onObjectClosed, Registry remove on object closed
+:PROPERTIES:
+:DATE:     <2014-06-19 Thu 10:44>
+:END:
+
+Registry removes object when it calls objectClosed.
 
 
+** DONE generalized slider scheme for st
+CLOSED: [2014-06-19 Thu 13:20]
+:PROPERTIES:
+:DATE:     <2014-06-19 Thu 13:19>
+:END:
+
+See file GenericGUI.sc
 
 * Undergoing tests
 

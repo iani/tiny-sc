@@ -10,12 +10,12 @@ Fri, May 30 2014, 14:20 EEST
 
 + Window {
 	*for { | object key = \gui, initFunc |
-		^NameSpace(object, key, {
+		^Registry(object, key, {
 			var window;
 			window = Window(format("%:%", object, key));
 			initFunc.(window, object, key);
 			window.onClose = {
-				NameSpace.remove(object, key);
+				// NameSpace.remove(object, key);
 				window.objectClosed;
 			};
 		}).front;

@@ -139,6 +139,10 @@ Notification {
 		this.releaseDependants;
 	}
 
+	onObjectClosed { | listener, action |
+		listener.addNotifier(this, \objectClosed, action);
+	}
+
 	addNotifierOneShot { | notifier, message, action |
 		Notification(notifier, message, this, { | ... args |
 			action.(*args); //action.(args);

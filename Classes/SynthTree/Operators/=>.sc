@@ -21,7 +21,22 @@ Tue, Jun 17 2014, 17:23 EEST
 	receiveNumberChuck { | number paramName = \amp | ^this.asSynthTree.set(paramName, number) }
 }
 
-
++ View {
+	=> { | st, paramName = \amp |
+		var param;
+		param = st.asSynthTree.getParam(paramName);
+		param.addNotifier(this, \value, { | val | param.mapSet(val) });
+		param.addNotifier(this, \keydown, { | view key |
+			switch (key,
+				$ , { param.synthTree.toggle}
+			);
+		});
+		this.addNotifier(param, \value, { | value, unmappedValue | 
+			this.value = unmappedValue 
+		});
+		this.value = param.unmappedValue;
+	}
+}
 
 /*
 
