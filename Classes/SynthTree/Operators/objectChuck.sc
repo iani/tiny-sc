@@ -10,11 +10,12 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		currentEnvironment.parent[key] = this;
 	}
 
-	=> { | chuckee, replaceAction = \fadeOut |
-		// chuck a source to a synthTree and play
-		//		^synthTree.asSynthTree.chuck(this, replaceAction);
-		// New implementation: Sat, Mar 29 2014, 03:14 EET :
-		^chuckee.receiveChuck(this, replaceAction);
+	=> { | chuckee, param |
+		if (param.isNil) {
+			^chuckee.receiveChuck(this);
+		}{
+			this.perform('+>', chuckee, param)
+		}
 	}
 
 	==> { | synthTree, replaceAction = \fadeOut |
