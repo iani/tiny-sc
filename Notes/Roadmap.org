@@ -1,14 +1,10 @@
-#+TODO: TODO STARTED REJECTED OBSOLETE DONE
+#+TODO: TODO STARTED REJECTED CANCELLED OBSOLETE DONE
 
 (Copied here on: Sun, Mar  9 2014, 20:37 EET)
 
 * Currently working on
 
 
-** TODO
-:PROPERTIES:
-:DATE:     <2014-06-18 Wed 17:33>
-:END:
 ** STARTED Redoing kr control sources
 :PROPERTIES:
 :DATE:     <2014-06-18 Wed 11:32>
@@ -18,57 +14,65 @@ Based on scheme for OSCMap, MIDISource etc.
 
 a kr bus (similar to BusPlug of JITLib), optionally accessible from symbol via registry.
 
-Start new source into \f1, in key \source of \f1.  Replace previous source in key \source of \f1 if it exists:
+It will be the *only* object used to share control sources, class called =KrMap=.  It is coded and stored as follows.
+
+*** Case 1: Storing directly in synthtree
+
+: { ... synth code ... } =>.param \synthtree;
+
+... accesses/creates a KrMap instance from the instance variable =krSource= inside MultiParameter stored in args under =param=,  creates a kr synth from the function, and stores it in default slot =source= of that KrMap.  This new synth replaces any previous synth stored in that slot, if it exists.
+
+: { ... synth code ... } =>.param \synthtree[\secondSource];
+
+... accesses/creates a KrMap instance from the instance variable =krSource= inside MultiParameter stored in args under =param=,  creates a kr synth from the function, and stores it in slot named =secondSource= of that KrMap.  This new synth replaces any previous synth stored in that slot, if it exists.
+
+In both cases above, the KrMap instance may have been put there previously by accessing it from a KrInstance stored by Registry in the Library, or it may be created anew.
+
+**** TODO IMPORTANT: Free KrMaps that are replaced and not stored in Library
+:PROPERTIES:
+:DATE:     <2014-06-19 Thu 20:55>
+:END:
+
+KrMap *must* have a way of knowing if it is stored in Library or not.  Because, if it has been created in a param of a SynthTree without being stored in Library, then when it is replaced by a different KrMap, it should be freed, because there is no refernce to it any longer, and it becomes therefore impossible to free its bus or synths.  Therefore, store tha name of KrMap inside the KrMap instance.  If the name of a KrMap is nil, then it should be freed when replaced inside a MultIparam.  Othewise not.
+
+*** Case 2: Accessing via name from Library
 
 : { ... ugen code ... } => \f1.k
 
-Start new source into \f1, in key \source2 of \f1.  Replace previous source in key \source2 of \f1 if it exists:
+... start new source into \f1, in key \source of \f1.  Replace previous source in key \source of \f1 if it exists
 
 : { ... ugen code ... } =>.source2 \f1.k
 
-Map \f1.k control bus source to =freq= parameter of st \sound1:
+... start new source into \f1, in key \source2 of \f1.  Replace previous source in key \source2 of \f1 if it exists:
 
-: \f1.k =>.freq \sound1;
+*** Case 3: Sending from library to synthtree
 
-Start new source in \vibrato1.k and then map to \freq parameter of \sound3;
+Send existing kr source =krsource1= to parameter =freq= of SynthTree =st1=.  The new source is stored in =krSource=, and the parameter =freq= is mapped to the bus of =krsource1=, replacing the previous KrMap.
+
+: \krsource1.k =>.freq \st1;
+
+Start new source in \vibrato1.k and then map to \freq parameter of \sound3:
 
 : { source } => \vibrato1.k =>.freq \sound3;
 
-Add new source in \vibrato1.k under key \vibrato2 and then map to \freq parameter of \sound3;
+Add new source in \vibrato1.k under key \vibrato2 and then map to \freq parameter of \sound3:
 
 : { source } =>.vibrato2 \vibrato1.k =>.freq \sound3;
 
-Implicitly create \freq.k and start new source under \source in \freq and map \freq.k into \sound2:
-
-: { source } =>.freq \sound2;
-
-** STARTED Operator review: possibly get rid of +> for mods.
+** STARTED Operator review: => for setting sources +> for modifying them
 :PROPERTIES:
 :DATE:     <2014-06-15 Sun 09:14>
 :END:
 
-When using an adverb, => can act as a modifier to the parameter given by the argument.
-So there is no need to use +>
+When using an adverb, => can act as a modifier to the parameter given by the argument. Use that, leaving +> to signify modifying an existing source inside an st.  Applies [only?] to patterns.
 
 : \source =>.param \target
 
 Trying new scheme
 
-*** operators
+** Considering \synthtree[]
 
-=>
-
-much later
-+>
-
-*** qualifiers: (1) .adverb, (2) [index]
-
-- =>.adverb :: names parameter to be targeted
 - control => \synthtree[\name] :: stores control under a name in synthree so that it can be later accessed or replaced.
-**** REJECTED [index]
-CLOSED: [2014-06-18 Wed 20:36]
-
-Access per [index] is a slightly unnecessary feature.  Always access source per name from symbol.
 
 *** list of cases
 
@@ -1812,7 +1816,7 @@ CLOSED: [2014-06-19 Thu 13:20]
 :DATE:     <2014-06-19 Thu 13:19>
 :END:
 
-See file GenericGUI.sc
+See file GenericGUI.sc, and examples in Examples/SliderExamples.scd
 
 * Undergoing tests
 

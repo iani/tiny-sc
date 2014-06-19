@@ -61,11 +61,11 @@ MultiControl : IdentityDictionary {
 		One SynthTree might want to compose the stream source
 		used by another SynthTree with a second stream source!
 	*/
-	var <unmappedValue = 0; // cache of unmappedValue for views
+	var <unmappedValue; // cache of unmappedValue for views
 	/* New.  Will replace dictionary entry. MultiControl to become base class.: */
 	// Wed, Jun 18 2014, 17:44 EEST
 	var <krSource; // only one kr Source at any moment
-	var <scalarSources; // any number of scaler (number) sources
+	var <scalarSources; // any number of scalar (number) sources
 
 	*new { | synthTree, name, spec, initialValue, stream |
 		^super.new.initMultiControl(synthTree, name, spec, initialValue, stream);
@@ -77,7 +77,9 @@ MultiControl : IdentityDictionary {
 		spec = (argSpec ? name).asSpec ? NullSpec;
 		stream = argStream.asStream;
 		nextValue = initialValue ?? { stream.next ?? { spec.default } };
+		unmappedValue = spec unmap: nextValue;
 	}
+
 
 	synthArgs {
 		/* Return name + next value, for constructing Synth args. */

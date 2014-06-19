@@ -1,3 +1,12 @@
+/*
+
+These examples show the concept of connecting a model with views. 
+It is only meant as conceptual illustration.
+
+For practical use with SynthTree, see file SliderExamples.scd
+
+*/
+
 //:
 { LFNoise2.ar(\freq.kr(1000)) } => \test;
 

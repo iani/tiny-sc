@@ -23,18 +23,39 @@ Tue, Jun 17 2014, 17:23 EEST
 
 + View {
 	=> { | st, paramName = \amp |
+		// connect view to parameter of synthtree
 		var param;
 		param = st.asSynthTree.getParam(paramName);
 		param.addNotifier(this, \value, { | val | param.mapSet(val) });
 		param.addNotifier(this, \keydown, { | view key |
-			switch (key,
-				$ , { param.synthTree.toggle}
-			);
+			switch (key, $ , { param.synthTree.toggle })
 		});
 		this.addNotifier(param, \value, { | value, unmappedValue | 
 			this.value = unmappedValue 
 		});
-		this.value = param.unmappedValue;
+		this.value =  param.unmappedValue;
+	}
+
+	>| { | st, paramName = \amp |
+		// remove view from parameter of synthtree
+		var param;
+		param = st.asSynthTree.getParam(paramName);
+		param.removeNotifier(this, \value);
+		param.removeNotifier(this, \keydown);
+		this.removeNotifier(param, \value);
+	}
+}
+
++ NumberBox {
+	=> { | st, paramName = \amp |
+		var param;
+		param = st.asSynthTree.getParam(paramName);
+		param.addNotifier(this, \value, { | val | param.set(val) });
+		param.addNotifier(this, \keydown, { | view key |
+			switch (key, $ , { param.synthTree.toggle});
+		});
+		this.addNotifier(param, \value, { | value | this.value = value });
+		this.value = param.nextValue;
 	}
 }
 

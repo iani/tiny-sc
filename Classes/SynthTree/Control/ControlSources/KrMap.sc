@@ -30,14 +30,14 @@ KrSource {
 }
 
 KrMap : Bus {
-
+	var <name;
 	var sources;
 
 	*new { | server numChannels = 1 |
-		^super.control(server, numChannels).initBusMap;
+		^super.control(server, numChannels).initKrMap;
 	}
 
-	initBusMap { sources = IdentityDictionary() }
+	initKrMap { sources = IdentityDictionary() }
 
 	addSource { | template name = \source startNow = true |
 		var source;
