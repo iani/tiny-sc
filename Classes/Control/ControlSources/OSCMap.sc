@@ -1,4 +1,7 @@
 /*
+
+Obsolete.  See BroadcastResponder.
+
 Experimental: 
 Map a value received via osc message to range 0-1 and broadcast it with changed message. 
 
@@ -8,7 +11,7 @@ Note: Could be optimized by using own set of dependants.
 
 */
 
-
+/*
 OSCMap : OSCFunc {
 	var <>mapper;
 
@@ -39,3 +42,4 @@ OSCMap : OSCFunc {
 		})
 	}
 }
+*/

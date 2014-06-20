@@ -51,6 +51,10 @@ BufferList {
 		^Platform.userAppSupportDir +/+ "BufferList.sctxar";
 	}
 
+	*loadDialog {
+		{ | path | this.loadFolder(path) }.doPath;
+	}
+
 	*loadFolder { | path |
 		var pathname, extension, server;
 		//		[this, thisMethod.name].postln;

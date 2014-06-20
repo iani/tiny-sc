@@ -445,7 +445,7 @@ SynthTree : IdentityTree {
 		argArgs keysValuesDo: { | key, value |
 			args.storeArgValue(key, value);
 		};
-		if (synth.isPlaying) { synth.set(*argArgs) };
+		if (synth.isPlaying) {synth.set(*argArgs) };
 	}
 
 	setSynthParameter { | parameter, value |
