@@ -36,7 +36,7 @@ EventStream : Stream {
 		};
 		^outEvent;
 	}
-	
+
 	/* This comes into play when we embed an EventPattern in a Stream as in: 
 		Pseq([EventPattern((degree: (1..8).pseq(2)))]).play;
 	*/
