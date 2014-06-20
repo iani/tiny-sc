@@ -51,6 +51,12 @@ KrMap : Bus {
 		if (startNow) { source.start };
 	}
 
+	free {
+		sources do: _.free;
+		super.free;
+		this.objectClosed;
+	 }
+
 }
 
 + Symbol {

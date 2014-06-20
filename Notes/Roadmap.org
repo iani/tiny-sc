@@ -5,6 +5,40 @@
 * Currently working on
 
 
+
+** How to store/access scalar control sources?
+:PROPERTIES:
+:DATE:     <2014-06-20 Fri 10:20>
+:END:
+
+A synthree parameter can only have one kr control source at a time.  So that is stored in a single instance variable.  However, a synthree parameter can have multiple scalar control sources at a time.  How to access these and how to detach a chosen source from a parameter?
+
+*** option 1: store under name in dictionary inside parameter
+
+To be able to detach a scalar control source at any time, store scalar control sources in a dictionary under names.  It is easy to create default names, to avoid having to provide a different name explicitly each time.  Default names proposed are:
+
+- view
+- pattern
+- midi
+- osc
+
+Note: =bus= and =buffer= are not scalar control sources.  Need to change older code that treats them as such.
+
+**** Specifying scalar control source names with \synthree[name]
+
+Consider this syntax:
+
+: \window.slider(\myfreq) =>.freq \st[\s1];
+
+Here =\st[\st]= is evaluated before =\st= knows that the =freq= parameter is being addressed.  To implement this, create a placeholder object =ParamSlot= that holds the name and synthree, and accesses the parameter when it is supplied by the =>.freq operator.
+
+*** option 2: store sources in set in param - not in dict (no names)
+
+*** option 3: store sources only globally in Library - not in param at all
+
+This is a variant of option 2.
+
+
 ** STARTED Redoing kr control sources
 :PROPERTIES:
 :DATE:     <2014-06-18 Wed 11:32>
@@ -20,7 +54,7 @@ It will be the *only* object used to share control sources, class called =KrMap=
 
 : { ... synth code ... } =>.param \synthtree;
 
-... accesses/creates a KrMap instance from the instance variable =krSource= inside MultiParameter stored in args under =param=,  creates a kr synth from the function, and stores it in default slot =source= of that KrMap.  This new synth replaces any previous synth stored in that slot, if it exists.
+... accesses/creates a KrMap instance from the instance variable =krSource= inside MultiParameter stored in args under =param=, creates a kr synth from the function, and stores it in default slot =source= of that KrMap.  This new synth replaces any previous synth stored in that slot, if it exists.
 
 : { ... synth code ... } =>.param \synthtree[\secondSource];
 
