@@ -1,6 +1,6 @@
 /*
 EventPattern plays both inside sequential patterns (Pseq etc), 
-and inside parallel patterns (Ppar), and on its own.
+and inside parallel patterns (Ppar), and on its own (like Pbind).
 
 IZ Mon, Apr 21 2014, 17:14 EEST
 
