@@ -21,7 +21,7 @@ Workaround: one might store the last used SynthTree in Library, and access it fo
 :DATE:     <2014-06-21 Sat 08:29>
 :END:
 
-See BuildingEventModelGuis.scd
+See BuildingEventModelGuis.scd in the present Notes folder.
 
 (Also see: EventModelTries.scd and ControlSourceTests.scd)
 
