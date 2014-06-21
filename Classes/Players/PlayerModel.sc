@@ -20,4 +20,6 @@ PlayerModel : EventModel {
 
 	}
 
+	// headless gui - no start stop
+	gui {} 
 }

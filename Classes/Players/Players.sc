@@ -13,14 +13,19 @@ AbstractPlayer {
 
 	stop {}
 
+	gui {}
+
 }
 
 EventPlayer : AbstractPlayer {
 
+	//	gui {}
 }
 
 
 TaskPlayer : AbstractPlayer {
+
+	//	gui {}
 
 }
 
