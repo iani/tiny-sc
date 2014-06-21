@@ -18,24 +18,34 @@ KrSource {
 	setTemplate { | argTemplate |
 		template = argTemplate;
 		if (synth.isPlaying) {
-			synth.free;
-			this.start(true);
+			synth.objectClosed.free; // do not notify stopped
+			this.makeSynth;
 		};
 	}
 
-	start { | doRestart = false |
-		if (doRestart.not and: { synth.isPlaying }) { ^this };
-		synth = template.kr(bus.index, server: bus.server);
+	makeSynth {
+		synth = template.kr(bus.index, server: bus.server)
+		.onEnd(this, { this.changed(\stopped); synth = nil; })
+		.onStart(this, { this.changed(\started) });
 	}
+
+	start {
+		if (synth.isPlaying) { ^this };
+		this.makeSynth;
+		// synth.onStart(this, { this.changed(\started) });
+	}
+	isPlaying { ^synth.isPlaying }
+	free { if (synth.isPlaying) { synth.free } }
 }
 
 KrMap : Bus {
-	var <name;
-	var sources;
+	var <sources;
 
-	*new { | server numChannels = 1 |
-		^super.control(server, numChannels).initKrMap;
+	// Note: new method not subclassable
+	*newKr { | server numChannels = 1 |
+		^this.control(server, numChannels).initKrMap;
 	}
+
 
 	initKrMap { sources = IdentityDictionary() }
 
@@ -49,6 +59,7 @@ KrMap : Bus {
 			source.setTemplate(template);
 		};
 		if (startNow) { source.start };
+		^source;
 	}
 
 	free {

@@ -611,16 +611,6 @@ SynthTree : IdentityTree {
 		template = template.reset(this);
 	}
 
-	/*
-	// under development
-	map { | param, curve | 
-		/*  Fade any parameter to any value(s) using a line or envelope ugen
-           on a control bus, mapped to the parameter. See MultiControl:map for details.
-		*/
-		this.getParam(param).map(curve);
-	}
-	*/
-
 	bufferList {
 		// From BufferList. Select buffer from list and play it
 		var buffers, keys;

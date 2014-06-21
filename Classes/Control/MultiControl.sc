@@ -64,7 +64,7 @@ MultiControl : IdentityDictionary {
 	var <unmappedValue; // cache of unmappedValue for views
 	/* New.  Will replace dictionary entry. MultiControl to become base class.: */
 	// Wed, Jun 18 2014, 17:44 EEST
-	var <krSource; // only one kr Source at any moment
+	var <krMap; // only one kr Source at any moment
 	var <scalarSources; // any number of scalar (number) sources
 
 	*new { | synthTree, name, spec, initialValue, stream |
@@ -122,12 +122,6 @@ MultiControl : IdentityDictionary {
 		this.changed(\value, value, unmappedValue);
 	}
 
-	map { | bus |
-		if (synthTree.isPlaying) {
-			synthTree.synth.map(name, bus.index);
-		}
-	}
-
 	receivePatternChuck { | pattern |
 		// TODO: fix this to work with [100, 200].pseq => ~freq;
 		// should be like this: 
@@ -155,6 +149,35 @@ MultiControl : IdentityDictionary {
 
 	getPattern { | patternName = \pattern | ^this[patternName].pattern }
 
+	addKrFunc { | func, sourceName = \source |
+		// play func as kr source into KrMap.  Create map if needed
+		var newSource;
+		krMap ?? {
+			krMap = Registry(synthTree, this, { KrMap.newKr(synthTree.server) });
+		};
+		newSource = krMap.addSource(func, name, startNow: true);
+		this.addNotifierOneShot(newSource, \started, { this bmap: krMap });
+	}
+
+	addKrMap { | argKrMap |
+		// map to krMap.  
+		krMap = argKrMap;
+		this bmap: krMap;
+	}
+
+	bmap { | bus | // map to bus
+		krMap = bus;
+		if (synthTree.isPlaying) { synthTree.synth.map(name, bus.index); };
+		this.addNotifier(synthTree, \started, { synthTree.synth.map(name, bus.index) });
+	}
+
+	bunMap { // unmap from bus and remove bus
+		krMap !? { krMap get: { | busValue | this.set(busValue) } };
+		krMap = nil;
+		this.removeNotifier(synthTree, \started);
+	}
+
+	// ================ following should be reviewed ================
 	add { | controlName, control |
 
 	}
@@ -194,6 +217,7 @@ MultiControl : IdentityDictionary {
 		// stop a control's process, if appropriate
 	}
 
+	// ================ above should be reviewed ================
 	// reset a control's value to specs default
 	reset { this.set(spec.default) }
 
@@ -270,14 +294,14 @@ MultiControl : IdentityDictionary {
 	addKr { | argSource |
 		// add a kr control bus.  Removes previous bus!
 		argSource = argSource.asKrSource(this);
-		if (krSource === argSource) { ^this };
+		if (krMap === argSource) { ^this };
 		this.removeKr;
-		krSource = argSource;
-		krSource addTo: this;
+		krMap = argSource;
+		krMap addTo: this;
 	}
 
 	removeKr {
-		krSource removeFrom: this;
-		krSource = nil;
+		krMap removeFrom: this;
+		krMap = nil;
 	}
 }

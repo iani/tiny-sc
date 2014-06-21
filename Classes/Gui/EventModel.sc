@@ -9,6 +9,11 @@ However, these methods would make it impossible to set keys with the same name i
 So EventModel subclass is defined here to avoid possible incompatibilities resulting
 from the shadowing of these keys.
 
+TODO: Use this to play routines and create to change their parameters.
+
+a = EventModel().addKeys(\a, \b);
+a.gui;
+
 Fri, May 30 2014, 08:34 EEST
 
 */

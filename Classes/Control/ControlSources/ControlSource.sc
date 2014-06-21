@@ -43,7 +43,7 @@ ControlSynth : ControlSource { // kr Synth sending to bus mapped to parameter
 
 	initControlSynth {
 		bus = Bus.control(parameter.server, 1);
-		this.addNotifier(parameter.synthTree, \started, { parameter map: bus });
+		this.addNotifier(parameter.synthTree, \started, { parameter bmap: bus });
 		parameter.changed(\controlSynth, this);
 		this.addNotifier(parameter, \controlSynth, { this.free; });
 		this.start;
@@ -53,7 +53,7 @@ ControlSynth : ControlSource { // kr Synth sending to bus mapped to parameter
 		if (this.isPlaying.not) {
 			source = template.kr(bus.index);
 			source.onEnd(this, { source = nil });
-			source.onStart(this, { parameter map: bus });
+			source.onStart(this, { parameter bmap: bus });
 		}
 	}
 
@@ -94,9 +94,15 @@ ControlOSC : ControlSource { // set parameter based on OSC input
 	kr { | outBus = 0 outName = \out server |
 		^{ Out.kr(outName.kr(0), this.value) }.play(server, args: [outName, outBus]);
 	}
-
+	/* Tested - now replaed by addKrFunc
 	+> { | st, param |
 		^ControlSynth(st.asSynthTree.getParam(param), this);
+	}
+	*/
+	// Used to be ++> while under testing. 
+	+> { | st param |
+		// THIS WILL REPLACE +> ABOVE, AFTER BEING TESTED
+		^st.asSynthTree.getParam(param).addKrFunc(this);
 	}
 }
 

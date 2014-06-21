@@ -4,7 +4,12 @@
 
 * Currently working on
 
+** TODO make gui for controlling routines + their params with EventModel
+:PROPERTIES:
+:DATE:     <2014-06-21 Sat 08:29>
+:END:
 
+See EventModelTries.scd and ControlSourceTests.scd.
 
 ** How to store/access scalar control sources?
 :PROPERTIES:
@@ -13,7 +18,17 @@
 
 A synthree parameter can only have one kr control source at a time.  So that is stored in a single instance variable.  However, a synthree parameter can have multiple scalar control sources at a time.  How to access these and how to detach a chosen source from a parameter?
 
-*** option 1: store under name in dictionary inside parameter
+*** DONE [#A] option 3: store sources only globally in Library - not in param at all
+CLOSED: [2014-06-21 Sat 05:36]
+:PROPERTIES:
+:DATE:     <2014-06-21 Sat 05:28>
+:END:
+
+This is a variant of option 2.
+
+Already =BroadcastingResponder= and =View= work without having to be stored in the parameter.
+
+*** REJECTED [#C] option 1: store under name in dictionary inside parameter
 
 To be able to detach a scalar control source at any time, store scalar control sources in a dictionary under names.  It is easy to create default names, to avoid having to provide a different name explicitly each time.  Default names proposed are:
 
@@ -32,21 +47,14 @@ Consider this syntax:
 
 Here =\st[\st]= is evaluated before =\st= knows that the =freq= parameter is being addressed.  To implement this, create a placeholder object =ParamSlot= that holds the name and synthree, and accesses the parameter when it is supplied by the =>.freq operator.
 
-*** option 2: store sources in set in param - not in dict (no names)
-
-*** option 3: store sources only globally in Library - not in param at all
-
-This is a variant of option 2.
-
+*** REJECTED [#C] option 2: store sources in set in param - not in dict (no names)
 
 ** STARTED Redoing kr control sources
 :PROPERTIES:
 :DATE:     <2014-06-18 Wed 11:32>
 :END:
 
-Based on scheme for OSCMap, MIDISource etc.
-
-a kr bus (similar to BusPlug of JITLib), optionally accessible from symbol via registry.
+A kr bus (similar to BusPlug of JITLib), always registered in Library via Registry.
 
 It will be the *only* object used to share control sources, class called =KrMap=.  It is coded and stored as follows.
 
@@ -54,13 +62,13 @@ It will be the *only* object used to share control sources, class called =KrMap=
 
 : { ... synth code ... } =>.param \synthtree;
 
-... accesses/creates a KrMap instance from the instance variable =krSource= inside MultiParameter stored in args under =param=, creates a kr synth from the function, and stores it in default slot =source= of that KrMap.  This new synth replaces any previous synth stored in that slot, if it exists.
+... accesses/creates a KrMap instance from the instance variable =krSource= inside MultiParameter stored in args under =param=, creates a kr synth from the function, and stores it in default slot =source= of that KrMap.  This new synth replaces any previous synth stored in that slot, if it exists.  If the KrMap instance is new, it is registered in Library under [SynthTree, Parmeter].
 
 : { ... synth code ... } =>.param \synthtree[\secondSource];
 
 ... accesses/creates a KrMap instance from the instance variable =krSource= inside MultiParameter stored in args under =param=,  creates a kr synth from the function, and stores it in slot named =secondSource= of that KrMap.  This new synth replaces any previous synth stored in that slot, if it exists.
 
-In both cases above, the KrMap instance may have been put there previously by accessing it from a KrInstance stored by Registry in the Library, or it may be created anew.
+In both cases above, the KrMap instance may have been put there previously by accessing it from a KrInstance stored by Registry in the Library, or it may be created anew.  If the KrMap instance is new, it is registered in Library under [SynthTree, Parmeter].
 
 **** TODO IMPORTANT: Free KrMaps that are replaced and not stored in Library
 :PROPERTIES:
@@ -174,7 +182,7 @@ Shortcut for:
 Simplify the way in which diverse controls are added to a MultiControl instance.
 Possibly make MultiControl a base Class - not an IdentityDictionary.
 
-*** two types of control sources:
+*** OBSOLETE two types of control sources:
 
 **** =ControlSource= unnamed, not-shared control sources
 :PROPERTIES:
@@ -230,7 +238,7 @@ Event +>.paramname \synthree;
 - Connected to listeners through =Notification=, broadcast their changes through the =changed= message mechanism.
 
 
-*** instance var control:
+*** OBSOLETE instance var control:
 
 may contain one of:
 - MIDIfunc
