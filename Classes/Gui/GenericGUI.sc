@@ -41,7 +41,7 @@ w = Window().front;
 		window.onClose = { window.objectClosed }; 
 		^window.front;
 	}
-	
+
 	slider { | name = \slider, windowName = \gui, windowFunc |
 		var window, parentLayout, layout, slider;
 		window = this.w(windowName, windowFunc).front;

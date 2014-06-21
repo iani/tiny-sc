@@ -10,13 +10,13 @@ a.gui({ | w |
 			({ [
 				
 				HLayout(
-					StaticText().string_("freq:"), a.numberBox(\freq),
-					a.slider(\freq).orientation_(\horizontal).maxHeight_(23),
+					StaticText().string_("freq:"), a.simpleNumberBox(\freq),
+					a.simpleSlider(\freq).orientation_(\horizontal).maxHeight_(23),
 				),				
 				HLayout(
-					StaticText().string_("amp:"), a.numberBox(\amp), a.knob(\amp)
+					StaticText().string_("amp:"), a.simpleNumberBox(\amp), a.simpleKnob(\amp)
 				),
-				HLayout(StaticText().string_("pan:"), a.numberBox(\pan), a.knob(\pan))
+				HLayout(StaticText().string_("pan:"), a.simpleNumberBox(\pan), a.simpleKnob(\pan))
 			]
 			} ! 6).flat
 		)
@@ -24,8 +24,11 @@ a.gui({ | w |
 });
 //:
 b = Synth(\default);
+
+b = { SinOsc.ar(\freq.kr(400), 0, \amp.kr(0.1)) }.play;
+
 a.synthCtl(b, \freq);
-a.syntthCtl(b, \amp);
+a.synthCtl(b, \amp);
 //:
 
 // Initialize a synthtree, but do not start playing it.
@@ -42,8 +45,13 @@ c.gui({ | w |
 		StaticText().string_("Press 'space' at the slider to switch synthree on/off"),
 		StaticText().string_("Slide the slider to control frequency"),
 		),
-		c.slider(\freq).maxWidth_(180).orientation_(\horizontal).st(\test),
-		c.numberBox(\freq).maxWidth_(70).st(\test),
+		c.simpleSlider(\freq).maxWidth_(180).orientation_(\horizontal).st(\test),
+		c.simpleNumberBox(\freq).maxWidth_(70).st(\test),
 	);
 });
 
+//: 
+
+
+
+//:

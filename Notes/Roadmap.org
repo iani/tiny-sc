@@ -4,12 +4,31 @@
 
 * Currently working on
 
+
+** TODO (URGENT!) chucking into synthtree should not push environment.
+:PROPERTIES:
+:DATE:     <2014-06-21 Sat 19:27>
+:END:
+
+This breaks all other experimental coding with environment variables!
+
+Workaround: one might store the last used SynthTree in Library, and access it for chucking with shortcuts using extra operators. (But this is not a first priority feature).
+
+5 <> \freq;  // chuck into freq parameter of last operated synthtree.
+
 ** TODO make gui for controlling routines + their params with EventModel
 :PROPERTIES:
 :DATE:     <2014-06-21 Sat 08:29>
 :END:
 
-See EventModelTries.scd and ControlSourceTests.scd.
+See BuildingEventModelGuis.scd
+
+(Also see: EventModelTries.scd and ControlSourceTests.scd)
+
+This is similar to Conductor.  See for example:
+http://sc3howto.blogspot.gr/2008/04/conductors-fast-gui.html
+
+Question: How does this approach compare to Conductor?  Am I reinventing the wheel?  Need to be explicit about the differences.
 
 ** How to store/access scalar control sources?
 :PROPERTIES:
@@ -351,7 +370,7 @@ Draft:
 
 
 
-** New approach to try: Implement the current operators for synths and patterns using Ndef, Pdef and related JITlib classes, to locate overlaps and possible differences.
+** New approach to try: Implement the current operrators for synths and patterns using Ndef, Pdef and related JITlib classes, to locate overlaps and possible differences.
 :PROPERTIES:
 :DATE:     <2014-04-28 Mon 22:12>
 :END:

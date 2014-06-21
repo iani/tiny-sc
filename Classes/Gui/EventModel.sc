@@ -48,9 +48,10 @@ EventModel : Event {
 	}
 
 	addKeys { | ... specs | specs do: this.addKey(*_) }
-	slider { | key, spec, default | ^Slider().map(this, key, spec, default) }
-	knob { | key, spec, default | ^Knob().map(this, key, spec, default) }
-	numberBox { | key, spec, default | ^NumberBox().unmap(this, key, spec, default) }
+	// note: do not override default slider for object!
+	simpleSlider { | key, spec, default | ^Slider().map(this, key, spec, default) }
+	simpleKnob { | key, spec, default | ^Knob().map(this, key, spec, default) }
+	simpleNumberBox { | key, spec, default | ^NumberBox().unmap(this, key, spec, default) }
 
 	synthCtl { | synth, key, spec, default |
 		this.getAdapter(key, spec, default);

@@ -6,6 +6,11 @@
  
 { LFNoise0.kr(1).range(1000, 1200) } =>.freq \test;
 
+
+{ Amplitude.kr(Inp.ar(\input, 2)) } =>.amp \test;
+
+{ Pitch.kr(Inp.ar(\input, 2)) } =>.freq \test;
+
 \freq >| \test;  // unmap, seting value to value of bus at time of unmap
 
 { XLine.kr(1000, 2000, 10) } =>.freq \test;
