@@ -3,6 +3,8 @@
 
 	=> { | chuckee | ^this.asEdef => chuckee }
 
+	=<> { | chuckee | ^this.st => chuckee }
+
 	>| { | chuckee | ^chuckee.asSynthTree.getParam(this).bunMap }
 
 	asPatternInstrument {
