@@ -51,16 +51,34 @@ BufferList {
 		^Platform.userAppSupportDir +/+ "BufferList.sctxar";
 	}
 
-	*loadDialog {
+	/*
+	*loadBufferDialog {
+		{ | path | this.loadBuffer(path) }.doPath;
+	}
+
+	*loadBuffer { | path |
+		var pathname, extension, server;
+		server = Server.default;
+		pathname = PathName(path);
+		extension = pathname.extension.asSymbol;
+		if ([\aiff, \aif, \wav] includes: extension) {
+			postf("Pre-loading: %\n", filePath);
+			Library.put(server, pathname.fileNameWithoutExtension.asSymbol,
+				BufferDummy(filePath);
+			);
+		};
+		if (server.serverRunning) { BufferFunc.initBuffers(server) }
+	}
+	*/
+
+	*loadFolderDialog {
 		{ | path | this.loadFolder(path) }.doPath;
 	}
 
 	*loadFolder { | path |
 		var pathname, extension, server;
-		//		[this, thisMethod.name].postln;
 		server = Server.default;
 		path ?? { path = Platform.userAppSupportDir +/+ "sounds/*" };
-		//	path.pathMatch.postln;
 		path.pathMatch do: { | filePath |
 			pathname = PathName(filePath);
 			extension = pathname.extension.asSymbol;

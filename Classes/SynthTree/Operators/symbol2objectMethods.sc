@@ -40,4 +40,11 @@ Tue, Jun 17 2014, 17:09 EEST
 	st { | createIfMissing = true, defaultChuck |	
 		^this.asSynthTree(createIfMissing, defaultChuck);
 	}
+	params {
+		^this.doIfSynthTree({ | st | st.postParams })
+	}
+	resetParams {
+		//		[this, thisMethod.name].postln;
+		^this.doIfSynthTree({ | st | st.resetParams })
+	}
 }

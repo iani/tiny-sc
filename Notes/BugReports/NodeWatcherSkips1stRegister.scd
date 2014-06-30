@@ -1,5 +1,8 @@
 /*
 
+This bug appears only in certain unreleased alpha versions of 3.7, 
+Report date: Sat, Jun 28 2014, 14:44 EEST
+
 Recompile SC, start the default server, and then run the following: 
 
 */

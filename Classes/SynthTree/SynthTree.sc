@@ -63,6 +63,7 @@ SynthTree : IdentityTree {
 			BufferFunc.initBuffers(server);
 			{ BufferFunc.postBufNames }.defer(1);
 			default.initTree(true);
+			/*
 			// workaround for NodeWatcher bug reported in: 
 			// ./Notes/BugReports/NodeWatcherSkips1stRegister.scd
 			{
@@ -74,6 +75,7 @@ SynthTree : IdentityTree {
 				"Skipped defective first NodeWatcher register.  SynthTree ready.".postln;
 				"================================================================".postln;
 			}.fork;
+			*/
 			this.changed(\serverBooted, server);
 		};
 		^server;
@@ -281,8 +283,6 @@ SynthTree : IdentityTree {
 			}
 		}
 	}
-
-	resetParams { args do: _.reset }
 
 	*pushIfDifferent { | synthTreeName |
 		synthTreeName = (synthTreeName ? 'st0').asSymbol;
@@ -643,6 +643,20 @@ SynthTree : IdentityTree {
 		});
 	}
 
+	postParams {
+		postf("\n//: %\n", name);
+		template.templateArgs.sort({ | a b | a.name <= b.name }) do: { | p |
+			postf("\n% =>.% %;", p.defaultValue, p.name, name.asCompileString);
+		};
+		"\n//:\n".postln;
+	}
+
+	// resetParams { args do: _.reset }
+	
+	resetParams {
+		template.templateArgs do: { | p | this.set(p.name, p.defaultValue) }
+	}
+	
 	// Emacs interaction
 
 	*chuckSelectingSynthTree { | argServer |
