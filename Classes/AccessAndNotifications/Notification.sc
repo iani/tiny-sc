@@ -176,3 +176,10 @@ Notification {
 		});
     }
 }
+
++ View {
+	addNotifier { | notifier, message, action |
+        super.addNotifier(notifier, message, action);
+		this.onClose = this.objectClosed;
+    }
+}

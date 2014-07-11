@@ -2,7 +2,7 @@
 
 Note Tue, Jun 24 2014, 12:56 EEST: This class can be replaced with Window.for,
 using Registry.
-
+================================================================
 Variant of Windows class, to enable subclassing.
 
 Enable any object to register windows under any number of keys.
