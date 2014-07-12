@@ -17,8 +17,6 @@ Later: Install a new folder from github:
 
 LibConfig : List {
 
-	var <installed = false;
-
 	*new { | name |
 		^this.notifyNew(Registry(this, \libs, name, { super.new; }));
 	}
@@ -56,10 +54,13 @@ LibConfig : List {
 			);
 			libsList addInterface: this;
 			this.addNotifier(libsList, \items, {
+				//				this.findInstalledConfig;
+				/*
 				libsList.items do: { | i |
-					this.getConfig.postln;
-					this.getConfig.installed.postln;
+					this.getConfig(i).postln;
+					this.getConfig(i).installed.postln;
 				}
+				*/
 			});
 			this.addNotifier(libsList, \return, {
 				this.getConfig(libsList.item).install
@@ -86,6 +87,18 @@ LibConfig : List {
 		names = Library.at(this, \libs);
 		if (names.isNil) { ^[] };
 		^names.keys.asArray.sort;
+	}
+
+	*installedConfig {
+		var folders, installedConfig;
+		folders  = PathName(Platform.userAppSupportDir +/+ "Extensions").folders 
+		collect: { | p | p.folderName.asSymbol };
+		folders remove: \quarks;
+		this.sortedNames do: { | cfig |
+			cfig = this.getConfig(cfig);
+			if (cfig == folders) { installedConfig = cfig }
+		};
+		^installedConfig;
 	}
 
 	install {
