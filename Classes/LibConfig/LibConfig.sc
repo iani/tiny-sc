@@ -17,6 +17,8 @@ Later: Install a new folder from github:
 
 LibConfig : List {
 
+	var <installed = false;
+
 	*new { | name |
 		^this.notifyNew(Registry(this, \libs, name, { super.new; }));
 	}
@@ -44,7 +46,7 @@ LibConfig : List {
 				StaticText().string_("Libs:"),
 				libsList = ListView(),
 				HLayout(
-					Button().states_([["Add Lib:"]])
+					Button().states_([["New Lib:"]])
 					.action_({ this.addLib(libNameField.string) }),
 					libNameField = TextField()
 				),
@@ -53,6 +55,18 @@ LibConfig : List {
 				Button().states_([["Add Folder"]]).action_({ this.addFolder(libsList.item) })
 			);
 			libsList addInterface: this;
+			this.addNotifier(libsList, \items, {
+				libsList.items do: { | i |
+					this.getConfig.postln;
+					this.getConfig.installed.postln;
+				}
+			});
+			this.addNotifier(libsList, \return, {
+				this.getConfig(libsList.item).install
+			});
+			this.addNotifier(libsList, \delete, {
+				this.getConfig(libsList.item).uninstall
+			});
 			foldersLabel.addNotifier(libsList, \items, {
 				foldersLabel.string = format("Folders for %", libsList.item ? "-");
 			});
@@ -65,7 +79,7 @@ LibConfig : List {
 
 	*getConfigFolders { | item | ^this.getConfig(item).array; }
 
-	*getConfig { | item | ^Library.at(this, \libs, item.asSymbol) ?? { List() }; }
+	*getConfig { | item | ^Library.at(this, \libs, item.asSymbol) ?? { NullConfig } }
 
 	*sortedNames {
 		var names;
@@ -73,4 +87,22 @@ LibConfig : List {
 		if (names.isNil) { ^[] };
 		^names.keys.asArray.sort;
 	}
+
+	install {
+		this do: {
+
+		}
+	}
+
+	uninstall {
+		this do: {
+
+		}
+	}
+}
+
+NullConfig {
+	*array { ^[] }
+	*install { }
+	*uninstall { }
 }
