@@ -12,7 +12,7 @@ TODO: Make subclasses for OSCFunc and for the different types of MIDIFuncs
 Fri, Jun 20 2014, 22:39 EEST
 */
 
-BroadcastingResponder {
+ BroadcastingResponder {
 	var <>spec, <>message = \value, <responder;
 
 	*new { | spec, message = \value |

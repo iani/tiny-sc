@@ -1,0 +1,1455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Tiny-sc</title>
+<!-- 2014-07-16 Wed 21:54 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="IOANNIS ZANNOS" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/javascript" src="http://orgmode.org/mathjax/MathJax.js"></script>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        // Only one of the two following lines, depending on user settings
+        // First allows browser-native MathML display, second forces HTML/CSS
+        //  config: ["MMLorHTML.js"], jax: ["input/TeX"],
+            jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 100,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        }
+    });
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Tiny-sc</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Abstract</a></li>
+<li><a href="#sec-2">2. Acknowledgments / Credits</a></li>
+<li><a href="#sec-3">3. Compatibility: chuckLib</a></li>
+<li><a href="#sec-4">4. Add-ons</a></li>
+<li><a href="#sec-5">5. Main features</a>
+<ul>
+<li><a href="#sec-5-1">5.1. SynthTrees (similar to Ndef)</a></li>
+</ul>
+</li>
+<li><a href="#sec-6">6. Basic synth handling</a></li>
+<li><a href="#sec-7">7. Setting global fade time</a></li>
+<li><a href="#sec-8">8. Setting synth parameters</a></li>
+<li><a href="#sec-9">9. Playing patterns in single parameters</a></li>
+<li><a href="#sec-10">10. Playing patterns in multiple parameters</a></li>
+<li><a href="#sec-11">11. Playing patterns in SynthTree</a>
+<ul>
+<li><a href="#sec-11-1">11.1. Event =&gt; \Symbol: Play as pattern</a></li>
+<li><a href="#sec-11-2">11.2. Cloning patterns and streams, propagating changes</a></li>
+</ul>
+</li>
+<li><a href="#sec-12">12. Restart synths after Command-.</a></li>
+<li><a href="#sec-13">13. Clearing SynthTree status</a></li>
+<li><a href="#sec-14">14. Patching Audio Synth I/O</a></li>
+<li><a href="#sec-15">15. GUI Views</a>
+<ul>
+<li><a href="#sec-15-1">15.1. Overview: 5 View Types&#xa0;&#xa0;&#xa0;<span class="tag"><span class="test">test</span></span></a></li>
+<li><a href="#sec-15-2">15.2. The Synth Template View</a></li>
+<li><a href="#sec-15-3">15.3. The SynhTree-Fader View</a>
+<ul>
+<li><a href="#sec-15-3-1">15.3.1. Keyboard commands on SynthTree.faders</a></li>
+</ul>
+</li>
+<li><a href="#sec-15-4">15.4. The Knobs view</a></li>
+<li><a href="#sec-15-5">15.5. Creating Views for any parameter</a></li>
+</ul>
+</li>
+<li><a href="#sec-16">16. Setting fadeTime in individual synths</a></li>
+<li><a href="#sec-17">17. Buffers and samples</a>
+<ul>
+<li><a href="#sec-17-1">17.1. BufferList autoload</a></li>
+<li><a href="#sec-17-2">17.2. Buffer list view</a></li>
+</ul>
+</li>
+<li><a href="#sec-18">18. Keyboard Bindings</a>
+<ul>
+<li><a href="#sec-18-1">18.1. Global key bindingsg</a></li>
+<li><a href="#sec-18-2">18.2. Org-mode bindings</a>
+<ul>
+<li><a href="#sec-18-2-1">18.2.1. General org-mode bindings for SuperCollider</a></li>
+<li><a href="#sec-18-2-2">18.2.2. Evaluating org-mode sections in sclang</a></li>
+<li><a href="#sec-18-2-3">18.2.3. Examples for evaluating in orgmode</a></li>
+</ul>
+</li>
+<li><a href="#sec-18-3">18.3. Sclang-mode bindings</a></li>
+</ul>
+</li>
+<li><a href="#sec-19">19. Triggering synths in routines</a></li>
+<li><a href="#sec-20">20. UGen shortcuts</a>
+<ul>
+<li><a href="#sec-20-1">20.1. <code>Inp.ar</code></a></li>
+</ul>
+</li>
+<li><a href="#sec-21">21. List of running synths and patterns</a></li>
+<li><a href="#sec-22">22. Broadcast data events to any listening object</a></li>
+</ul>
+</div>
+</div>
+<p>
+<i>Compact coding tools for SuperCollider, with Emacs Org-mode intergration</i>
+</p>
+
+<p>
+(IZ Tue, 25 Feb 2014 16:20:26ff)
+</p>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Abstract</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+The purpose of this library is to provide simple and short solutions for some relatively complex or arduous recurring tasks in SuperCollider.  It is hoped that it will make working with SuperCollider easier, at any level.  The following sections introduce features of the library through examples.
+</p>
+
+<p>
+Examples are added here after being tested.  More details about what tiny-sc sets out to do are found in files <code>Roadmap.org</code> and <code>BasicIdeas.org</code>.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Acknowledgments / Credits</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+As of Mon, Jun  2 2014, tiny-sc contains a variant of the Utopia library making Network Music Apps.  (<a href="https://github.com/muellmusik/Utopia">https://github.com/muellmusik/Utopia</a>).  Utopia is developed by Scott Wilson on the basis of the Republic Quark by Alberto de Campo and Julian Rohrhuber.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Compatibility: chuckLib</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+chuckLib by James Harkins (ddwChucklib Quark, see <a href="http://sourceforge.net/p/quarks/code/HEAD/tree/">http://sourceforge.net/p/quarks/code/HEAD/tree/</a> and <a href="http://www.dewdrop-world.net/sc3/tutorials/index.php?id=6">http://www.dewdrop-world.net/sc3/tutorials/index.php?id=6</a>) uses the chuck operator (=&gt;) in a different way.  If you want to use both chuckLib and tiny-sc at the same time, please download the chucklib<sub>compat</sub> branch from the github repo and use it intead of the master branch. You can get the chuckLib compatible version of tiny-sc as a zipped file from:
+</p>
+
+<p>
+<a href="https://github.com/iani/tiny-sc/releases/tag/chuckLib01">https://github.com/iani/tiny-sc/releases/tag/chuckLib01</a>
+</p>
+
+<p>
+<b>When using the chucklib<sub>compat</sub> branch, the chuck operator for tiny-sc becomes =&gt;&gt; instead of =&gt;.  You can use =&gt; in the usual way in chuckLib.</b>
+</p>
+</div>
+</div>
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Add-ons</h2>
+<div class="outline-text-2" id="text-4">
+
+<p>
+Extensions of tiny-sc that make use other libraries are stored in a separate repository <a href="https://github.com/iani/tiny-sc-addons/">https://github.com/iani/tiny-sc-addons/</a>
+</p>
+</div>
+</div>
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Main features</h2>
+<div class="outline-text-2" id="text-5">
+
+<p>
+<code>tiny-sc</code> provides facilities for handling of synths and patterns that are similar to those of JITlib.  Two basic classes have parallels in JITlib.  These are: <code>SynthTree</code> (similar to <code>Ndef</code>) and <code>Edef</code> (similar to <code>Pdef</code>).  A main difference from JITlib is the use of a new class <code>EventPattern</code> to play patterns, instead of <code>Pbind</code>.  This, together with new class <code>Edef</code> provide several important advantages regarding nesting and on-the-fly modification (see below).
+</p>
+
+<p>
+To make coding more compact and direct, instead of instantiating classes in the standard manner of SuperCollider (<code>SomeClass()</code> or <code>SomeClass.new(...)</code>), <code>tiny-sc</code> uses binary operators, and accesses named objects directly by their name as a symbol.  The default behavior of these operators is to start the playing object when applied.  So, instead of writing:
+</p>
+
+<pre class="example">
+Ndef(\a, { SinOsc.ar([350, 351.3], 0, 0.2) });
+Ndef(\a).play;
+</pre>
+
+<p>
+one writes:
+</p>
+
+<pre class="example">
+{ SinOsc.ar([350, 351.3], 0, 0.2) } =&gt; \a;
+</pre>
+
+<p>
+The meaning of operators in <code>tiny-sc</code> depends on the class of the operands in the expression.  The general rule of thumb is that when one of the operands is an event, then the operation applies to playing a pattern.  This will become clear in the following examples.
+</p>
+</div>
+
+<div id="outline-container-sec-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> SynthTrees (similar to Ndef)</h3>
+<div class="outline-text-3" id="text-5-1">
+<pre class="example">
+//: Play a Synth function in a SynthTree
+{ SinOsc.ar([350, 351.3], 0, 0.2) } =&gt; \a;
+
+//: Change the source of the SynthTree to another function
+{ SinOsc.ar(\freq.kr(440) * [1, 1.25], 0, 0.1) } =&gt; \a;
+
+//: Change the value of a control parameter
+\a.set(\freq, 550);
+
+//: Change the source again: the parameter's value is used for the new Synth:
+{ LFSaw.ar(\freq.kr(440) * [1, 1.25], 0, 0.025) } =&gt; \a;
+
+//: Change again
+{ LFNoise2.ar(\freq.kr(440), 0.25) } =&gt; \a;
+
+//: An event plays a pattern
+(degree: (0..7).pseq, dur: 0.1) =&gt; \a;
+
+//: To overwrite the previous pattern, just send another pattern
+(note: (0..11).prand / 3, dur: 0.125) =&gt; \a;
+
+//: Use operator +&gt; to modify an existing pattern:
+(dur: Pfunc({ (0.001 exprand: 0.5).round(0.1) }), legato: 0.15) +&gt; \a;
+
+//: Fade out
+\a.fadeOut(5);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Basic synth handling</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+Associating symbols with synths, starting, stopping with fadeout, replacing the stored synth in the same symbol:
+</p>
+
+<p>
+Try the following, one line at a time:
+</p>
+
+<pre class="example">
+// Start a synth and store it in a name
+{ WhiteNoise.ar(0.1) } =&gt; \sound;
+// Stop The sound with the default fade-out duration
+\sound.fadeOut;
+// Restart the stored sound - remake the synth.
+\sound.start;
+// Replace the synth at \sound with another one
+{ SinOsc.ar(440, 0, 0.1) } =&gt; \sound;
+// Set the fade-in fade-out time to 0.5 seconds
+\sound.fadeTime = 5;
+// Replace again, fading-out the previous sound in 0.5 seconds
+{ PinkNoise.ar(0.1) } =&gt; \sound;
+// Change the fade-time of the SynthTree in the same line:
+{ LPF.ar(GrayNoise.ar(0.1*Decay.kr(Dust.kr(10))), \freq.kr(5000)) } =&gt; \sound.fadeTime_(0.5);
+// Output channel can be set
+1 =&gt;.out \sound;
+//: context-dependent shortcut:  use parameter of last synthtree as environment variable
+0 =&gt; ~out;
+//: Set frequncy, naming the synthtree:
+1000 =&gt;.freq \sound;
+//: Again: context dependent: ~freq is parameter of last used synthtree:
+2500 =&gt; ~freq;
+//: Another alternative syntax:
+\sound.set(\freq, 5500);
+//: All sounds have amp parameter.  Here a clearly audible example
+{ GrayNoise.ar(0.1) } =&gt; \sound;
+//: parameter defaults to \amp
+0.03 =&gt; \sound;
+//: set back to 0.1
+0.1 =&gt; \sound
+// Fadeout with custom duration
+\sound.fadeOut(12);
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Setting global fade time</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+The environment variable ~fadeTime stores the global default duration for fade-in and fade-out of synths.  It is stored in the parent environment of the current environment.  The =!&gt; operator is used to set environment variables of the parent environment.  Examples:
+</p>
+
+<pre class="example">
+// Set global fade time to 3 seconds
+10 =!&gt; \fadeTime;
+// Fade in a synth.
+{ WhiteNoise.ar(0.1) } =&gt; \sound2;
+// Cross-fade another synth in its place
+{ SinOsc.ar(0.1 * LFNoise0.kr(5).range(400, 4000)) } =&gt; \sound2;
+// And a third synth
+{ LPF.ar(0.1 * GrayNoise.ar, LFNoise0.kr(5).range(400, 4000)) } =&gt; \sound2;
+// Set global fade time to 0.01 seconds
+0.01 =!&gt; \fadeTime;
+// Notice difference in cross-fading duration
+{ LFDNoise3.ar(LFNoise0.kr(15).range(400, 4000), 0.1) } =&gt; \sound2;
+// One more time
+{ 0.1 * SinOsc.ar(LFNoise0.kr(15).range(400, 4000)) } =&gt; \sound2;
+// Fadeout also uses the global default
+\sound2.fadeOut;
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> Setting synth parameters</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+When a synth template gets chucked to a synthtree with =&gt;, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.
+</p>
+
+<pre class="example">
+{ 0.1 * LPF.ar(LFSaw.ar(\freq.kr(440)), \filterFreq.kr(1000)) } =&gt; \sound3;
+// Parameters of last chucked SynthTree are in the environment.
+// Change the filter frequency:
+400 =&gt; ~filterFreq;
+// Change the generator frequency:
+600 =&gt; ~freq;
+// Play a routine into frequency, then fade out
+{ 50 do: { 50.rrand(80).midicps =&gt; ~freq; 0.05.wait }; \sound3.fadeOut(3); }.fork;
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-9" class="outline-2">
+<h2 id="sec-9"><span class="section-number-2">9</span> Playing patterns in single parameters</h2>
+<div class="outline-text-2" id="text-9">
+<pre class="example">
+{ SinOsc.ar(\freq.kr(400), 0, 0.1) } =&gt; \sound4;
+// Play a pattern into ~freq:
+{ 50.rrand(80).midicps } *&gt; \freq;
+// Alternative formulation:
+{ 80.rrand(90).midicps } =&gt; 0.2 *&gt; \freq;
+//: Play another pattern into freq parameter:
+{ 250 rrand: 350 } =&gt; 0.05 *&gt; \freq;
+//: And another:
+{ [60, 62, 66, 67].choose.midicps } =&gt; Prand([0.1, 0.2, 0.4], inf) *&gt; \freq;
+//: Shorter formulation of the above (with different paremeter values):
+[70, 72, 76, 77].midicps.prand =&gt; [0.2, 0.4, 0.8].prand *&gt; \freq;
+// Pattern keeps playing when new synth is chucked into tree:
+{ 0.1 * LPF.ar(LFPulse.ar(\freq.kr(440)), 1000) } =&gt; \sound4;
+// Open knobs interface to watch how freq changes
+~st.knobs;
+//  Play with global duration stored in ~dur:
+{ [65, 69, 70, 73].choose.midicps } =&gt; Pfunc({ ~dur.next }) *&gt; \freq;
+// Change global duration:
+0.05 =!&gt; \dur;
+// Fade out this synth
+\sound4.fadeOut;
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-10" class="outline-2">
+<h2 id="sec-10"><span class="section-number-2">10</span> Playing patterns in multiple parameters</h2>
+<div class="outline-text-2" id="text-10">
+<p>
+Sending an Event to a Symbol plays patterns to all parameters of the corresponding SynthTree with the same duration pattern.   Here is a sequence that also shows how to chuck SynthDef templates into the SynthTree to change the playing synth.
+</p>
+
+<pre class="example">
+//: Sending patterns to parameters of synths in SynthTree.
+`\basshighend =&gt; \funnyStuff;
+//: Play a single parameter with a duration pattern
+{ 60.rrand(90).midicps }.pfunc =&gt; [0.1, 0.1, 0.2].pseq *&gt; \freq;
+//: You can change the instrument, the pattern keeps changing
+`\bassfoundation =&gt; \funnyStuff;
+//:
+`\werkitd =&gt; \funnyStuff;
+//: The pattern can be also set to play a single value
+1000 *&gt; \freq;
+//: An event sets both the duration and the parameter
+(dur: 0.1, freq: [1, 2, 3].pseq * 1000) *&gt; \funnyStuff;
+//: Multiple parameters can be set
+(dur: 0.05, freq: (1..13).pseq * 100, amp: [0.01, 0.01, 0.2, 0.03].pseq) *&gt; \funnyStuff
+
+//: Change the instrument again
+`\bassfoundation =&gt; \funnyStuff;
+//: And again
+`\organdonor =&gt; \funnyStuff;
+//: And again
+`\everythingrhodes =&gt; \funnyStuff;
+//: Funny effects
+(
+(dur: [0.1 pn: 15, 0.05 pn: 30, 0.01 pn: 100].prand,
+freq: (1..13).pseq * 100,
+amp: [0.01, 0.01, 0.2, 0.03].pseq) *&gt; \funnyStuff;
+)
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-11" class="outline-2">
+<h2 id="sec-11"><span class="section-number-2">11</span> Playing patterns in SynthTree</h2>
+<div class="outline-text-2" id="text-11">
+</div><div id="outline-container-sec-11-1" class="outline-3">
+<h3 id="sec-11-1"><span class="section-number-3">11.1</span> Event =&gt; \Symbol: Play as pattern</h3>
+<div class="outline-text-3" id="text-11-1">
+<pre class="example">
+//: Playing events directly in SynthTree
+//: Set a longish fade time to observe cross-fading
+3 =!&gt; \fadeTime;
+//: Start playing an EventPattern in a SynthTree (similar to Pbind)
+(degree: [20, 22].pseq, dur: 0.5) =&gt; \test;
+//: Change the pattern on the fly
+(degree: [10, 11].pseq) =&gt; \test;
+//: Modify a parameter in the SynthTree
+(amp: [0.04, 0.04, 0.1].pseq) %&gt; \test;
+//: And nother parameter
+(instrument: [\sine, \bassfoundation].prand) %&gt; \test;
+//: Change tempo, modifying the stream's event
+(dur: 0.05) +&gt; \test;
+//: Wander about
+(degree: Pbrown(10, 15, 1, inf)) +&gt; \test
+//: Wander about differently
+(degree: Pstutter(2, Pbrown(-15, 15, 1, inf)) + [10, 11].pseq) +&gt; \test;
+//: Insert some held notes
+(legato: [0.5 ! 15, 20].flat.prand) +&gt; \test;
+//: And silences
+(amp: [Pfuncn({ 0 }, 40), [0.04, 0.04, 0.1].pseq(1) ! 10].flat.prand) %&gt; \test;
+//: Vary the pulse
+(dur: Pbrown(0.02, 0.15, 0.01, inf)) +&gt; \test;
+//: Modify amplitude
+(amp: { 0.001 exprand: 0.3 }.pfunc) %&gt; \test;
+//: Modify degree
+(degree: (-20..20).prand) %&gt; \test;
+//: Use note instead of degree (non-diatonic)
+(note: (-10, -9 .. 12).prand) %&gt; \test
+//: Modify duration again
+(dur: 0.1) +&gt; \test;
+//: Fade-out
+\test fadeOut: 5;
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-11-2" class="outline-3">
+<h3 id="sec-11-2"><a id="ID-3072F115-DC86-4F66-B10E-1EB66A99A6CF" name="ID-3072F115-DC86-4F66-B10E-1EB66A99A6CF"></a><span class="section-number-3">11.2</span> Cloning patterns and streams, propagating changes</h3>
+<div class="outline-text-3" id="text-11-2">
+
+<pre class="example">
+//: Start a named pattern reference in a SynthTree
+Edef(\simple, (degree: [1, 2, 3].pseq)) =&gt; \wander;
+
+//: Change the named pattern Edef.  (Edef(\simple) =&lt; ... also possible)
+\simple =&lt; (degree: Pbrown(-5, 5, 3, inf));
+//: Modify some more
+\simple =&lt; (dur: 0.125, amp: 0.1);
+//: And more
+\simple =&lt; (instrument: [\bassfoundation, \sine].prand);
+
+//: Many keys in event OK
+\simple =&lt; (legato: { 0.4 exprand: 1.5 }.pfunc, amp: [Pn(0.01, 3), 0.05, 0.02, 0.02].pseq);
+
+//: Modify how the synthtree interprets the stream
+(degree:{if(~degree%3==0){~degree+(0..2)*[2,3].choose}{~degree}})%&gt;\wander;
+
+//: Add another SynthTree playing from the same stream as \wander
+\wander cloneInto: \other;
+
+//: Modify how the second SynthTree plays the stream
+(degree: { 20 + ~degree }, ratio: 0.5) %&gt; \other;
+
+//: Like it? Lets have more:
+(degree: { (17, 19 .. 23) + ~degree }) %&gt; \other;
+
+//: Hm, up there a little louder:
+(amp: { Pbrown(0.5, 2, 0.1, inf).asStream * (~amp ? 0.01) }) %&gt; \other;
+
+//: Or maybe try playing inverse amplitude:
+(amp: { 1 - (~amp ? 0.01) / 10 }) %&gt; \other;
+
+//: See if propagation works
+Edef(\simple) =&lt; (degree: Pwhite(-10.1, -12, inf));
+//: OK
+Edef(\simple) =&lt; (degree: (-10..10).pyramid(5).pseq);
+//: OK
+Edef(\simple) =&lt; (degree: (10..-10).pyramid(5).pseq);
+
+//: Pauses? Suddenly a whiff of baroque.
+(
+(amp: [0, 0, 0.1, 0.2, 0.05].pseq, degree: { ~degree }) %&gt; \wander;
+(amp: [0, 0.1].pseq, degree: { 2 + ~degree }) %&gt; \other;
+)
+//: Try some modulation
+(
+\simple =&lt; (mtranspose: Pstutter(12, (-4..2).pseq),
+	ctranspose: Pstutter(24, ((0..5) * 5 % 12).pseq),
+	scale: Scale.harmonicMinor
+);
+)
+//: Fade out
+\wander.fadeOut(5);
+\other.fadeOut(10);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-12" class="outline-2">
+<h2 id="sec-12"><span class="section-number-2">12</span> Restart synths after Command-.</h2>
+<div class="outline-text-2" id="text-12">
+<p>
+Add some more synths to the tree:
+</p>
+
+<pre class="example">
+{ SinOsc.ar(440) } =&gt; \la;
+{ SinOsc.ar(550) } =&gt; \doDiese;
+{ SinOsc.ar(660) } =&gt; \mi;
+</pre>
+
+<p>
+Stop all synths by typing Command-. (on SC IDE), or Control-c Control-s (on Emacs), or by evaluating this:
+</p>
+
+<pre class="example">
+thisProcess.stop;
+</pre>
+
+<p>
+Then run this to restart the synths:
+</p>
+
+<pre class="example">
+SynthTree.initTree;
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-13" class="outline-2">
+<h2 id="sec-13"><span class="section-number-2">13</span> Clearing SynthTree status</h2>
+<div class="outline-text-2" id="text-13">
+<p>
+To stop all synths of the SynthTree from being restarted, evaluate this:
+</p>
+
+<pre class="example">
+SynthTree.stopAll;
+</pre>
+
+<p>
+After this, no synths will be restarted with <code>SynthTree.initTree</code>.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-14" class="outline-2">
+<h2 id="sec-14"><span class="section-number-2">14</span> Patching Audio Synth I/O</h2>
+<div class="outline-text-2" id="text-14">
+<p>
+Example 1:  Simple patching of one source to one effect:
+</p>
+
+<pre class="example">
+// Start an effects synth with a low-pass filter
+{ LPF.ar(Inp.ar, \freq.kr(2000)) } =&gt; \lpf;
+// Start a WhiteNoise synth
+{ WhiteNoise.ar(0.1) } =&gt; \source;
+// Send the noise synth to the filter
+\source.st =&gt; \lpf;
+// Change the frequency of the low pass filter
+\lpf.set(\freq, 5000);
+</pre>
+
+<p>
+Example 2: Several synths sending to one effect.
+</p>
+
+<pre class="example">
+{ LPF.ar(Inp.ar, LFNoise0.kr(40 ! 2).range(500, 4000)) } =&gt; \lpf;
+{ PinkNoise.ar } |&gt; \source2 =&gt; \lpf;
+{ LFPulse.ar(LFNoise0.kr(30).range(3000, 4000)) } =&gt; \source2;
+</pre>
+
+<p>
+Example 3: Change the synth of the source:
+</p>
+
+<pre class="example">
+{ LPF.ar(Inp.ar, \freq.kr(1000)) * Decay.kr({ Dust.kr(\trigRate.kr(1)) } ! 2) } =&gt; \lpf;
+</pre>
+
+<p>
+Example 4: Change the synth of the effect:
+</p>
+
+<pre class="example">
+{ LFTri.ar(LFNoise2.kr(12).range(400, 4000)) } =&gt; \source2;
+</pre>
+
+<p>
+Confirm that the tree can be restarted after Command-. also when it contains linked synths:
+</p>
+
+<pre class="example">
+thisProcess.stop; // run this to stop all synths first
+// Then run this to restart all stopped synths:
+SynthTree.initTree;
+// Modify parameters of the lpf SynthTree
+\lpf.set(\trigRate, 10, \freq, 2000);
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-15" class="outline-2">
+<h2 id="sec-15"><span class="section-number-2">15</span> GUI Views</h2>
+<div class="outline-text-2" id="text-15">
+</div><div id="outline-container-sec-15-1" class="outline-3">
+<h3 id="sec-15-1"><span class="section-number-3">15.1</span> Overview: 5 View Types&#xa0;&#xa0;&#xa0;<span class="tag"><span class="test">test</span></span></h3>
+<div class="outline-text-3" id="text-15-1">
+
+<p>
+There are 5 main view types:
+</p>
+
+<dl class="org-dl">
+<dt> Fader View </dt><dd>Vertical strip on the left, showing the currently registered SynthTree instances and their run status, with a slider for controlling the level of each instance.
+</dd>
+<dt> Knobs View </dt><dd>Horizontal strip at the bottom, one for each SynthTree instances, with knob controls for setting all registered parameters of the SynthTree.  This is opened from the Fader view by typing "k" on a selected SynthTree strip's label.
+</dd>
+<dt> Synth Template View </dt><dd>A window with 2 list views: The left list shows the tags (categories) of SynthTree templates (SynthDefs or Functions) and the right list shows the templates belonging to the selected category.  At the bottom is a drag view showing the name of the selected template.  Drag the selected template onto any label on the Fader view to play that template on the SynthTree belonging to that fader strip.
+</dd>
+<dt> Pattern Template View </dt><dd>(Tentative / Under development!)  Holds templates of patterns to play in SynthTrees.  May be integrated in the same list as the Synth Template View.
+</dd>
+<dt> Process Registry View </dt><dd>Experimental / Proof of concept: Shows a list of currently running synth and routine processes, in a manner similar to the process view of Mini Audicle in ChucK.  Works together with Emacs/Org-Mode (see keyboard shortcuts).  Can also work with SuperCollider IDE, but requires using different methods for playing Functions, Synths or Routines.  This feature is superseded by the Fader View, but kept here as proof-of-concept.
+</dd>
+</dl>
+</div>
+</div>
+<div id="outline-container-sec-15-2" class="outline-3">
+<h3 id="sec-15-2"><span class="section-number-3">15.2</span> The Synth Template View</h3>
+<div class="outline-text-3" id="text-15-2">
+
+<pre class="example">
+SynthTemplate.gui;
+</pre>
+</div>
+
+<ol class="org-ol"><li>Keyboard commands on Synth Template view<br  /><div class="outline-text-5" id="text-15-2-0-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="left">Key</th>
+<th scope="col" class="left">Action</th>
+<th scope="col" class="left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="left">return</td>
+<td class="left">send template to currently selected SynthTree instance*</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">shift-return</td>
+<td class="left">send template to a new SynthTree instance</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">control-return</td>
+<td class="left">add template as input to currently selected SynthTree instance</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">control-.</td>
+<td class="left">thisProcess.quit (like in SuperCollider IDE)</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">control-/</td>
+<td class="left">SynthTree.initTree (restart all SynthTrees stopped by control-.</td>
+<td class="left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+(*) Note : The currently SynthTree is selected in the Faders panel by clicking on the label displaying the SynthTree description (template name + synthtree name), or by chucking into a SynthTree in code (=&gt;).
+</p>
+</div>
+</li></ol>
+</div>
+
+<div id="outline-container-sec-15-3" class="outline-3">
+<h3 id="sec-15-3"><span class="section-number-3">15.3</span> The SynhTree-Fader View</h3>
+<div class="outline-text-3" id="text-15-3">
+<pre class="example">
+SynthTree.faders;
+</pre>
+</div>
+
+<div id="outline-container-sec-15-3-1" class="outline-4">
+<h4 id="sec-15-3-1"><span class="section-number-4">15.3.1</span> Keyboard commands on SynthTree.faders</h4>
+<div class="outline-text-4" id="text-15-3-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="left">Key</th>
+<th scope="col" class="left">Action</th>
+<th scope="col" class="left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="left">&#xa0;</td>
+<td class="left"><b>On the whole window</b></td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">b</td>
+<td class="left">Open Buffer List for creating buffer-playback synth</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">,</td>
+<td class="left">Stop synths and routines (<code>thisProcess.stop</code>)</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">.</td>
+<td class="left">Stop synths and remove from SynthTree.initTree</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">i</td>
+<td class="left">SynthTree.initTree.  Restart non-removed synths</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">0-9</td>
+<td class="left">Set global fade time to 0.02, 1, 2, 3 &#x2026; 9 seconds</td>
+<td class="left">&#xa0;</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="left">&#xa0;</td>
+<td class="left"><b>On slots that contain a SynthTree:</b></td>
+<td class="left">&#xa0;</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="left">k</td>
+<td class="left">Open knobs window for controlling all parameters of synth</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">g</td>
+<td class="left">start synth</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">s</td>
+<td class="left">stop synth</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">space</td>
+<td class="left">Toggle play status of selected SynthTree.</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">,</td>
+<td class="left">Stop synths and routines (<code>thisProcess.stop</code>)</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">.</td>
+<td class="left">Stop synths and remove from SynthTree.initTree</td>
+<td class="left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-15-4" class="outline-3">
+<h3 id="sec-15-4"><span class="section-number-3">15.4</span> The Knobs view</h3>
+</div>
+
+
+<div id="outline-container-sec-15-5" class="outline-3">
+<h3 id="sec-15-5"><span class="section-number-3">15.5</span> Creating Views for any parameter</h3>
+<div class="outline-text-3" id="text-15-5">
+<pre class="example">
+{ SinOsc.ar(\freq.kr(440)) } =&gt; \viewtest;
+\viewtest.view(\freq).view(\amp);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-16" class="outline-2">
+<h2 id="sec-16"><span class="section-number-2">16</span> Setting fadeTime in individual synths</h2>
+<div class="outline-text-2" id="text-16">
+<pre class="example">
+// Start an "effect" synth with an input
+{ LPF.ar(In.ar(\in.kr(0)), \freq.kr(4000)) } =&gt; \lpf;
+// Set fadeTime of effect:
+\lpf.fadeTime = 10;
+// Send a synth to the input of the effect synth
+\lpf =&lt; ({ WhiteNoise.ar } ==&gt; \source);
+// Set fadeTime of source;
+\source.fadeTime = 5;
+// change effect, with fadeTime stored previously
+{ Inp.ar * Decay2.kr(Dust.kr(3)) } =&gt; \lpf;
+// change source, with fadeTime stored previously
+{ SinOsc.ar(2000 rrand: 3000) } ==&gt; \source;
+// change source again, With fadeTime stored previously
+{ LFTri.ar(400 rrand: 800) } ==&gt; \source;
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-17" class="outline-2">
+<h2 id="sec-17"><span class="section-number-2">17</span> Buffers and samples</h2>
+<div class="outline-text-2" id="text-17">
+</div><div id="outline-container-sec-17-1" class="outline-3">
+<h3 id="sec-17-1"><span class="section-number-3">17.1</span> BufferList autoload</h3>
+<div class="outline-text-3" id="text-17-1">
+<p>
+Setting classvar autoload of <code>BufferList</code> to <code>true</code> will make SuperCollider load all <code>.aiff</code> and <code>.wav</code> files that are found under folder <code>sounds</code> in the SuperCollider user support directory (<code>Platform.userAppSupportDir</code>) whenever the default server boots.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-17-2" class="outline-3">
+<h3 id="sec-17-2"><span class="section-number-3">17.2</span> Buffer list view</h3>
+<div class="outline-text-3" id="text-17-2">
+<p>
+Open a List view with all buffers loaded in BufferList:
+</p>
+
+<pre class="example">
+BufferList.showList;
+</pre>
+
+<p>
+Keyboard commands on the Buffer List list view:
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="left">Key</th>
+<th scope="col" class="left">Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="left">return</td>
+<td class="left">play/stop selected buffer in a SynthTree named as the buffer</td>
+</tr>
+
+<tr>
+<td class="left">shift-return</td>
+<td class="left">like return, but set loop to 0 (do not loop buffer)</td>
+</tr>
+
+<tr>
+<td class="left">space, shift-space</td>
+<td class="left">like return, but always create new SynthTree to play in</td>
+</tr>
+
+<tr>
+<td class="left">l</td>
+<td class="left">load a new buffer from file</td>
+</tr>
+
+<tr>
+<td class="left">s</td>
+<td class="left">save list of loaded buffers to file</td>
+</tr>
+
+<tr>
+<td class="left">o</td>
+<td class="left">load list of buffers from file</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-18" class="outline-2">
+<h2 id="sec-18"><span class="section-number-2">18</span> Keyboard Bindings</h2>
+<div class="outline-text-2" id="text-18">
+<p>
+Following keyboard bindings only apply to Emacs.
+</p>
+</div>
+
+<div id="outline-container-sec-18-1" class="outline-3">
+<h3 id="sec-18-1"><span class="section-number-3">18.1</span> Global key bindingsg</h3>
+<div class="outline-text-3" id="text-18-1">
+<dl class="org-dl">
+<dt> H-c l </dt><dd>sclang-start
+</dd>
+<dt> C-c C-x C-/ </dt><dd>sclang-init-synth-tree
+</dd>
+</dl>
+
+<p>
+Following keyboard shortcuts allow one to choose a synthtree from the list of synthtrees currently loaded in SuperCollider, or operate on the last chosen synthtree in emacs:
+</p>
+
+<dl class="org-dl">
+<dt> H-c c </dt><dd>org-sc-select-synthtree-then-chuck
+</dd>
+<dt> H-c H-c </dt><dd>org-sc-chuck-into-last-synthtree
+</dd>
+<dt> H-c k </dt><dd>org-sc-select-synthtree-then-knobs
+</dd>
+<dt> H-c space </dt><dd>org-sc-toggle-synthtree
+</dd>
+<dt> H-c H-space </dt><dd>org-sc-toggle-section-synthtree
+</dd>
+<dt> H-c g </dt><dd>org-sc-start-synthtree
+</dd>
+<dt> H-c s </dt><dd>org-sc-stop-synthtree
+</dd>
+<dt> H-c H-s </dt><dd>org-sc-stop-last-synthtree
+</dd>
+</dl>
+
+<p>
+The chuck commands (<code>H-c c</code>, <code>H-c H-c</code>) enclose the snippet or section into a function before chucking.  Try for example <code>H-c c</code> placing the cursor in the following line of code in sclang-mode:
+</p>
+
+<pre class="example">
+//:
+SinOsc.ar(\freq.kr(800) * LFNoise0.kr(12).range(0.8, 1.2));
+//:
+</pre>
+
+<p>
+Stop the example above by typing <code>H-c H-space</code>.
+</p>
+
+<p>
+Following keyboard shortcuts select a buffer from the list of buffers currently loaded in SuperCollider, or operate on the buffer list:
+</p>
+
+<dl class="org-dl">
+<dt> H-b g </dt><dd>org-sc-play-buffer
+</dd>
+<dt> H-b l </dt><dd>org-sc-load-buffer
+</dd>
+<dt> H-b f </dt><dd>org-sc-free-buffer
+</dd>
+<dt> H-b L </dt><dd>org-sc-show-buffer-list
+</dd>
+<dt> H-b o </dt><dd>org-sc-open-buffer-list
+</dd>
+<dt> H-b s </dt><dd>org-sc-save-buffer-list
+</dd>
+</dl>
+</div>
+</div>
+<div id="outline-container-sec-18-2" class="outline-3">
+<h3 id="sec-18-2"><span class="section-number-3">18.2</span> Org-mode bindings</h3>
+<div class="outline-text-3" id="text-18-2">
+</div><div id="outline-container-sec-18-2-1" class="outline-4">
+<h4 id="sec-18-2-1"><span class="section-number-4">18.2.1</span> General org-mode bindings for SuperCollider</h4>
+<div class="outline-text-4" id="text-18-2-1">
+<dl class="org-dl">
+<dt> C-c C-s </dt><dd>sclang-main-stop
+</dd>
+<dt> H-C-o </dt><dd>org-sc-toggle-mode
+</dd>
+</dl>
+</div>
+</div>
+
+<div id="outline-container-sec-18-2-2" class="outline-4">
+<h4 id="sec-18-2-2"><span class="section-number-4">18.2.2</span> Evaluating org-mode sections in sclang</h4>
+<div class="outline-text-4" id="text-18-2-2">
+</div><ol class="org-ol"><li>New - in progress<br  /><div class="outline-text-5" id="text-18-2-2-1">
+<p>
+2 types of movement x 3 choices of what to do with section = 12 commands.
+</p>
+
+<p>
+add choices of what to do without moving: = 14 commands
+</p>
+
+<dl class="org-dl">
+<dt> 2 types of movement </dt><dd><ol class="org-ol">
+<li>Move to immediately next/previous section
+</li>
+<li>Move to next/previous section at same level
+</li>
+</ol>
+</dd>
+
+<dt> 3 choices of actions </dt><dd><ol class="org-ol">
+<li>Do nothing (possibly: select current section as region)
+</li>
+<li>Evaluate heading or contents of current section
+If current section heading begins with "!", then evaluate heading.
+Else evaluate contents of section.
+</li>
+<li>Wrap selection in { } and chuck it into synthtree.
+See 2 above regarding what is evaluated.
+Name of synthtree to be chucked to can be given as tag or as value of property <code>SYNTHREE_NAME</code>.  If no name is given, then the expression is chucked into the current synthtree (<code>~st</code>).
+</li>
+</ol>
+</dd>
+
+<dt> (no term) </dt><dd>2 choices of what to do without moving:
+<ol class="org-ol">
+<li>evaluate this section
+</li>
+<li>chuck this section
+</li>
+</ol>
+</dd>
+
+<dt> <code>H-C-space</code> </dt><dd>evaluate this section
+</dd>
+<dt> <code>H-M-space</code> </dt><dd>chuck this section
+</dd>
+<dt> <code>H-n</code> </dt><dd>next section
+</dd>
+<dt> <code>H-C-n</code> </dt><dd>next section + evaluate
+</dd>
+<dt> <code>H-M-n</code> </dt><dd>next section + chuck
+</dd>
+<dt> <code>H-p</code> </dt><dd>previous section
+</dd>
+<dt> <code>H-C-p</code> </dt><dd>previous section + evaluate
+</dd>
+<dt> <code>H-M-p</code> </dt><dd>previous section + chuck
+</dd>
+<dt> <code>H-j</code> </dt><dd>next section at same level
+</dd>
+<dt> <code>H-C-j</code> </dt><dd>next section at same level + evaluate
+</dd>
+<dt> <code>H-M-j</code> </dt><dd>next section at same level + chuck
+</dd>
+<dt> <code>H-k</code> </dt><dd>previous section at same level
+</dd>
+<dt> <code>H-C-k</code> </dt><dd>previous section at same level + evaluate
+</dd>
+<dt> <code>H-M-k</code> </dt><dd>previous section at same level + chuck
+</dd>
+</dl>
+</div>
+</li>
+<li>From alpha02<br  /><div class="outline-text-5" id="text-18-2-2-2">
+<p>
+Note: The process registry window and the org-sc-eval-in-routine technique is now superseded by SynthTree and its guis.  SynthTree Fader gui is a more convenient way to control running synths.  The process registry is nevertheless kept here as mere "proof of concept", imitating the MiniAudicle process list window of ChucK.
+</p>
+
+<dl class="org-dl">
+<dt> H-C-r </dt><dd>sclang-process-registry-gui: Open registry gui.
+</dd>
+<dt> C-M-x </dt><dd>org-sc-eval
+</dd>
+<dt> H-C-x </dt><dd>org-sc-eval-in-routine.  Wraps code in routine and registers it in ProcessRegistry.
+</dd>
+<dt> C-M-z </dt><dd>org-sc-stop-section-processes.  Stop all processes started from the current section.  Uses automatically generated section ID to identify the current section.
+</dd>
+<dt> H-C-z </dt><dd>org-sc-stop-section-processes
+</dd>
+<dt> C-c C-M-. </dt><dd>org-sc-stop-section-processes
+</dd>
+<dt> H-C-n </dt><dd>org-sc-next-section
+</dd>
+<dt> C-M-n </dt><dd>org-sc-eval-next.  Go to next section and evaluate as in org-sc-eval.
+</dd>
+<dt> H-C-p </dt><dd>org-sc-previous-section
+</dd>
+<dt> C-M-p </dt><dd>org-sc-eval-previous
+</dd>
+<dt> C-c C-, </dt><dd>sclang-eval-line
+</dd>
+<dt> C-c C-9 </dt><dd>sclang-eval-dwim
+</dd>
+<dt> C-c C-x l </dt><dd>org-sc-toggle-autoload
+</dd>
+<dt> C-c C-x C-l </dt><dd>org-sc-load-marked
+</dd>
+</dl>
+</div>
+</li></ol>
+</div>
+
+<div id="outline-container-sec-18-2-3" class="outline-4">
+<h4 id="sec-18-2-3"><span class="section-number-4">18.2.3</span> Examples for evaluating in orgmode</h4>
+<div class="outline-text-4" id="text-18-2-3">
+<p>
+Before evaluating the following sections, type <code>H-C-r</code> to open the Process Registry window.  This displays the currently running processes.   Selecting a process and typing delete will stop or free that process.
+</p>
+</div>
+
+<ol class="org-ol"><li>A sine, 3 frequencies<br  /><div class="outline-text-5" id="text-18-2-3-1">
+<p>
+// Type C-M-x with the cursor in the current section
+</p>
+
+<p>
+a = { SinOsc.ar(\freq.kr(440), 0, 0.1) }.pla;
+0.1.wait;
+a.set(\freq, 550);
+0.1.wait;
+a.set(\freq, 660);
+a release: 3;
+</p>
+</div>
+</li>
+<li>Sine, simple loop<br  /><div class="outline-text-5" id="text-18-2-3-2">
+<p>
+// Type C-M-x with the cursor in the current section
+</p>
+
+<p>
+a = { SinOsc.ar(\freq.kr(440), 0, 0.1) }.pla;
+7 do: {
+        0.1.wait;
+        a.set(\freq, 550);
+        0.1.wait;
+        a.set(\freq, 660);
+};
+a release: 3;
+</p>
+</div>
+</li>
+<li>Sine, random melody loop<br  /><div class="outline-text-5" id="text-18-2-3-3">
+<p>
+// Type C-M-x with the cursor in the current section
+</p>
+
+<p>
+a = { SinOsc.ar(\freq.kr(440), 0, 0.1) }.pla;
+50 do: {
+        0.1.wait;
+        a.set(\freq, (440 * (4..12).choose / 4).postln);
+};
+a release: 3;
+3.wait;
+"DONE!".postln;
+</p>
+</div>
+</li>
+<li>Wandering dense sine cluster<br  /><div class="outline-text-5" id="text-18-2-3-4">
+<p>
+<i>/ Watch the registry window tracking 1 to 30 rapidly changing synths
+/</i> Kill the routine by selecting it in the registry window and
+<i>/ hitting the backspace key.
+/</i> Then kill any remaining synths one by one with the backspace key
+</p>
+
+<p>
+var synths, fwalk, swalk, synth;
+synths = List();
+fwalk = (Pbrown(30, 90, 0.75, inf) + Pfunc({ 0.01.exprand(1.5)})).asStream;
+swalk = Pbrown(0, 30, 1, inf).asStream;
+loop {
+        if (swalk.next &gt; synths.size) {
+                synths add: Syn("adsrsine", [\freq, fwalk.next.midicps]);
+        }{
+                synth = synths.choose;
+                synth.release(1.0.exprand(5.0));
+                synths remove: synth;
+        };
+        0.05.wait;
+};
+</p>
+</div>
+</li>
+<li>Ghost voices<br  /><div class="outline-text-5" id="text-18-2-3-5">
+
+<p>
+var synths, fwalk, swalk, synth;
+synths = List();
+fwalk = (Pbrown(30, 90, 0.75, inf) + Pfunc({ 0.01.exprand(1.5)})).asStream;
+swalk = Pbrown(0, 30, 1, inf).asStream;
+loop {
+        if (swalk.next &gt; synths.size) {
+                synths add: Syn("adsrringz", [\freq, fwalk.next.midicps, \decayTime, 3, &amp;, 0.02]);
+        }{
+                synth = synths.choose;
+                synth.release(1.0.exprand(5.0));
+                synths remove: synth;
+        };
+        0.05.wait;
+};
+</p>
+</div>
+</li></ol>
+</div>
+</div>
+<div id="outline-container-sec-18-3" class="outline-3">
+<h3 id="sec-18-3"><span class="section-number-3">18.3</span> Sclang-mode bindings</h3>
+<div class="outline-text-3" id="text-18-3">
+<dl class="org-dl">
+<dt> H-C-o </dt><dd>org-sc-toggle-mode
+</dd>
+<dt> C-c .  </dt><dd>sclang-execute-current-snippet
+</dd>
+<dt> C-c C-, </dt><dd>sclang-eval-line
+</dd>
+<dt> C-c C-. </dt><dd>sclang-select-snippet
+</dd>
+<dt> C-M-x </dt><dd>sclang-execute-current-snippet
+</dd>
+<dt> C-M-f </dt><dd>sclang-goto-next-snippet
+</dd>
+<dt> C-M-b </dt><dd>sclang-goto-previous-snippet
+</dd>
+<dt> C-M-n </dt><dd>sclang-execute-next-snippet
+</dd>
+<dt> C-M-p </dt><dd>sclang-execute-previous-snippet
+</dd>
+<dt> C-H-f </dt><dd>sclang-goto-next-snippet
+</dd>
+<dt> C-H-b </dt><dd>sclang-goto-previous-snippet
+</dd>
+<dt> C-H-n </dt><dd>sclang-execute-next-snippet
+</dd>
+<dt> C-H-p </dt><dd>sclang-execute-previous-snippet
+</dd>
+<dt> C-H-r </dt><dd>sclang-process-registry-gui
+</dd>
+<dt> C-c l </dt><dd>sclang-recompile
+</dd>
+<dt> M-C </dt><dd>sclang-clear-post-buffer
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-19" class="outline-2">
+<h2 id="sec-19"><a id="ID-BD7795E1-1FAD-418D-8CF8-6A48925DA909" name="ID-BD7795E1-1FAD-418D-8CF8-6A48925DA909"></a><span class="section-number-2">19</span> Triggering synths in routines</h2>
+<div class="outline-text-2" id="text-19">
+
+<p>
+Use =|&gt; to set the source of a SynthTree without starting it.  This is necessary in cases like the following, where the starting of the synth is done explicitly by trig in a routine:
+</p>
+
+<pre class="example">
+//:
+{
+	var synth;
+	synth = { [SinOsc, LFPulse, LFTri, LFSaw].choose.ar(\freq.kr(400)) } =|&gt; \test;
+	50 do: {
+		synth.trig(\freq, 400 rrand: 1200);
+		0.1.wait;
+	}
+}.fork
+//:
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-20" class="outline-2">
+<h2 id="sec-20"><span class="section-number-2">20</span> UGen shortcuts</h2>
+<div class="outline-text-2" id="text-20">
+</div><div id="outline-container-sec-20-1" class="outline-3">
+<h3 id="sec-20-1"><span class="section-number-3">20.1</span> <code>Inp.ar</code></h3>
+<div class="outline-text-3" id="text-20-1">
+<pre class="example">
+{ Inp.ar * Decay2.kr({ Dust.kr(1) } ! 2, 0.5, 2) } =&gt; \smooth;
+\smooth =&lt; ({ GrayNoise.ar(3) } ==&gt; \gray);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-21" class="outline-2">
+<h2 id="sec-21"><span class="section-number-2">21</span> List of running synths and patterns</h2>
+</div>
+
+<div id="outline-container-sec-22" class="outline-2">
+<h2 id="sec-22"><span class="section-number-2">22</span> Broadcast data events to any listening object</h2>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: IOANNIS ZANNOS</p>
+<p class="date">Created: 2014-07-16 Wed 21:54</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.5h)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
