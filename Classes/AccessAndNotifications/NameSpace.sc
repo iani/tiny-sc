@@ -1,6 +1,12 @@
 /*
+This version is deprecated. 
+Use class Registry instead.
+
 Experimental:
 Store / get named instances for any type in Library. 
+
+Path is limited to 2 levels.
+
 
 Type need not be a class.
 
