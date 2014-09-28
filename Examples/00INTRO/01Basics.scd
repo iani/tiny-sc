@@ -8,15 +8,15 @@ Sat, May 31 2014, 12:48 EEST
 STILL INCOMPLETE!
 */
 
-/* 
-1. The "chuck operator" => sets the source of a named sound and plays it. 
-The source can be: 
+/*
+1. The "chuck operator" => sets the source of a named sound and plays it.
+The source can be:
 */
 
-//: 1.1. A function: 
+//: 1.1. A function:
 { WhiteNoise.ar(0.1) } => \sound1;
 //: 1.2. A reference to the name of a template holding a SynthDef
-`\boombah => \sound1;
+`\lpfsawr => \sound1;
 //: 1.3. An event plays like a pattern:
 (degree: Pseq([0, 2, 4, 7], inf), dur: 0.1) => \sound1;
 
@@ -27,7 +27,7 @@ The source can be:
 \sound1.start;
 
 //: 4. To change a parameter of the sound, use the 'set' message
-// New sound to test: 
+// New sound to test:
 { Formant.ar(\fundfreq.kr(440), \formfreq.kr(1760), 880) } => \sound1;
 
 //: Changing the formant frequency
@@ -37,9 +37,12 @@ The source can be:
 //: Change the fundamental frequeny
 \sound1.set(\fundfreq, 220);
 
-/* 
-5. If the playing sound is a pattern, you can add or ovewrite exisitng 
-key-pattern pairs on the fly with the operator 
+//: Note: Open a fader interface for all SynthTrees:
+SynthTree.faders;
+
+/*
+5. If the playing sound is a pattern, you can add or ovewrite exisitng
+key-pattern pairs on the fly with the operator
 */
 
 //: 5.1 Chuck a new key-pattern array to the sound
