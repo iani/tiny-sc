@@ -5,7 +5,6 @@ Introductory tutorial to tiny-sc
 
 Sat, May 31 2014, 12:48 EEST
 
-STILL INCOMPLETE!
 */
 
 /*
@@ -17,7 +16,7 @@ The source can be:
 { WhiteNoise.ar(0.1) } => \sound1;
 //: 1.2. A reference to the name of a template holding a SynthDef
 `\lpfsawr => \sound1;
-//: 1.3. An event plays like a pattern:
+//: 1.3. An event (plays like a pattern):
 (degree: Pseq([0, 2, 4, 7], inf), dur: 0.1) => \sound1;
 
 //: 2. To stop a named sound (SynthTree), send it the message fadeOut.
@@ -127,11 +126,11 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 0.05 =!> \dur;
 // Fade out this synth
 \sound4.fadeOut;
-#+END_EXAMPLE
 
-* Playing patterns in multiple parameters
-
+//: Playing patterns in multiple parameters
+/*
 Sending an Event to a Symbol plays patterns to all parameters of the corresponding SynthTree with the same duration pattern.   Here is a sequence that also shows how to chuck SynthDef templates into the SynthTree to change the playing synth.
+*/
 
 #+BEGIN_EXAMPLE
 //: Sending patterns to parameters of synths in SynthTree.
@@ -156,11 +155,11 @@ Sending an Event to a Symbol plays patterns to all parameters of the correspondi
 //: And again
 `\everythingrhodes => \funnyStuff;
 //: Funny effects
-
+(
 (dur: [0.1 pn: 15, 0.05 pn: 30, 0.01 pn: 100].prand,
 freq: (1..13).pseq * 100,
 amp: [0.01, 0.01, 0.2, 0.03].pseq) *> \funnyStuff;
-
+)
 //:
 
 //: Playing events directly in SynthTree
@@ -196,9 +195,8 @@ amp: [0.01, 0.01, 0.2, 0.03].pseq) *> \funnyStuff;
 (dur: 0.1) +> \test;
 //: Fade-out
 \test fadeOut: 5;
-#+END_EXAMPLE
 
-//: ** Cloning patterns and streams, propagating changes
+//: Cloning patterns and streams, propagating changes
 //: Start a named pattern reference in a SynthTree
 Edef(\simple, (degree: [1, 2, 3].pseq)) => \wander;
 
@@ -252,86 +250,69 @@ Edef(\simple) =< (degree: (10..-10).pyramid(5).pseq);
 //: Fade out
 \wander.fadeOut(5);
 \other.fadeOut(10);
-#+END_EXAMPLE
 
-* Restart synths after Command-.
 
-Add some more synths to the tree:
+//: Restart synths after Command-.
 
-#+BEGIN_EXAMPLE
+// Add some more synths to the tree:
+
 { SinOsc.ar(440) } => \la;
 { SinOsc.ar(550) } => \doDiese;
 { SinOsc.ar(660) } => \mi;
 #+END_EXAMPLE
 
-Stop all synths by typing Command-. (on SC IDE), or Control-c Control-s (on Emacs), or by evaluating this:
-
-#+BEGIN_EXAMPLE
+/* Stop all synths by typing Command-. (on SC IDE),
+  or Control-c Control-s (on Emacs), or by evaluating this:
+*/
 thisProcess.stop;
-#+END_EXAMPLE
 
-Then run this to restart the synths:
+// Then run this to restart the synths:
 
-#+BEGIN_EXAMPLE
 SynthTree.initTree;
-#+END_EXAMPLE
 
-* Clearing SynthTree status
+//: Clearing SynthTree status
 
-To stop all synths of the SynthTree from being restarted, evaluate this:
+// To stop all synths of the SynthTree from being restarted, evaluate this:
 
-#+BEGIN_EXAMPLE
 SynthTree.stopAll;
-#+END_EXAMPLE
 
-After this, no synths will be restarted with =SynthTree.initTree=.
+// After this, no synths will be restarted with =SynthTree.initTree=.
 
-* Patching Audio Synth I/O
+// ============== Patching Audio Synth I/O ================
 
-// Example 1:  Simple patching of one source to one effect:
+//: Example 1:  Simple patching of one source to one effect:
 
-#+BEGIN_EXAMPLE
-// Start an effects synth with a low-pass filter
+//: Start an effects synth with a low-pass filter
 { LPF.ar(Inp.ar, \freq.kr(2000)) } => \lpf;
-// Start a WhiteNoise synth
+//: Start a WhiteNoise synth
 { WhiteNoise.ar } => \source;
-// Send the noise synth to the filter
+//: Send the noise synth to the filter
 \lpf =< \source;
-// Change the frequency of the low pass filter
+//: Change the frequency of the low pass filter
 \lpf.set(\freq, 5000);
-#+END_EXAMPLE
 
-Example 2: Several synths sending to one effect.
+//: Example 2: Several synths sending to one effect.
 
-#+BEGIN_EXAMPLE
 { LPF.ar(Inp.ar, LFNoise0.kr(40 ! 2).range(500, 4000)) } => \lpf;
 \lpf =< ({ PinkNoise.ar } ==> \source);
 \lpf =< ({ LFPulse.ar(LFNoise0.kr(30).range(3000, 4000)) } ==> \source2);
-#+END_EXAMPLE
 
-Example 3: Changing the synths of the source and of the effect:
+//: Example 3: Changing the synths of the source and of the effect:
 
-#+BEGIN_EXAMPLE
 { LPF.ar(Inp.ar, \freq.kr(1000)) * Decay.kr({ Dust.kr(\trigRate.kr(1)) } ! 2) } =>.5 \lpf;
 \lpf =< ({ LFTri.ar(LFNoise2.kr(12).range(400, 4000)) } ==> \source2);
-#+END_EXAMPLE
 
-Confirm that the tree can be restarted after Command-. also when it contains linked synths:
+//: Confirm that the tree can be restarted after Command-. also when it contains linked synths:
 
-#+BEGIN_EXAMPLE
 thisProcess.stop; // run this to stop all synths first
-// Then run this to restart all stopped synths:
+//: Then run this to restart all stopped synths:
 SynthTree.initTree;
-// Modify parameters of the lpf SynthTree
+//: Modify parameters of the lpf SynthTree
 \lpf.set(\trigRate, 10, \freq, 2000);
-#+END_EXAMPLE
 
-* GUI Views
-
+// ================= GUI Views =================
+/*
 ** Overview: 5 View Types                                              :test:
-:PROPERTIES:
-:DATE:     <2014-04-02 Wed 16:40>
-:END:
 
 There are 5 main view types:
 
@@ -340,17 +321,13 @@ There are 5 main view types:
 - Synth Template View :: A window with 2 list views: The left list shows the tags (categories) of SynthTree templates (SynthDefs or Functions) and the right list shows the templates belonging to the selected category.  At the bottom is a drag view showing the name of the selected template.  Drag the selected template onto any label on the Fader view to play that template on the SynthTree belonging to that fader strip.
 - Pattern Template View :: (Tentative / Under development!)  Holds templates of patterns to play in SynthTrees.  May be integrated in the same list as the Synth Template View.
 - Process Registry View :: Experimental / Proof of concept: Shows a list of currently running synth and routine processes, in a manner similar to the process view of Mini Audicle in ChucK.  Works together with Emacs/Org-Mode (see keyboard shortcuts).  Can also work with SuperCollider IDE, but requires using different methods for playing Functions, Synths or Routines.  This feature is superseded by the Fader View, but kept here as proof-of-concept.
+*/
 
-** The Synth Template View
-:PROPERTIES:
-:DATE:     <2014-04-02 Wed 16:40>
-:END:
+//: The Synth Template View
 
-#+BEGIN_EXAMPLE
 SynthTemplate.gui;
-#+END_EXAMPLE
 
-**** Keyboard commands on Synth Template view
+/* Keyboard commands on Synth Template view
 
 |----------------+-----------------------------------------------------------------+---|
 | Key            | Action                                                          |   |
@@ -363,13 +340,14 @@ SynthTemplate.gui;
 |----------------+-----------------------------------------------------------------+---|
 
 (*) Note : The currently SynthTree is selected in the Faders panel by clicking on the label displaying the SynthTree description (template name + synthtree name), or by chucking into a SynthTree in code (=>).
-** The SynhTree-Fader View
 
-#+BEGIN_EXAMPLE
+*/
+
+//: The SynhTree-Fader View
+
 SynthTree.faders;
-#+END_EXAMPLE
 
-*** Keyboard commands on SynthTree.faders
+/* Keyboard commands on SynthTree.faders
 
 |-------+-----------------------------------------------------------+---|
 | Key   | Action                                                    |   |
@@ -391,18 +369,16 @@ SynthTree.faders;
 | ,     | Stop synths and routines (=thisProcess.stop=)             |   |
 | .     | Stop synths and remove from SynthTree.initTree            |   |
 |-------+-----------------------------------------------------------+---|
-** The Knobs view
 
+*/
 
-** Creating Views for any parameter
-#+BEGIN_EXAMPLE
+//:The Knobs view
+// Creating Views for any parameter
+
 { SinOsc.ar(\freq.kr(440)) } => \viewtest;
 \viewtest.view(\freq).view(\amp);
-#+END_EXAMPLE
 
-* Setting fadeTime in individual synths
-
-#+BEGIN_EXAMPLE
+//: Setting fadeTime in individual synths
 // Start an "effect" synth with an input
 { LPF.ar(In.ar(\in.kr(0)), \freq.kr(4000)) } => \lpf;
 // Set fadeTime of effect:
@@ -417,34 +393,35 @@ SynthTree.faders;
 { SinOsc.ar(2000 rrand: 3000) } ==> \source;
 // change source again, With fadeTime stored previously
 { LFTri.ar(400 rrand: 800) } ==> \source;
-#+END_EXAMPLE
 
-* Buffers and samples
+// ============ Buffers and samples ==============
 
-Play a sample loaded from disk with PlayBuf (If no name is specified, the name of the receiver of =.buf= is used to find a buffer of the same name.  If no such buffer exists, then a Dialog window is opened for choosing a file to load into a buffer):
+/* Play a sample loaded from disk with PlayBuf
+If no name is specified, the name of the receiver of =.buf= is used to find a buffer of the same name.
+If no such buffer exists, then a Dialog window is opened for choosing a file to load into a buffer.
+*/
 
-#+BEGIN_EXAMPLE
 { \buf.playBuf } => \chimes.buf.set(\amp, 1);
-#+END_EXAMPLE
 
-Play the same sample in a different synth, with different rate
+// Play the same sample in a different synth, with different rate
 
-#+BEGIN_EXAMPLE
 { \buf.playBuf(rate: 1.2) } => \different.buf(\chimes).set(\amp, 1);
-#+END_EXAMPLE
 
-** BufferList autoload
-
+// BufferList autoload
+/*
 Setting classvar autoload of =BufferList= to =true= will make SuperCollider load all =.aiff= and =.wav= files that are found under folder =sounds= in the SuperCollider user support directory (=Platform.userAppSupportDir=) whenever the default server boots.
+*/
 
-** Buffer list view
+/* Buffer list view
 
 Following opens a Buffer List view with all buffers loaded through selecting from a SynthTree as shown above, or put in the default "sounds" folder in User App Support Dir/SuperCollider
 
-#+BEGIN_EXAMPLE
-BufferList.showList;
-#+END_EXAMPLE
+*/
 
+
+BufferList.showList;
+
+/*
 Keyboard commands on the Buffer List list view:
 
 |--------------------+--------------------------------------------------------------|
@@ -458,7 +435,9 @@ Keyboard commands on the Buffer List list view:
 | o                  | load list of buffers from file                               |
 |--------------------+--------------------------------------------------------------|
 
-* Keyboard Bindings
+*/
+
+/* ============= Keyboard Bindings =============
 
 Following keyboard bindings only apply to Emacs.
 
@@ -479,15 +458,14 @@ Following keyboard shortcuts allow one to choose a synthtree from the list of sy
 - H-c H-s :: org-sc-stop-last-synthtree
 
 The chuck commands (=H-c c=, =H-c H-c=) enclose the snippet or section into a function before chucking.  Try for example =H-c c= placing the cursor in the following line of code in sclang-mode:
+*/
 
-#+BEGIN_EXAMPLE
 //:
 SinOsc.ar(\freq.kr(800) * LFNoise0.kr(12).range(0.8, 1.2));
 //:
-#+END_EXAMPLE
 
-Stop the example above by typing =H-c H-space=.
-
+// Stop the example above by typing =H-c H-space=.
+/*
 Following keyboard shortcuts select a buffer from the list of buffers currently loaded in SuperCollider, or operate on the buffer list:
 
 - H-b g :: org-sc-play-buffer
@@ -497,7 +475,9 @@ Following keyboard shortcuts select a buffer from the list of buffers currently 
 - H-b o :: org-sc-open-buffer-list
 - H-b s :: org-sc-save-buffer-list
 
-** Org-mode bindings
+*/
+
+/* ======== Org-mode bindings =========
 
 *** General org-mode bindings for SuperCollider
 - C-c C-s :: sclang-main-stop
@@ -541,7 +521,7 @@ add choices of what to do without moving: = 14 commands
 - =H-C-k= :: previous section at same level + evaluate
 - =H-M-k= :: previous section at same level + chuck
 
-**** From alpha02
+* From alpha02
 Note: The process registry window and the org-sc-eval-in-routine technique is now superseded by SynthTree and its guis.  SynthTree Fader gui is a more convenient way to control running synths.  The process registry is nevertheless kept here as mere "proof of concept", imitating the MiniAudicle process list window of ChucK.
 
   - H-C-r :: sclang-process-registry-gui: Open registry gui.
@@ -558,6 +538,7 @@ Note: The process registry window and the org-sc-eval-in-routine technique is no
   - C-c C-9 :: sclang-eval-dwim
   - C-c C-x l :: org-sc-toggle-autoload
   - C-c C-x C-l :: org-sc-load-marked
+
 *** Examples for evaluating in orgmode
 
 Before evaluating the following sections, type =H-C-r= to open the Process Registry window.  This displays the currently running processes.   Selecting a process and typing delete will stop or free that process.
@@ -638,7 +619,8 @@ loop {
 :ID:       F6420F84-E198-4469-9788-7119EB29CA00
 :eval-id:  3
 :END:
-
+*/
+//:
 var synths, fwalk, swalk, synth;
 synths = List();
 fwalk = (Pbrown(30, 90, 0.75, inf) + Pfunc({ 0.01.exprand(1.5)})).asStream;
@@ -654,7 +636,7 @@ loop {
 	0.05.wait;
 };
 
-** Sclang-mode bindings
+/* Sclang-mode bindings
 
 - H-C-o :: org-sc-toggle-mode
 - C-c .  :: sclang-execute-current-snippet
@@ -672,8 +654,9 @@ loop {
 - C-H-r :: sclang-process-registry-gui
 - C-c l :: sclang-recompile
 - M-C :: sclang-clear-post-buffer
+*/
 
-* Triggering synths in routines
+/* Triggering synths in routines
 :PROPERTIES:
 :DATE:     <2014-03-17 Mon 17:58>
 :ID:       BD7795E1-1FAD-418D-8CF8-6A48925DA909
@@ -681,8 +664,8 @@ loop {
 :END:
 
 Use =|> to set the source of a SynthTree without starting it.  This is necessary in cases like the following, where the starting of the synth is done explicitly by trig in a routine:
+*/
 
-#+BEGIN_EXAMPLE
 //:
 {
 	var synth;
@@ -693,17 +676,10 @@ Use =|> to set the source of a SynthTree without starting it.  This is necessary
 	}
 }.fork
 //:
-#+END_EXAMPLE
 
-* UGen shortcuts
+// ======== UGen shortcuts ======
 
-** =Inp.ar=
+// =Inp.ar=
 
-#+BEGIN_EXAMPLE
 { Inp.ar * Decay2.kr({ Dust.kr(1) } ! 2, 0.5, 2) } => \smooth;
 \smooth =< ({ GrayNoise.ar(3) } ==> \gray);
-#+END_EXAMPLE
-
-* List of running synths and patterns
-
-* Broadcast data events to any listening object
