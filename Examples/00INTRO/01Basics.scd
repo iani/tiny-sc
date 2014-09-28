@@ -35,6 +35,8 @@ The source can be:
 \sound1.set(\formfreq, 2000);
 //: Change the fundamental frequeny
 \sound1.set(\fundfreq, 220);
+//: Change the fundamental frequeny
+\sound1.set(\fundfreq, 2200);
 
 //: Note: Open a fader interface for all SynthTrees:
 SynthTree.faders;
@@ -64,7 +66,6 @@ key-pattern pairs on the fly with the operator
 250 => ~freq;  // Alternative syntax: \sound.set(\freq, 250)
 // Fadeout with custom duration
 \sound.fadeOut(12);
-#+END_EXAMPLE
 
 The environment variable ~fadeTime stores the global default duration for fade-in and fade-out of synths.  It is stored in the parent environment of the current environment.  The =!> operator is used to set environment variables of the parent environment.  Examples:
 
@@ -85,13 +86,12 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 { 0.1 * SinOsc.ar(LFNoise0.kr(15).range(400, 4000)) } => \sound2;
 // Fadeout also uses the global default
 \sound2.fadeOut;
-#+END_EXAMPLE
 
-* Setting synth parameters
+
+/* Setting synth parameters
 
 When a synth template gets chucked to a synthtree with =>, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.
-
-#+BEGIN_EXAMPLE
+*/
 { 0.1 * LPF.ar(LFSaw.ar(\freq.kr(440)), \filterFreq.kr(1000)) } => \sound3;
 // Parameters of last chucked SynthTree are in the environment.
 // Change the filter frequency:
@@ -100,16 +100,18 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 600 => ~freq;
 // Play a routine into frequency, then fade out
 { 50 do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; \sound3.fadeOut(3); }.fork;
-#+END_EXAMPLE
+//:
+{ inf do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; \sound3.fadeOut(3); }.fork;
+//:
+{ 10 do: { 50.rrand(80).midicps => ~freq; 0.5.wait }; \sound3.fadeOut(3); }.fork;
 
-* Playing patterns in single parameters
+//: Playing patterns in single parameters
 
-#+BEGIN_EXAMPLE
 { SinOsc.ar(\freq.kr(400), 0, 0.1) } => \sound4;
 // Play a pattern into ~freq:
 { 50.rrand(80).midicps } *> \freq;
 // Alternative formulation:
-{ 80.rrand(90).midicps } => 0.2 *> \freq;
+{ 80.rrand(90).midicps } => 0.02 *> \freq;
 //: Play another pattern into freq parameter:
 { 250 rrand: 350 } => 0.05 *> \freq;
 //: And another:
@@ -123,7 +125,7 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 //  Play with global duration stored in ~dur:
 { [65, 69, 70, 73].choose.midicps } => Pfunc({ ~dur.next }) *> \freq;
 // Change global duration:
-0.05 =!> \dur;
+0.1 =!> \dur;
 // Fade out this synth
 \sound4.fadeOut;
 
@@ -132,7 +134,6 @@ When a synth template gets chucked to a synthtree with =>, the parameters of tha
 Sending an Event to a Symbol plays patterns to all parameters of the corresponding SynthTree with the same duration pattern.   Here is a sequence that also shows how to chuck SynthDef templates into the SynthTree to change the playing synth.
 */
 
-#+BEGIN_EXAMPLE
 //: Sending patterns to parameters of synths in SynthTree.
 `\basshighend => \funnyStuff;
 //: Play a single parameter with a duration pattern

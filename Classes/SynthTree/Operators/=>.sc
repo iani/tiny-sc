@@ -17,7 +17,7 @@ Tue, Jun 17 2014, 17:23 EEST
 }
 
 + Symbol {
-	receiveChuck { | chucker adverb | chucker.chuckInto(this.asSynthTree, adverb) }
+	//	receiveChuck { | chucker adverb | chucker.chuckInto(this.asSynthTree, adverb) }
 	receiveNumberChuck { | number paramName = \amp | ^this.asSynthTree.set(paramName, number) }
 }
 
