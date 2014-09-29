@@ -4,6 +4,25 @@
 
 * Currently working on
 
+** Review of operators
+:PROPERTIES:
+:DATE:     <2014-09-29 Mon 10:10>
+:END:
+
+*** source => symbol/sourcetree: set source of synthtree
+
+Send a source to a sourcetree.  The source replaces any previous source.  The sourcetree starts playing.
+
+*** source =>.parameter symbol/sourcetree: set source of parameter of synthtree
+
+Send a source to a parameter of a sourcetree. The source replaces any previous source at that parameter.
+
+*** source +> something: Modify source of synthtree
+
+*** source %> something: Add filter to source of synthtree
+
+*** source *> something: Obsolete?
+
 
 ** TODO (URGENT!) chucking into synthtree should not push environment.
 :PROPERTIES:
@@ -646,7 +665,7 @@ There are following possibilities of chucking something to a synthree parameter:
 - Buffer :: set bufnum to the parameter for playing the buffer
 - Event :: set all params and restart.
 
-**** Constructing pattern players
+**** TODO Constructing pattern players
 Shortcut method for turning Function, pattern, array, or stream into a patternplayer for playing into the parameter: =pp=!
 
 Alternative operator for constructing a pattern player (instead of =pp= method): Chuck:
