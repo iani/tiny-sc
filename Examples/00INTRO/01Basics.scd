@@ -25,32 +25,29 @@ The source can be:
 //: 3. To restart a sound, send it the message start
 \sound1.start;
 
-//: 4. To change a parameter of the sound, use the 'set' message
+//: 4. To change a parameter of the sound, use =>.parameter
 // New sound to test:
 { Formant.ar(\fundfreq.kr(440), \formfreq.kr(1760), 880) } => \sound1;
 
 //: Changing the formant frequency
-\sound1.set(\formfreq, 200);
+200 =>.formfreq \sound1;
 //: Again
-\sound1.set(\formfreq, 2000);
+2000 =>.formfreq \sound1;
 //: Change the fundamental frequeny
-\sound1.set(\fundfreq, 220);
-//: Change the fundamental frequeny
-\sound1.set(\fundfreq, 2200);
+400 =>.fundfreq \sound1;
 
 //: Note: Open a fader interface for all SynthTrees:
 SynthTree.faders;
 
 /*
 5. If the playing sound is a pattern, you can add or ovewrite exisitng
-key-pattern pairs on the fly with the operator
+key-pattern pairs on the fly.
 */
 
 //: 5.1 Chuck a new key-pattern array to the sound
 //  The patterns included in the array replace the ones with the
 //  same name in the SynthTree, or are added to it.
 (dur: Prand([0.01, 0.2], inf), amp: Pseq([0.01, 0.1], inf)) => \sound1;
-
 
 // Replace the synth at \sound with another one
 { SinOsc.ar(440, 0, 0.1) } => \sound;
@@ -61,22 +58,23 @@ key-pattern pairs on the fly with the operator
 // Change the fade-time of the SynthTree in the same line:
 { LPF.ar(GrayNoise.ar(0.1*Decay.kr(Dust.kr(10))), \freq.kr(5000)) } => \sound.fadeTime_(0.5);
 // Output channel can be set
-1 => ~out;
+1 =>.out \sound;
 // So can the freq or any other parameter
-250 => ~freq;  // Alternative syntax: \sound.set(\freq, 250)
+250 =>.freq \sound;
 // Fadeout with custom duration
 \sound.fadeOut(12);
 
+/*
 The environment variable ~fadeTime stores the global default duration for fade-in and fade-out of synths.  It is stored in the parent environment of the current environment.  The =!> operator is used to set environment variables of the parent environment.  Examples:
+*/
 
-#+BEGIN_EXAMPLE
 // Set global fade time to 3 seconds
 10 =!> \fadeTime;
 // Fade in a synth.
 { WhiteNoise.ar(0.1) } => \sound2;
 // Cross-fade another synth in its place
 { SinOsc.ar(0.1 * LFNoise0.kr(5).range(400, 4000)) } => \sound2;
-// And a third synth
+// Cross-fade a third synth
 { LPF.ar(0.1 * GrayNoise.ar, LFNoise0.kr(5).range(400, 4000)) } => \sound2;
 // Set global fade time to 0.01 seconds
 0.01 =!> \fadeTime;
@@ -88,22 +86,10 @@ The environment variable ~fadeTime stores the global default duration for fade-i
 \sound2.fadeOut;
 
 
-/* Setting synth parameters
-
-When a synth template gets chucked to a synthtree with =>, the parameters of that synth get pushed to the current environment.  They can then be accessed and set directly as environment variables.
-*/
+/* Setting synth parameters with a routine */
 { 0.1 * LPF.ar(LFSaw.ar(\freq.kr(440)), \filterFreq.kr(1000)) } => \sound3;
-// Parameters of last chucked SynthTree are in the environment.
-// Change the filter frequency:
-400 => ~filterFreq;
-// Change the generator frequency:
-600 => ~freq;
 // Play a routine into frequency, then fade out
-{ 50 do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; \sound3.fadeOut(3); }.fork;
-//:
-{ inf do: { 50.rrand(80).midicps => ~freq; 0.05.wait }; \sound3.fadeOut(3); }.fork;
-//:
-{ 10 do: { 50.rrand(80).midicps => ~freq; 0.5.wait }; \sound3.fadeOut(3); }.fork;
+{ 50 do: { 50.rrand(80).midicps =>.freq \sound3; 0.05.wait }; \sound3.fadeOut(3); }.fork;
 
 //: Playing patterns in single parameters
 
@@ -147,7 +133,7 @@ Sending an Event to a Symbol plays patterns to all parameters of the correspondi
 //: An event sets both the duration and the parameter
 (dur: 0.1, freq: [1, 2, 3].pseq * 1000) *> \funnyStuff;
 //: Multiple parameters can be set
-(dur: 0.05, freq: (1..13).pseq * 100, amp: [0.01, 0.01, 0.2, 0.03].pseq) *> \funnyStuff
+(dur: 0.05, freq: (1..13).pseq * 100, amp: [0.05, 0.05, 0.2, 0.03].pseq) *> \funnyStuff
 
 //: Change the instrument again
 `\bassfoundation => \funnyStuff;

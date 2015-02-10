@@ -9,20 +9,43 @@
 :DATE:     <2014-09-29 Mon 10:10>
 :END:
 
+This review may result in some operators (eg *>) becoming obsolete.
+
+Some of the things described here are yet to implement.
+
 *** source => symbol/sourcetree: set source of synthtree
 
 Send a source to a sourcetree.  The source replaces any previous source.  The sourcetree starts playing.
+
+Special case:
+
+: (event) -> duration pattern => sourcetree
+or
+: [array] -> duration pattern => sourcetree
+
+Play all key-pattern pairs in event or array in corresponding parameters of sourcetree, with common duration pattern.
 
 *** source =>.parameter symbol/sourcetree: set source of parameter of synthtree
 
 Send a source to a parameter of a sourcetree. The source replaces any previous source at that parameter.
 
+Special case:
+
+: value pattern -> duration pattern =>.parameter sourcetree
+
+Play value pattern with duration pattern in parameter of sourcetree.
+
 *** source +> something: Modify source of synthtree
+
+Modifies stream that plays in synthtree.
 
 *** source %> something: Add filter to source of synthtree
 
-*** source *> something: Obsolete?
+Adds filter to stream that plays in synthree.
 
+*** source *> something: Obsolete? (!)
+
+Covered by variants of => using associations (see above).
 
 ** TODO (URGENT!) chucking into synthtree should not push environment.
 :PROPERTIES:
