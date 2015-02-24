@@ -2,7 +2,7 @@
 Modify SynthTree by adding an object.
 
 Patterns:
-- Event: modify BddfInstrument (EventStream).
+- Event: modify BddfInstrument (EvtStream).
 
 Parameters: 
 - SimpleNumber: Set a parameter

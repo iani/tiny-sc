@@ -72,8 +72,8 @@ Edef(\x) =>@ \test2;
 Edef(\x) =>@ \test3;
 
 
-a = Edef(\x, (dur: 1, degree: [0, 1, 2, 3, 4, 5, 6, 7].pseq)).asEventStreamPlayer.play;
-b = Edef(\x, (dur: 1, degree: [0, 1, 2, 3, 4, 5, 6, 7].pseq)).asEventStreamPlayer.play;
+a = Edef(\x, (dur: 1, degree: [0, 1, 2, 3, 4, 5, 6, 7].pseq)).asEvtStreamPlayer.play;
+b = Edef(\x, (dur: 1, degree: [0, 1, 2, 3, 4, 5, 6, 7].pseq)).asEvtStreamPlayer.play;
 
 
 //:

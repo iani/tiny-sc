@@ -118,7 +118,7 @@ Note: Two special instrument names could be used for pauses and for modulating t
 - \pause
 - \legato
 
-A separate class called PatternSynth can be used to handle the playing of a pattern with PatternTask. (This is analogous to EventStreamPlayer).  This provides an interface compatible with Synth, which is needed to use a PatternTask in the synth variable of a SynthTree, and some other useful features:
+A separate class called PatternSynth can be used to handle the playing of a pattern with PatternTask. (This is analogous to EvtStreamPlayer).  This provides an interface compatible with Synth, which is needed to use a PatternTask in the synth variable of a SynthTree, and some other useful features:
 
 - PatternSynth :: Play synths in response to events received from a PatternTask via a PatternFunc.  Enclose the synths in a separate group and route their output through a separate synth reading from a private bus, so as to provide level control, fade-in and fade-out envelope, and collective control of all currently active synths in the group.
 

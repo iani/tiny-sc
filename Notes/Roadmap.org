@@ -303,7 +303,7 @@ Event +>.paramname \synthree;
 
 may contain one of:
 - MIDIfunc
-- EventStream
+- EvtStream
 - OSCfunc
 - Bus
 - A protean kind of broadcasting control source of yet undefined class (not yet implemented).
@@ -339,7 +339,7 @@ Or:
 
 Or to map to busses!
 
-Or to play a pattern in a parameter!  Note:  One could play these as EventStreams (even Edefs or Idefs), using a set eventType, that does synth.set(param, val) as its action.  See SC Help, =Event types=:
+Or to play a pattern in a parameter!  Note:  One could play these as EvtStreams (even Edefs or Idefs), using a set eventType, that does synth.set(param, val) as its action.  See SC Help, =Event types=:
 
 #+BEGIN_EXAMPLE
 set
@@ -389,7 +389,7 @@ Draft:
     Answer: Using the same operator is probably simpler to remember, and ` as "not a SynthTree" may be also easy to remember.  So for the moment, keep the ` syntax.
   - PROBLEM: What if a different edef is chucked into the same idef?
     Change idef's parent?  Perhaps yes.
-- (event) => `\idef :: Play event as source of idef's EventStream.  Create Idef if it does not exist.  In any case, idef becomes parentless (!).
+- (event) => `\idef :: Play event as source of idef's EvtStream.  Create Idef if it does not exist.  In any case, idef becomes parentless (!).
   - STATUS: TODO.
 - (event) +> `\idef :: Modify (or create if not existing) idef.
   + STATUS: TODO.
@@ -639,7 +639,9 @@ See draft of this Classes/Gui/GenericWindow.scd
 ** Review / remove use of changed(\value) in PatternTask
 Could a function be called directly instead, to save CPU cycles?
 
-** EventList class
+** EventSequence class
+
+(Renamed from EventList to avoid clash with FP quark)
 
 (Earlier version done in Lilt2 lib: Chain).
 
@@ -1012,7 +1014,7 @@ When fadeout is long, one may think that it is not working.  Change color of fad
 :PROPERTIES:
 :DATE:     <2014-04-02 Wed 11:14>
 :END:
-(Note to self: Forget about nesting here.  For that you need EventList.)
+(Note to self: Forget about nesting here.  For that you need EventSequence.)
 
 The valueStream may produce as value an array of 3 elements:
 
@@ -1398,14 +1400,14 @@ Look at following methods in Pattern:
 
 #+BEGIN_EXAMPLE
 play { arg clock, protoEvent, quant;
-		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)
+		^this.asEvtStreamPlayer(protoEvent).play(clock, false, quant)
 	}
 
 	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
 	iter { ^this.asStream }
 
-	asEventStreamPlayer { arg protoEvent;
-		^EventStreamPlayer(this.asStream, protoEvent);
+	asEvtStreamPlayer { arg protoEvent;
+		^EvtStreamPlayer(this.asStream, protoEvent);
 	}
 	embedInStream { arg inval;
 		^this.asStream.embedInStream(inval);
@@ -1426,8 +1428,8 @@ And in Stream:
 		^inval
 	}
 
-	asEventStreamPlayer { arg protoEvent;
-		^EventStreamPlayer(this, protoEvent);
+	asEvtStreamPlayer { arg protoEvent;
+		^EvtStreamPlayer(this, protoEvent);
 	}
 
 	play { arg clock, quant;
@@ -1436,7 +1438,7 @@ And in Stream:
 	}
 #+END_EXAMPLE
 
-And in EventStreamPlayer:
+And in EvtStreamPlayer:
 
 #+BEGIN_EXAMPLE
 	play { arg argClock, doReset = (false), quant;
@@ -1464,7 +1466,7 @@ And in EventStreamPlayer:
 	}
 #+END_EXAMPLE
 
-And also in EventStreamPlayer this:
+And also in EvtStreamPlayer this:
 
 #+BEGIN_EXAMPLE
 	prNext { arg inTime;
@@ -1492,14 +1494,14 @@ role of embedInStream not clear yet.
 
 *** First implementation proto-draft
 
-See class EventPattern, EventStream.
+See class EventPattern, EvtStream.
 
 ** Use embed in stream to chain (=embed) PatternTasks?
 :PROPERTIES:
 :DATE:     <2014-04-20 Sun 18:32>
 :END:
 
-Embedding of event-patterns done.  See EventPattern, EventStream.
+Embedding of event-patterns done.  See EventPattern, EvtStream.
 For playing in SynthTree see Edef, Idef, Bdef.
 
 
@@ -1524,7 +1526,7 @@ IZ Tue, Apr 22 2014, 00:42 EEST
 :DATE:     <2014-04-23 Wed 16:50>
 :END:
 
-Try making Edef subclass of EventPattern and Idef subclass of EventStream.  The reason is to implement the alternative asStream and embedInStream methods without having to add exra wrappers in a different class to handle them.
+Try making Edef subclass of EventPattern and Idef subclass of EvtStream.  The reason is to implement the alternative asStream and embedInStream methods without having to add exra wrappers in a different class to handle them.
 
 *** Operators:
 :PROPERTIES:
@@ -1648,7 +1650,7 @@ Use generator class NameSpace for named instances, instead of subclassing.
 
 ***** Modifying the eventstream or pattern with "mods"
 
-A mod takes the event inherited from the parent and applies modifications to it in order to generate a modified Event that is used by the EventPattern or EventStream.
+A mod takes the event inherited from the parent and applies modifications to it in order to generate a modified Event that is used by the EventPattern or EvtStream.
 
 Analysis of mod possibilities
 
@@ -1688,7 +1690,7 @@ Other operations may be added later as needed.
 
 ** Make Edef and SynthTree play with EventPattern instead of PatternEventPlayer.
 
-Note: All inheritance/modifications should be done with Edef, its related classes Cdef (inheriting clone of Edef), Idef (inheriting named wrapper around EventStreamPlayer), Bdef (subclass of Istream that makes the streamplayer broadcast instead of playing) or SynthTree.  Keep EventPattern, EventStream as simple as possible.
+Note: All inheritance/modifications should be done with Edef, its related classes Cdef (inheriting clone of Edef), Idef (inheriting named wrapper around EvtStreamPlayer), Bdef (subclass of Istream that makes the streamplayer broadcast instead of playing) or SynthTree.  Keep EventPattern, EvtStream as simple as possible.
 
 *** Next things in this matter
 :PROPERTIES:
@@ -1708,13 +1710,13 @@ Furthermore, since we can nest EventPatterns, we will also want to nest Mdefs.  
 The new PatternInstrument should have:
 
 - The Mdef it was created from (to respawn).
-- The EventStreamPlayer that it is playing (so that it can start it or stop it).
+- The EvtStreamPlayer that it is playing (so that it can start it or stop it).
 - Any other synth/group/bus/SynthTree related stuff (derived from as it is now).
 - The facilities for varying the way that the received events are played ("filter").
 
 **** QUOTE How to do the broadcasting
 
-Use a subclass of EventStreamPlayer, called EventStreamBroadcaster that uses a variant of prPlay as follows:
+Use a subclass of EvtStreamPlayer, called EvtStreamBroadcaster that uses a variant of prPlay as follows:
 
 #+BEGIN_EXAMPLE
 prNext { arg inTime;
@@ -1748,7 +1750,7 @@ broadcastAndDelta { | cleanup, mute, streamPlayer |
 }
 #+END_EXAMPLE
 
-**** Runtime modifications apply to EventStreamBroadcasters, not Mdefs (!?)
+**** Runtime modifications apply to EvtStreamBroadcasters, not Mdefs (!?)
 
 
 **** Coding examples
@@ -1756,8 +1758,8 @@ broadcastAndDelta { | cleanup, mute, streamPlayer |
 Playing an Mdef: Always creates a Bdef.
 
 #+BEGIN_EXAMPLE
-Mdef(\x).play; // plays into EventStreamBroadcaster (Bdef) of same name
-Mdef(\x).play(\y) // plays into EventStreamBroadcaster named \y
+Mdef(\x).play; // plays into EvtStreamBroadcaster (Bdef) of same name
+Mdef(\x).play(\y) // plays into EvtStreamBroadcaster named \y
 
 // Possible shortcut:
 \x => `\y;
@@ -1813,7 +1815,7 @@ Done in Idef addEvent.  Example:
 :DATE:     <2014-04-30 Wed 00:14>
 :END:
 
-Not applicable, because the values received from the playing EventStream are final ones - the result of playing the Stream.  It is however possible to use a preexisting stream to compute new values and combine them with the value from the event.
+Not applicable, because the values received from the playing EvtStream are final ones - the result of playing the Stream.  It is however possible to use a preexisting stream to compute new values and combine them with the value from the event.
 
 #+BEGIN_EXAMPLE
 (degree: (0..7).pseq, dur: 0.25) => \test;
@@ -2208,4 +2210,4 @@ The eval id is stored as property in the org-section.
 
 ** Process trees?
 
-To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EventStreamPlayer) and notify the children when the thread stops.  Similarly for EventStreamPlayer.  Registering processes under a snippet/org-section id is a simpler alternative. However process-tree based stopping is a different thing, because one may want to kill a parent-process through the gui, independent fom the snippet grouping which may contain also other processe
+To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EvtStreamPlayer) and notify the children when the thread stops.  Similarly for EvtStreamPlayer.  Registering processes under a snippet/org-section id is a simpler alternative. However process-tree based stopping is a different thing, because one may want to kill a parent-process through the gui, independent fom the snippet grouping which may contain also other processe

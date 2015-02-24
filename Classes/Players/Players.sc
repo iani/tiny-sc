@@ -4,7 +4,7 @@ Sun, Jun 22 2014, 00:18 EEST
 */
 
 
-AbstractPlayer {
+PlayerSuperclass {
 	var <model; // EventPlayerModel or TaskPlayerModel or ...
 	var <process;
 

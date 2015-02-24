@@ -10,18 +10,18 @@ EventPattern : Pattern {
 
 	*new { | event | ^this.newCopyArgs(event ?? { () }) }
 
-	asStream { ^EventStream(event) }
+	asStream { ^EvtStream(event) }
 
 	pattern { ^this }
 }
 
-EventStream : Stream {
+EvtStream : Stream {
 	var <>event; // contains streams
 	*new { | event |
-		^super.new.initEventStream(event);
+		^super.new.initEvtStream(event);
 	}
 
-	initEventStream { | inEvent |
+	initEvtStream { | inEvent |
 		event = ();
 		inEvent keysValuesDo: { | key, value | event[key] = value.asStream(this); };
 	}

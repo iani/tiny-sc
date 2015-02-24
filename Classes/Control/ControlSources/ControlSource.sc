@@ -159,7 +159,7 @@ Event +>.paramname \sourceree;
 
 may contain one of:
 - MIDIfunc
-- EventStream
+- EvtStream
 - OSCfunc
 - Bus
 - A protean kind of broadcasting control source of yet undefined class (not yet implemented).

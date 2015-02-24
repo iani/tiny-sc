@@ -1,6 +1,6 @@
 /* 
 
-Keep track of running Nodes, Routines, Tasks and EventStreamPlayers.  
+Keep track of running Nodes, Routines, Tasks and EvtStreamPlayers.  
 Issue notifications when an instance of one of the above stops running. 
 
 Other objects can use the ProcessRegistry to update displays and lists of processes.
@@ -179,7 +179,7 @@ NamedProcess {
 	}
 }
 
-+ EventStreamPlayer {
++ EvtStreamPlayer {
 	rp { | processRegistry |
 		// add myself to processRegistry
 		(processRegistry ?? { ProcessRegistry.default }).add(this, \stopped);
