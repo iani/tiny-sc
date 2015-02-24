@@ -44,6 +44,33 @@ for evaluation after processing in Emacs."
       (sclang-eval-region)
       (set-mark nil))))
 
+(defun sclang-duplicate-current-snippet ()
+  "Paste a copy of the region between //: comments as new snippet."
+  (interactive)
+  (save-excursion
+    (let ((here (point))
+          (blockstart (re-search-backward "^//:" nil t))
+          (blockend))
+      (when (not blockstart)
+        (setq blockstart 1)
+        (goto-char 1)
+        (insert "//:\n"))
+      (set-mark blockstart)
+      (goto-char here)
+      (setq blockend (re-search-forward "^//:" nil t))
+      (if blockend
+          (setq blockend (- blockend 3))
+        (progn
+          (insert "\n")
+          (setq blockend (point-max))))
+      (goto-char blockend)
+      (copy-region-as-kill blockstart blockend)
+      (set-mark nil)
+      (yank)))
+  (sclang-goto-next-snippet)
+  (set-mark nil))
+
+
 (defun sclang-chuck-current-snippet ()
   "Evaluate region between //: comments in sclang."
   (interactive)
@@ -153,6 +180,8 @@ If prefix argument given, then open inspector in SC on the result"
   ;; (local-set-key (kbd "C-c C-M-p") 'sclang-switch-to-post)
   (local-set-key (kbd "C-c C-.") 'sclang-select-snippet)
   (local-set-key (kbd "C-M-x") 'sclang-execute-current-snippet) ;; alternative
+  (local-set-key (kbd "C-M-2") 'sclang-duplicate-current-snippet)
+  (local-set-key (kbd "C-M-,") 'sclang-duplicate-current-snippet) ;; alternative
   (local-set-key (kbd "C-M-f") 'sclang-goto-next-snippet)
   (local-set-key (kbd "C-M-b") 'sclang-goto-previous-snippet)
   (local-set-key (kbd "C-M-n") 'sclang-execute-next-snippet)
