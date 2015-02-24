@@ -1400,14 +1400,14 @@ Look at following methods in Pattern:
 
 #+BEGIN_EXAMPLE
 play { arg clock, protoEvent, quant;
-		^this.asEvtStreamPlayer(protoEvent).play(clock, false, quant)
+		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)
 	}
 
 	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
 	iter { ^this.asStream }
 
-	asEvtStreamPlayer { arg protoEvent;
-		^EvtStreamPlayer(this.asStream, protoEvent);
+	asEventStreamPlayer { arg protoEvent;
+		^EventStreamPlayer(this.asStream, protoEvent);
 	}
 	embedInStream { arg inval;
 		^this.asStream.embedInStream(inval);
@@ -1428,8 +1428,8 @@ And in Stream:
 		^inval
 	}
 
-	asEvtStreamPlayer { arg protoEvent;
-		^EvtStreamPlayer(this, protoEvent);
+	asEventStreamPlayer { arg protoEvent;
+		^EventStreamPlayer(this, protoEvent);
 	}
 
 	play { arg clock, quant;
@@ -1438,7 +1438,7 @@ And in Stream:
 	}
 #+END_EXAMPLE
 
-And in EvtStreamPlayer:
+And in EventStreamPlayer:
 
 #+BEGIN_EXAMPLE
 	play { arg argClock, doReset = (false), quant;
@@ -1466,7 +1466,7 @@ And in EvtStreamPlayer:
 	}
 #+END_EXAMPLE
 
-And also in EvtStreamPlayer this:
+And also in EventStreamPlayer this:
 
 #+BEGIN_EXAMPLE
 	prNext { arg inTime;
@@ -1690,7 +1690,7 @@ Other operations may be added later as needed.
 
 ** Make Edef and SynthTree play with EventPattern instead of PatternEventPlayer.
 
-Note: All inheritance/modifications should be done with Edef, its related classes Cdef (inheriting clone of Edef), Idef (inheriting named wrapper around EvtStreamPlayer), Bdef (subclass of Istream that makes the streamplayer broadcast instead of playing) or SynthTree.  Keep EventPattern, EvtStream as simple as possible.
+Note: All inheritance/modifications should be done with Edef, its related classes Cdef (inheriting clone of Edef), Idef (inheriting named wrapper around EventStreamPlayer), Bdef (subclass of Istream that makes the streamplayer broadcast instead of playing) or SynthTree.  Keep EventPattern, EvtStream as simple as possible.
 
 *** Next things in this matter
 :PROPERTIES:
@@ -1710,13 +1710,13 @@ Furthermore, since we can nest EventPatterns, we will also want to nest Mdefs.  
 The new PatternInstrument should have:
 
 - The Mdef it was created from (to respawn).
-- The EvtStreamPlayer that it is playing (so that it can start it or stop it).
+- The EventStreamPlayer that it is playing (so that it can start it or stop it).
 - Any other synth/group/bus/SynthTree related stuff (derived from as it is now).
 - The facilities for varying the way that the received events are played ("filter").
 
 **** QUOTE How to do the broadcasting
 
-Use a subclass of EvtStreamPlayer, called EvtStreamBroadcaster that uses a variant of prPlay as follows:
+Use a subclass of EventStreamPlayer, called EvtStreamBroadcaster that uses a variant of prPlay as follows:
 
 #+BEGIN_EXAMPLE
 prNext { arg inTime;
@@ -2210,4 +2210,4 @@ The eval id is stored as property in the org-section.
 
 ** Process trees?
 
-To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EvtStreamPlayer) and notify the children when the thread stops.  Similarly for EvtStreamPlayer.  Registering processes under a snippet/org-section id is a simpler alternative. However process-tree based stopping is a different thing, because one may want to kill a parent-process through the gui, independent fom the snippet grouping which may contain also other processe
+To kill all child-processes of a Routine one may add thisThread as notifier to a child process (Node or Routine or EventStreamPlayer) and notify the children when the thread stops.  Similarly for EventStreamPlayer.  Registering processes under a snippet/org-section id is a simpler alternative. However process-tree based stopping is a different thing, because one may want to kill a parent-process through the gui, independent fom the snippet grouping which may contain also other processe

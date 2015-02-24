@@ -21,7 +21,7 @@ a.play;
 
 a.inspect;
 */
-Idef : EvtStreamPlayer { // NamedInheritingEvtStreamPlayer
+Idef : EventStreamPlayer { // NamedInheritingEventStreamPlayer
 	var <>name;
 	var <parent;
 	var <children;

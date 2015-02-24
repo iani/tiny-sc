@@ -2,7 +2,7 @@
 Edef: Associate an EventPattern with a symbol and implement propagation 
 of later modifications of the pattern to streams played from it. 
 Cdef: clone of an Edef, inherits subsequent changes to father.
-Idef: subclass of EvtStreamPlayer, with inheritance.
+Idef: subclass of EventStreamPlayer, with inheritance.
 Bdef: subclass of Idef, broadcasting instead of playing
 
 These subclass of EventPattern and Idef subclass of EvtStream.  
@@ -65,7 +65,7 @@ Edef : EventPattern { // NamedEventPattern
 
 	addChild { | child | children = children add: child }
 
-	asEvtStreamPlayer { | argName |
+	asEventStreamPlayer { | argName |
 		// For playing in Ndef
 		^Idef(argName, this);
 	}

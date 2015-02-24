@@ -17,13 +17,13 @@ PlayerSuperclass {
 
 }
 
-EventPlayer : AbstractPlayer {
+EventPlayer : PlayerSuperclass {
 
 	//	gui {}
 }
 
 
-TaskPlayer : AbstractPlayer {
+TaskPlayer : PlayerSuperclass {
 
 	//	gui {}
 
