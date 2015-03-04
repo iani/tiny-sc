@@ -7,6 +7,8 @@
 
 	>| { | chuckee | ^chuckee.asSynthTree.getParam(this).bunMap }
 
+	// =! { | value | ^value =!> this }
+	
 	asPatternInstrument {
 		^PatternInstrument(PatternTask([], Pfunc({ ~dur.next })), this);
 	}

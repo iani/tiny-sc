@@ -6,9 +6,6 @@ IZ Sat, Mar  8 2014, 23:40 EET
 */
 
 + Object {
-	=!> { | key |
-		currentEnvironment.parent[key] = this;
-	}
 
 	=> { | chuckee, param |
 		if (param.isNil) {
@@ -17,6 +14,13 @@ IZ Sat, Mar  8 2014, 23:40 EET
 			this.perform('+>', chuckee, param)
 		}
 	}
+
+	!> { | key | SynthTree.chuckIntoParameter(key, this) }
+	/*
+	=!> { | key |
+		currentEnvironment.parent[key] = this;
+	}
+	*/
 
 	==> { | synthTree, replaceAction = \fadeOut |
 		// as => but do not start the synth now: 

@@ -3,7 +3,7 @@
 		^chuckee.patternParams(this, adverb)
 	}
 
-	=!> { | chuckee |
+	=-> { | chuckee |
 		^chuckee.clearChuckPatternParams(this)
 	}
 }

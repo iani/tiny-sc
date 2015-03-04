@@ -46,7 +46,7 @@ Here all methods that are needed to handle =<
 	}
 
 	setOutput { | synthTree, inputName = \in |
-		var outputBus;
+		var outputBus, targetSynth;
 		outputBus = synthTree.getInputBus(inputName);
 		if (outputBus.isNil) {
 			postf("% has no input named %. Cannot output to it\n",
@@ -55,8 +55,11 @@ Here all methods that are needed to handle =<
 		};
 		output = synthTree;
 		outputName = inputName;
+		targetSynth = synthTree.synth;
 		if (synth.isPlaying) {
-			this.moveBefore(synthTree.synth);
+			if (targetSynth.notNil) {
+				this.moveBefore(targetSynth);
+			};
 			synth.set(\out, outputBus.index);
 		}
 	}

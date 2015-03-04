@@ -52,6 +52,10 @@ Here all methods that are needed to handle -> and *>
 }
 
 + SynthTree {
+	*chuckIntoParameter { | paramName, object |
+		this.current.chuckIntoParameter(paramName, object);
+	}
+
 	chuckIntoParameter { | paramName, pattern |
 		template.chuckPattern(paramName, pattern, this);
 		if (this.isPlaying.not) { this.start }; // really???

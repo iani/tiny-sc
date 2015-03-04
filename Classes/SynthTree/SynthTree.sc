@@ -13,6 +13,7 @@ SynthTree : IdentityTree {
 	classvar <>showGuiAtStartup = false;
 	classvar <default;
 	classvar nameSpaces; // dictionaries holding the SynthTree instances by server
+	classvar current;   // last instance operated on
 	classvar parentEvents; // contains parent events for each server. 
 	/* Each parent event contains: 
 		~fx: Last chucked SynthTree which has inputs
@@ -49,19 +50,16 @@ SynthTree : IdentityTree {
 		server ?? { server = Server.default };
 		parentEvent = this.makeParentEvent(server);
 		// TODO? Keep track of separate envir stacks for each server?
-		().parent_(parentEvent).push; // we loose last ~st for this server
+		().parent_(parentEvent).push; // we lose last ~st for this server
 		default = this.new(\root);
-		default.inputs = IdentityDictionary();
-		default.inputs[\in] = Bus('audio', 0,
-			// server.options.numOutputBusChannels,
-			0, // trick the allocator: reserve 0 channels
-			server);
+		this.initRootInputBus;
 		nameSpaces[server, \root] = default;
 		ServerBootCheck add: { // most reliable way to check server boot
 			var fixNodeWatcher;
 			default.group = server.asTarget;
 			BufferFunc.initBuffers(server);
 			{ BufferFunc.postBufNames }.defer(1);
+			this.initRootInputBus(server);
 			default.initTree(true);
 			/*
 			// workaround for NodeWatcher bug reported in: 
@@ -81,6 +79,14 @@ SynthTree : IdentityTree {
 		^server;
 	}
 
+	*initRootInputBus { | server |
+		default.inputs = IdentityDictionary();
+		default.inputs[\in] = Bus('audio', 0,
+			// server.options.numOutputBusChannels,
+			0, // trick the allocator: reserve 0 channels
+			server);
+	}
+	
 	*newName { | baseName = "st" | ^format ("%%", baseName, UniqueID.next).asSymbol }
 
 	*makeParentEvent { | argServer |
@@ -118,6 +124,8 @@ SynthTree : IdentityTree {
 		^this.nameSpaces.at(argServer);
 	}
 
+	*current { ^current ? default }
+	
 	*new { | name |
 		^super.new.init(name);
 	}
@@ -180,6 +188,7 @@ SynthTree : IdentityTree {
 		server = this.server;
 		// keysValuesDo could produce errors because of operating
 		// on array being modified
+		if (this === default) { ^nil }; // do not init root bus
 		inputs.keys do: { | key |
 			bus = inputs[key];
 			inputs[key] = Bus.audio(server, bus.numChannels);
@@ -267,9 +276,10 @@ SynthTree : IdentityTree {
 	push {
 		args.parent[\st] = this;
 		if (inputs.size > 0) { args.parent[\fx] = this; };
-		args.push;		// currentEnvironment = args; 
+		// args.push;		// currentEnvironment = args;
+		current = this;
 		this.changed(\chuck);
-		postf("~st set to: %\n", this);
+		postf("Current SynthTree set to: %\n", this);
 	}
 
 	clearPatterns {
@@ -304,7 +314,7 @@ SynthTree : IdentityTree {
 	}
 
 	moveBefore { | argSynth |
-		// TODO: move my synth before the output synth
+		// Move my synth before the output synth
 		// and then call moveBefore (Output) on all my inputs sunthTrees
 		if (synth.isPlaying) {
 			synth.moveBefore(argSynth);
