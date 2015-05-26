@@ -137,14 +137,14 @@
 		^FunctionSynthTemplate(this, name);
 	}
 
-    asSynth { | synthTree, fadeTime |
+    asSynth { | synthTree, fadeTime, addAction = \addToHead |
 		var outputBus;
 		outputBus = synthTree.getOutputBusIndex;
         ^this.xplay(
             synthTree.group,
             outbus: outputBus, 
             fadeTime: synthTree.getFadeTime(fadeTime),
-            addAction: \addToHead,
+            addAction: addAction,
             args: synthTree.synthArgs
         );
     }

@@ -33,14 +33,14 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		};
 	}
 
-	|> { | synthTree, replaceAction = \fadeOut |
+	|> { | synthTree |
 		// Just set the synthTree's template.
 		synthTree = synthTree.asSynthTree;
 		^synthTree.setTemplate(this);
 	}
 
 	// deprecated: 
-	=|> { | synthTree, replaceAction = \fadeOut |
+	=|> { | synthTree |
 		// Just set the synthTree's template.
 		synthTree = synthTree.asSynthTree;
 		^synthTree.setTemplate(this);
@@ -65,7 +65,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		}
 	}
 
-	%> { | params |  ^SynthPattern (this, params) } // 20140429: obsolete?
+	%> { | params |  ^SynthPattern(this, params) } // 20140429: obsolete?
 	hasInputs { ^false }
 	push {}
 	globDur { currentEnvironment.parent[\dur] = this.asStream } 

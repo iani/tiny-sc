@@ -507,8 +507,8 @@ property SYNTHTREE of current section (inheritable)."
   '(progn
      (define-key org-mode-map (kbd "H-C-SPC") 'org-sc-eval-this-section)
      (define-key org-mode-map (kbd "H-M-SPC") 'org-sc-chuck-this-section)
-     (define-key org-mode-map (kbd "H-n") 'org-sc-next-section)
-     (define-key org-mode-map (kbd "H-p") 'org-sc-previous-section)
+     (define-key org-mode-map (kbd "H-s n") 'org-sc-next-section)
+     (define-key org-mode-map (kbd "H-s p") 'org-sc-previous-section)
      (define-key org-mode-map (kbd "H-C-n") 'org-sc-eval-next-section)
      (define-key org-mode-map (kbd "H-C-p") 'org-sc-eval-previous-section)
      (define-key org-mode-map (kbd "H-M-n") 'org-sc-chuck-next-section)

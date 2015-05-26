@@ -25,7 +25,8 @@ SynthTree : IdentityTree {
 	var <synth;  // the synth of this node
 	var <>inputs; // dictionary of input names and bus specs or busses
 	var <outputName; // name of input where this synth sends it output
-	var <output; // SynthTree instance where this synth sends its output
+	var <>output; // SynthTree instance where this synth sends its output, or bus number
+	
 	var >group;  // optional group enclosing synth as well as
 	// synths of input subtree [!??!?]
 	var <>template; // template for (re-) creating synth
@@ -35,6 +36,7 @@ SynthTree : IdentityTree {
 	var <>name;
 	var <>args; // args sent to synth at creation time
 	var <>replaceAction = \fadeOut; // only used by addInputSynth
+	var <>addAction = \addToHead;
 
 	*initClass {
 		StartUp add: {
@@ -323,7 +325,7 @@ SynthTree : IdentityTree {
 	}
 
     makeSynth { | attackTime |
-		synth = template.asSynth(this, attackTime);
+		synth = template.asSynth(this, attackTime, addAction);
 		synth !? {
 			synth.onEnd(this, { // This also registers on NodeWatcher:
 				if (this.isPlaying.not) {

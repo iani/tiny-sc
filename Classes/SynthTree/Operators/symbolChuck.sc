@@ -26,6 +26,10 @@
 	receivePatternChuck { | pattern |
 		^this.asSynthTree chuck: pattern.asPatternInstrument;
 	}
+
+	set { | ... params |
+		^this.asSynthTree.set(*params);
+	}
 }
 
 + SynthTree {
