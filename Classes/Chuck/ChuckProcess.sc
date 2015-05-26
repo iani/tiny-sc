@@ -24,11 +24,15 @@ ChuckProcess {
 	}
 
 	setArgs { | args |
-		var theArgs;
+		var theArgs, keysValues;
 		theArgs = params [\args];
 		args keysValuesDo: { | key, value |
+			value = value.asStream;
+			keysValues = keysValues add: key;
+			keysValues = keysValues add: value;
 			theArgs [key] = value;
 		};
+		^keysValues;
 	}
 	
 	setProcessParameter { | parameter, value |
@@ -54,8 +58,8 @@ FunctionChuck : ChuckProcess {
 	}
 
 	setArgs { | args |
-		super.setArgs (args);
-		synth.set (*args);
+		var nextArgs;
+		synth.set (*super.setArgs (args));
 	}
 	
 	setProcessParameter { | parameter, value |

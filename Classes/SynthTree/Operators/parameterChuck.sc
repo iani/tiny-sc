@@ -10,12 +10,13 @@ Here all methods that are needed to handle -> and *>
 	}
 }
 
+/*
 + Object {
 	*> { | chuckee |
 		^chuckee.starChuck(this)
 	}
 }
-
+*/
 + Symbol {
 	starChuck { | object |
 		// \default => SynthTree.newName;

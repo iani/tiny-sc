@@ -5,6 +5,12 @@
 			chuck.setProcessParameter (adverb, this)
 		})
 	}
+
+	*> { | symbol, adverb |
+		^Registry.doIfFound (Chuck, symbol, { | chuck |
+			chuck.setArgs (adverb, this)
+		})
+	}
 }
 
 + Function {
