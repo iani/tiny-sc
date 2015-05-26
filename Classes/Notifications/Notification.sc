@@ -38,9 +38,6 @@ Example:
 
 anObject.objectClosed : remove all notifiers and listeners from / to anObject.
 
-Further methods for adding and removing notifiers/listeners are more or lest self-explanatoryl
-
-
 */
 
 
@@ -171,7 +168,7 @@ Notification {
         super.addNotifier(notifier, message, action);
         NodeWatcher.register(this);
         this.addNotifierOneShot(this, 'n_end', {
-			// remove notifiers only *after* all notifications have been issued!
+			// remove notifiers only after all notifications have been issued!
 			{ this.objectClosed; }.defer(0.001);
 		});
     }

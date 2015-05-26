@@ -4,23 +4,6 @@ Like a MultilevelIdentityDictionary, except that its leaves (last level nodes) a
 
 IZ Thu, Mar  6 2014, 20:11 EET
 
-b = IdentityDictionary();
-
-b.put(\1, 1);
-
-a = IdentityTree();
-a.add([\a, \b])
-a.add([\a, \b, \c])
-a.add([\a, \d])
-
-a.keys;
-a[\a].keys;
-a.get([\a]).keys;
-a.get([\a, \b]);
-a.get([\a, \b, \c]);
-a.get([\a, \d]);
-a.get([\a, \asdf]);
-
 */
 
 IdentityTree : IdentityDictionary {
