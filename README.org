@@ -6,4 +6,6 @@
 
 This branch (=retiny=) is a re-do of all Node, Synth and Buffer management tools of the library.  The goal is to simplify object structure and usage.
 
-This is an experimental branch.  Most documentation and code has been removed and are being rewritten from scratch.  For info on tiny-sc, see the master branch of this repository.
+This is an experimental branch - not for general use.
+
+Work here starts with a new class "Chuck", which is to be a simpler alternative to SynthTree.

@@ -6,7 +6,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 */
 
 + Object {
-
+	/*
 	=> { | chuckee, param |
 		if (param.isNil) {
 			^chuckee.receiveChuck(this);
@@ -14,7 +14,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 			this.perform('+>', chuckee, param)
 		}
 	}
-
+	*/
 	!> { | key | SynthTree.chuckIntoParameter(key, this) }
 	/*
 	=!> { | key |

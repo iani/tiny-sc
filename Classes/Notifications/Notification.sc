@@ -138,6 +138,9 @@ Notification {
 
 	onObjectClosed { | listener, action |
 		listener.addNotifier(this, \objectClosed, action);
+		if (this respondsTo: \onClose_) {
+			this.onClose = { this.objectClosed };
+		}
 	}
 
 	addNotifierOneShot { | notifier, message, action |

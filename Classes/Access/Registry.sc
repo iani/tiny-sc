@@ -25,10 +25,18 @@ Registry {
 		action = pathAndFunc.last;
 		path = pathAndFunc[0..pathAndFunc.size-2];
 		instance = Library.global.atPath(path);
-		instance !? { action.(instance) };
+		if (instance.isNil) {
+			postf("No instance found at path: %\n", path);
+		} { action.(instance) };
 	}
 
 	*remove { | ... path |
 		Library.global.removeEmptyAt(*path);
+	}
+}
+
++ Function {
+	at { | ... path |
+		^Registry(*(path add: this))
 	}
 }
