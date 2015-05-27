@@ -2,6 +2,7 @@
 ChuckProcess {
 	classvar >parentParams; // Parent event holding default parameters for params
 	var <chuck, <template, <params;
+	var <paramsTemplate; // TODO: store patterns of the param streams, for cloning
 
 	*new { | chuck, template, params |
 		^this.newCopyArgs (
