@@ -9,7 +9,9 @@ Beat {
 	var <listeners; // dictionary of beat listeners
 	var <durationStream, <task, <tempoClock;
 
-	play {
+	play { | beats, beatPattern |
+		if (this.isPlaying) { ^this }; // don't restart if already playing ...
+		// Following is a draft only!
 		durationStream = durationPattern.asStream;
 		task = Task ({
 			var dur;
@@ -41,11 +43,14 @@ BeatStream {
 
 BPM : Ref {
 	
-	| { | beat adverb = 'x' |
+	| { | beat beatPattern = 'x' |
 		// use adverb to introduce beat patterns like this: bpm |.xoxo \beat1
 		postf ("This sets the basic duration pattern of a Beat: %, %\n", beat, adverb);
+
+		Registry (Beat, beat, {
+			Beat ()
+		}).play (value, beatPattern)
 	}
-	
 }
 
 + SimpleNumber {
