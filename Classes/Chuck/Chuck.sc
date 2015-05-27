@@ -7,11 +7,13 @@ Simpler alternative to SynthTree?
 Chuck {
 	var <name, <process;
 
-	*new { | name |
-		^this.newCopyArgs(name).init;
+	*new { | name, template, params |
+		^this.newCopyArgs(name).init(template, params);
 	}
 
-	init { process = ChuckProcess (this) }
+	init { | template, params |
+		process = template.asChuckProcess (this, params)
+	}
  
 	play { | template |
 		this.makeProcess (template ?? { process.template }).play;
@@ -20,7 +22,7 @@ Chuck {
 
 	makeProcess { | template |
 		process.stop;
-		process = template asChuckProcess: this;
+		process = template.asChuckProcess(this, process.params);
 		^process;
 	}
 
@@ -38,8 +40,16 @@ Chuck {
 	}
 }
 
-+ Function {
-	asChuckProcess { | chuck |
-		^FunctionChuck(chuck, this, chuck.process.params);
++ Object {
+	asChuckProcess { | chuck, params |
+		^this.chuckProcessClass.new(chuck, this, params);
 	}
+}
+
++ Nil {
+	chuckProcessClass { ^Cnil }
+}
+
++ Function {
+	chuckProcessClass { ^Cfunc }
 }

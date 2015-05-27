@@ -40,7 +40,11 @@ ChuckProcess {
 	}
 }
 
-FunctionChuck : ChuckProcess {
+Cnil : ChuckProcess {
+	// Just a consistent naming for the empty ChuckProcess
+}
+
+Cfunc : ChuckProcess {
 	var <synth;
 
 	play {
