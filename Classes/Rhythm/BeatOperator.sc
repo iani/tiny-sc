@@ -45,7 +45,7 @@ BPM : Ref {
 	
 	| { | beat beatPattern = 'x' |
 		// use adverb to introduce beat patterns like this: bpm |.xoxo \beat1
-		postf ("This sets the basic duration pattern of a Beat: %, %\n", beat, adverb);
+		postf ("This sets the basic duration pattern of a Beat: %, %\n", beat, beatPattern);
 
 		Registry (Beat, beat, {
 			Beat ()
