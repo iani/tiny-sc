@@ -1,0 +1,37 @@
+* Main operations and operator
+Main operations are:
+
+1. Set duration pettern (and optionally also beat pattern) of a Beat instance
+2. Set beat pattern of a Beat instance
+3. Set beat pattern of a subpattern of a Beat instance
+
+Draft for operators:
+
+
+set duration pattern of a Beat instance, and start playing:
+
+: anObject || \symbol;
+
+set duration pattern + beat pattern of a Beat instance, and start playing:
+
+: anObject ||.beatpattern \symbol;
+
+Note: beatpattern can be a symbol, x denoting active beats, anything else non-active beats.
+
+Set beat pattern of main beat of Beat \beat:
+: "xoxoxxx" || \beat
+	// or:
+: 'xoxoxxx' || \beat
+
+Set beat pattern of subbeat pattern \bass of Beat \beat:
+: "xxxoo" ||.bass \beat
+	// or:
+: 'xxxoo' ||.bass \beat
+
+* Possible extension: Subpatterns of different tempi
+
+Set some subpatterns to operate at a tempo relative to the main tempo of the pattern?
+
+They should start relative to the first beat of the main pattern ...
+
+Nested subpatterns possible?

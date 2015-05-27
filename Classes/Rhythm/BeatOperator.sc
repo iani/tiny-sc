@@ -2,6 +2,29 @@
 DRAFT!
 
 Wed, May 27 2015, 08:45 EEST
+
+set duration pattern of a Beat instance, and start playing: 
+
+anObject || \symbol;
+
+set duration pattern + beat pattern of a Beat instance, and start playing: 
+
+anObject ||.beatpattern \symbol; 
+
+Note: beatpattern can be a symbol, x denoting active beats, anything else non-active beats.
+
+Set beat pattern of main beat of Beat \beat:
+"xoxoxxx" || \beat
+	// or:
+'xoxoxxx' || \beat
+
+Set beat pattern of subbeat pattern \bass of Beat \beat:
+"xxxoo" ||.bass \beat 
+	// or:
+'xxxoo' ||.bass \beat 
+
+
+
 */
 
 Beat {
@@ -59,11 +82,19 @@ BPM : Ref {
 
 + String {
 	| { | beat adverb = 'default' |
+		// set the beat pattern of a Beat instance
 		postf("beat test! adverb is: %\n", adverb);
 	}
 }
 
 + Symbol {
+	// set the beat pattern of a Beat instance
 	| { "symbol ok".postln; 
 	}
+}
+
+// SHORTCUT FOR ".bpm !"
++ Object {
+	// shortcut for .bpm ? !!!
+	|| { "testing".postln; }
 }
