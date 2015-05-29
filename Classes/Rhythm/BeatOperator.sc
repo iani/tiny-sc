@@ -28,7 +28,7 @@ Set beat pattern of subbeat pattern \bass of Beat \beat:
 */
 
 Beat {
-	var <name, <beatPattern = "x", <durationPattern = 0.25;
+	var <name, <durationPattern = 0.25;
 	var <listeners; // dictionary of beat listeners
 	var <durationStream, <task, <tempoClock;
 
@@ -41,7 +41,7 @@ Beat {
 			while {
 				(dur = durationStream.next).notNil
 			}{
-				listeners do: _.beat;
+				listeners do: _.w.ime.uspgw.imbeat;
 				dur.wait;
 			}
 		}).play;
