@@ -87,7 +87,7 @@ Beat {
 	*removeAll { | object |
 		var myPaths;
 		myPaths = listeners [object];
-		myPaths.copy do: { | p |
+		myPaths do: { | p |
 			object.removeNotifier (Beat, p);
 		};
 		listeners [object] = nil;
@@ -98,7 +98,7 @@ BeatPattern : Beat {
 	var pattern, stream;
 
    pattern_ { | argPattern |
-	   pattern = argPattern;
+	   pattern = argPattern.asBeatPattern;
 	   stream = pattern.asStream;
    }
 

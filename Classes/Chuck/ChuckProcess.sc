@@ -42,10 +42,16 @@ ChuckProcess {
 }
 
 Cnil : ChuckProcess {
-	// Just a consistent naming for the empty ChuckProcess
+	// Just a consistent name for the empty ChuckProcess
 }
 
 Cfunc : ChuckProcess {
+	play {
+		params use: template;
+	}
+}
+
+CplayFunc : ChuckProcess {
 	var <synth;
 
 	play {
