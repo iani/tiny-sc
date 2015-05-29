@@ -29,31 +29,102 @@ Set beat pattern of subbeat pattern \bass of Beat \beat:
 */
 
 Beat {
-	var <name, <parent;
+	classvar <listeners;
+
+	var <name, <parent, path;
+
+	*initClass { listeners = IdentityDictionary () }
 
 	*new { | name, parent |
-		Registry
+		var path;
+		path = this.makePath(name, parent);
+		^Registry(path, {
+			this.newCopyArgs(name.asSymbol, parent, path)
+		});
 	}
 
-	play { | beats, beatPattern |
+	*makePath { | name, parent |
+		if (parent.isNil) {
+			^name.asSymbol;
+		}{
+			^(parent.makePath ++ _ ++ name).asSymbol;
+		}
+	}
 
-		/*
-		// Following is a draft only!
-		durationStream = durationPattern.asStream;
-		task = Task ({
-			var dur;
-			while {
-				(dur = durationStream.next).notNil
+	enable {
+		this.addNotifier(Beat, path, { this.play; });
+	}
+
+	disable {
+		this.removeNotifier(Beat, path);
+	}
+
+	*add { | path, object |
+		var myPaths;
+		myPaths = listeners [object] ?? { Set () };
+		listeners [object] = myPaths add: path;
+	}
+
+	*remove { | path, object |
+		var myPaths;
+		myPaths = listeners [object];
+		myPaths !? {
+			object.removeNotifier (Beat, path);
+			myPaths remove: path;
+			if (myPaths.size == 0) {
+				listeners [object] = nil;
 			}{
-				listeners do: _.w.ime.uspgw.imbeat;
-				dur.wait;
+				listeners [object] = myPaths;
 			}
-			}).play;
-		*/
+		}
+	}
+
+	*add1 { | path, object |
+		this.removeAll (object);
+		this.add (path, object);
+	}
+
+	*removeAll { | object |
+		var myPaths;
+		myPaths = listeners [object];
+		myPaths.copy do: { | p |
+			object.removeNotifier (Beat, p);
+		};
+		listeners [object] = nil;
 	}
 }
 
-BeatListener {
+BeatPattern : Beat {
+	var pattern, stream;
+
+   pattern_ { | argPattern |
+	   pattern = argPattern;
+	   stream = pattern.asStream;
+   }
+
+	beat {
+		
+   }
+}
+
+BeatPlayer : BeatPattern {
+	var task, clock, <dur;
+	
+	play { 
+		this.pattern = pattern; // resets stream
+		task = Task ({
+			while {
+				(dur = stream.next).notNil
+			}{
+				Beat.changed (path, this);
+				dur.wait;
+			};
+		}).play;
+	}
+}
+
+
+BeatFilter {
 	var <beatPattern, <listeners;
 	var <beatStream;
 
