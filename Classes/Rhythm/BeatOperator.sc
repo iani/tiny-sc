@@ -23,17 +23,21 @@ Set beat pattern of subbeat pattern \bass of Beat \beat:
 	// or:
 'xxxoo' ||.bass \beat 
 
-
+	var <name, <durationPattern = 0.25;
+	var <durationStream, <task, <tempoClock;
 
 */
 
 Beat {
-	var <name, <durationPattern = 0.25;
-	var <listeners; // dictionary of beat listeners
-	var <durationStream, <task, <tempoClock;
+	var <name, <parent;
+
+	*new { | name, parent |
+		Registry
+	}
 
 	play { | beats, beatPattern |
-		if (this.isPlaying) { ^this }; // don't restart if already playing ...
+
+		/*
 		// Following is a draft only!
 		durationStream = durationPattern.asStream;
 		task = Task ({
@@ -44,7 +48,8 @@ Beat {
 				listeners do: _.w.ime.uspgw.imbeat;
 				dur.wait;
 			}
-		}).play;
+			}).play;
+		*/
 	}
 }
 
