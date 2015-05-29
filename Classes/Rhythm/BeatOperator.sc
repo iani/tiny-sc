@@ -57,6 +57,7 @@ BeatListener {
 		if (beatStream.next) { listeners do: _.play; }
 	}
 }
+ 
 
 BeatStream {
 	// a stream that translates x and o to beat / no beat.

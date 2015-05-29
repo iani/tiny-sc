@@ -1,20 +1,21 @@
 * Main operations and operator
 Main operations are:
-
-1. Set duration pettern (and optionally also beat pattern) of a Beat instance
-2. Set beat pattern of a Beat instance
-3. Set beat pattern of a subpattern of a Beat instance
+1. Creating and modifying patterns
+   1. Set duration pattern (and optionally also beat pattern) of a Beat instance
+   2. Set beat pattern of a Beat instance
+   3. Set beat pattern of a subpattern of a Beat instance
+2. Playing Chucks in patterns
 
 Draft for operators:
 
 
 set duration pattern of a Beat instance, and start playing:
 
-: anObject || \symbol;
+: <pattern or number> || \symbol;
 
 set duration pattern + beat pattern of a Beat instance, and start playing:
 
-: anObject ||.beatpattern \symbol;
+: <pattern or number> ||.beatpattern \symbol;
 
 Note: beatpattern can be a symbol, x denoting active beats, anything else non-active beats.
 
@@ -27,6 +28,21 @@ Set beat pattern of subbeat pattern \bass of Beat \beat:
 : "xxxoo" ||.bass \beat
 	// or:
 : 'xxxoo' ||.bass \beat
+
+Play chuck in Beat instance
+: <chuck or symbol> ||.beatpattern \beat;
+
+Play chuck in Beat instance with own beat pattern (create beat if it does not already exist.)
+: <chuck or symbol> ||.beatpattern \beat;
+
+Play chuck in subbeat name of Beat instance
+: <chuck or symbol> *|.subbeatname \beat;
+* Defaults
+
+: <chuck or symbol> || \beatname
+
+If Beat named \beatname does not exist, it is created using a default global duration as beat duration.
+
 
 * Possible extension: Subpatterns of different tempi
 
