@@ -8,7 +8,7 @@ Chuck {
 	var <name, <process;
 
 	*new { | name, template, params |
-		^this.newCopyArgs(name).init(template, params);
+		^Registry(Chuck, name, { this.newCopyArgs(name).init(template, params) });
 	}
 
 	init { | template, params |
@@ -51,5 +51,10 @@ Chuck {
 }
 
 + Function {
-	chuckProcessClass { ^Cfunc }
+	chuckProcessClass { ^CplayFunc }
+}
+
++ Symbol {
+	chuck { ^Chuck (this) }
+	ft_ { | dur = 0.1 | ^this.chuck.setProcessParameter (\fadeTime, dur) }
 }

@@ -15,7 +15,11 @@
 
 + Function {
 	=> { | symbol |
-		^Registry(Chuck, symbol, { Chuck(symbol) }).play (this);
+		^Chuck (symbol).play (this);
+	}
+
+	&> { | symbol |
+		^Chuck (symbol).eval (this);
 	}
 }
 
