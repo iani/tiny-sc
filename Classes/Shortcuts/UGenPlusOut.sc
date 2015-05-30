@@ -82,10 +82,15 @@ IZ Wed, 26 Feb 2014 08:22:41
 		*/
 	}
 
-	percOut {
-		/* // draft:
-			this.out(... , this * Perc(...))
-		*/
+	percOut { } // TODO
+	
+	perc { | dur = 1, attackTime=0.01, level=1.0, curve = -4.0, doneAction = 2 |
+		^(
+			this * EnvGen.kr(
+				Env.perc(attackTime, dur - attackTime max: 0.01, level, curve)
+				doneAction: doneAction
+			)
+		);
 	}
 
 	sineOut {
