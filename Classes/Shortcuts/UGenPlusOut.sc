@@ -87,7 +87,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 	perc { | dur = 1, attackTime=0.01, level=1.0, curve = -4.0, doneAction = 2 |
 		^(
 			this * EnvGen.kr(
-				Env.perc(attackTime, dur - attackTime max: 0.01, level, curve)
+				Env.perc(attackTime, dur - attackTime max: 0.01, level, curve),
 				doneAction: doneAction
 			)
 		);
@@ -146,6 +146,15 @@ IZ Wed, 26 Feb 2014 08:22:41
 		/* // draft:
 			this.out(... , this * Adsr(...))
 		*/
+	}
+
+	perc { | dur = 1, attackTime=0.01, level=1.0, curve = -4.0, doneAction = 2 |
+		^(
+			this * EnvGen.kr(
+				Env.perc(attackTime, dur - attackTime max: 0.01, level, curve),
+				doneAction: doneAction
+			)
+		);
 	}
 
 	percOut {
