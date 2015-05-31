@@ -57,16 +57,30 @@ Csynth : ChuckProcess {
 		);
 	}
 
-	stop { synth !? { synth.release } }
+	stop { this.release }
 	release { | dur |
 		synth !? {
-			synth.release(dur ?? { params[\fadeTime].next })
+			if (synth.isPlaying) {
+				synth.release(dur ?? { params[\fadeTime].next })
+			}{
+				synth.onStart (this, { 
+					synth.release(dur ?? { params[\fadeTime].next })
+				})
+			}
 		}
 	}
-	free { synth !? { synth.free } }
+
+	free {
+		synth !? {
+			if (synth.isPlaying) {
+				synth.free;
+			}{
+				synth.onStart (this, { synth.free })
+			}
+		}
+	}
 
 	setArgs { | args |
-		var nextArgs;
 		synth.set (*super.setArgs (args));
 	}
 	

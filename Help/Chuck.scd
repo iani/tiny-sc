@@ -84,6 +84,14 @@
 Chuck(\test).inspect;
 
 //:
+{
+	a =	{WhiteNoise.ar (0.1) }.play;
+	a.isPlaying.postln;
+	a.onEnd (\this, {"done ................................................................".postln;});
+	0.5.wait;
+	a.isPlaying.postln;
+	a.release;
+}.fork
 
 
 
