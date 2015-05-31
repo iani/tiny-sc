@@ -1,4 +1,3 @@
-
 ChuckProcess {
 	classvar >parentParams; // Parent event holding default parameters for params
 	var <chuck, <template, <params;
@@ -17,8 +16,7 @@ ChuckProcess {
 			parentParams = (
 				outbus: 0,
 				fadeTime: 0.02,
-				addAction: \addToHead,
-				args: ()
+				addAction: \addToHead
 			)
 		};
 		^parentParams;
@@ -27,6 +25,7 @@ ChuckProcess {
 	setArgs { | args |
 		var theArgs, keysValues;
 		theArgs = params [\args];
+		theArgs ?? { params [\args] = theArgs = ().parent_ (params) };
 		args keysValuesDo: { | key, value |
 			value = value.asStream;
 			keysValues = keysValues add: key;
@@ -45,13 +44,7 @@ Cnil : ChuckProcess {
 	// Just a consistent name for the empty ChuckProcess
 }
 
-Cfunc : ChuckProcess {
-	play {
-		params use: template;
-	}
-}
-
-CplayFunc : ChuckProcess {
+Csynth : ChuckProcess {
 	var <synth;
 
 	play {
@@ -60,13 +53,17 @@ CplayFunc : ChuckProcess {
 			params [\outbus].next,
 			params [\fadeTime].next,
 			params [\addAction].next,
-			params [\args].getPairs
+			(params [\args] ?? { () }).getPairs
 		);
 	}
 
-	stop {
-		synth !? { synth.release }
+	stop { synth !? { synth.release } }
+	release { | dur |
+		synth !? {
+			synth.release(dur ?? { params[\fadeTime].next })
+		}
 	}
+	free { synth !? { synth.free } }
 
 	setArgs { | args |
 		var nextArgs;
@@ -98,4 +95,22 @@ CplayFunc : ChuckProcess {
 		// TODO: Review this!
 		synth.set (*aargs)
 	}
+}
+
+
+Cfunc : Csynth {
+	play {
+		var result;
+		result = params [\args] use: template.func;
+		if (result isKindOf: Node) {
+			synth = result;
+		}
+	}
+}
+
+CfuncTemplate {
+	var <func;
+	*new { | func | ^this.newCopyArgs(func) }
+
+	chuckProcessClass { ^Cfunc }
 }

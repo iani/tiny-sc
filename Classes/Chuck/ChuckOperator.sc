@@ -1,4 +1,7 @@
 + Object {
+	asChuckProcess { | chuck, params |
+		^this.chuckProcessClass.new(chuck, this, params);
+	}
 
 	=> { | symbol, adverb |
 		^Registry.doIfFound (Chuck, symbol, { | chuck |
@@ -23,3 +26,40 @@
 	}
 }
 
++ Nil {
+	chuckProcessClass { ^Cnil }
+}
+
++ Function {
+	chuckProcessClass { ^Csynth }
+	
+}
+
++ Symbol {
+	play { | target, outbus, fadeTime, addAction, args |
+		^Synth (this, args ++ [out: outbus, fadeTime: fadeTime], target, addAction)
+	}
+	chuck { ^Chuck (this) }
+	// can use dur =>.fadeTime \symbol instead, but this is shorter:
+	ft_ { | dur = 0.1 | ^this.chuck.setProcessParameter (\fadeTime, dur) }
+	free { ^Registry.doIfFound(Chuck, this, _.free); }
+	release { | dur = 0.1 |
+		^Registry.doIfFound(Chuck, this, _.release (dur));
+	}
+	replay {
+		^Registry.doIfFound(Chuck, this, _.play);
+	}
+
+	// Bus stuff
+	//	abus / cbus  { /* ^Cbus(this, \audio, \control)  */ }
+	@< { | object, io = \in_out |
+		^Chuck (this).prepend (object, io);
+	}
+	@> { | object, io = \in_out |
+		^Chuck (this).append (object, io);
+	}	
+}
+
++ Method {
+	notImplemented { postf ("% not implemented in %\n", name, ownerClass )}
+}

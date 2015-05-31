@@ -20,6 +20,10 @@ Chuck {
 		this.changed (\started);
 	}
 
+	eval { | func |
+		this.play (CfuncTemplate (func))
+	}
+
 	makeProcess { | template |
 		process.stop;
 		process = template.asChuckProcess(this, process.params);
@@ -38,23 +42,16 @@ Chuck {
 		process.setProcessParameter (parameter, value);
 		this.changed (\parameter, parameter, value);
 	}
-}
 
-+ Object {
-	asChuckProcess { | chuck, params |
-		^this.chuckProcessClass.new(chuck, this, params);
+	free { process.free }
+	release { | dur = 0.1 | process release: dur }
+	prepend { | chuck, io = \in_out |
+	   thisMethod.notImplemented;
 	}
+	append { | chuck, io = \in_out |
+	   thisMethod.notImplemented;
+	}
+
+	notImplemented { | method | postf ("% not implemented in %\n", method, this) }
 }
 
-+ Nil {
-	chuckProcessClass { ^Cnil }
-}
-
-+ Function {
-	chuckProcessClass { ^CplayFunc }
-}
-
-+ Symbol {
-	chuck { ^Chuck (this) }
-	ft_ { | dur = 0.1 | ^this.chuck.setProcessParameter (\fadeTime, dur) }
-}

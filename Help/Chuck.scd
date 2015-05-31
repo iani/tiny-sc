@@ -1,10 +1,91 @@
 
 { WhiteNoise.ar(0.1) } => \test;
 { BrownNoise.ar(0.1) } => \test;
-3 =>.fadeTime \test;
+0.93 =>.fadeTime \test;
+// 0 =>.fadeTime \test;
 { SinOsc.ar(400, 0, 0.1) } => \test;
 { SinOsc.ar(\freq.kr (800), 0, 0.1) } => \test;
-λ600 *>.freq \test;
+{ Silent.ar } => \test;
+
+
+\test.release;
+\test.free;
+
+
+600 *>.freq \test;
 (400..600).prand *>.freq \test;
 
-600.asStream;
+\test.replay;
+//:
+{
+	loop {
+		\test.replay;
+		1.wait;
+	}
+}.fork
+
+//:
+{
+	loop {
+		\test.replay;
+		0.1.wait;
+	}
+}.fork
+
+//:
+{
+	loop {
+		\test.replay;
+		0.015.wait;
+	}
+}.fork
+
+//:
+{ [LFSaw, SinOsc, LFPulse].choose.ar(\freq.kr (800)) * 0.1 } => \test;
+//:
+{
+	[LFSaw, SinOsc, LFPulse, LFNoise0, LFNoise1, LFNoise2, Blip]
+	.choose.ar(\freq.kr (800)) * 0.1
+} => \test;
+//:
+(100..300).prand *>.freq \test;
+//:
+(100..3000).prand *>.freq \test;
+//:
+(30..100).scramble.midicps.pseq *>.freq \test;
+//:
+(50..100).midicps.pseq *>.freq \test;
+//:
+10 =>.fadeTime \test;
+
+//:
+
+// { "Hello".postln; } => \test;
+{ "Hello".postln; } &> \test;
+//:
+{
+	{
+		Resonz.ar (Decay.kr( Dust.kr(20, 0.1)) * WhiteNoise.ar, Rand (50, 15000))
+    }.play (~target, ~outbus, ~fadeTime)
+} &> \test;
+//:
+{
+	{
+		Resonz.ar (Decay.kr( Impulse.kr(20, 0.1)) * WhiteNoise.ar, ~freq, 3)
+    }.play (~target, ~outbus, ~fadeTime)
+} &> \test;
+//:
+{
+	{
+		 SinOsc.ar (~freq, 0, 0.1)
+    }.play (~target, ~outbus, ~fadeTime)
+} &> \test;
+//:
+Chuck(\test).inspect;
+
+//:
+
+
+
+
+
