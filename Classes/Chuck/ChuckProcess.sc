@@ -45,6 +45,7 @@ ChuckProcess {
 	synth { ^nil }
 
 	addAudioReader { | chuck, slot = \out |
+		/*
 		var target;
 		target = LinkedBus.addWriter(this, slot);
 		if (slot === \out) {
@@ -54,6 +55,7 @@ ChuckProcess {
 		}{
 			
 		}
+		*/
 	}
 
 	addAudioWriter { | chuck, slot = \in |

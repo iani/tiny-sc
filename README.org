@@ -9,3 +9,5 @@ This branch (=retiny=) is a re-do of all Node, Synth and Buffer management tools
 This is an experimental branch - not for general use.
 
 Work here starts with a new class "Chuck", which is to be a simpler alternative to SynthTree.
+
+(Mon, Jun  1 2015, 16:24 EEST): Attempting integration of Steno for routing of processes.  See:https://github.com/telephon/Steno.
