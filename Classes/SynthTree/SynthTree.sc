@@ -89,7 +89,7 @@ SynthTree : IdentityTree {
 			server);
 	}
 	
-	*newName { | baseName = "st" | ^format ("%>", baseName, UniqueID.next).asSymbol }
+	*newName { | baseName = "st" | ^format ("%%", baseName, UniqueID.next).asSymbol }
 
 	*makeParentEvent { | argServer |
 		var parentEvent;
