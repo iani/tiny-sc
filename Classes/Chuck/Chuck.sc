@@ -16,6 +16,7 @@ Chuck {
 	}
  
 	play { | template |
+		process.stop;
 		this.makeProcess (template ?? { process.template }).play;
 		this.changed (\started);
 	}
@@ -25,7 +26,6 @@ Chuck {
 	}
 
 	makeProcess { | template |
-		process.stop;
 		process = template.asChuckProcess(this, process.params);
 		^process;
 	}
@@ -52,6 +52,9 @@ Chuck {
 	   thisMethod.notImplemented;
 	}
 
-	notImplemented { | method | postf ("% not implemented in %\n", method, this) }
+	addToBeat { | beat |
+		beat.add(this, { this.play });
+		^beat;
+	}
 }
 

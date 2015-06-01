@@ -1,33 +1,4 @@
-/*
-DRAFT!
-
-Wed, May 27 2015, 08:45 EEST
-
-set duration pattern of a Beat instance, and start playing: 
-
-anObject || \symbol;
-
-set duration pattern + beat pattern of a Beat instance, and start playing: 
-
-anObject ||.beatpattern \symbol; 
-
-Note: beatpattern can be a symbol, x denoting active beats, anything else non-active beats.
-
-Set beat pattern of main beat of Beat \beat:
-"xoxoxxx" || \beat
-	// or:
-'xoxoxxx' || \beat
-
-Set beat pattern of subbeat pattern \bass of Beat \beat:
-"xxxoo" ||.bass \beat 
-	// or:
-'xxxoo' ||.bass \beat 
-
-	var <name, <durationPattern = 0.25;
-	var <durationStream, <task, <tempoClock;
-
-*/
-
+/* Wed, May 27 2015, 08:45 EEST */
 Beat {
 	classvar <listeners;
 
@@ -38,9 +9,20 @@ Beat {
 	*new { | name, parent |
 		var path;
 		path = this.makePath(name, parent);
-		^Registry(path, {
+		[thisMethod.name, path].postln;
+		
+		^Registry(Beat, path.asSymbol, {
+			"was not found, making new".postln;
 			this.newCopyArgs(name.asSymbol, parent, path)
 		});
+	}
+
+	*getFromPath { | path |
+		if (path.asString includes: $_) {
+			^BeatPattern(path)
+		}{
+			^BeatPlayer(path)
+		}
 	}
 
 	*makePath { | name, parent |
@@ -51,18 +33,15 @@ Beat {
 		}
 	}
 
-	enable {
-		this.addNotifier(Beat, path, { this.play; });
+	add { | object, action |
+		this.class.add(path, object, action);
 	}
-
-	disable {
-		this.removeNotifier(Beat, path);
-	}
-
-	*add { | path, object |
+	
+	*add { | path, object, action |
 		var myPaths;
 		myPaths = listeners [object] ?? { Set () };
 		listeners [object] = myPaths add: path;
+		object.addNotifier(Beat, path, action);
 	}
 
 	*remove { | path, object |
@@ -97,26 +76,61 @@ Beat {
 BeatPattern : Beat {
 	var pattern, stream;
 
-   pattern_ { | argPattern |
-	   pattern = argPattern.asBeatPattern;
-	   stream = pattern.asStream;
-   }
+	enable {
+		Beat.add(parent.path, this, { this.play });
+	}
 
-	beat {
-		
+	play {
+		if (stream.next) { Beat.changed(path) }
+	}
+	
+	disable {
+		Beat.remove(parent.path, this);
+	}
+	
+	pattern_ { | argPattern |
+		this.setPattern(argPattern.asBeatPattern);
+	}
+
+	setPattern { | argPattern |
+		postf("setPattern: %\n", argPattern).postln;
+		pattern = argPattern;
+		stream = pattern.asStream;
+		postf("setPattern: %\n !!!! after !!!", argPattern).postln;
    }
 }
 
 BeatPlayer : BeatPattern {
 	var task, clock, <dur;
 	
-	play { 
-		this.pattern = pattern; // resets stream
+	pattern_ { | argPattern | this.setPattern(argPattern) }
+
+	start { | defaultPattern |
+		if (task.isPlaying) { ^this };
+		if (task.isNil or: { task.streamHasEnded }) {
+			this.reset;
+		};
+		task.start;
+	}
+
+	reset {
+		this.makeStream;
+		this.makeTask;
+	}
+	makeStream { this.pattern = pattern; } // resets stream
+	stop { task.stop; }
+
+	restart {
+		this.reset;
+		this.start;
+	}
+
+	makeTask { 
 		task = Task ({
 			while {
 				(dur = stream.next).notNil
 			}{
-				Beat.changed (path, this);
+				Beat.changed (path);
 				dur.wait;
 			};
 		}).play;

@@ -8,9 +8,11 @@ ChuckProcess {
 			chuck,
 			template,
 			params ?? { ().parent_ (this.parentParams) }
-		)
+		).init;
 	}
 
+	init { }
+	
 	*parentParams {
 		parentParams ?? {
 			parentParams = (
@@ -38,6 +40,9 @@ ChuckProcess {
 	setProcessParameter { | parameter, value |
 		params [parameter] = value;
 	}
+	play {}
+
+	synth { ^nil }
 }
 
 Cnil : ChuckProcess {
@@ -47,8 +52,10 @@ Cnil : ChuckProcess {
 Csynth : ChuckProcess {
 	var <synth;
 
+	init { synth = chuck.process.synth }
+	
 	play {
-		synth = template.play(
+		this.synth = template.play(
 			params [\target].next.asTarget,
 			params [\outbus].next,
 			params [\fadeTime].next,
@@ -57,6 +64,11 @@ Csynth : ChuckProcess {
 		);
 	}
 
+	synth_ { | argSynth |
+		synth = argSynth;
+		synth.onEnd (this, { this.changed (\synthStopped)});
+	}
+	
 	stop { this.release }
 	release { | dur |
 		synth !? {
@@ -111,13 +123,12 @@ Csynth : ChuckProcess {
 	}
 }
 
-
 Cfunc : Csynth {
 	play {
 		var result;
 		result = params [\args] use: template.func;
 		if (result isKindOf: Node) {
-			synth = result;
+			this.synth = result;
 		}
 	}
 }

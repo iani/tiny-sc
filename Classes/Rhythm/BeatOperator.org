@@ -11,35 +11,57 @@ Draft for operators:
 
 set duration pattern of a Beat instance, and start playing:
 
-: <pattern or number> || \symbol;
+: <pattern or number> %% \symbol;
 
 set duration pattern + beat pattern of a Beat instance, and start playing:
 
-: <pattern or number> ||.beatpattern \symbol;
+: <pattern or number> %%.beatpattern \symbol;
 
 Note: beatpattern can be a symbol, x denoting active beats, anything else non-active beats.
 
 Set beat pattern of main beat of Beat \beat:
-: "xoxoxxx" || \beat
+: "xoxoxxx" %% \beat
 	// or:
-: 'xoxoxxx' || \beat
+: 'xoxoxxx' %% \beat
 
 Set beat pattern of subbeat pattern \bass of Beat \beat:
-: "xxxoo" ||.bass \beat
+: "xxxoo" %%.bass \beat
 	// or:
-: 'xxxoo' ||.bass \beat
+: 'xxxoo' %%.bass \beat
 
 Play chuck in Beat instance
-: <chuck or symbol> ||.beatpattern \beat;
 
 Play chuck in Beat instance with own beat pattern (create beat if it does not already exist.)
-: <chuck or symbol> ||.beatpattern \beat;
+Beat filter subbeat name defaults to 'default'.
+: <chuck or symbol> %%.beatpattern \beat;
 
-Play chuck in subbeat name of Beat instance
-: <chuck or symbol> *|.subbeatname \beat;
+Play chuck in subbeat name of Beat instance.
+Subbeat path (can have any subbeat depth) is given by separating subbeat names by =_=:
+
+: <chuck or symbol> %% \subbeat_beat;
+* Chaining %% expressions for brevity
+
+DRAFT!
+
+Possibilities:
+** A: chuck -> beat
+
+chuckname %% beatname
+
+chuckname %% pattern %% beatname
+
+function %% chuckname %% pattern %% beatname
+** B: beat -> chuck
+
+beatname %% chuckname
+
+pattern %% beatname %% chuckname
+
+pattern %% beatname %% function %% chuckname
+
 * Defaults
 
-: <chuck or symbol> || \beatname
+: <chuck or symbol> %% \beatname
 
 If Beat named \beatname does not exist, it is created using a default global duration as beat duration.
 

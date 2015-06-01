@@ -28,6 +28,7 @@ Registry {
 		if (instance.isNil) {
 			postf("No instance found at path: %\n", path);
 		} { action.(instance) };
+		^instance;
 	}
 
 	*remove { | ... path |

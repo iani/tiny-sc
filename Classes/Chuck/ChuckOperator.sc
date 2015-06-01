@@ -35,10 +35,12 @@
 	
 }
 
-+ Symbol {
++ String {
 	play { | target, outbus, fadeTime, addAction, args |
 		^Synth (this, args ++ [out: outbus, fadeTime: fadeTime], target, addAction)
-	}
+	}	
+}
++ Symbol {
 	chuck { ^Chuck (this) }
 	// can use dur =>.fadeTime \symbol instead, but this is shorter:
 	ft_ { | dur = 0.1 | ^this.chuck.setProcessParameter (\fadeTime, dur) }
@@ -46,8 +48,8 @@
 	release { | dur = 0.1 |
 		^Registry.doIfFound(Chuck, this, _.release (dur));
 	}
-	replay {
-		^Registry.doIfFound(Chuck, this, _.play);
+	play { | func |
+		^Registry.doIfFound(Chuck, this, _.play (func));
 	}
 
 	// Bus stuff

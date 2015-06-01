@@ -12,14 +12,16 @@
 \test.free;
 
 
+{ BrownNoise.ar(0.1) } || \test;
+
 600 *>.freq \test;
 (400..600).prand *>.freq \test;
 
-\test.replay;
+\test.play;
 //:
 {
 	loop {
-		\test.replay;
+		\test.play;
 		1.wait;
 	}
 }.fork
@@ -27,7 +29,7 @@
 //:
 {
 	loop {
-		\test.replay;
+		\test.play;
 		0.1.wait;
 	}
 }.fork
@@ -35,7 +37,7 @@
 //:
 {
 	loop {
-		\test.replay;
+		\test.play;
 		0.015.wait;
 	}
 }.fork
@@ -65,13 +67,13 @@
 //:
 {
 	{
-		Resonz.ar (Decay.kr( Dust.kr(20, 0.1)) * WhiteNoise.ar, Rand (50, 15000))
+		0.3 * Resonz.ar (Decay.kr( Dust.kr(20, 0.1)) * WhiteNoise.ar, Rand (50, 15000))
     }.play (~target, ~outbus, ~fadeTime)
 } &> \test;
 //:
 {
 	{
-		Resonz.ar (Decay.kr( Impulse.kr(20, 0.1)) * WhiteNoise.ar, ~freq, 3)
+	  0.1 *	Resonz.ar (Decay.kr( Impulse.kr(20, 0.1)) * WhiteNoise.ar, ~freq, 3)
     }.play (~target, ~outbus, ~fadeTime)
 } &> \test;
 //:
