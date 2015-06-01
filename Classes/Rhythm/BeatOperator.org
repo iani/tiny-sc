@@ -46,11 +46,12 @@ DRAFT!
 Possibilities:
 ** A: chuck -> beat
 
-chuckname %% beatname
+| chnam %% btnam            | symbol  | symbol  | ch-bt ok  |         |           |        |
+| chnam %% pat %% bnam      | symbol  | num/pat | chpatcaps | symbol  | ch-bt     |        |
+| f %% chnam %% pat %% bnam | func    | symbol  | ch        | num/pat | chpatcaps | symbol |
+| function %% chnam         | func    | symbol  | ch ok     |         |           |        |
+| numpat %% btnam           | num/pat | symbol  | bt ok     |         |           |        |
 
-chuckname %% pattern %% beatname
-
-function %% chuckname %% pattern %% beatname
 ** B: beat -> chuck
 
 beatname %% chuckname
@@ -58,6 +59,10 @@ beatname %% chuckname
 pattern %% beatname %% chuckname
 
 pattern %% beatname %% function %% chuckname
+
+pattern %% beatname
+
+function %% chuckname
 
 * Defaults
 

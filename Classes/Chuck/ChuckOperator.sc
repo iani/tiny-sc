@@ -4,15 +4,21 @@
 	}
 
 	=> { | symbol, adverb |
+		^Chuck(symbol).setProcessParameter (adverb, this);
+		/*
 		^Registry.doIfFound (Chuck, symbol, { | chuck |
 			chuck.setProcessParameter (adverb, this)
 		})
+		*/
 	}
 
 	*> { | symbol, adverb |
+		^Chuck(symbol).setArgs (adverb, this);
+		/*
 		^Registry.doIfFound (Chuck, symbol, { | chuck |
 			chuck.setArgs (adverb, this)
 		})
+		*/
 	}
 }
 
@@ -55,10 +61,16 @@
 	// Bus stuff
 	//	abus / cbus  { /* ^Cbus(this, \audio, \control)  */ }
 	@< { | object, io = \in_out |
-		^Chuck (this).prepend (object, io);
+		^Chuck (this).prependAudio (object, io);
 	}
 	@> { | object, io = \in_out |
-		^Chuck (this).append (object, io);
+		^Chuck (this).appendAudio (object, io);
+	}	
+	<@ { | object, io = \in_out |
+		^Chuck (this).prependControl (object, io);
+	}
+	>@ { | object, io = \in_out |
+		^Chuck (this).appendControl (object, io);
 	}	
 }
 

@@ -123,7 +123,7 @@ BufferList {
 		//		BufferList.getBuffer(bufName).postln;
 		
 		`bufName
-		+> format("%%", bufName, UniqueID.next - 1001).asSymbol.asSynthTree
+		+> format("%>", bufName, UniqueID.next - 1001).asSymbol.asSynthTree
 		.set(\amp, 1)
 		.set(\loop, if (loop) { 1 } { 0 });
 	}
