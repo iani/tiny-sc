@@ -43,22 +43,18 @@ ChuckProcess {
 	play {}
 
 	synth { ^nil }
-	addAudioReader { | chuck, slot = \out |
-		var target;
-		target = LinkedBus.addWriter(this, slot);
-		if (slot === \out) {
-			this.outbus = target;
-			this.target = target.asTarget;
-			
-		}{
-			
-		}
+	setWriterAudioTarget { | buslink, slot = \out |
+		// write your output to buslink
+		this.moveToHead(buslink);
+		this.target = buslink;
+		this.outbus_()
 	}
+	setReaderAudioTarget { | buslink, slot = \in |
+		// read your input from buslink
 
-	addAudioWriter { | chuck, slot = \in |
-		thisMethod.notImplemented;
 	}
 }
+
 
 Cnil : ChuckProcess {
 	// Just a consistent name for the empty ChuckProcess

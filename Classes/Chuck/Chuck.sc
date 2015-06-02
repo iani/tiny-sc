@@ -45,13 +45,13 @@ Chuck {
 
 	free { process.free }
 	release { | dur = 0.1 | process release: dur }
-	prepend { | chuck, io = \in_out |
-	   thisMethod.notImplemented;
-	}
-	append { | chuck, io = \in_out |
-	   thisMethod.notImplemented;
+
+	// Linking audio
+	append { | reader, io = \in_out |
+	   BusLink.linkAudio(process, reader.process, *io.asString.split($_).collect(_.asSymbol));
 	}
 
+	// Rhythm and playing sequences
 	addToBeat { | beat |
 		beat.add(this, { this.play });
 		^beat;

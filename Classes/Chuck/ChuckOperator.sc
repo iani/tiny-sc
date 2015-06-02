@@ -53,12 +53,8 @@
 	}
 
 	// Bus stuff
-	//	abus / cbus  { /* ^Cbus(this, \audio, \control)  */ }
-	@< { | object, io = \in_out |
-		^Chuck (this).prepend (object, io);
-	}
-	@> { | object, io = \in_out |
-		^Chuck (this).append (object, io);
+	@> { | chuckName, io = \in_out |
+		^Chuck (this).append (Chuck (chuckName), io);
 	}	
 }
 

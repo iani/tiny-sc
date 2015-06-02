@@ -6,31 +6,40 @@ Given a Reader and a Writer:
 
 Draft only.
 Details vary  - see implementation.
-Groups are nested to preserve order of children groups.
+
+To preserve order of groups when moving them around, will move these in reverse order to next location.  Checking this in file: file:./BusOrderTest.scd
 
 CYCLE CHECK STILL NEEDED: moving a group inside a group that it previously contains results in all groups being killed.
 
 |---+---------------+---------------+---------------------------------------------|
 | ! | w's target is | r's target is | action                                      |
 |---+---------------+---------------+---------------------------------------------|
-|   | nil           | nil           | Create new LinkBus, set targets accordingly |
-|   | nil           | a LinkBus     | set w target to head of LinkBus             |
-|   | a LinkBus     | nil           | set r target to tail of LinkBus             |
-|   | a LinkBus     | a LinkBus     | Reorder LinkBusses                          |
+|   | nil           | nil           | Create new BusLink, set targets accordingly |
+|   | nil           | a BusLink     | set w target to head of BusLink             |
+|   | a BusLink     | nil           | set r target to tail of BusLink             |
+|   | a BusLink     | a BusLink     | Reorder BusLinks                            |
 |---+---------------+---------------+---------------------------------------------|
 
-** Create new LinkBus
+** Create new BusLink
 
-1. Create new LinkBus
-2. Move/add writer to head of LinkBus group
-3. Move/add reader to tail of LinkBus group
+1. Create new BusLink
+2. Move/add writer to head of BusLink group
+3. Move/add reader to tail of BusLink group
 
-** Reorder LinkBusses
+** Reorder BusLinks
 
-Following draft is for one case only.  It has to be decided who will move to the other's LinkBus, because moving means that either existing readers or existing writers are disconnected.  See below [[*Specify%20who%20will%20move:%20The%20Reader%20or%20the%20Writer?][Specify who will move: The Reader or the Writer?]]
+Following draft is for one case only.  It has to be decided who will move to the other's BusLink, because moving means that either existing readers or existing writers are disconnected.  See below [[*Specify%20who%20will%20move:%20The%20Reader%20or%20the%20Writer?][Specify who will move: The Reader or the Writer?]]
 
 1. Check if reordering would result in cycles. If not:
    1. Move group of writer's linkbus before reader's linkbus
    2. Move all groups of writer's writers successively before each other
 
 * Specify who will move: The Reader or the Writer?
+
+If both the Reader and the Writer are in BusLinks, then choose for moving that one which will not lose any links by changing its bus.  If both will lose, then report a conflict and abort the change.  Such conflicts should be fixed by manual (ad hoc) creation of a synth copying the signal to the new link.  This for later.  Mechanism:
+
+- Check if the writer has only one reader.
+   - If yes, then move the writer to the reader's BusLink
+   - If no, then check the reader if it has only one writer
+     - If yes, then move the reader to the writer's BusLink
+     - If no, then report incompatibility and abort the linking process

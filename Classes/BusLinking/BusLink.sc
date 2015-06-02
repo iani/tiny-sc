@@ -1,51 +1,58 @@
 
-BusLink : Bus {
-	var <group;
-	var <writers, <readers;
+BusLink {
+	var <bus, <writers, <readers;
 
-	*new { | rate = \audio index  numChannels = 1 group |
-		group ?? {
-			group = if (rate === \audio) { Group() } { nil.asTarget };
-		};
-		^if (index.isNil) {
-			this.perform(rate, group.server, numChannels).init(group)
-		}{
-			this.newCopyArgs(rate, index, numChannels, group.server).init(group);	
-		}
+	*new { | rate = \audio index  numChannels = 1, server |
+		^this.newCopyArgs(
+			if (index.isNil) {
+				Bus.perform(rate, group.server, numChannels).init(group)
+			}{
+				Bus.newCopyArgs(rate, index, numChannels, group.server).init(group);	
+			}, Set(), Set()
+		)
 	}
 
-	*linkAudio { | writer, reader, outParam = \out, inParam = \in, move = \writer |
-		var wt, rt, theTarget;
-		wt = writer.target;
-		rt = reader.target;
+	*linkAudio { | writer, reader, outParam = \out, inParam = \in |
+		var wb, rb, theBus, numWritersReaders, numReadersWriters;
+
+		postf("%: out: %, in: %", thisMethod.name, outParam, inParam);
+
+		wb = writer.outbus(outParam);
+		rb = reader.inbus(inParam);
 		case
 		{
-			wt.isNil and: { rt.isNil }
+			wb.isNil and: { rb.isNil }
 		} {
-			theTarget = BusLink(\audio);
-			writer.setWriterAudioTarget(theTarget, outParam);
-			reader.setReaderAudioTarget(theTarget, inParam);
+			theBus = BusLink(\audio);
+			writer.setOutbus(theBus, outParam); 
+			reader.setInbus(theBus, inParam);
 		}
 		{
-			wt.isNil and: { rt.notNil }
+			wb.isNil and: { rb.notNil }
 		} {
-			theTarget = rt;
-			writer.setWriterAudioTarget(theTarget, outParam);
+			theBus = rb;
+			writer.setOutbus(theBus, outParam);
 		}
 		{
-			wt.notNil and: { rt.isNil }
+			wb.notNil and: { rb.isNil }
 		} {
-			theTarget = wt;
-			reader.setReaderAudioTarget(theTarget, inParam);
+			theBus = wb; // to tail of target and move reader's readers links after
+			reader.setInbus(theBus, inParam);
 		}
 		{
-			wt.notNil and: { rt.notNil }
+			wb.notNil and: { rb.notNil }
 		} {
-			if (move === \writer) {
-				writer.setWriterAudioTarget(rt, outParam)
-			}{
-				reader.setReaderAudioTarget(wt, inParam);
+			/* negotiate who should change BusLink depending on existing links
+				to avoid losing connections. */
+			numWritersReaders = writer.readers(outParam).size;
+			numReadersWriters = reader.writers(inParam).size;
+			if (numWritersReaders <= 1) {
+				^writer.setOutbus(rb, outParam)
 			}
+			if (numReadersWriters <= 1) {
+				^reader.setInbus(wb, inParam);
+			};
+			postf("cannot relink % and % without breaking links\n", writer, reader);
 		}
 	}
 
@@ -55,9 +62,10 @@ BusLink : Bus {
 		readers = Set();
 	}
 
+	asTarget { ^group }
+
 	addReader { | chuck |
 		readers add: chuck;
-		//		chuck addInput()
 	}
 
 	addWriter { | chuck |
