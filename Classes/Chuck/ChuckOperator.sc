@@ -1,6 +1,6 @@
 + Object {
-	asChuckProcess { | chuck, params |
-		^this.chuckProcessClass.new(chuck, this, params);
+	asChuckProcess { | chuck, args |
+		^this.chuckProcessClass.new(chuck, this, args);
 	}
 
 	=> { | symbol, adverb |
@@ -46,7 +46,9 @@
 	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); }
 	ft_ { | dur = 0.1 | ^this.chuck.setProcessParameter (\fadeTime, dur) }
 	outbus_ { | bus, slot = \out |
-		^this.chuck.process.outbus_(bus, slot);
+		[thisMethod.name, this, bus, slot].postln;
+		^this.chuck.outbus_(bus, slot);
+		// ^this.chuck.process.outbus_(bus, slot);
 	}
 	free { ^Registry.doIfFound(Chuck, this, _.free); }
 	release { | dur = 0.1 |

@@ -7,12 +7,12 @@ Simpler alternative to SynthTree?
 Chuck {
 	var <name, <process;
 
-	*new { | name, template, params |
-		^Registry(Chuck, name, { this.newCopyArgs(name).init(template, params) });
+	*new { | name, template, args |
+		^Registry(Chuck, name, { this.newCopyArgs(name).init(template, args) });
 	}
 
-	init { | template, params |
-		process = template.asChuckProcess (this, params)
+	init { | template, args |
+		process = template.asChuckProcess (this, args)
 	}
  
 	play { | template |
@@ -26,7 +26,7 @@ Chuck {
 	}
 
 	makeProcess { | template |
-		process = template.asChuckProcess(this, process.params);
+		process = template.asChuckProcess(this, process.args);
 		^process;
 	}
 
@@ -45,6 +45,9 @@ Chuck {
 
 	free { process.free }
 	release { | dur = 0.1 | process release: dur }
+
+	fadeTime_ { | dur = 0.1 | process.fadeTime = dur }
+	outbus_ { | bus = 0 slot = \out | process.outbus_(bus, slot) }
 
 	// Linking audio
 	append { | reader, io = \in_out |

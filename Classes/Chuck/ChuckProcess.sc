@@ -1,33 +1,33 @@
 ChuckProcess {
-	classvar >parentParams; // Parent event holding default parameters for params
-	var <chuck, <template, <params;
-	var <paramsTemplate; // TODO: store patterns of the param streams, for cloning
+	classvar >parentArgs; // Parent event holding default parameters for args
+	var <chuck, <template, <args;
+	var <argsTemplate; // TODO: store patterns of the param streams, for cloning
 
-	*new { | chuck, template, params |
+	*new { | chuck, template, args |
 		^this.newCopyArgs (
 			chuck,
 			template,
-			params ?? { ().parent_ (this.parentParams) }
+			args ?? { ().parent_ (this.parentArgs) }
 		).init;
 	}
 
 	init { }
 	
-	*parentParams {
-		parentParams ?? {
-			parentParams = (
+	*parentArgs {
+		parentArgs ?? {
+			parentArgs = (
 				outbus: 0,
 				fadeTime: 0.02,
 				addAction: \addToHead
 			)
 		};
-		^parentParams;
+		^parentArgs;
 	}
 
 	setArgs { | args |
 		var theArgs, keysValues;
-		theArgs = params [\args];
-		theArgs ?? { params [\args] = theArgs = ().parent_ (params) };
+		theArgs = args [\args];
+		theArgs ?? { args [\args] = theArgs = ().parent_ (args) };
 		args keysValuesDo: { | key, value |
 			value = value.asStream;
 			keysValues = keysValues add: key;
@@ -38,7 +38,7 @@ ChuckProcess {
 	}
 	
 	setProcessParameter { | parameter, value |
-		params [parameter] = value;
+		args [parameter] = value;
 	}
 	play {}
 
@@ -48,7 +48,7 @@ ChuckProcess {
 		// write your output to buslink
 		this.moveToHead(buslink);
 		this.target = buslink;
-		this.outbus_()
+		//		this.outbus_()
 	}
 	setReaderAudioTarget { | buslink, slot = \in |
 		// read your input from buslink
@@ -56,8 +56,9 @@ ChuckProcess {
 	}
 
 	outbus_ { | bus, slot = \out |
+		[thisMethod.name, bus, slot].postln;
 		if (slot === \out) { this.setProcessParameter(\outbus, bus) };
-		this.setArgs (slot, bus);
+		this.setArgs ([slot, bus]);
 	}
 
 	fadeTime_ { | dur = 0.1 |
@@ -78,11 +79,11 @@ Csynth : ChuckProcess {
 	
 	play {
 		this.synth = template.play(
-			params [\target].next.asTarget,
-			params [\outbus].next,
-			params [\fadeTime].next,
-			params [\addAction].next,
-			(params [\args] ?? { () }).getPairs
+			args [\target].next.asTarget,
+			args [\outbus].next,
+			args [\fadeTime].next,
+			args [\addAction].next,
+			(args [\args] ?? { () }).getPairs
 		);
 	}
 
@@ -95,10 +96,10 @@ Csynth : ChuckProcess {
 	release { | dur |
 		synth !? {
 			if (synth.isPlaying) {
-				synth.release(dur ?? { params[\fadeTime].next })
+				synth.release(dur ?? { args[\fadeTime].next })
 			}{
 				synth.onStart (this, { 
-					synth.release(dur ?? { params[\fadeTime].next })
+					synth.release(dur ?? { args[\fadeTime].next })
 				})
 			}
 		}
@@ -127,10 +128,11 @@ Csynth : ChuckProcess {
 		
 	}
 
+	/*
 	outbus_ { | aoutbus |
 		synth.set (\outbus, aoutbus);
 	}
-
+	*/
 	fadeTime_ { | afadeTime |
 		synth.set (\fadeTime, afadeTime);
 	}
@@ -148,7 +150,7 @@ Csynth : ChuckProcess {
 Cfunc : Csynth {
 	play {
 		var result;
-		result = params [\args] use: template.func;
+		result = args [\args] use: template.func;
 		if (result isKindOf: Node) {
 			this.synth = result;
 		}
