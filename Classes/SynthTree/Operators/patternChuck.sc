@@ -1,4 +1,5 @@
 + Pattern {
+	/*
 	=> { | chuckee, adverb |
 		^switch (adverb,
 			'd', { chuckee.asSynthTree setPatternDuration: this },
@@ -6,7 +7,8 @@
 			{ chuckee.receivePatternChuck(this, adverb) }
 		);
 	}
-
+	*/
+	
 	receivePatternChuck { | pattern |
 		^PatternTask(pattern, this);
 	}

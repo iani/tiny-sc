@@ -4,15 +4,7 @@
 	}
 
 	=> { | symbol, adverb |
-		^Registry.doIfFound (Chuck, symbol, { | chuck |
-			chuck.setProcessParameter (adverb, this)
-		})
-	}
-
-	*> { | symbol, adverb |
-		^Registry.doIfFound (Chuck, symbol, { | chuck |
-			chuck.setArgs (adverb, this)
-		})
+		^Chuck(symbol).setArgs (adverb, this)
 	}
 }
 
@@ -43,19 +35,22 @@
 + Symbol {
 	chuck { ^Chuck (this) }
 	// can use dur =>.fadeTime \symbol instead, but this is shorter:
-	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); }
-	ft_ { | dur = 0.1 | ^this.chuck.setProcessParameter (\fadeTime, dur) }
-	outbus_ { | bus, slot = \out |
-		[thisMethod.name, this, bus, slot].postln;
-		^this.chuck.outbus_(bus, slot);
-		// ^this.chuck.process.outbus_(bus, slot);
+	//	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); } // still shadowed by SynthTree. TODO: Scrap SynthTree
+	ft_ { | dur = 0.1 | ^this.chuck.setArgs (\fadeTime, dur) }
+	out_ { | bus = 0, slot = \out |
+		^this.chuck.setArgs(slot, bus);
 	}
+	dur_ { | dur = 1 | ^this.chuck.dur = dur }
+	clock_ { | clock | ^this.chuck.clock = clock }
 	free { ^Registry.doIfFound(Chuck, this, _.free); }
 	release { | dur = 0.1 |
 		^Registry.doIfFound(Chuck, this, _.release (dur));
 	}
-	play { | func |
-		^Registry.doIfFound(Chuck, this, _.play (func));
+	play { | dur |
+		var chuck;
+		chuck = Chuck (this);
+		dur !? { chuck.dur = dur };
+		^chuck.play;
 	}
 
 	// Bus stuff

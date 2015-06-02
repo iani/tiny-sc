@@ -131,7 +131,7 @@ Cdef : Edef { // NamedEventPatternClone
 
 + Event {
 	chuckInto { | object | ^object.asEdef.addEvent(this, true) }
-	=> { | chuckee | ^chuckee.chuckEvent(this);	}
+	//	=> { | chuckee | ^chuckee.chuckEvent(this);	}
 	+> { | chuckee adverb | ^chuckee.addPlayerMods(this, adverb); }
 	+!> { | chuckee | ^chuckee.replacePlayerMods(this);	}
 	%> { | chuckee | ^chuckee.addMods(this); }

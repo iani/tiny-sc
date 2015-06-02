@@ -48,6 +48,8 @@ Chuck {
 
 	fadeTime_ { | dur = 0.1 | process.fadeTime = dur }
 	outbus_ { | bus = 0 slot = \out | process.outbus_(bus, slot) }
+	dur_ { | dur | process.dur = dur }
+	clock_ { | clock | process.clock = clock }
 
 	// Linking audio
 	append { | reader, io = \in_out |

@@ -1,6 +1,7 @@
 ChuckProcess {
 	classvar >parentArgs; // Parent event holding default parameters for args
 	var <chuck, <template, <args;
+	var <dur, <>clock;
 	var <argsTemplate; // TODO: store patterns of the param streams, for cloning
 
 	*new { | chuck, template, args |
@@ -11,12 +12,22 @@ ChuckProcess {
 		).init;
 	}
 
-	init { }
+	init {
+		//		synth = chuck.process.synth;
+		var process;
+		process = chuck.process;
+		if (process.notNil) {
+			clock = chuck.process.clock ?? { TempoClock.default };
+			dur = chuck.process.dur;
+		}{
+			clock = TempoClock.default;
+		};
+	}
 	
 	*parentArgs {
 		parentArgs ?? {
 			parentArgs = (
-				outbus: 0,
+				out: 0,
 				fadeTime: 0.02,
 				addAction: \addToHead
 			)
@@ -24,26 +35,32 @@ ChuckProcess {
 		^parentArgs;
 	}
 
-	setArgs { | args |
-		var theArgs, keysValues;
-		theArgs = args [\args];
-		theArgs ?? { args [\args] = theArgs = ().parent_ (args) };
-		args keysValuesDo: { | key, value |
+	setArgs { | theArgs |
+		var keysValues;
+		theArgs keysValuesDo: { | key, value |
 			value = value.asStream;
-			keysValues = keysValues add: key;
-			keysValues = keysValues add: value;
-			theArgs [key] = value;
+			keysValues = keysValues.add (key).add (value);
+			args [key] = value;
 		};
 		^keysValues;
 	}
 	
-	setProcessParameter { | parameter, value |
-		args [parameter] = value;
+	play { | argDur |
+		argDur !? { this.dur = argDur };
+		this.sched;
 	}
-	play {}
+
+	dur_ { | argDur | dur = argDur.asStream }
+
+	sched {
+		clock.sched (dur.next, {
+			this.release;
+			this.play;
+		})
+	}
 
 	synth { ^nil }
-
+	
 	setWriterAudioTarget { | buslink, slot = \out |
 		// write your output to buslink
 		this.moveToHead(buslink);
@@ -55,9 +72,7 @@ ChuckProcess {
 
 	}
 
-	outbus_ { | bus, slot = \out |
-		[thisMethod.name, bus, slot].postln;
-		if (slot === \out) { this.setProcessParameter(\outbus, bus) };
+	out_ { | bus, slot = \out |
 		this.setArgs ([slot, bus]);
 	}
 
@@ -75,18 +90,23 @@ Cnil : ChuckProcess {
 Csynth : ChuckProcess {
 	var <synth;
 
-	init { synth = chuck.process.synth }
 	
-	play {
-		this.synth = template.play(
-			args [\target].next.asTarget,
-			args [\outbus].next,
-			args [\fadeTime].next,
-			args [\addAction].next,
-			(args [\args] ?? { () }).getPairs
-		);
+	init {
+		synth = chuck.process.synth;
+		super.init;
 	}
 
+	play { | argDur |
+		this.synth = template.play(
+			args [\target].next.asTarget,
+			args [\out].next,
+			args [\fadeTime].next,
+			args [\addAction].next,
+			args.getPairs
+		);
+		super.play (argDur);
+	}
+	
 	synth_ { | argSynth |
 		synth = argSynth;
 		synth.onEnd (this, { this.changed (\synthStopped)});
@@ -150,7 +170,7 @@ Csynth : ChuckProcess {
 Cfunc : Csynth {
 	play {
 		var result;
-		result = args [\args] use: template.func;
+		result = args use: template.func;
 		if (result isKindOf: Node) {
 			this.synth = result;
 		}
