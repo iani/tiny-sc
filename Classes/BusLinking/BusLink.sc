@@ -5,15 +5,15 @@ BusLink {
 	*new { | rate = \audio index  numChannels = 1, server |
 		^this.newCopyArgs(
 			if (index.isNil) {
-				Bus.perform(rate, group.server, numChannels).init(group)
+				Bus.perform(rate, server.asTarget.server, numChannels)
 			}{
-				Bus.newCopyArgs(rate, index, numChannels, group.server).init(group);	
+				Bus.newCopyArgs(rate, index, numChannels, server.asTarget.server)
 			}, Set(), Set()
 		)
 	}
 
 	*linkAudio { | writer, reader, outParam = \out, inParam = \in |
-		var wb, rb, theBus, numWritersReaders, numReadersWriters;
+		var wb, rb, theBus;
 
 		postf("%: out: %, in: %", thisMethod.name, outParam, inParam);
 
@@ -36,7 +36,7 @@ BusLink {
 		{
 			wb.notNil and: { rb.isNil }
 		} {
-			theBus = wb; // to tail of target and move reader's readers links after
+			theBus = wb;
 			reader.setInbus(theBus, inParam);
 		}
 		{
@@ -44,25 +44,15 @@ BusLink {
 		} {
 			/* negotiate who should change BusLink depending on existing links
 				to avoid losing connections. */
-			numWritersReaders = writer.readers(outParam).size;
-			numReadersWriters = reader.writers(inParam).size;
-			if (numWritersReaders <= 1) {
+			if (writer.readers(outParam).size <= 1) {
 				^writer.setOutbus(rb, outParam)
-			}
-			if (numReadersWriters <= 1) {
+			};
+			if (reader.writers(inParam).size <= 1) {
 				^reader.setInbus(wb, inParam);
 			};
 			postf("cannot relink % and % without breaking links\n", writer, reader);
 		}
 	}
-
-	init { | argGroup |
-		group = argGroup;
-		writers = Set();
-		readers = Set();
-	}
-
-	asTarget { ^group }
 
 	addReader { | chuck |
 		readers add: chuck;
