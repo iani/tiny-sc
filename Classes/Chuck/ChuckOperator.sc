@@ -43,7 +43,11 @@
 + Symbol {
 	chuck { ^Chuck (this) }
 	// can use dur =>.fadeTime \symbol instead, but this is shorter:
+	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); }
 	ft_ { | dur = 0.1 | ^this.chuck.setProcessParameter (\fadeTime, dur) }
+	outbus_ { | bus, slot = \out |
+		^this.chuck.process.outbus_(bus, slot);
+	}
 	free { ^Registry.doIfFound(Chuck, this, _.free); }
 	release { | dur = 0.1 |
 		^Registry.doIfFound(Chuck, this, _.release (dur));

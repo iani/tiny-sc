@@ -43,6 +43,7 @@ ChuckProcess {
 	play {}
 
 	synth { ^nil }
+
 	setWriterAudioTarget { | buslink, slot = \out |
 		// write your output to buslink
 		this.moveToHead(buslink);
@@ -53,6 +54,16 @@ ChuckProcess {
 		// read your input from buslink
 
 	}
+
+	outbus_ { | bus, slot = \out |
+		if (slot === \out) { this.setProcessParameter(\outbus, bus) };
+		this.setArgs (slot, bus);
+	}
+
+	fadeTime_ { | dur = 0.1 |
+		this.setProcessParameter(\fadeTime, dur);
+	}
+	
 }
 
 

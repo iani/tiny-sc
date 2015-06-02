@@ -1,9 +1,10 @@
 
 BusLink {
-	var <bus, <writers, <readers;
+	var <rate = \audio, <numChannels = 1, <bus, <writers, <readers;
 
 	*new { | rate = \audio index  numChannels = 1, server |
 		^this.newCopyArgs(
+			rate, numChannels, // To re-allocate on server reboot
 			if (index.isNil) {
 				Bus.perform(rate, server.asTarget.server, numChannels)
 			}{
@@ -50,23 +51,12 @@ BusLink {
 			if (reader.writers(inParam).size <= 1) {
 				^reader.setInbus(wb, inParam);
 			};
-			postf("cannot relink % and % without breaking links\n", writer, reader);
+			postf("cannot link % and % without breaking links\n", writer, reader);
 		}
 	}
 
-	addReader { | chuck |
-		readers add: chuck;
-	}
-
-	addWriter { | chuck |
-
-	}
-
-	removeReader { | chuck |
-
-	}
-
-	removeWriter { | chuck |
-
-	}
+	addReader { | chuck | readers add: chuck; }
+	addWriter { | chuck | writers add: chuck; }
+	removeReader { | chuck | readers remove: chuck; }
+	removeWriter { | chuck | writers remove: chuck; }
 }
