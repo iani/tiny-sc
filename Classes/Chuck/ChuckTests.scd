@@ -21,13 +21,21 @@ Pwhite(500, 600, inf) =>.freq \test;
 
 \test.dur = 0.015;
 
-{
-	
-}
+//:
 
-Server.default.scope;
+switch (\reader,
+
+	\reader, { "reader".postln},
+	\writer, { "writer".postln;}
+)
 
 
-{ "hello".postln }.sched(1)
 
-sched
+
+//:
+
+)
+
+
+
+

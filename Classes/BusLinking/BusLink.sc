@@ -13,50 +13,33 @@ BusLink {
 		)
 	}
 
-	*linkAudio { | writer, reader, outParam = \out, inParam = \in |
+	*linkAudio { | writer, reader, inParam = \in, outParam = \out |
 		var wb, rb, theBus;
 
 		postf("%: out: %, in: %", thisMethod.name, outParam, inParam);
 
-		wb = writer.outbus(outParam);
-		rb = reader.inbus(inParam);
+		wb = writer.getArg(outParam);
+		rb = reader.getArg(inParam);
 		case
-		{
-			wb.isNil and: { rb.isNil }
-		} {
-			theBus = BusLink(\audio);
-			writer.setOutbus(theBus, outParam); 
-			reader.setInbus(theBus, inParam);
-		}
-		{
-			wb.isNil and: { rb.notNil }
-		} {
-			theBus = rb;
-			writer.setOutbus(theBus, outParam);
-		}
-		{
-			wb.notNil and: { rb.isNil }
-		} {
-			theBus = wb;
-			reader.setInbus(theBus, inParam);
-		}
-		{
-			wb.notNil and: { rb.notNil }
-		} {
+		{ wb.isKindOf(BusLink).not and: { rb.isKindOf(BusLink).not }} 
+		{ BusLink(\audio).add(writer, outParam, \writers).add(reader, inParam, \readers) }
+		{ wb.isKindOf(BusLink).not and: { rb.isKindOf(BusLink) } }
+		{ rb.add(writer, outParam, \writers); }
+		{ wb.isKindOf(BusLink) and: { rb.isKindOf(BusLink).not } }
+		{ wb.add(reader, inParam, \readers); }
+		{ true; } // all other cases were exhausted above.
 			/* negotiate who should change BusLink depending on existing links
-				to avoid losing connections. */
-			if (writer.readers(outParam).size <= 1) {
-				^writer.setOutbus(rb, outParam)
-			};
-			if (reader.writers(inParam).size <= 1) {
-				^reader.setInbus(wb, inParam);
-			};
+			to avoid losing connections. */
+		{
+			if (writer.readers(outParam).size <= 1) { ^rb.add(writer, outParam, \writers) };
+			if (reader.writers(inParam).size <= 1) { ^wb.add(reader, inParam, \readers) };
 			postf("cannot link % and % without breaking links\n", writer, reader);
 		}
 	}
 
-	addReader { | chuck | readers add: chuck; }
-	addWriter { | chuck | writers add: chuck; }
-	removeReader { | chuck | readers remove: chuck; }
-	removeWriter { | chuck | writers remove: chuck; }
+	add { | chuck, param, role |
+		chuck.process.removeBus(param);
+		this.perform(role) add: chuck;
+		chuck.process.setArgs([param, this]);
+	}
 }

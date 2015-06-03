@@ -21,13 +21,10 @@ Chuck {
 		this.changed (\started);
 	}
 
-	eval { | func |
-		this.play (CfuncTemplate (func))
-	}
+	eval { | func | this.play (CfuncTemplate (func)) }
 
 	makeProcess { | template |
-		process = template.asChuckProcess(this, process.args);
-		^process;
+		^process = template.asChuckProcess(this, process.args);
 	}
 
 	setArgs { | ... args |
@@ -51,9 +48,24 @@ Chuck {
 	dur_ { | dur | process.dur = dur }
 	clock_ { | clock | process.clock = clock }
 
+	synth { ^process.synth }
+	readers { ^process.readers }
+	writers { ^process.writers }
+
 	// Linking audio
 	append { | reader, io = \in_out |
-	   BusLink.linkAudio(process, reader.process, *io.asString.split($_).collect(_.asSymbol));
+		var in, out;
+		#in, out = io.asString.split($_).collect(_.asSymbol);
+		if (reader.hasDirectWriter(this, in)) {
+			postf ("% is already a writer of %\n", this, reader);
+			^this;
+		};
+		if (reader.hasReader(this)) {
+			postf("% is a reader of %. Cannot add it as writer\n", this, reader);
+			^this;
+		};
+		GroupLink.linkAudio(this, reader);
+		BusLink.linkAudio(this, reader, in, out);
 	}
 
 	// Rhythm and playing sequences

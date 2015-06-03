@@ -60,24 +60,38 @@ ChuckProcess {
 	}
 
 	synth { ^nil }
+
+	addWriterBus { | busLink, slot |
+		// remove self from previous bus and add to this bus
+		var previous;
+		previous = args [slot];
+		if (previous isKindOf: BusLink) { previous.writers remove: chuck };
+		busLink.writers add: chuck;
+		this.setArgs ([slot, busLink]);
+	}
+
+	addReaderBus { | busLink, slot |
+		var previous;
+		previous = args [slot];
+		if (previous isKindOf: BusLink) { previous.readers remove: chuck };
+		busLink.readers add: chuck;
+		this.setArgs ([slot, busLink]);
+	}
 	
-	setWriterAudioTarget { | buslink, slot = \out |
-		// write your output to buslink
-		this.moveToHead(buslink);
-		this.target = buslink;
-		//		this.outbus_()
-	}
-	setReaderAudioTarget { | buslink, slot = \in |
-		// read your input from buslink
-
+	readers {
+		
 	}
 
+	writers {
+		
+	}
+	
 	out_ { | bus, slot = \out |
 		this.setArgs ([slot, bus]);
 	}
 
 	fadeTime_ { | dur = 0.1 |
-		this.setProcessParameter(\fadeTime, dur);
+		this.setArgs([\fadeTime, dur]);
 	}
 	
 }
@@ -90,7 +104,6 @@ Cnil : ChuckProcess {
 Csynth : ChuckProcess {
 	var <synth;
 
-	
 	init {
 		synth = chuck.process.synth;
 		super.init;
@@ -118,7 +131,7 @@ Csynth : ChuckProcess {
 			if (synth.isPlaying) {
 				synth.release(dur ?? { args[\fadeTime].next })
 			}{
-				synth.onStart (this, { 
+				synth.onStart (this, {
 					synth.release(dur ?? { args[\fadeTime].next })
 				})
 			}
