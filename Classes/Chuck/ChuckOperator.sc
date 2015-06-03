@@ -9,11 +9,11 @@
 }
 
 + Function {
-	=> { | symbol |
+	=> { | symbol |  // add adverb to play in parameter!
 		^Chuck (symbol).play (this);
 	}
 
-	&> { | symbol |
+	&> { | symbol |  // add adverb to play in parameter!
 		^Chuck (symbol).eval (this);
 	}
 }
@@ -28,10 +28,16 @@
 }
 
 + String {
+	=> { | symbol |  // add adverb to play in parameter!
+		^Chuck (symbol).play (this);
+	}
+
+	chuckProcessClass { ^Csynth }
 	play { | target, outbus, fadeTime, addAction, args |
 		^Synth (this, args ++ [out: outbus, fadeTime: fadeTime], target, addAction)
 	}	
 }
+
 + Symbol {
 	chuck { ^Chuck (this) }
 	// can use dur =>.fadeTime \symbol instead, but this is shorter:
@@ -40,22 +46,21 @@
 	out_ { | bus = 0, slot = \out |
 		^this.chuck.setArgs(slot, bus);
 	}
-	dur_ { | dur = 1 | ^this.chuck.dur = dur }
-	clock_ { | clock | ^this.chuck.clock = clock }
+
 	free { ^Registry.doIfFound(Chuck, this, _.free); }
 	release { | dur = 0.1 |
 		^Registry.doIfFound(Chuck, this, _.release (dur));
 	}
-	play { | dur |
-		var chuck;
-		chuck = Chuck (this);
-		dur !? { chuck.dur = dur };
-		^chuck.play;
+	play {
+		^Chuck (this).play;
 	}
 
+	sched { | dur = 1, clock |
+		^Chuck (this).sched (dur, clock ?? { TempoClock.new })
+	}
 	// Bus stuff
-	@> { | chuckName, io = \in_out |
-		^Chuck (this).append (Chuck (chuckName), io);
+	@> { | reader, io = \in_out |
+		^Chuck (this).append (Chuck (reader), io);
 	}	
 }
 

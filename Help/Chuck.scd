@@ -50,15 +50,15 @@
 	.choose.ar(\freq.kr (800)) * 0.1
 } => \test;
 //:
-(100..300).prand *>.freq \test;
+(100..300).prand =>.freq \test;
 //:
-(100..3000).prand *>.freq \test;
+(100..3000).prand =>.freq \test;
 //:
-(30..100).scramble.midicps.pseq *>.freq \test;
+(30..100).scramble.midicps.pseq =>.freq \test;
 //:
-(50..100).midicps.pseq *>.freq \test;
+(50..100).midicps.pseq =>.freq \test;
 //:
-10 =>.fadeTime \test;
+1 =>.fadeTime \test;
 
 //:
 
@@ -66,8 +66,9 @@
 { "Hello".postln; } &> \test;
 //:
 {
+	currentEnvironment.postln;
 	{
-		0.3 * Resonz.ar (Decay.kr( Dust.kr(20, 0.1)) * WhiteNoise.ar, Rand (50, 15000))
+		0.3 * Resonz.ar (Decay.kr( Dust.kr(20, 0.1)) * WhiteNoise.ar, Rand (50, 5000))
     }.play (~target, ~outbus, ~fadeTime)
 } &> \test;
 //:
@@ -85,17 +86,48 @@
 //:
 Chuck(\test).inspect;
 
+//: linking
+
+\a @> \b;
+\b @> \c;
+\b @> \a;
+\c @> \a;
+
+
+\b.chuck.readers;
+\a.chuck.readers;
+
+\a.chuck.process.directReaders;
+
+
+
+\b.chuck.process.args;
+
+\a.chuck.process.args[\out].inspect;
+
+\a.chuck.process.args[\out].readersTree;
+
+// .readersTree;
+\a.chuck.readers;
+
+[1] includes: 1;
 //:
-{
-	a =	{WhiteNoise.ar (0.1) }.play;
-	a.isPlaying.postln;
-	a.onEnd (\this, {"done ................................................................".postln;});
-	0.5.wait;
-	a.isPlaying.postln;
-	a.release;
-}.fork
+{ SinOsc.ar(\freq.kr (800), 0, 0.1) } => \test;
+//:
+{ SinOsc.ar(Rand (400, 800), 0, 0.1) } => \test;
+//:
+600 =>.freq \test;
 
+\testet =>.freq \test;
 
+BusLink() =>.freq \test;
 
+\test.chuck.process.args;
 
+"default" => \test;
+
+\test.play;
+
+\test.sched(0.15);
+\test.ft = 0.14;
 

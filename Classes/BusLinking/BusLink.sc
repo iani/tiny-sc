@@ -38,8 +38,31 @@ BusLink {
 	}
 
 	add { | chuck, param, role |
-		chuck.process.removeBus(param);
-		this.perform(role) add: chuck;
-		chuck.process.setArgs([param, this]);
+		// add this BusLink at parameter param of chuck, with role reader or writer.
+		chuck.process.removeFromBus(param, role); // remove chuck from previous BusLink 
+		this.perform(role) add: chuck;            // add to this BusLink
+		chuck.process.setArgs([param, this]);     // Set parameter to this buslink
+		postf("Added % to param % as %\n", chuck, param, role);
+		postf("the chucks args are now: %\n", chuck.process.args);
+	}
+
+	readersTree { | set |
+		[this, "readers:", readers].postln;
+		//		1.wait;
+		set ?? { set = Set() };
+		
+		if (readers.size == 0)
+		{ ^set }
+		{
+			set addAll: readers;
+			readers do: { | r |
+				r.process.args.select({ | x |
+					//			1.wait;
+					x.postln;
+					x.isKindOf(BusLink) and: { x.readers.includes(r).not };
+				}).collect({|y| y.readersTree(set) })
+			};
+			^set;
+		}
 	}
 }

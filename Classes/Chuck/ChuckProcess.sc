@@ -17,10 +17,10 @@ ChuckProcess {
 		var process;
 		process = chuck.process;
 		if (process.notNil) {
-			clock = chuck.process.clock ?? { TempoClock.default };
-			dur = chuck.process.dur;
+			clock = process.clock ?? { TempoClock () };
+			dur = process.dur;
 		}{
-			clock = TempoClock.default;
+			clock = TempoClock ();
 		};
 	}
 	
@@ -45,41 +45,45 @@ ChuckProcess {
 		^keysValues;
 	}
 	
-	play { | argDur |
-		argDur !? { this.dur = argDur };
-		this.sched;
+	play { // | argDur |
+		//	argDur !? { this.dur = argDur };
+		// clock.stop;
+		// this.sched;
 	}
 
-	dur_ { | argDur | dur = argDur.asStream }
-
-	sched {
-		clock.sched (dur.next, {
-			this.release;
-			this.play;
-		})
+	sched { | argDur argClock |
+		clock.stop;
+		clock = argClock;
+		dur = argDur.asStream;
+		clock.sched (dur.next, { chuck.play; dur.next; })
 	}
 
 	synth { ^nil }
 
-	addWriterBus { | busLink, slot |
-		// remove self from previous bus and add to this bus
-		var previous;
-		previous = args [slot];
-		if (previous isKindOf: BusLink) { previous.writers remove: chuck };
-		busLink.writers add: chuck;
-		this.setArgs ([slot, busLink]);
-	}
-
-	addReaderBus { | busLink, slot |
-		var previous;
-		previous = args [slot];
-		if (previous isKindOf: BusLink) { previous.readers remove: chuck };
-		busLink.readers add: chuck;
-		this.setArgs ([slot, busLink]);
+	removeFromBus { | param, role |
+		var link;
+		link = args [param];
+		if (link isKindOf: BusLink) { link.perform (role).remove (chuck) };
 	}
 	
-	readers {
-		
+	readers { | set |
+		var directReaders;
+		set ?? { set = Set (); }; 
+		directReaders = this.directReaders;
+		set addAll: directReaders;
+		directReaders do: _.readers (set);
+		^set;
+	}
+
+	directReaders {
+		var set;
+		set = Set ();
+		args do: { | v |
+			if (v isKindOf: BusLink and: { v.writers includes: chuck}) {
+				set addAll: v.readers;
+			}
+		};
+		^set;
 	}
 
 	writers {
@@ -150,11 +154,6 @@ Csynth : ChuckProcess {
 
 	setArgs { | args |
 		synth.set (*super.setArgs (args));
-	}
-	
-	setProcessParameter { | parameter, value |
-		super.setProcessParameter (parameter, value);
-		this.perform ((parameter ++ "_").asSymbol, value);
 	}
 
 	target_ { | atarget |

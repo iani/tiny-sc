@@ -33,20 +33,14 @@ Chuck {
 		process.setArgs (args);
 		this.changed (\args, args);
 	}
-
-	setProcessParameter { | parameter, value |
-		// Set a parameter in the environment of the process
-		process.setProcessParameter (parameter, value);
-		this.changed (\parameter, parameter, value);
-	}
-
+	getArg { | name | ^process.args [name] }
+	
 	free { process.free }
 	release { | dur = 0.1 | process release: dur }
 
 	fadeTime_ { | dur = 0.1 | process.fadeTime = dur }
 	outbus_ { | bus = 0 slot = \out | process.outbus_(bus, slot) }
-	dur_ { | dur | process.dur = dur }
-	clock_ { | clock | process.clock = clock }
+	sched { | dur clock | process.sched(dur, clock) }
 
 	synth { ^process.synth }
 	readers { ^process.readers }
@@ -60,11 +54,10 @@ Chuck {
 			postf ("% is already a writer of %\n", this, reader);
 			^this;
 		};
-		if (reader.hasReader(this)) {
-			postf("% is a reader of %. Cannot add it as writer\n", this, reader);
+		if (reader.readers includes: this) {
+			postf("!!!% is a reader of %. Cannot add it as writer!!!\n", this, reader);
 			^this;
 		};
-		GroupLink.linkAudio(this, reader);
 		BusLink.linkAudio(this, reader, in, out);
 	}
 
@@ -73,5 +66,27 @@ Chuck {
 		beat.add(this, { this.play });
 		^beat;
 	}
+
+	hasDirectWriter { | chuck, slot = \in |
+		var link;
+		link = process.args[slot];
+		if (link isKindOf: BusLink) {
+			^link.writers includes: chuck;
+		}{
+			^false;
+		}
+	}
+
+	hasReader { | chuck |
+		^process.readers includes: chuck;
+	}
+
+	printOn { arg stream;
+		stream << "Chuck(" << name << ")";
+	}
+	storeOn { arg stream;
+		stream << "Chuck(" << name << ")";
+	}
+
 }
 
