@@ -60,9 +60,11 @@
 		*/
 		^NameSpace.doIfFound(\Edef, this, _.stopAll);
 	}
+	/*
 	free {
 		^this doIfSynthTree: { | st | st.free };
 	}
+	*/
 
 	freeBuffer {
 		this.free;

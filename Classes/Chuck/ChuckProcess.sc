@@ -25,13 +25,6 @@ ChuckProcess {
 	}
 
 	setArgs { | theArgs |
-		var keysValues;
-		theArgs keysValuesDo: { | key, value |
-			value = value.asStream;
-			keysValues = keysValues.add (key).add (value);
-			args [key] = value;
-		};
-		^keysValues;
 	}
 	
 	play {}
@@ -44,34 +37,7 @@ ChuckProcess {
 		if (link isKindOf: BusLink) { link.perform (role).remove (chuck) };
 	}
 	
-	readers { | set |
-		var directReaders;
-		set ?? { set = Set (); }; 
-		directReaders = this.directReaders;
-		set addAll: directReaders;
-		directReaders do: _.readers (set);
-		^set;
-	}
-
-	directReaders {
-		var set;
-		set = Set ();
-		args do: { | v |
-			if (v isKindOf: BusLink and: { v.writers includes: chuck}) {
-				set addAll: v.readers;
-			}
-		};
-		^set;
-	}
-
-	readersDo { | func |
-		var directReaders;
-		directReaders = this.directReaders;
-		directReaders do: { | r |
-			func.(r, this);
-			r.readersDo (func);
-		}
-	}
+	
 
 	writers {
 		

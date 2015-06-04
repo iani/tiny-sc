@@ -5,22 +5,47 @@ Simpler alternative to SynthTree?
 */
 
 Chuck {
-	var <name, <process;
+	var <name, <source, <argsTemplate, <args, <output;
 	var <clock, <>durStream, <dur;
-	// TODO: // var <template, <args, <argsTemplate, <output;
-	// TODO: // classvar >parentArgs;
+	classvar >parentArgs;
 
-	*new { | name, template, args |
-		^Registry(Chuck, name, { this.newCopyArgs(name).init(template, args) });
+	parentArgs {
+		parentArgs ?? {
+			parentArgs = (
+				out: 0,
+				fadeTime: 0.02,
+				addAction: \addToHead,
+			)
+		};
+		^parentArgs;
 	}
 
-	init { | template, args |
-		process = template.asChuckProcess (this, args)
+	
+	clone { | childName |
+		^this.new(childName, source, argsTemplate)
 	}
- 
-	play { | template |
-		this.changed (\play); // this releases previous synth
-		this.makeProcess (template ?? { process.template }).play;
+	
+	*new { | name, source, argsTemplate |
+		^Registry(Chuck, name, {
+			this.newCopyArgs(name, source.asChuckSource, argsTemplate ?? { () }).init;
+		})
+	}
+
+	init {
+		args = ().parent_(this.parentArgs);
+		argsTemplate keysValuesDo: { | key value |
+			args[key] = value.asStream;
+		}
+	}
+			
+	play { | argSource |
+		argSource !? { this setSource: argSource };
+		output = source.play(output, args, this);
+		this.changed(\play, output);
+	}
+
+	setSource { | argSource |
+		source = argSource.asChuckSource;
 	}
 
 	sched { | argDur argClock pattern |
@@ -44,28 +69,44 @@ Chuck {
 		this.changed(\sched, dur, argClock);
 	}
 
-	eval { | func | this.play (CfuncTemplate (func)) }
-
-	makeProcess { | template |
-		^process = template.asChuckProcess(this, process.args);
+	// TODO: use notification to encapsulate current output
+	// in order to prevent hanging synths when output is overwritten before release
+	release { | dur |
+		if (output isKindOf: Node) {
+			if (output.isPlaying) {
+				output.release(dur ?? { args[\fadeTime].next })
+			}{
+				output.onStart (this, { | ... args |
+					postf("look in these contents for the real synth %\n", args);
+ 					output.release(dur ?? { args[\fadeTime].next })
+				})
+			}
+		}
 	}
 
-	setArgs { | ... args |
-		process.setArgs (args);
+	setArgs { | ... newArgs |
+		var keysValues;
+		newArgs keysValuesDo: { | key, value |
+			value = value.asStream;
+			keysValues = keysValues.add (key).add (value);
+			args [key] = value;
+		};
+		if (output isKindOf: Node and: { output.isPlaying }) { output.set(*keysValues) };
 		this.changed (\args, args);
 	}
-	getArg { | name | ^process.args [name] }
+
+	getArg { | name | ^args [name] }
 	
-	free { process.free; this.changed(\free); }
-	release { | dur = 0.1 | process release: dur; this.changed(\release); }
+	free {
+		if (output isKindOf: Node ) { output.free } { output.stop };
+		this.changed(\free);
+	}
 
-	fadeTime_ { | dur = 0.1 | process.fadeTime = dur }
-	outbus_ { | bus = 0 slot = \out | process.outbus_(bus, slot) }
-	synth { ^process.synth }
-	readers { ^process.readers }
-	writers { ^process.writers }
 
-	// Linking audio
+
+	fadeTime_ { | dur = 0.1 | this.setArgs(\fadeTime, dur) }
+	outbus_ { | bus = 0 slot = \out | this.setArgs(slot, bus) }
+		
 	append { | reader, io = \in_out |
 		var in, out;
 		#in, out = io.asString.split($_).collect(_.asSymbol);
@@ -81,6 +122,36 @@ Chuck {
 		BusLink.linkAudio(this, reader, in, out);
 		this.changed(\append, reader, in, out);
 	}
+	readers { | set |
+		var directReaders;
+		set ?? { set = Set (); }; 
+		directReaders = this.directReaders;
+		set addAll: directReaders;
+		directReaders do: _.readers (set);
+		^set;
+	}
+
+	directReaders {
+		var set;
+		set = Set ();
+		args do: { | v |
+			if (v isKindOf: BusLink and: { v.writers includes: this}) {
+				set addAll: v.readers;
+			}
+		};
+		^set;
+	}
+
+	readersDo { | func |
+		var directReaders;
+		directReaders = this.directReaders;
+		directReaders do: { | r |
+			func.(r, this);
+			r.readersDo (func);
+		}
+	}
+
+
 
 	addAfter { | writer |
 		// TODO: COMPLETE THIS
@@ -89,7 +160,7 @@ Chuck {
 
 	hasDirectWriter { | chuck, slot = \in |
 		var link;
-		link = process.args[slot];
+		link = args[slot];
 		if (link isKindOf: BusLink) {
 			^link.writers includes: chuck;
 		}{
@@ -98,14 +169,9 @@ Chuck {
 	}
 
 	hasReader { | chuck |
-		^process.readers includes: chuck;
+		^this.readers includes: chuck;
 	}
-
-	// Rhythm and playing sequences
-	addToBeat { | beat |
-		beat.add(this, { this.play });
-		^beat;
-	}
+	
 	printOn { arg stream;
 		stream << "Chuck(" << name << ")";
 	}
