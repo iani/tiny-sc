@@ -123,11 +123,11 @@ Server.default.scope;
 //:
 Pwhite(100, 5000, inf) =>.freq \test;
 { SinOsc.ar(\freq.kr (800), 0, 0.1) } => \test;
-0.12 |> \test;
+0.06 |> \test;
 //:
 0.04 |> \test;
 //:
-0.12 |> \test;
+[0.04 ! 10, 0.15 ! 3].flat.pseq |> \test;
 //:
 0.12 |> \test;
 //:
@@ -167,3 +167,9 @@ Synth("default").isPlaying;
 //:
 a = Synth("default").addNotifier(\test, \x, {});
 a.isPlaying;
+//:
+{ WhiteNoise.arp.perc(0.1) } => \x;
+\x |> \y;
+[0.1, 0.2, 0.2, 0.4].pseq |> \y;
+{ BrownNoise.arp.perc(0.5) } => \z;
+\z |>.xoxo \y;

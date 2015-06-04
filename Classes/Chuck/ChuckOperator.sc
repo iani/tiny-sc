@@ -3,12 +3,12 @@
 		^this.chuckProcessClass.new(chuck, this, args);
 	}
 
-	=> { | symbol, adverb |
-		^Chuck(symbol).setArgs (adverb, this)
+	=> { | chuckName, adverb |
+		^Chuck(chuckName).setArgs (adverb, this)
 	}
 
-	|> { | symbol |
-		^symbol.sched (this.asStream);
+	|> { | chuckName |
+		^chuckName.sched (this.asStream);
 	}
 }
 
@@ -43,6 +43,20 @@
 }
 
 + Symbol {
+	=> { | reader, io = \in_out |
+		^Chuck (this).append (Chuck (reader), io);
+	}
+	|> { | master, pattern = 'x' |
+		var chuck;
+		chuck = Chuck (this);
+		
+		pattern = pseq (pattern.asString.ascii collect: { | x |
+			if (x == 120) /* = $x */ { chuck }{ nil }
+		}).asStream;
+		^chuck.addNotifier (Chuck (master), \play, {
+			pattern.next.play
+		})
+	}
 	chuck { ^Chuck (this) }
 	// can use dur =>.fadeTime \symbol instead, but this is shorter:
 	//	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); } // still shadowed by SynthTree. TODO: Scrap SynthTree
@@ -61,10 +75,6 @@
 
 	sched { | dur = 1, clock |
 		^Chuck (this).sched (dur, clock ?? { TempoClock () })
-	}
-	// Bus stuff
-	=> { | reader, io = \in_out |
-		^Chuck (this).append (Chuck (reader), io);
 	}	
 }
 

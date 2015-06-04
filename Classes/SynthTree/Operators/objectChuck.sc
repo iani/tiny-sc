@@ -15,7 +15,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		}
 	}
 	*/
-	!> { | key | SynthTree.chuckIntoParameter(key, this) }
+	//	!> { | key | SynthTree.chuckIntoParameter(key, this) }
 	/*
 	=!> { | key |
 		currentEnvironment.parent[key] = this;
