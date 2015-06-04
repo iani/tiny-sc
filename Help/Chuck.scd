@@ -121,14 +121,21 @@ Server.default.scope;
 
 [1] includes: 1;
 //:
+Pwhite(100, 5000, inf) =>.freq \test;
 { SinOsc.ar(\freq.kr (800), 0, 0.1) } => \test;
-Pwhite(200, 500, inf) =>.freq \test;
+0.12 |> \test;
+//:
+0.04 |> \test;
+//:
+0.12 |> \test;
+//:
+0.12 |> \test;
 //:
 Pseq([Pstutter(5, Pfuncn({ 0.05 exprand: 0.35 }, 1)), 0.7], inf) |> \test;
 //:
 0.5 |> \test;
 //:
-0.15 |> \test;
+0.01 |> \test;
 //:
 Pn(0.1, 5) |> \test;
 //:
@@ -154,3 +161,9 @@ BusLink() =>.freq \test;
 \test.ft = 0.14;
 
 \test.chuck.process.args;
+
+//:
+Synth("default").isPlaying;
+//:
+a = Synth("default").addNotifier(\test, \x, {});
+a.isPlaying;

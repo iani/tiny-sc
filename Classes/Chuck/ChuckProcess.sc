@@ -107,9 +107,20 @@ Csynth : ChuckProcess {
 			args [\addAction].next,
 			args.getPairs
 		);
-		super.play (argDur);
+		synth.addNotifier (chuck, \play, { | n |
+			// n.listener.postln;
+			if (synth.isPlaying) {
+				n.listener.release (args[\fadeTime].next);
+			}{
+				SystemClock.sched (0.02, {
+					n.listener.release (args[\fadeTime].next);
+					nil
+				});
+			};
+			n.listener.objectClosed;
+		})
 	}
-	
+		
 	synth_ { | argSynth |
 		synth = argSynth;
 		synth.onEnd (this, { this.changed (\synthStopped)});

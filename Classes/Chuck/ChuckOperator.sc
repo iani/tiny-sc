@@ -60,7 +60,7 @@
 	}
 
 	sched { | dur = 1, clock |
-		^Chuck (this).sched (dur, clock ?? { TempoClock.new })
+		^Chuck (this).sched (dur, clock ?? { TempoClock () })
 	}
 	// Bus stuff
 	=> { | reader, io = \in_out |

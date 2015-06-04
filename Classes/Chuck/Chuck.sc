@@ -6,7 +6,7 @@ Simpler alternative to SynthTree?
 
 Chuck {
 	var <name, <process;
-	var <clock, <>dur;
+	var <clock, <>durStream, <dur;
 
 	*new { | name, template, args |
 		^Registry(Chuck, name, { this.newCopyArgs(name).init(template, args) });
@@ -17,21 +17,29 @@ Chuck {
 	}
  
 	play { | template |
-		process.stop;
+		this.changed (\play); // this releases previous synth
 		this.makeProcess (template ?? { process.template }).play;
-		this.changed (\started);
 	}
 
 	sched { | argDur argClock |
 		clock.stop;
 		clock = argClock;
-		dur = argDur.asStream;
-		clock.sched (0, {
-			var theDur;
-			theDur = dur.next;
-			if (theDur.isNil) { this.release } { this.play };
-			theDur;
-		})
+		durStream = argDur.asStream;
+		/* Following is a hack to avoid hanging synths when 
+			changing back from very short durations to longer ones
+			Shortest safe duration at the moment is 0.05 */
+		// this.changed(\play);
+		this.release;
+		// { 0.05.wait; this.release; }.fork; // necessary!
+		clock.sched (
+			(dur ? 0.1) min: 0.1,  // end of hack
+			{
+				dur = durStream.next;
+				if (dur.isNil) { this.release } { this.play };
+				dur;
+			}
+		);
+		this.changed(\sched, dur, argClock);
 	}
 
 	eval { | func | this.play (CfuncTemplate (func)) }
@@ -46,8 +54,8 @@ Chuck {
 	}
 	getArg { | name | ^process.args [name] }
 	
-	free { process.free }
-	release { | dur = 0.1 | process release: dur }
+	free { process.free; this.changed(\free); }
+	release { | dur = 0.1 | process release: dur; this.changed(\release); }
 
 	fadeTime_ { | dur = 0.1 | process.fadeTime = dur }
 	outbus_ { | bus = 0 slot = \out | process.outbus_(bus, slot) }
@@ -69,6 +77,7 @@ Chuck {
 		};
 		reader addAfter: this;
 		BusLink.linkAudio(this, reader, in, out);
+		this.changed(\append, reader, in, out);
 	}
 
 	addAfter { | writer |
