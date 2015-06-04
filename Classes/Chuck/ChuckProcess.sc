@@ -1,7 +1,6 @@
 ChuckProcess {
 	classvar >parentArgs; // Parent event holding default parameters for args
 	var <chuck, <template, <args;
-	var <dur, <>clock;
 	var <argsTemplate; // TODO: store patterns of the param streams, for cloning
 
 	*new { | chuck, template, args |
@@ -9,21 +8,11 @@ ChuckProcess {
 			chuck,
 			template,
 			args ?? { ().parent_ (this.parentArgs) }
-		).init;
+		)
 	}
 
-	init {
-		//		synth = chuck.process.synth;
-		var process;
-		process = chuck.process;
-		if (process.notNil) {
-			clock = process.clock ?? { TempoClock () };
-			dur = process.dur;
-		}{
-			clock = TempoClock ();
-		};
-	}
-	
+	init {}
+
 	*parentArgs {
 		parentArgs ?? {
 			parentArgs = (
@@ -46,13 +35,6 @@ ChuckProcess {
 	}
 	
 	play {}
-
-	sched { | argDur argClock |
-		clock.stop;
-		clock = argClock;
-		dur = argDur.asStream;
-		clock.sched (dur.next, { chuck.play; dur.next; })
-	}
 
 	synth { ^nil }
 
@@ -115,7 +97,6 @@ Csynth : ChuckProcess {
 
 	init {
 		synth = chuck.process.synth;
-		super.init;
 	}
 
 	play { | argDur |

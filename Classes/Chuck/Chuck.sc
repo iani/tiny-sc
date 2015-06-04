@@ -6,6 +6,7 @@ Simpler alternative to SynthTree?
 
 Chuck {
 	var <name, <process;
+	var <clock, <>dur;
 
 	*new { | name, template, args |
 		^Registry(Chuck, name, { this.newCopyArgs(name).init(template, args) });
@@ -21,6 +22,18 @@ Chuck {
 		this.changed (\started);
 	}
 
+	sched { | argDur argClock |
+		clock.stop;
+		clock = argClock;
+		dur = argDur.asStream;
+		clock.sched (0, {
+			var theDur;
+			theDur = dur.next;
+			if (theDur.isNil) { this.release } { this.play };
+			theDur;
+		})
+	}
+
 	eval { | func | this.play (CfuncTemplate (func)) }
 
 	makeProcess { | template |
@@ -28,8 +41,6 @@ Chuck {
 	}
 
 	setArgs { | ... args |
-		// set a parameter in the synth of a Chuck type which
-		// has a synth or pattern type playing process
 		process.setArgs (args);
 		this.changed (\args, args);
 	}
@@ -40,8 +51,6 @@ Chuck {
 
 	fadeTime_ { | dur = 0.1 | process.fadeTime = dur }
 	outbus_ { | bus = 0 slot = \out | process.outbus_(bus, slot) }
-	sched { | dur clock | process.sched(dur, clock) }
-
 	synth { ^process.synth }
 	readers { ^process.readers }
 	writers { ^process.writers }
@@ -63,7 +72,8 @@ Chuck {
 	}
 
 	addAfter { | writer |
-		this.setTarget()
+		// TODO: COMPLETE THIS
+		//		this.setTarget()
 	}
 
 	hasDirectWriter { | chuck, slot = \in |

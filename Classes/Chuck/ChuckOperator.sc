@@ -6,6 +6,10 @@
 	=> { | symbol, adverb |
 		^Chuck(symbol).setArgs (adverb, this)
 	}
+
+	|> { | symbol |
+		^symbol.sched (this.asStream);
+	}
 }
 
 + Function {
@@ -59,7 +63,7 @@
 		^Chuck (this).sched (dur, clock ?? { TempoClock.new })
 	}
 	// Bus stuff
-	@> { | reader, io = \in_out |
+	=> { | reader, io = \in_out |
 		^Chuck (this).append (Chuck (reader), io);
 	}	
 }

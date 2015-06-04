@@ -32,13 +32,13 @@ IZ Sat, Mar  8 2014, 23:40 EET
 			^synthTree.setTemplate(this);
 		};
 	}
-
+	/*
 	|> { | synthTree |
 		// Just set the synthTree's template.
 		synthTree = synthTree.asSynthTree;
 		^synthTree.setTemplate(this);
 	}
-
+	*/
 	// deprecated: 
 	=|> { | synthTree |
 		// Just set the synthTree's template.

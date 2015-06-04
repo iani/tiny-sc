@@ -14,7 +14,7 @@
 
 { BrownNoise.ar(0.1) } || \test;
 
-600 *>.freq \test;
+600 =>.freq \test;
 (400..600).prand *>.freq \test;
 
 \test.play;
@@ -68,7 +68,7 @@
 {
 	currentEnvironment.postln;
 	{
-		0.3 * Resonz.ar (Decay.kr( Dust.kr(20, 0.1)) * WhiteNoise.ar, Rand (50, 5000))
+		0.3 * Resonz.arp (Decay.kr( Dust.kr(20, 0.1)) * WhiteNoise.ar, Rand (50, 5000))
     }.play (~target, ~outbus, ~fadeTime)
 } &> \test;
 //:
@@ -88,16 +88,19 @@ Chuck(\test).inspect;
 
 //: linking
 
-{ WhiteNoise.arp } => \a;
-{ Resonz.ar(In.ar(\in.kr), LFNoise2.kr(1).range(500, 5000)) } => \b;
+\a => \b;
+{ Resonz.arps(In.ar(\in.kr), LFNoise0.kr(30).range(500, 5000)) } => \b;
+{ WhiteNoise.ar } => \a;
+
+//:
+Server.default.scope;
 //:
 
 
 
-\a @> \b;
-\b @> \c;
-\b @> \a;
-\c @> \a;
+\b => \c;
+\b => \a;
+\c => \a;
 
 
 \b.chuck.readers;
@@ -121,7 +124,15 @@ Chuck(\test).inspect;
 { SinOsc.ar(\freq.kr (800), 0, 0.1) } => \test;
 Pwhite(200, 500, inf) =>.freq \test;
 //:
-\test.sched(Pseq([Pstutter(5, Pfuncn({ 0.05 exprand: 0.35 }, 1)), 0.7], inf));
+Pseq([Pstutter(5, Pfuncn({ 0.05 exprand: 0.35 }, 1)), 0.7], inf) |> \test;
+//:
+0.5 |> \test;
+//:
+0.15 |> \test;
+//:
+Pn(0.1, 5) |> \test;
+//:
+Pseq([Pstutter(15, Pfuncn({ 0.04 exprand: 0.4 }, 1)), 2], inf) |> \test;
 //:
 { LFSaw.arp(\freq.kr (800)) } => \test;
 //:
