@@ -15,9 +15,6 @@ BusLink {
 
 	*linkAudio { | writer, reader, inParam = \in, outParam = \out |
 		var wb, rb, theBus;
-
-		postf("%: out: %, in: %", thisMethod.name, outParam, inParam);
-
 		wb = writer.getArg(outParam);
 		rb = reader.getArg(inParam);
 		case
@@ -42,8 +39,6 @@ BusLink {
 		chuck.process.removeFromBus(param, role); // remove chuck from previous BusLink 
 		this.perform(role) add: chuck;            // add to this BusLink
 		chuck.process.setArgs([param, this]);     // Set parameter to this buslink
-		postf("Added % to param % as %\n", chuck, param, role);
-		postf("the chucks args are now: %\n", chuck.process.args);
 	}
 
 	readersTree { | set |
@@ -65,4 +60,6 @@ BusLink {
 			^set;
 		}
 	}
+
+	asControlInput { ^bus.index }
 }

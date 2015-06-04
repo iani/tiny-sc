@@ -58,13 +58,12 @@ Chuck {
 			postf("!!!% is a reader of %. Cannot add it as writer!!!\n", this, reader);
 			^this;
 		};
+		reader addAfter: this;
 		BusLink.linkAudio(this, reader, in, out);
 	}
 
-	// Rhythm and playing sequences
-	addToBeat { | beat |
-		beat.add(this, { this.play });
-		^beat;
+	addAfter { | writer |
+		this.setTarget()
 	}
 
 	hasDirectWriter { | chuck, slot = \in |
@@ -81,6 +80,11 @@ Chuck {
 		^process.readers includes: chuck;
 	}
 
+	// Rhythm and playing sequences
+	addToBeat { | beat |
+		beat.add(this, { this.play });
+		^beat;
+	}
 	printOn { arg stream;
 		stream << "Chuck(" << name << ")";
 	}

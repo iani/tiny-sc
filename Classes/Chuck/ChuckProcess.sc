@@ -29,7 +29,7 @@ ChuckProcess {
 			parentArgs = (
 				out: 0,
 				fadeTime: 0.02,
-				addAction: \addToHead
+				addAction: \addToHead,
 			)
 		};
 		^parentArgs;
@@ -45,11 +45,7 @@ ChuckProcess {
 		^keysValues;
 	}
 	
-	play { // | argDur |
-		//	argDur !? { this.dur = argDur };
-		// clock.stop;
-		// this.sched;
-	}
+	play {}
 
 	sched { | argDur argClock |
 		clock.stop;
@@ -84,6 +80,15 @@ ChuckProcess {
 			}
 		};
 		^set;
+	}
+
+	readersDo { | func |
+		var directReaders;
+		directReaders = this.directReaders;
+		directReaders do: { | r |
+			func.(r, this);
+			r.readersDo (func);
+		}
 	}
 
 	writers {

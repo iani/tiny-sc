@@ -88,6 +88,12 @@ Chuck(\test).inspect;
 
 //: linking
 
+{ WhiteNoise.arp } => \a;
+{ Resonz.ar(In.ar(\in.kr), LFNoise2.kr(1).range(500, 5000)) } => \b;
+//:
+
+
+
 \a @> \b;
 \b @> \c;
 \b @> \a;
@@ -113,6 +119,11 @@ Chuck(\test).inspect;
 [1] includes: 1;
 //:
 { SinOsc.ar(\freq.kr (800), 0, 0.1) } => \test;
+Pwhite(200, 500, inf) =>.freq \test;
+//:
+\test.sched(Pseq([Pstutter(5, Pfuncn({ 0.05 exprand: 0.35 }, 1)), 0.7], inf));
+//:
+{ LFSaw.arp(\freq.kr (800)) } => \test;
 //:
 { SinOsc.ar(Rand (400, 800), 0, 0.1) } => \test;
 //:
@@ -131,3 +142,4 @@ BusLink() =>.freq \test;
 \test.sched(0.15);
 \test.ft = 0.14;
 
+\test.chuck.process.args;
