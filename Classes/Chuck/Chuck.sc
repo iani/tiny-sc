@@ -54,12 +54,10 @@ Chuck {
 		durStream = argDur.asStream;
 		/* Following is a hack to avoid hanging synths when 
 			changing back from very short durations to longer ones
-			Shortest safe duration at the moment is 0.05 */
-		// this.changed(\play);
+			Shortest safe duration at the moment is 0.01 */
 		this.release;
-		// { 0.05.wait; this.release; }.fork; // necessary!
 		clock.sched (
-			(dur ? 0.1) min: 0.1,  // end of hack
+			0.01, //	(dur ? 0.1) min: 0.1,  // end of hack
 			{
 				dur = durStream.next;
 				if (dur.isNil) { this.release } { this.play };
@@ -71,14 +69,16 @@ Chuck {
 
 	// TODO: use notification to encapsulate current output
 	// in order to prevent hanging synths when output is overwritten before release
-	release { | dur |
+	release { | argDur |
 		if (output isKindOf: Node) {
 			if (output.isPlaying) {
-				output.release(dur ?? { args[\fadeTime].next })
+				output.release(argDur ?? { args[\fadeTime].next })
 			}{
-				output.onStart (this, { | ... args |
-					postf("look in these contents for the real synth %\n", args);
- 					output.release(dur ?? { args[\fadeTime].next })
+				output.onStart (this, { | notification |
+					// postf("look in these contents for the real synth %\n", args);
+ 					if (notification.listener.isPlaying) {
+						notification.listener.release(argDur ?? { args[\fadeTime].next })
+					}
 				})
 			}
 		}

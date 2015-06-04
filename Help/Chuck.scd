@@ -123,9 +123,11 @@ Server.default.scope;
 //:
 Pwhite(100, 5000, inf) =>.freq \test;
 { SinOsc.ar(\freq.kr (800), 0, 0.1) } => \test;
-0.06 |> \test;
+0.1 |> \test;
 //:
-0.04 |> \test;
+0.01 |> \test;
+//:
+1 |> \test;
 //:
 [0.04 ! 10, 0.15 ! 3].flat.pseq |> \test;
 //:

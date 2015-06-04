@@ -58,10 +58,10 @@
 	|> { | master, pattern |
 		var sub, playFunc;
 		sub = Chuck (this);
-		pattern = pattern.asString;
 		if (pattern.size == 0) {
 			playFunc = { sub.play }
 		}{
+			pattern = pattern.asString;
 			playFunc = { | notifier, value |
 				if (pattern includes: value [0]) { sub.play }
 			}

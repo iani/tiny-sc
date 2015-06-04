@@ -39,13 +39,14 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		^synthTree.setTemplate(this);
 	}
 	*/
-	// deprecated: 
+	// deprecated:
+	/*
 	=|> { | synthTree |
 		// Just set the synthTree's template.
 		synthTree = synthTree.asSynthTree;
 		^synthTree.setTemplate(this);
 	}
-
+	*/
 	=@> { | synthTree, param = \amp |
 		// map a source to a parameter of the synthtree
 		^this doIfSynthTree: { | st | st.map(param, this) }
