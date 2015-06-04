@@ -6,9 +6,11 @@ Replaces ChuckProcess.
 ChuckSource {
 	var <source;
 
-	*new { | source | ^this.newCopyArgs(source) }
+	*new { | source |
+		^this.newCopyArgs( (source ?? { ["x", 0] }).asStream)
+	}
 
-	play { | output, args, chuck |
+	play { | output, args |
 		if (output respondsTo: \release) {
 			if (output.isPlaying) {
 				output.release(args[\fadeTime].next)
@@ -21,17 +23,17 @@ ChuckSource {
 				});
 			}
 		};
-		^this.prPlay(args, chuck)
+		^this.prPlay(args)
 	}
 
-	prPlay { | args, chuck |
+	prPlay { | args |
 		^args use: source;
 	}
 	
 }
 
 ChuckSynthSource : ChuckSource {
-	prPlay { | args, chuck |
+	prPlay { | args |
 		^source.play(
 			args [\target].next.asTarget,
 			args [\out].next,

@@ -11,11 +11,8 @@
 \test.release;
 \test.free;
 
-
-{ BrownNoise.ar(0.1) } || \test;
-
 600 =>.freq \test;
-(400..600).prand *>.freq \test;
+(400..600).prand =>.freq \test;
 
 \test.play;
 //:
@@ -96,8 +93,6 @@ Chuck(\test).inspect;
 Server.default.scope;
 //:
 
-
-
 \b => \c;
 \b => \a;
 \c => \a;
@@ -105,7 +100,6 @@ Server.default.scope;
 
 \b.chuck.readers;
 \a.chuck.readers;
-
 \a.chuck.process.directReaders;
 
 
@@ -170,8 +164,23 @@ Synth("default").isPlaying;
 a = Synth("default").addNotifier(\test, \x, {});
 a.isPlaying;
 //:
-{ WhiteNoise.arp.perc(0.1) } =|> \x;
 \x |> \y;
-[0.1, 0.2, 0.2, 0.4, 0.1, 0.2].pseq |> \y;
-{ BrownNoise.arp.perc(0.5) } =|> \z;
-\z |>.xoox \y;
+0.03 |>\y;
+
+\x |>.xoxxooxxxxxoooxxxxooooxxxxxooooooooxoooooooo \y;
+{ WhiteNoise.arp.perc(0.1) } =|> \x;
+
+//:
+\z |> \x;
+
+{ SinOsc.arp(Rand(400, 800) )} =|> \z;
+
+//:
+
+\z |>.xox___xoxo \x;
+//:
+{ LFSaw.arp(Rand(400, 800)).perc(0.1) } =|> \z;
+
+//:
+{ LFSaw.arp(Rand(400, 8000).perc(0.5)).perc(0.5) }  =|> \z;
+

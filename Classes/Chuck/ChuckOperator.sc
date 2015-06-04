@@ -10,6 +10,54 @@
 	=|> { | symbol |  // add adverb to play in parameter!
 		^Chuck (symbol) setSource: this;
 	}
+
+	asBeatPattern { ^this }
+}
+
++ Symbol {
+	=> { | reader, io = \in_out | ^Chuck (this).append (Chuck (reader), io); }
+	!> { | master | ^Chuck (this).removeNotifier (Chuck (master), \play); }
+	chuck { ^Chuck (this) }
+	// can use dur =>.fadeTime \symbol instead, but this is shorter:
+	//	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); } // still shadowed by SynthTree. TODO: Scrap SynthTree
+	ft_ { | dur = 0.1 | ^this.chuck.setArgs (\fadeTime, dur) }
+	out_ { | bus = 0, slot = \out | ^this.chuck.setArgs(slot, bus); }
+	free { ^Registry.doIfFound(Chuck, this, _.free); }
+	release { | dur = 0.1 | ^Registry.doIfFound(Chuck, this, _.release (dur)); }
+	play { ^Chuck (this).play; }
+	sched { | dur = 1, clock | ^Chuck (this).sched (dur, clock ?? { TempoClock () }) }
+
+	|> { | master pattern |
+		^Chuck (this).playSubPattern (Chuck (master), pattern)
+	}
+
+	asBeatPattern { ^Pseq(this.asString, inf) }
+}
+
++ Chuck {
+	|> { | master, pattern |
+		^this.playSubPattern (Chuck (master), pattern)
+	}
+
+	playSubPattern { | master, pattern |
+		var stream;
+		stream =  (pattern ? 'x').asBeatPattern.asStream;
+		^this.addNotifier (master, \play, { | value, notifier |
+			if (value.isKindOf(Node) or: { value[1] == 0 } ) {
+				this.addNotifier (master, \play, { | value, notifier |
+					var matcher, initial;
+					matcher = stream.next.asString;
+					initial = matcher [0];
+					case
+					{ initial === $x } { this.play }
+					{ initial === $o } { this.release; }
+					{ initial === $_ } { /* no release */ }
+					{ matcher includes: value [0] } { this.play }
+					{ this.release }
+				});
+			}}
+		)
+	}
 }
 
 + Function {
@@ -50,35 +98,6 @@
 		})
 	}
 	
-}
-
-+ Symbol {
-	=> { | reader, io = \in_out | ^Chuck (this).append (Chuck (reader), io); }
-
-	|> { | master, pattern |
-		var sub, playFunc;
-		sub = Chuck (this);
-		if (pattern.size == 0) {
-			playFunc = { sub.play }
-		}{
-			pattern = pattern.asString;
-			playFunc = { | notifier, value |
-				if (pattern includes: value [0]) { sub.play }
-			}
-		};
-		^sub.addNotifier (Chuck (master), \play, playFunc)
-	}
-
-	!> { | master | ^Chuck (this).removeNotifier (Chuck (master), \play); }
-	chuck { ^Chuck (this) }
-	// can use dur =>.fadeTime \symbol instead, but this is shorter:
-	//	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); } // still shadowed by SynthTree. TODO: Scrap SynthTree
-	ft_ { | dur = 0.1 | ^this.chuck.setArgs (\fadeTime, dur) }
-	out_ { | bus = 0, slot = \out | ^this.chuck.setArgs(slot, bus); }
-	free { ^Registry.doIfFound(Chuck, this, _.free); }
-	release { | dur = 0.1 | ^Registry.doIfFound(Chuck, this, _.release (dur)); }
-	play { ^Chuck (this).play; }
-	sched { | dur = 1, clock | ^Chuck (this).sched (dur, clock ?? { TempoClock () }) }
 }
 
 + Method {
