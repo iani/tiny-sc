@@ -108,12 +108,13 @@ Csynth : ChuckProcess {
 			args.getPairs
 		);
 		synth.addNotifier (chuck, \play, { | n |
-			// n.listener.postln;
 			if (synth.isPlaying) {
 				n.listener.release (args[\fadeTime].next);
 			}{
 				SystemClock.sched (0.02, {
-					n.listener.release (args[\fadeTime].next);
+					if (n.listener.isPlaying) {
+						n.listener.release(args[\fadeTime].next)
+					};
 					nil
 				});
 			};

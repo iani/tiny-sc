@@ -168,8 +168,8 @@ Synth("default").isPlaying;
 a = Synth("default").addNotifier(\test, \x, {});
 a.isPlaying;
 //:
-{ WhiteNoise.arp.perc(0.1) } => \x;
+{ WhiteNoise.arp.perc(0.1) } =|> \x;
 \x |> \y;
-[0.1, 0.2, 0.2, 0.4].pseq |> \y;
-{ BrownNoise.arp.perc(0.5) } => \z;
-\z |>.xoxo \y;
+[0.1, 0.2, 0.2, 0.4, 0.1, 0.2].pseq |> \y;
+{ BrownNoise.arp.perc(0.5) } =|> \z;
+\z |>.xoox \y;

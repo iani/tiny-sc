@@ -7,6 +7,8 @@ Simpler alternative to SynthTree?
 Chuck {
 	var <name, <process;
 	var <clock, <>durStream, <dur;
+	// TODO: // var <template, <args, <argsTemplate, <output;
+	// TODO: // classvar >parentArgs;
 
 	*new { | name, template, args |
 		^Registry(Chuck, name, { this.newCopyArgs(name).init(template, args) });
@@ -21,7 +23,7 @@ Chuck {
 		this.makeProcess (template ?? { process.template }).play;
 	}
 
-	sched { | argDur argClock |
+	sched { | argDur argClock pattern |
 		clock.stop;
 		clock = argClock;
 		durStream = argDur.asStream;

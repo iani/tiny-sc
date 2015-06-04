@@ -7,14 +7,18 @@
 		^Chuck(chuckName).setArgs (adverb, this)
 	}
 
-	|> { | chuckName |
-		^chuckName.sched (this.asStream);
+	|> { | chuckName, pattern |
+		^chuckName.sched (this.asStream, TempoClock (), pattern);
 	}
 }
 
 + Function {
 	=> { | symbol |  // add adverb to play in parameter!
 		^Chuck (symbol).play (this);
+	}
+
+	=|> { | symbol |  // add adverb to play in parameter!
+		^Chuck (symbol).makeProcess (this);
 	}
 
 	&> { | symbol |  // add adverb to play in parameter!
@@ -49,13 +53,16 @@
 	|> { | master, pattern = 'x' |
 		var chuck;
 		chuck = Chuck (this);
-		
 		pattern = pseq (pattern.asString.ascii collect: { | x |
 			if (x == 120) /* = $x */ { chuck }{ nil }
 		}).asStream;
 		^chuck.addNotifier (Chuck (master), \play, {
 			pattern.next.play
 		})
+	}
+
+	!> { | master |
+		^Chuck (this).removeNotifier (Chuck (master), \play);
 	}
 	chuck { ^Chuck (this) }
 	// can use dur =>.fadeTime \symbol instead, but this is shorter:
