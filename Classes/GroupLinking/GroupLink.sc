@@ -54,4 +54,9 @@ GroupLink {
 		readerGroup ?? { readerGroup = GroupLink(Group.after(group)) };
 		^readerGroup;
 	}
+
+	getWriterGroup {
+		writerGroup ?? { writerGroup = GroupLink(Group.before(group)) };
+		^writerGroup;
+	}
 }
