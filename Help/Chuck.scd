@@ -165,8 +165,12 @@ a = Synth("default").addNotifier(\test, \x, {});
 a.isPlaying;
 //:
 \x |> \y;
-0.13 |>\y;
-
+0.15 |>\y;
+//:
+[0.15, 0.3].pseq |>\y;
+//:
+[0.15, 0.15, 0.15, 0.3].pseq |>\y;
+//:
 \x |>.xoxxooxxxxxoooxxxxooooxxxxxooooooooxoooooooo \y;
 { WhiteNoise.arps.perc(0.1) } ==> \x;
 
@@ -199,5 +203,6 @@ a.isPlaying;
 { LFSaw.arp({ Rand(400, 8000) }.dup.perc(0.5)).perc(0.5) }  ==> \z;
 
 
-==>
+//:
+1 |> \a;
 

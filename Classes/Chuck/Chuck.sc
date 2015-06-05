@@ -9,7 +9,8 @@ Chuck {
 	var <clock, <>durStream, <dur;
 	classvar >parentArgs;
 
-	parentArgs {
+	parentArgs { ^this.class.parentArgs }
+	*parentArgs {
 		parentArgs ?? {
 			parentArgs = (
 				out: 0,

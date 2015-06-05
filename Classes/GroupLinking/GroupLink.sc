@@ -8,7 +8,7 @@ GroupLink {
 		CmdPeriod add: { this.remakeGroups; };
 	}
 	*init {
-		ChuckProcess.parentArgs[\target] = this.default;
+		Chuck.parentArgs[\target] = this.default;
 		this.remakeGroups;
 	}
 
