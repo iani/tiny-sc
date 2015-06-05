@@ -1,8 +1,10 @@
 
 + Ref {
-	=> { | st |
+	/*	
+		=> { | st |
 		^st.asSynthTree chuck: value.asSynthTemplate
-	}
+		}
+	*/
 
 	++> { | st, paramName = \buf |		
 		^this.perform('+>', st, paramName).set(\loop, 1);

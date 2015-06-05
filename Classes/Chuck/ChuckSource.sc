@@ -29,7 +29,8 @@ ChuckSource {
 	prPlay { | args |
 		^args use: source;
 	}
-	
+
+	asChuckSource { ^this }
 }
 
 ChuckSynthSource : ChuckSource {

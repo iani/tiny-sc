@@ -120,6 +120,30 @@ Chuck {
 		BusLink.linkAudio(this, reader, in, out);
 		this.changed(\append, reader, in, out);
 	}
+
+	addAfter { | writer |
+		if (this.isAfter(writer).not) { // do not move to earlier group than currently
+			//			{
+			//	"preparing".postln;
+			//	1.wait;
+			//	"step 1".postln;
+				args[\target] = writer.args[\target].getReaderGroup;
+			//	1.wait;
+			//	"step 2".postln;
+				output !? { output moveToTail: args[\target].group; };
+			//	"done".postln;
+				//			args[\target] = writer.args[\target].getReaderGroup;
+				// output !? { output moveToTail: args[\target].group; };
+				// Server.default.queryAllNodes;
+			// }.fork
+		};
+	}
+
+	isAfter { | writer |
+		"isAfter mothod is ignored - this may lead to errors".postln;
+		^false // TODO: write algorithm for this
+	}
+
 	readers { | set |
 		var directReaders;
 		set ?? { set = Set (); }; 
@@ -147,11 +171,6 @@ Chuck {
 			func.(r, this);
 			r.readersDo (func);
 		}
-	}
-
-	addAfter { | writer |
-		// TODO: COMPLETE THIS
-		//		this.setTarget()
 	}
 
 	hasDirectWriter { | chuck, slot = \in |

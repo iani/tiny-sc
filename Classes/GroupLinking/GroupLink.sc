@@ -1,7 +1,6 @@
 GroupLink {
 	classvar default;
-	var <members, <>group, <readerGroup, <writerGroup;
-	// name?
+	var <>group, <>members, <readerGroup, <writerGroup;
 
 	*initClass {
 		ServerBootCheck add: { this.init; };
@@ -20,8 +19,12 @@ GroupLink {
 			default.remakeReaderGroups;
 			default.remakeWriterGroups;
 			Server.default.queryAllNodes;
-			"GroupLink inited - can start using tiny-sc v2".postln;
+			"GroupLink inited - can start using tiny-sc".postln;
 		}.fork;
+	}
+
+	*new { | group |
+		^this.newCopyArgs(group, Set())
 	}
 
 	remakeReaderGroups {
@@ -44,4 +47,11 @@ GroupLink {
 	}
 
 	asTarget { ^group }
+
+	asControlInput { ^group.nodeID }
+
+	getReaderGroup {
+		readerGroup ?? { readerGroup = GroupLink(Group.after(group)) };
+		^readerGroup;
+	}
 }

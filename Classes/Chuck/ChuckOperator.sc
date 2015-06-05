@@ -50,7 +50,7 @@
 + Function {
 	=> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
 
-	|> { | master, sub |
+	|> { | master, sub |  // TODO: Review this.
 		var playFunc;
 		sub = Chuck (sub);
 		
@@ -58,6 +58,11 @@
 			if (this.(key, count, notifier)) { sub.play }
 		})
 	}
+}
+
++ Ref { // `{ } quotes function so that it evals rather than {}.plays
+	=> { | symbol |
+		^Chuck(symbol).source_(ChuckSource(value)).play }
 }
 
 + String {
