@@ -165,22 +165,39 @@ a = Synth("default").addNotifier(\test, \x, {});
 a.isPlaying;
 //:
 \x |> \y;
-0.03 |>\y;
+0.13 |>\y;
 
 \x |>.xoxxooxxxxxoooxxxxooooxxxxxooooooooxoooooooo \y;
-{ WhiteNoise.arp.perc(0.1) } =|> \x;
+{ WhiteNoise.arps.perc(0.1) } ==> \x;
 
 //:
 \z |> \x;
 
-{ SinOsc.arp(Rand(400, 800) )} =|> \z;
+{ SinOsc.arps(Rand(400, 800) )} ==> \z;
 
 //:
+\z |> \x;
 
+{ SinOsc.arps(Rand(60, 100).midicps )} ==> \z;
+
+//:
+\z |>.xox___xoooxoxx \y;
+//:
 \z |>.xox___xoxo \x;
 //:
-{ LFSaw.arp(Rand(400, 800)).perc(0.1) } =|> \z;
+{ LFSaw.arps(Rand(400, 800)).perc(0.1) } ==> \z;
 
 //:
-{ LFSaw.arp(Rand(400, 8000).perc(0.5)).perc(0.5) }  =|> \z;
+
+{ LFSaw.arps(Rand(400, 8000).perc(0.5)).perc(0.5) }  ==> \z;
+
+//:
+{ SinOsc.arps(Rand(400, 8000).perc(0.5)).perc(0.5) }  ==> \z;
+//:
+{ SinOsc.arp({ Rand(400, 8000) }.dup.perc(0.5)).perc(0.5) }  ==> \z;
+//:
+{ LFSaw.arp({ Rand(400, 8000) }.dup.perc(0.5)).perc(0.5) }  ==> \z;
+
+
+==>
 

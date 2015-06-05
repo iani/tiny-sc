@@ -1,16 +1,7 @@
 + Object {
-	=> { | chuckName, adverb |
-		^Chuck(chuckName).setArgs (adverb, this)
-	}
-
-	|> { | chuckName, pattern |
-		^chuckName.sched (this.asStream, TempoClock (), pattern);
-	}
-
-	=|> { | symbol |  // add adverb to play in parameter!
-		^Chuck (symbol) setSource: this;
-	}
-
+	=> { | chuckName, adverb | ^Chuck(chuckName).setArgs (adverb, this) }
+	|> { | chuckName, pattern | ^chuckName.sched (this.asStream, TempoClock (), pattern); }
+	==> { | symbol | ^Chuck (symbol).source = this; } // add adverb to play in parameter!
 	asBeatPattern { ^this }
 }
 
@@ -26,33 +17,29 @@
 	release { | dur = 0.1 | ^Registry.doIfFound(Chuck, this, _.release (dur)); }
 	play { ^Chuck (this).play; }
 	sched { | dur = 1, clock | ^Chuck (this).sched (dur, clock ?? { TempoClock () }) }
-
-	|> { | master pattern |
-		^Chuck (this).playSubPattern (Chuck (master), pattern)
-	}
-
+	|> { | master pattern | ^Chuck (this).playSubPattern (Chuck (master), pattern) }
 	asBeatPattern { ^Pseq(this.asString, inf) }
 }
 
 + Chuck {
-	|> { | master, pattern |
-		^this.playSubPattern (Chuck (master), pattern)
-	}
+	|> { | master, pattern | ^this.playSubPattern (Chuck (master), pattern) }
 
 	playSubPattern { | master, pattern |
 		var stream;
 		stream =  (pattern ? 'x').asBeatPattern.asStream;
-		^this.addNotifier (master, \play, { | value, notifier |
-			if (value.isKindOf(Node) or: { value[1] == 0 } ) {
-				this.addNotifier (master, \play, { | value, notifier |
+		// Only follow one pattern.  Otherwise hanging synths ensue:
+		this.removeMessage(\play); 
+		^this.addNotifier (master, \play, { | key, argCount, notifier |
+			if (argCount == 0) {
+				this.addNotifier (master, \play, { | key, argCount, notifier |
 					var matcher, initial;
 					matcher = stream.next.asString;
 					initial = matcher [0];
 					case
-					{ initial === $x } { this.play }
+					{ initial === $x } { this.play(key, argCount) }
 					{ initial === $o } { this.release; }
 					{ initial === $_ } { /* no release */ }
-					{ matcher includes: value [0] } { this.play }
+					{ matcher includes: key } { this.play(key, argCount) }
 					{ this.release }
 				});
 			}}
@@ -61,24 +48,20 @@
 }
 
 + Function {
-	=> { | symbol |  // add adverb to play in parameter!
-		^Chuck (symbol).play (this);
-	}
+	=> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
 
 	|> { | master, sub |
 		var playFunc;
 		sub = Chuck (sub);
 		
-		^sub.addNotifier (Chuck (master), \play, { | notifier value |
-			if (this.(value, notifier)) { sub.play }
+		^sub.addNotifier (Chuck (master), \play, { | key, count, notifier |
+			if (this.(key, count, notifier)) { sub.play }
 		})
 	}
 }
 
 + String {
-	=> { | symbol |  // add adverb to play in parameter!
-		^Chuck (symbol).play (this);
-	}
+	=> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
 
 	|> { | master, sub |
 		var pattern, stream, func;

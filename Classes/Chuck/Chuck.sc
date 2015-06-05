@@ -5,7 +5,7 @@ Simpler alternative to SynthTree?
 */
 
 Chuck {
-	var <name, <source, <argsTemplate, <args, <output;
+	var <name, <source, <argsTemplate, <args, <output, <count;
 	var <clock, <>durStream, <dur;
 	classvar >parentArgs;
 
@@ -38,13 +38,12 @@ Chuck {
 		}
 	}
 			
-	play { | argSource |
-		argSource !? { this setSource: argSource };
-		output = source.play(output, args, this);
-		this.changed(\play, output);
+	play { | key, argCount, notification |
+		#output, count = source.play(output, args, this, notification).asArray;
+		this.changed(\play, key, count ? argCount ? 0);
 	}
 
-	setSource { | argSource |
+	source_ { | argSource |
 		source = argSource.asChuckSource;
 	}
 

@@ -21,7 +21,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 		currentEnvironment.parent[key] = this;
 	}
 	*/
-
+	/*
 	==> { | synthTree, replaceAction = \fadeOut |
 		// as => but do not start the synth now: 
 		// synth gets started when the synthTree is added as input with =<
@@ -32,6 +32,7 @@ IZ Sat, Mar  8 2014, 23:40 EET
 			^synthTree.setTemplate(this);
 		};
 	}
+	*/
 	/*
 	|> { | synthTree |
 		// Just set the synthTree's template.
