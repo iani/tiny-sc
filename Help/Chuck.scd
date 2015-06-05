@@ -87,7 +87,12 @@ Chuck(\test).inspect;
 
 \a => \b;
 { Resonz.arps(In.ar(\in.kr), LFNoise0.kr(30).range(500, 5000)) } => \b;
-{ WhiteNoise.ar } => \a;
+{ WhiteNoise.arp } => \a;
+
+\a.chuck.args.inspect;
+//:
+
+
 
 //:
 Server.default.scope;

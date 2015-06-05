@@ -102,8 +102,6 @@ Chuck {
 		this.changed(\free);
 	}
 
-
-
 	fadeTime_ { | dur = 0.1 | this.setArgs(\fadeTime, dur) }
 	outbus_ { | bus = 0 slot = \out | this.setArgs(slot, bus) }
 		
@@ -151,8 +149,6 @@ Chuck {
 		}
 	}
 
-
-
 	addAfter { | writer |
 		// TODO: COMPLETE THIS
 		//		this.setTarget()
@@ -171,6 +167,14 @@ Chuck {
 	hasReader { | chuck |
 		^this.readers includes: chuck;
 	}
+
+	removeFromBus { | param, role |
+		var bus;
+		bus = args[param];
+		if (bus isKindOf: BusLink) {
+			bus.perform(role) remove: this;
+		}
+	}
 	
 	printOn { arg stream;
 		stream << "Chuck(" << name << ")";
@@ -180,4 +184,17 @@ Chuck {
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

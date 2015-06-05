@@ -36,9 +36,9 @@ BusLink {
 
 	add { | chuck, param, role |
 		// add this BusLink at parameter param of chuck, with role reader or writer.
-		chuck.process.removeFromBus(param, role); // remove chuck from previous BusLink 
+		chuck.removeFromBus(param, role); // remove from previous BusLink 
 		this.perform(role) add: chuck;            // add to this BusLink
-		chuck.process.setArgs([param, this]);     // Set parameter to this buslink
+		chuck.setArgs(param, this);     // Set parameter to this buslink
 	}
 
 	readersTree { | set |
@@ -51,7 +51,7 @@ BusLink {
 		{
 			set addAll: readers;
 			readers do: { | r |
-				r.process.args.select({ | x |
+				r.args.select({ | x |
 					//			1.wait;
 					x.postln;
 					x.isKindOf(BusLink) and: { x.readers.includes(r).not };
