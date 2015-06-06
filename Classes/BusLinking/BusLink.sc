@@ -28,8 +28,8 @@ BusLink {
 			/* negotiate who should change BusLink depending on existing links
 			to avoid losing connections. */
 		{
-			if (writer.readers(outParam).size <= 1) { ^rb.add(writer, outParam, \writers) };
-			if (reader.writers(inParam).size <= 1) { ^wb.add(reader, inParam, \readers) };
+			if (writer.readersAt(outParam).size <= 1) { ^rb.add(writer, outParam, \writers) };
+			if (reader.writersAt(inParam).size <= 1) { ^wb.add(reader, inParam, \readers) };
 			postf("cannot link % and % without breaking links\n", writer, reader);
 		}
 	}

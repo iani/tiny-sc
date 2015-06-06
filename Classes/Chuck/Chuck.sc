@@ -104,7 +104,25 @@ Chuck {
 
 	fadeTime_ { | dur = 0.1 | this.setArgs(\fadeTime, dur) }
 	outbus_ { | bus = 0 slot = \out | this.setArgs(slot, bus) }
-		
+
+	readersAt { | param = \out |
+		param = args[param];
+		if (param isKindOf: BusLink) {
+			^param.readers
+		}{
+			^nil;
+		}
+	}
+
+	writersAt { | param = \in |
+		param = args[param];
+		if (param isKindOf: BusLink) {
+			^param.writers
+		}{
+			^nil;
+		}
+	}
+	
 	append { | reader, io = \in_out |
 		var in, out;
 		#in, out = io.asString.split($_).collect(_.asSymbol);
