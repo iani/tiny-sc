@@ -44,7 +44,7 @@ The above table can be compared to a vertical piano-roll notation.
 - The numbers of the second column (=abs=) note the time elapsed from the beginning of the execution of the table (from the event of row 1).  They are calculated by the table from the =rel= row using a column formula.
 - Each column after the =abs= column corresponds to one =Chuck= instance, as named in the header of the column.  Thus, the above table has three Chucks: =A=, =B= and =C=.
 - The symbols at each row of the Chuck columns are names of actions to be executed on the Chuck of the corresponding column.  There are two default actions: =x= means =play= and =.= means =release=.  Any other names (strings that are converted by SC to symbols) can point to actions that are stored in library under 'ChuckAction', and that can be defined by the user.  They can be any function that is applied to the chuck in question.
-- Columns whose names are enclosed in =<>= like this: =<A>= can be used to scheduel actions (Functions) that are evaluated independently of any Chuck instance.
+- Columns whose names are enclosed in =<>= like this: =<A>= can be used to schedule actions (Functions) that are evaluated independently of any Chuck instance.
 - Horizontal lines inside the piano roll serve to separate different sections of a piece.  Column =section_name= is reserved to naming the sections, and =section_dur= can be used to calculate the partial duration of each section as well as the time of the events relative to the beginning of the section, with the formula: =vsum(@-I$2..@+0$2)=
 
 ** Tests

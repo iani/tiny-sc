@@ -11,10 +11,18 @@ ChuckSource {
 	}
 
 	play { | output, args |
+		/*
+			if (portamento.next) {
+			     this.setArgs(output, args);
+			}{
+			// insert stop previous output here
+                 this.prPlay(args);
+			}
+		*/
 		if (output respondsTo: \release) {
 			if (output.isPlaying) {
 				output.release(args[\fadeTime].next)
-			}{
+			}{  // TODO: replace this with onStart call for accuracy:
 				SystemClock.sched (0.02, {
 					if (output.isPlaying) {
 						output.release(args[\fadeTime].next)

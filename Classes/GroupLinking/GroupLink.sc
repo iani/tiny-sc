@@ -48,7 +48,7 @@ GroupLink {
 
 	readerGroups {
 		if (readerGroup.isNil) {
-			^nil
+			^[]
 		} {
 			^readerGroup.readerGroups add: readerGroup
 		}

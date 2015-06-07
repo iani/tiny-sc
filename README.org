@@ -2,12 +2,193 @@
 
 /Compact coding tools for SuperCollider, with Emacs Org-mode intergration/
 
-(Tue, May 26 2015, 06:24 CEST)
+This is version 1.0alpha (=retiny=).
 
-This branch (=retiny=) is a re-do of all Node, Synth and Buffer management tools of the library.  The goal is to simplify object structure and usage.
+* Installation
 
-This is an experimental branch - not for general use.
+- Download the library from http://github.com/iani/tiny-sc.
+- Place the tiny-sc folder in the SuperCollider Extensions folder (found by executing this in SuperCollider):
+  : Platform.userExtensionDir;
+- Recompile the library (Command-Shift-L or menu Lang Recompile in the IDE).
 
-Work here starts with a new class "Chuck", which is to be a simpler alternative to SynthTree.
+* Principles
 
-(Mon, Jun  1 2015, 16:24 EEST): Attempting integration of Steno for routing of processes.  See:https://github.com/telephon/Steno.
+Tiny-sc uses class =Chuck= to define containers that can run synths or patterns. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.
+
+* Tutorial
+
+** Playing functions
+
+Start playing a function:
+
+: { SinOsc.arps(400) } => \mysound;
+
+Replace it with another function:
+
+: { PinkNoise.arps.perc(0.5) } => \mysound;
+
+Replay the previously stored function:
+
+: \mysound.play;
+
+** Playing synthdefs
+
+: "default" => \mysound;
+
+** Set play source without actually playing
+
+Replace the play function without playing the synth:
+
+: { SinOsc.arps(Rand(400, 800)) } ==> \mysound;
+
+Trigger manually at any point:
+
+: \mysound.play;
+
+** Releasing
+
+Release with default time:
+
+: \mysound.release;
+
+Release with custom time:
+
+(First, start the sound again:)
+: \mysound.play;
+
+Now release:
+
+: \mysound release: 5;
+
+** Setting fade time (for cross fade)
+
+: \mysound.fadeTime = 1;
+
+Try several different sounds with cross fade:
+
+: { LFSaw.arps(Rand(400, 800)) } => \mysound;
+: { WhiteNoise.arps } => \mysound;
+: { PinkNoise.arps } => \mysound;
+
+** Setting function/synth arguments (parameters)
+
+Set a parameter to use in the synth's arguments:
+
+: 600 =>.freq \mysound;
+
+Test it:
+
+: { SinOsc.arps(\freq.kr(400)) } => \mysound;
+
+Setting a new parameter value immediately sends it to the synth:
+
+: 800 =>.freq \mysound;
+
+** Linking output to input of other Chucks
+
+Source:
+: { PinkNoise.arp() } => \source;
+
+Effect:
+
+: { Resonz.arp(In.ar(\in.ar(0)), LFNoise0.ar(30).range(300, 1000)) } => \effect1;
+
+Send source to effect:
+
+: \source => \effect1;
+
+Second effect:
+
+: { In.ar(\in.ar(0)) * Decay.kr(Dust.kr(3)) } => \effect2;
+
+Send first effect to second effect, creating chain =source -> effect1 -> effect2=
+
+: \effect1 => \effect2;
+
+
+** Playing patterns
+
+*** Playing patterns in parameters
+
+Set a function to play the pattern with
+
+: { SinOsc.arps(\freq.kr(400)) } ==> \patsound;
+
+Obtain successive values of parameter =freq= from a pattern:
+
+: [60, 65, 67].midicps.pseq =>.freq \patsound;
+
+Try playing =patsound= repeatedly, to hear the sequence of values:
+
+: \patsound.play;
+
+*** Timing sequences of play events in a Chuck
+
+Play =patsound= repeatetedly at duration intervals of 0.1 seconds:
+
+: 0.1 |> \patsound;
+
+Use a pattern to obtain successive durations between events:
+
+: [0.2, 0.1].pseq |> \patsound;
+
+*** Triggering multiple instances from one pattern
+
+
+#+BEGIN_SRC sclang
+
+  \sub |>.xoxoxoxx \master;
+
+  { WhiteNoise.arps() } ==> \sub;
+
+  0.1 |> \master;
+  //:
+
+  \sub2 |>.oxoxxxoo \master;
+
+  { BrownNoise.arps() } ==> \sub2;
+
+  //:
+
+  \sub3 |>.xoxxx___ \master;
+
+  { LFPulse.arps(\freq.kr(800)) } ==> \sub3;
+
+  [60, 64, 67, 69].midicps.pseq =>.freq \sub3;
+
+  //:
+  \sub3 |>.x_xxxooo \sub2;
+  //:
+  \sub4 |>.xo \sub3;
+
+  { SinOsc.arp([2500, 2000]).perc(0.3) * 2 } ==> \sub4;
+
+  //:
+  0.1 |> \m1;
+
+  \r1 |>.xox \m1;
+
+  { WhiteNoise.arps().perc } ==> \r1;
+
+  \r2 |>.xox \m1;
+
+  [60, 62].midicps.pseq =>.freq \r2
+
+  { SinOsc.arps(\freq.kr(400)) } ==> \r2;
+
+  \r2 |>.xox \r1;
+
+  [64, 65].midicps.pseq =>.freq \r3
+
+  { SinOsc.arp(\freq.kr(400) * [1, 1.2]) } ==> \r3;
+
+  \r3 |>.xox \m1;
+
+  \r3 |>.xox \r1;
+
+  \r3 |>.xox \r2;
+
+  \r3 |>.x_x \r2;
+
+  (40..80).midicps.prand =>.freq \r3;
+#+END_SRC

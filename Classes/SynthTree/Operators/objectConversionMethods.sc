@@ -30,10 +30,11 @@
 		var synthTree;
 		^(synthTree = this.asSynthTree(false)) !? { synthTree.fadeOut(fadeTime) };
 	}
-
+	/*
 	fadeTime_ { | fadeTime = 0.2 |
 		^this.asSynthTree.fadeTime = fadeTime;
 	}
+	*/
 	set { | ... args |
 		/* Note: TODO: SynthTree stores args and use them when later 
 			starting the synth, in which case it makes

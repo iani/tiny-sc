@@ -25,6 +25,8 @@ array.sprandi becomes: Pub(Prand(array, inf)) etc.
     psern { | repeats = 1 | ^this.pser(repeats); }
     pser1 { | repeats = 1 | ^this.pser(repeats); }
 
+	pseries { | repeats = inf | ^Pseries(*this add: repeats) }
+	
     prand { | repeats = inf | ^Prand(this, repeats); }
     prandi { | repeats = inf | ^this.prand(repeats); }
     prandn { | repeats = 1 | ^this.prand(repeats); }

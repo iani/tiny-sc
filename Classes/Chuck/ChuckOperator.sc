@@ -10,7 +10,7 @@
 	!> { | master | ^Chuck (this).removeNotifier (Chuck (master), \play); }
 	chuck { ^Chuck (this) }
 	// can use dur =>.fadeTime \symbol instead, but this is shorter:
-	//	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); } // still shadowed by SynthTree. TODO: Scrap SynthTree
+	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); }
 	ft_ { | dur = 0.1 | ^this.chuck.setArgs (\fadeTime, dur) }
 	out_ { | bus = 0, slot = \out | ^this.chuck.setArgs(slot, bus); }
 	free { ^Registry.doIfFound(Chuck, this, _.free); }

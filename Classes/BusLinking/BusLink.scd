@@ -1,4 +1,0 @@
-a = BusLink()
-
-
-b = Bus()
