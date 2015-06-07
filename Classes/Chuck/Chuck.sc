@@ -141,17 +141,18 @@ Chuck {
 
 	addAfter { | writer |
 		if (this.isAfter(writer).not) { // do not move to earlier group than currently
-			args[\target] = writer.args[\target].getReaderGroup;
+			args[\target] = writer.target.getReaderGroup;
 			this.readersDo({ | reader writer | reader addAfter: writer });
-			output !? { output moveToTail: args[\target].group; };
+			output !? { output moveToTail: this.target.group; };
 		};
 	}
 
-	isAfter { | writer |
-		"isAfter method is ignored - this may lead to errors".postln;
-		^false // TODO: write algorithm for this
-	}
+	target { ^args[\target] }
 
+	isAfter { | writer |
+		^writer.target.readerGroups includes: this.target;
+	}
+	
 	readers { | set |
 		var directReaders;
 		set ?? { set = Set (); }; 
@@ -211,17 +212,3 @@ Chuck {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

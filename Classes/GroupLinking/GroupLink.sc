@@ -46,6 +46,13 @@ GroupLink {
 		^default;
 	}
 
+	readerGroups {
+		if (readerGroup.isNil) {
+			^nil
+		} {
+			^readerGroup.readerGroups add: readerGroup
+		}
+	}
 	asTarget { ^group }
 
 	asControlInput { ^group.nodeID }
@@ -59,4 +66,12 @@ GroupLink {
 		writerGroup ?? { writerGroup = GroupLink(Group.before(group)) };
 		^writerGroup;
 	}
+
+	printOn { arg stream;
+		stream << "GroupLink(" << group.nodeID << ")";
+	}
+	storeOn { arg stream;
+		stream << "GroupLink(" << group.nodeID << ")";
+	}
+
 }

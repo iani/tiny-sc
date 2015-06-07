@@ -168,8 +168,22 @@ If prefix argument given, then open inspector in SC on the result"
          (forward-line 1))
     string))
 
+(defun sclang-snippet-menu ()
+  (interactive)
+  (let* ((menu (grizzl-make-index
+               '("recompile"
+                 "stop"
+                 "start"
+                 "boot server"
+                 "query all nodes")))
+         (command (grizzl-completing-read "select command:" menu)))
+    (call-interactively
+     (intern
+      (concat "sclang-" (replace-regexp-in-string " " "-" command))))))
+
 (defun sc-snippets ()
   "Define sclang mode keys for snippets."
+  (local-set-key (kbd "C-M-c") 'sclang-snippet-menu)
   (local-set-key (kbd "C-c .") 'sclang-execute-current-snippet)
   ;; For some aggravating reason, cannot un-bind C-c C-c from sclang-eval-dwim
   ;; But I do not want to modify the source code of sc-extensions
@@ -184,8 +198,8 @@ If prefix argument given, then open inspector in SC on the result"
   (local-set-key (kbd "C-M-,") 'sclang-duplicate-current-snippet) ;; alternative
   (local-set-key (kbd "C-M-f") 'sclang-goto-next-snippet)
   (local-set-key (kbd "C-M-b") 'sclang-goto-previous-snippet)
-  (local-set-key (kbd "C-M-n") 'sclang-execute-next-snippet)
-  (local-set-key (kbd "C-M-p") 'sclang-execute-previous-snippet)
+  (local-set-key (kbd "C-s-n") 'sclang-execute-next-snippet)
+  (local-set-key (kbd "C-s-p") 'sclang-execute-previous-snippet)
   ;; alternatives using Control/Meta+Function-key:
   (local-set-key (kbd "H-SPC") 'org-sc-toggle-synthtree)
   (local-set-key (kbd "H-C-SPC") 'sclang-execute-current-snippet)

@@ -62,4 +62,12 @@ BusLink {
 	}
 
 	asControlInput { ^bus.index }
+
+	printOn { arg stream;
+		stream << "BusLink(" << bus.index << ")";
+	}
+	storeOn { arg stream;
+		stream << "BusLink(" << bus.index << ")";
+	}
+
 }

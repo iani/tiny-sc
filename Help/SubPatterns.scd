@@ -41,3 +41,53 @@
 //:
 1 |> \a;
 
+//:
+
+0.1 |> \a;
+
+{ WhiteNoise.arps() } ==> \a;
+
+0 ==> \a;
+
+\b |>.xoxoxoxx \a;
+
+{ WhiteNoise.arps() } ==> \b;
+//:
+
+\c |>.oxoxxxoo \a;
+
+{ BrownNoise.arps() } ==> \c;
+
+//:
+
+\d |>.oxoxxx__ \a;
+
+{ LFSaw.arps(\freq.kr(800)) } ==> \d;
+
+[60, 64, 67, 69].midicps.pseq =>.freq \d;
+
+//:
+([0.5, 1.00001, 5] * 0.15).pseq |> \mastertimeline;
+
+0.1 |> \mastertimeline;
+
+{ WhiteNoise.arps().perc(0.5) } ==> \initialstuff;
+
+{ PinkNoise.arps().perc(0.5) } ==> \stuff1;
+
+{ LFSaw.arps(300).perc(0.5) } ==> \stuff2;
+
+{ SinOsc.arps(800).perc(0.5) } ==> \stuff3;
+
+
+//:
+\initialstuff |>.x__oooo \mastertimeline;
+\stuff2 |>.ooxooooo \mastertimeline;
+\stuff3 |>.xxoxoxoo \mastertimeline;
+
+
+
+
+
+
+

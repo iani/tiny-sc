@@ -19,12 +19,3 @@ Server.default.queryAllNodes;
 //:
 \a => \b;
 //:
-\a.chuck.args[\out].bus;
-//:
-\b.chuck.args[\out].bus;
-//:
-\b.chuck.args[\in].bus;
-//:
-\b.chuck.args[\out].bus;
-//:
-\c.chuck.args[\in].bus;

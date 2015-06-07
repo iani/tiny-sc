@@ -19,6 +19,7 @@
 	sched { | dur = 1, clock | ^Chuck (this).sched (dur, clock ?? { TempoClock () }) }
 	|> { | master pattern | ^Chuck (this).playSubPattern (Chuck (master), pattern) }
 	asBeatPattern { ^Pseq(this.asString, inf) }
+	target { ^Chuck(this).target }
 }
 
 + Chuck {
@@ -40,6 +41,31 @@
 					{ initial === $o } { this.release; }
 					{ initial === $_ } { /* no release */ }
 					{ matcher includes: key } { this.play(key, argCount) }
+					{ this.release }
+				});
+			}}
+		)
+	}
+
+	// draft for hierarchical matching of all inherited subpatterns
+	playSubPattern2 { | master, pattern |
+		var stream;
+		stream =  (pattern ? 'x').asBeatPattern2.asStream;
+		// Only follow one pattern.  Otherwise hanging synths ensue:
+		this.removeMessage(\play); 
+		^this.addNotifier (master, \play, { | key, argCount, notifier |
+			if (argCount[0] == 0) {
+				this.addNotifier (master, \play, { | key, argCount, notifier |
+					var myCount, matcher, initial;
+					#matcher, myCount = stream.next;
+					matcher = matcher.asString;
+					initial = matcher [0];
+					case
+					{ initial === $x } { this.play(key, argCount) }
+					{ initial === $o } { this.release; }
+					{ initial === $_ } { /* no release */ }
+					{ matcher includes: key } {
+						this.play([matcher] ++ key, [myCount] ++ argCount) }
 					{ this.release }
 				});
 			}}
