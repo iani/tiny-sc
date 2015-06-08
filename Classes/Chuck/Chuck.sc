@@ -207,28 +207,21 @@ Chuck {
 		if (output isKindOf: Node) { output moveToTail: grouplink.group; };
 	}
 
+	toRoot { | outParam = \out |  /// INCOMPLETE
+		var bus;
+		bus = args[outParam];
+		if (bus isKindOf: BusLink) {
+			bus.readers do: { | reader |
+				bus.unlinkAudio(this, reader, reader.getInParam(bus), outParam);
+			};
+		};
+	}
+
+	getInParam { | bus | ^args.findKeyForValue(bus) }
+	
 	setOutput2Root { | outParam = \out |
 		this.setArgs(outParam, 0);
 	}
-	/*
-	removeFromBus { | param, role |
-		var bus;
-		bus = args[param];
-		if (bus isKindOf: BusLink) {
-			/*			switch (role,
-				// I am no longer a reader at this bus: move before default group -> read nothing
-				\readers, {
-					if (output isKindOf: Node) { output.moveBefore(output.server.defaultGroup) };
-					this.setArgs(param, 0);
-				},
-				// I am no longer a writer at this bus: Write to direct output instead
-				\writers, { this.setArgs(param, 0) }
-			);
-			*/
-			bus.perform(role) remove: this;
-		}
-	}
-	*/
 	
 	printOn { arg stream;
 		stream << "Chuck(" << name << ")";

@@ -5,6 +5,14 @@
 	asBeatPattern { ^this }
 }
 
++ Event {
+	=> { | chuckName | ^Chuck(chuckName).setArgs(*this.getPairs) }
+}
+
++ SequenceableCollection {
+	=> { | chuckName | ^Chuck(chuckName).setArgs(*this) }
+}
+
 + Symbol {
 	=> { | reader, io = \in_out | ^Chuck (this).append (Chuck (reader), io); }
 	!> { | master | ^Chuck (this).removeNotifier (Chuck (master), \play); }
@@ -20,6 +28,7 @@
 	|> { | master pattern | ^Chuck (this).playSubPattern (Chuck (master), pattern) }
 	asBeatPattern { ^Pseq(this.asString, inf) }
 	target { ^Chuck(this).target }
+	toRoot { ^Chuck(this).toRoot }
 }
 
 + Chuck {

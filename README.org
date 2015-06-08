@@ -93,7 +93,7 @@ Create a Chuck to be the source:
 
 Create an effect to play the source with:
 
-: { Resonz.arp(In.ar(\in.ar(0)), LFNoise0.ar(30).range(300, 1000)) } => \effect1;
+: { Resonz.ar(In.ar(\in.ar(0)), LFNoise0.ar(30).range(300, 8000), 3) } => \effect1;
 
 Send source to effect:
 
@@ -101,12 +101,21 @@ Send source to effect:
 
 Second effect:
 
-: { In.ar(\in.ar(0)) * Decay.kr(Dust.kr(3)) } => \effect2;
+: { In.ar(\in.ar(0)) * Decay2.kr(Dust.kr(3.dup, 3), 0.5, 2) } => \effect2;
 
 Send first effect to second effect, creating chain =source -> effect1 -> effect2=
 
 : \effect1 => \effect2;
 
+Unlink output and send to root channel output (Channel 0):
+
+Example 1: Send effect1 directly to output, bypassing effect2:
+
+: \effect1.toRoot;
+
+Example 2: Send source directly to output, bypassing effect1:
+
+: \source.toRoot;
 
 ** Playing patterns
 
@@ -135,7 +144,6 @@ Use a pattern as source of successive durations between events:
 : [0.2, 0.1].pseq |> \patsound;
 
 *** Triggering multiple instances from one pattern
-
 
 : \sub |>.xoxoxoxx \master;
 

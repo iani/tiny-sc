@@ -31,20 +31,22 @@ BusLink {
 	
 	*unlinkAudio { | writer, reader, inParam = \in, outParam = \out |
 		// INCOMPLETE!
-		var wb, rb, writers, readers;
+		var wb, rb;
 		wb = writer.getArg(outParam);
 		rb = reader.getArg(inParam);
 		if (wb.isKindOf(BusLink) and: { rb.isKindOf(BusLink) } and: { wb == rb }) {
-			writers = wb.writers;
-			readers = wb.readers;
+			wb.unlinkAudio(writer, reader, inParam, outParam);
+		}{
+			postf("% and % are not linked.  Cannot unlink.\n", writer, reader);
+		};
+	}
+
+	unlinkAudio { | writer, reader, inParam, outParam |
 			readers remove: reader;
 			writers remove: writer;
 			if (writers.size == 0) { reader.setInput2Null(inParam) };
 			if (readers.size == 0) { writer.setOutput2Root(outParam) };
-			if (readers.size == 0 and: { writers.size == 0 }) { wb.bus.free };
-		}{
-			postf("% and % are not linked.  Cannot unlink.\n", writer, reader);
-		};
+			if (readers.size == 0 and: { writers.size == 0 }) { bus.free };
 	}
 
 	*linkAudio { | writer, reader, inParam = \in, outParam = \out |
