@@ -1,4 +1,6 @@
 //:
+{ WhiteNoise.arps.perc(0.1) } ==> \x;
+//:
 \x |> \y;
 0.15 |>\y;
 //:
@@ -7,7 +9,7 @@
 [0.15, 0.15, 0.15, 0.3].pseq |>\y;
 //:
 \x |>.xoxxooxxxxxoooxxxxooooxxxxxooooooooxoooooooo \y;
-{ WhiteNoise.arps.perc(0.1) } ==> \x;
+
 
 //:
 \z |> \x;
@@ -15,8 +17,6 @@
 { SinOsc.arps(Rand(400, 800) )} ==> \z;
 
 //:
-\z |> \x;
-
 { SinOsc.arps(Rand(60, 100).midicps )} ==> \z;
 
 //:

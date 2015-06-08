@@ -1,8 +1,0 @@
-#name : SynthDef( ... , { ... out } ).add
-# --
-SynthDef(\\${1:foo}, {
-    var source;
-    source = ${2:SinOsc.ar(\freq.kr(400));}
-    ${3:source = source * Adsr();}
-    $4source.out;
-}).add;
