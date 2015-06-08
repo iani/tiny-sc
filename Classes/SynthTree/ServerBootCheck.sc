@@ -31,6 +31,10 @@ ServerBootCheck {
 
 	classvar default;
 
+	*addStartup { | func | StartUp add: { this add: func } }
+	*add { | func | this.default.add(func); }
+	add { | func | funcs = funcs add: func; }
+
 	*default {
 		^default ?? { this.new(Server.default) }
 	}
@@ -100,6 +104,5 @@ ServerBootCheck {
 	 serverDidNotReallyBoot {
 		postf("Server % resuming after system wakeup\n", server); 
 	 }
-	 *add { | func | this.default.add(func); }
-	 add { | func | funcs = funcs add: func; }
+
 }

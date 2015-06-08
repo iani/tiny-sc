@@ -143,10 +143,11 @@ Chuck {
 		if (this.isAfter(writer).not) { // do not move to earlier group than currently
 			args[\target] = writer.target.getReaderGroup;
 			this.readersDo({ | reader writer | reader addAfter: writer });
-			output !? { output moveToTail: this.target.group; };
+			// this.setTarget(writer.target.getReaderGroup); // ??????????? Examine this!
+			if (output isKindOf: Node) { output moveToTail: this.target.group; };
 		};
 	}
-
+	
 	target { ^args[\target] }
 
 	isAfter { | writer |
@@ -196,13 +197,38 @@ Chuck {
 		^this.readers includes: chuck;
 	}
 
+	setInput2Null { | inParam = \in |
+		this setTarget: GroupLink.nullGroup;
+		this.setArgs(inParam, 0);
+	}
+
+	setTarget { | grouplink |
+		args[\target] = grouplink;
+		if (output isKindOf: Node) { output moveToTail: grouplink.group; };
+	}
+
+	setOutput2Root { | outParam = \out |
+		this.setArgs(outParam, 0);
+	}
+	/*
 	removeFromBus { | param, role |
 		var bus;
 		bus = args[param];
 		if (bus isKindOf: BusLink) {
+			/*			switch (role,
+				// I am no longer a reader at this bus: move before default group -> read nothing
+				\readers, {
+					if (output isKindOf: Node) { output.moveBefore(output.server.defaultGroup) };
+					this.setArgs(param, 0);
+				},
+				// I am no longer a writer at this bus: Write to direct output instead
+				\writers, { this.setArgs(param, 0) }
+			);
+			*/
 			bus.perform(role) remove: this;
 		}
 	}
+	*/
 	
 	printOn { arg stream;
 		stream << "Chuck(" << name << ")";

@@ -54,6 +54,7 @@ Release with default time:
 Release with custom time:
 
 (First, start the sound again:)
+
 : \mysound.play;
 
 Now release:
@@ -64,7 +65,7 @@ Now release:
 
 : \mysound.fadeTime = 1;
 
-Try several different sounds with cross fade:
+Try several different sounds with cross fade, one after the other:
 
 : { LFSaw.arps(Rand(400, 800)) } => \mysound;
 : { WhiteNoise.arps } => \mysound;
@@ -86,10 +87,11 @@ Setting a new parameter value immediately sends it to the synth:
 
 ** Linking output to input of other Chucks
 
-Source:
+Create a Chuck to be the source:
+
 : { PinkNoise.arp() } => \source;
 
-Effect:
+Create an effect to play the source with:
 
 : { Resonz.arp(In.ar(\in.ar(0)), LFNoise0.ar(30).range(300, 1000)) } => \effect1;
 
@@ -128,67 +130,64 @@ Play =patsound= repeatetedly at duration intervals of 0.1 seconds:
 
 : 0.1 |> \patsound;
 
-Use a pattern to obtain successive durations between events:
+Use a pattern as source of successive durations between events:
 
 : [0.2, 0.1].pseq |> \patsound;
 
 *** Triggering multiple instances from one pattern
 
 
-#+BEGIN_SRC sclang
+: \sub |>.xoxoxoxx \master;
 
-  \sub |>.xoxoxoxx \master;
+: { WhiteNoise.arps() } ==> \sub;
 
-  { WhiteNoise.arps() } ==> \sub;
+: 0.1 |> \master;
 
-  0.1 |> \master;
-  //:
 
-  \sub2 |>.oxoxxxoo \master;
+: \sub2 |>.oxoxxxoo \master;
 
-  { BrownNoise.arps() } ==> \sub2;
+: { BrownNoise.arps() } ==> \sub2;
 
-  //:
 
-  \sub3 |>.xoxxx___ \master;
 
-  { LFPulse.arps(\freq.kr(800)) } ==> \sub3;
+: \sub3 |>.xoxxx___ \master;
 
-  [60, 64, 67, 69].midicps.pseq =>.freq \sub3;
+: { LFPulse.arps(\freq.kr(800)) } ==> \sub3;
 
-  //:
-  \sub3 |>.x_xxxooo \sub2;
-  //:
-  \sub4 |>.xo \sub3;
+: [60, 64, 67, 69].midicps.pseq =>.freq \sub3;
 
-  { SinOsc.arp([2500, 2000]).perc(0.3) * 2 } ==> \sub4;
 
-  //:
-  0.1 |> \m1;
+: \sub3 |>.x_xxxooo \sub2;
 
-  \r1 |>.xox \m1;
+: \sub4 |>.xo \sub3;
 
-  { WhiteNoise.arps().perc } ==> \r1;
+: { SinOsc.arp([2500, 2000]).perc(0.3) * 2 } ==> \sub4;
 
-  \r2 |>.xox \m1;
 
-  [60, 62].midicps.pseq =>.freq \r2
+: 0.1 |> \m1;
 
-  { SinOsc.arps(\freq.kr(400)) } ==> \r2;
+: \r1 |>.xox \m1;
 
-  \r2 |>.xox \r1;
+: { WhiteNoise.arps().perc } ==> \r1;
 
-  [64, 65].midicps.pseq =>.freq \r3
+: \r2 |>.xox \m1;
 
-  { SinOsc.arp(\freq.kr(400) * [1, 1.2]) } ==> \r3;
+: [60, 62].midicps.pseq =>.freq \r2
 
-  \r3 |>.xox \m1;
+: { SinOsc.arps(\freq.kr(400)) } ==> \r2;
 
-  \r3 |>.xox \r1;
+: \r2 |>.xox \r1;
 
-  \r3 |>.xox \r2;
+: [64, 65].midicps.pseq =>.freq \r3
 
-  \r3 |>.x_x \r2;
+: { SinOsc.arp(\freq.kr(400) * [1, 1.2]) } ==> \r3;
 
-  (40..80).midicps.prand =>.freq \r3;
-#+END_SRC
+: \r3 |>.xox \m1;
+
+: \r3 |>.xox \r1;
+
+: \r3 |>.xox \r2;
+
+: \r3 |>.x_x \r2;
+
+: (40..80).midicps.prand =>.freq \r3;
