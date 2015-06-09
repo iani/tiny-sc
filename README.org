@@ -85,6 +85,35 @@ Setting a new parameter value immediately sends it to the synth:
 
 : 800 =>.freq \mysound;
 
+** UGen shortcuts
+
+(Incomplete)
+
+*** arp
+
+
+
+*** arps
+*** sine
+
+Multiply UGen or UGen array output with =EnvGen.kr(Env.sine(\dur.kr(dur), level))=.  This provides a sine-shaped envelope, whose duration is controlled by the value of =dur= in arguments.
+
+Set the function to play.
+: { SinOsc.arps(Rand(400, 800)).sine } ==> \envtest;
+
+Test using default duration value:
+: \envtest.play;
+
+Observe changing duration of envelope according to value of =dur= from timing pattern:
+
+: [0.05, 0.1, 0.5, 1].collect(_.pn(8)).pseq |> \envtest;
+
+Alternatively:
+
+: [1, 0.1, 0.5, 2, 0.1.pn(4)].prand |> \envtest;
+
+*** perc
+
 ** Linking output to input of other Chucks
 
 Create a Chuck to be the source:
