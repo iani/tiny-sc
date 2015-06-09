@@ -1,0 +1,25 @@
+* Optimize ChuckSynthSource
+:PROPERTIES:
+:DATE:     <2015-06-09 Tue 12:51>
+:END:
+
+Extend ChuckSynthSource with new subclass ChuckFuncSynthSource to add the SynthDef of the Synth source function when a new ChuckFuncSynthSource is created, and create synths with =Synth()= instead of ={ ... }.play=.
+
+This is easy: =Chuck:source({ ... })= (called by: ={ ... } => \aChuck=) always creates a new ChuckSynthSource instance.
+
+Method ChuckFuncSynthSource:new:
+
+- Construct the name of the SynthDef like this =format("<%>", name)=.
+- Immediately construct and =add= the SynthDef, using Function:asSynthDef, possibly with modification of GraphBuilder.wrapOut to add fadeTime as control instead of as one-time-only (fixed) value.
+- Use modified Function:play method (possibly named =add=) to /store synth name and notify the containing chuck (!) that it has completed loading/.
+
+Method ChuckFuncSynthSource:prPlay:
+
+Check if synthdef name is set.
+- If it is nil, add ChuckFuncSynthSource instance as listener to the containing Chuck instance on message =defloaded= and create the new synth then.
+- If it is not nil, play the new synth using the stored synthdef name string.
+
+Note: The ChuckSource class hierarchy becomes:
+- ChuckSource
+  - ChuckSynthSource :: play strings as DefNames with Synth()
+    - ChuckFuncSynthSource :: play functions by adding them as SynthDefs and storing the string to play synths as soon as the def is loaded on the server.

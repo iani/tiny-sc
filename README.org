@@ -89,11 +89,6 @@ Setting a new parameter value immediately sends it to the synth:
 
 (Incomplete)
 
-*** arp
-
-
-
-*** arps
 *** sine
 
 Multiply UGen or UGen array output with =EnvGen.kr(Env.sine(\dur.kr(dur), level))=.  This provides a sine-shaped envelope, whose duration is controlled by the value of =dur= in arguments.
@@ -113,6 +108,18 @@ Alternatively:
 : [1, 0.1, 0.5, 2, 0.1.pn(4)].prand |> \envtest;
 
 *** perc
+
+Like =sine= but with =Env.perc=.
+
+*** arp
+
+Create control name =amp= with default value 0.1 and multiply it with the receiver UGen or UGen array.
+
+*** arps
+
+Like arp, but send the output to an array of 2 channels.  Can be used to quickly convert a UGen functions output to stereo ouput + provide amplitude control.
+
+***
 
 ** Linking output to input of other Chucks
 
