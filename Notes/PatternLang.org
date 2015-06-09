@@ -136,7 +136,7 @@ Note: If we want to use this in the table, we can not use | inside an operator b
 **** Draft 1 (rejected)
 |---+-----------------------+-----------------------------------------------------|
 | ! | in table              | expansion                                           |
-|   | x                     | _.play     (where _ is the column's Chuck)           |
+|   | x                     | _.play     (where _ is the column's Chuck)          |
 |   | .                     | _.release                                           |
 |   | anything .            | _ release: anything                                 |
 |   | asymbol . anything    | _.asymbol(*anything)  (!!!???)                      |
@@ -152,10 +152,10 @@ An alternative that is more concise, more general, and easier to parse:
 
 |---+-----------------------+-----------------------------------------------------|
 | ! | in table              | expansion                                           |
-|   | x                     | _.play     (where _ is the column's Chuck)           |
+|   | x                     | _.play     (where _ is the column's Chuck)          |
 |   | .                     | _.release                                           |
-|   | _ anything            | _.anything (may include message + argument)
-|   | anything _            | anything _ (eg: \src => _)                           |
+|   | _ anything            | _.anything (may include message + argument)         |
+|   | anything _            | anything _ (eg: \src => _)                          |
 |   | 'symbol other than x' | play function stored using extra operators above[1] |
 |---+-----------------------+-----------------------------------------------------|
 

@@ -59,7 +59,7 @@ Chuck {
 		clock.sched (
 			0.01, //	(dur ? 0.1) min: 0.1,  // end of hack
 			{
-				dur = durStream.next;
+				args[\dur] = dur = durStream.next;
 				if (dur.isNil) { this.release } { this.play };
 				dur;
 			}
