@@ -51,6 +51,17 @@ ChuckSynthSource : ChuckSource {
 			args.getPairs
 		).register;
 	}
+
+	/*
+		prPlay { | args |
+		^Synth (this,
+           args.getPairs ++ [out: outbus, fadeTime: fadeTime], target, addAction)
+		}
+	*/
+}
+
+ChuckFuncSynthSource : ChuckSynthSource {
+	
 }
 
 + Object {
