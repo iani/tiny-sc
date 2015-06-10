@@ -17,13 +17,20 @@ TaskPlayer {
 		this.makeStream;
 		this.makeTask;
 		counter = Pseries(0, 1, inf).asStream;
-		valStream = valPattern.asStream;
+		this.makeValStream;
 	}
 
 	pattern_ { | argPattern |
 		pattern = argPattern;
 		this.makeStream;
 	}
+
+	valPattern_ { | argPattern |
+		valPattern = argPattern;
+		this.makeValStream;
+	}
+
+	makeValStream { valStream = valPattern.asStream; }
 	
 	makeStream { stream = pattern.asStream }
 	makeTask {

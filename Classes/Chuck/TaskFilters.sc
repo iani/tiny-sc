@@ -2,6 +2,8 @@
 TaskFilter { // subclasses implement different filter methods
 	// for now, only one task  or filter can be parent;
 	var parent;
+
+	
 	
 	addToTask { | task |
 		this.removeFromTask;
@@ -20,28 +22,48 @@ TaskFilter { // subclasses implement different filter methods
 		parent = nil;
 	}
 	
-	start {}
+	start { this.changed(\start) }
 	beat { thisMethod.subclassResponsibility }
-	stop {}
+	stop { this.changed(\stop) }
 	dur { ^parent.dur }
 	count { ^parent.count }
 	val { ^this.topval }
 	topval { ^parent.topval } // top value (TaskPlayer val ...)
 }
 
-Tox : TaskFilter {
+TPatFilter : TaskFilter {
 	var pattern, stream, <val;
 
 	pattern_ { | argPattern |
 		pattern = argPattern;
 		stream = pattern.asStream;
 	}
-	
-	beat {
+
+	beat { // only get value.  Subclasses choose whether to beat
 		val = stream.next;
+	}
+}
+
+Tox : TPatFilter {
+	beat {
+		super.beat;
 		switch (val,
 			$x, { this.changed(\beat) },
 			$o, { this.changed(\stop) }			
 		)
 	}	
 }
+
+Tbartox : Tox {
+	var startBeat = 0;
+	var waiting = true;
+	beat {
+		if (waiting and: { startBeat != parent.val }) {
+			// skip till first beat
+		}{
+			waiting = false;
+			super.beat;
+		}
+	}	
+}
+
