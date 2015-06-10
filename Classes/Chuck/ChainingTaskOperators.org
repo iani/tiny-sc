@@ -5,6 +5,10 @@ ANSWER: Most probably leave this to the responsibility of the user, as switching
 * 1
 : { func } ==> \chuckname *> <number or pattern>;
 
+or even:
+
+: \chuckname *> <number or pattern>;
+
 1. Get TaskPlayer of same name as Chuck
 2. Set its duration pattern
 3. Connect Chuck to TaskPlayer
@@ -13,6 +17,11 @@ ANSWER: Most probably leave this to the responsibility of the user, as switching
 * 2
 
 : { func } ==> \chuckname *> \symbol;
+
+or even:
+
+: \chuckname *> \symbolAir;
+
 
 1. Get TaskPlayer or TaskFilter named \symbol.
 2. Connect Chuck to TaskPlayer or Filter.
