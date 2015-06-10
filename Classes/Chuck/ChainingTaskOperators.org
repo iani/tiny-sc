@@ -1,0 +1,57 @@
+QUESTION: That to do with TaskPlayers or <tox> patterns when Chuck changes to a different TaskPlayer? (use notifications to let TaskPlayers/tox patterns stop????? Too complicated?)
+
+ANSWER: Most probably leave this to the responsibility of the user, as switching between running TaskPlayers and filters may make sense!  At most provide a method to post the list of existing TaskPlayers and filters, while marking those TaskPlayers that are currently playing.
+
+* 1
+: { func } ==> \chuckname *> <number or pattern>;
+
+1. Get TaskPlayer of same name as Chuck
+2. Set its duration pattern
+3. Connect Chuck to TaskPlayer
+4. Start TaskPlayer
+
+* 2
+
+: { func } ==> \chuckname *> \symbol;
+
+1. Get TaskPlayer or TaskFilter named \symbol.
+2. Connect Chuck to TaskPlayer or Filter.
+(3. ??? Start TaskPlayer or Filter ???)
+
+* 3
+
+: { func } ==> \chuckname *>.xopattern <number or pattern>;
+
+1. Get TaskPlayer of same name as Chuck
+2. Set its duration pattern
+3. Get Tox named <chuckname> (enclose name of chuck in <>!)
+4. Set Tox'es filter pattern to xopattern.
+5. Connect Tox to TaskPlayer
+6. Connect Chuck to Tox
+7. Start TaskPlayer
+
+* 4
+
+: { func } ==> \chuckname *>.xopattern \symbol;
+
+1. Get TaskPlayer or filter named by \symbol.
+2. If it is a TaskPlayer, then create Tox using <symbol> rule and connect it to the TaskPlayer.
+3. Set Tox'es filter pattern to xopattern.
+4. Connect Tox to TaskPlayer
+5. Connect Chuck to Tox
+6. Start TaskPlayer
+
+* 5
+
+How to create other types of filters and connect them to TaskPlayers / Chucks?
+
+: ClassName (parameters) *> \taskplayerorfilter
+
+: \chuckname *>.filtername ClassName (parameters) *> \taskplayerorfilter
+
+: { func } ==> \chuckname *>.filtername ClassName (parameters) *> \taskplayerorfilter
+
+
+Generally provide a name in creation of Task Filters like this:?
+
+: ClassName(filtername, parameters ...) ?????

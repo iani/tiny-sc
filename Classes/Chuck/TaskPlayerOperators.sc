@@ -43,45 +43,6 @@
 	}
 }
 
-/*
-ChuckFilterReceiver {
-	var chuck, task, filterPattern;
-
-	*> { | filterName | 
-	filterPattern.asTaskFilter(filterName).connectChuckTask(chuck, task);
-	}
-
-}
-*/
-
-// ================ INCOMPLETE: ================
-/* // possibly:
-
-'xo___' ><.pattternname \chuckname;
-
-or:
-
-pattern -> 'xo-filter' *> \taskname;
-
-or 
-
-{ func } ==> \chuckname => taskNameOrPattern;
-
-{ func } ==> \chuckname =>.xofilter taskNameOrPattern;
-
-Alternatively: 
-
-{ func } ==> \chuckname *>.xofilter taskNameOrPattern;
-
-To specify taskfilter by name: 
-
-{ func } ==> \chuckname *>.xofilter `taskName *> filterName;
-
-Task-filters: 
-Registry(TaskFilter, \taskname, \filtername, { ... });
-*/
-
-
 + Symbol {
 
 	*> { | taskName, xoPattern | // chuck -> task

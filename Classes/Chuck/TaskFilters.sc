@@ -1,6 +1,6 @@
 
 TaskFilter { // subclasses implement different filter methods
-	// for now, only one task  or filter can be parent;
+	// for now, only one task or filter can be parent;
 	var parent;
 
 	
