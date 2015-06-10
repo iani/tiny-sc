@@ -238,20 +238,22 @@ Use a pattern as source of successive durations between events:
 *** Multiple voice example
 :PROPERTIES:
 :ID:       E5056ED9-4D0C-4BB4-A5B9-26429CD7FA11
-:eval-id:  5
+:eval-id:  11
 :END:
 
 #+BEGIN_SRC sclang
-(
-{ | n |
-	var name, voiceFactor;
-	name = format("multi%", n).asSymbol;
-	voiceFactor = 1 + n / 2;
-	{ Blip.arps(voiceFactor * Line.kr(Rand(100, 500), voiceFactor * Rand(100, 500),
-		Rand(0.1, 1)), Line.kr(Rand(5, 25), Rand(5, 25), 0.5)).perform([\perc, \sine]@@n)
-	} ==> name;
+  (
+  { | n |
+      var name;
+      name = format("multi%", n).asSymbol;
+      {
+          Blip.arps(
+              1 + n / 2 * Line.kr(Rand(100, 700), Rand(100, 700), Rand(0.1, 1)),
+              Line.kr(Rand(5, 25), Rand(5, 25), 0.5)
+          ).perform([\perc, \sine]@@n)
+      } ==> name;
 
-([0.25.pn(14), 1, 2, 0.1 ! 10, 3] / (0.5 + (n / 4))).flat.prand *> name;
-} ! 4;
-)
+      ([0.25.pn(14), 1, 2, 0.1 ! 10, 3] / (0.5 + (n / 4))).flat.prand *> name;
+  } ! 4;
+  )
 #+END_SRC

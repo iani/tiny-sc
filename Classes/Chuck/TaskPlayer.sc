@@ -1,6 +1,7 @@
 TaskPlayer {
 	var <name, <pattern, <clock, stream, <dur;
-	var <task;
+	var <task, <counter, <count;
+	var <valPattern, <valStream, <val;
 
 	*new { | name, pattern  = 1, clock |
 		^Registry(TaskPlayer, name, {
@@ -15,6 +16,8 @@ TaskPlayer {
 	init {
 		this.makeStream;
 		this.makeTask;
+		counter = Pseries(0, 1, inf).asStream;
+		valStream = valPattern.asStream;
 	}
 
 	pattern_ { | argPattern |
@@ -28,6 +31,8 @@ TaskPlayer {
 		task = Task({
 			this.changed(\start);
 			while { (dur = stream.next).notNil } {
+				count = counter.next;
+				val = valStream.next;
 				this.changed(\beat, dur);
 				dur.wait;
 			};

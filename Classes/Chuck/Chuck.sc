@@ -42,10 +42,13 @@ Chuck {
 	}
 
 	play { | argDur, key, argCount, notification |
-		/* Ad-hoc fix: prevent occasional re-release of synth
+		/*  Ad-hoc fix: prevent occasional re-release of synth
 			that ended through its envelope, by 
-			setting the dur to 0.01 less than argDur. */
-		argDur !? { args[\dur] = argDur - 0.01 max: 0.01 };
+			setting the dur to 0.03 less than argDur. 
+			Note: 0.01 shorter is not enough! 30 ms is ok.
+		*/
+		argDur !? { args[\dur] = argDur - 0.03 max: 0.001 };
+		//		argDur !? { args[\dur] = argDur };
 		#output, count = source.play(output, args, this, notification).asArray;
 		this.changed(\play, argDur, key, count ? argCount ? 0);
 	}
