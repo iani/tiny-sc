@@ -84,6 +84,8 @@ GroupLink {
 	}
 	*/
 
+	server { ^group.server }
+
 	printOn { arg stream;
 		stream << "GroupLink(" << group.nodeID << ")";
 	}

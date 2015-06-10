@@ -1,4 +1,4 @@
-* Optimize ChuckSynthSource
+* TODO Optimize ChuckSynthSource
 :PROPERTIES:
 :DATE:     <2015-06-09 Tue 12:51>
 :END:
@@ -21,16 +21,25 @@ Check if synthdef name is set.
 
 Note: The ChuckSource class hierarchy becomes:
 - ChuckSource
-  - ChuckSynthSource :: play strings as DefNames with Synth()
+  - Chucksynthsource :: play strings as DefNames with Synth()
     - ChuckFuncSynthSource :: play functions by adding them as SynthDefs and storing the string to play synths as soon as the def is loaded on the server.
 
-* Chuck: Store =out=, =fadeTime= in event, not parent
+* TODO Chuck: Store =out=, =fadeTime= in event, not parent
+:PROPERTIES:
+:DATE:     <2015-06-09 Tue 14:04>
+:END:
 
 So that they be always included in args when playing ChuckSynthSource with new methods resulting from [[*Optimize%20ChuckSynthSource][Optimize ChuckSynthSource]].
 
-* Chuck: Store =target= in extra instance var?
+* TODO Chuck: Store =target= in extra instance var?
+:PROPERTIES:
+:DATE:     <2015-06-09 Tue 14:04>
+:END:
 
-* Chuck: Rewrite scheduling using a separate class.
+* TODO Chuck: Rewrite scheduling using a separate class.
+:PROPERTIES:
+:DATE:     <2015-06-09 Tue 14:04>
+:END:
 
 - Should contain a task.
 - Can register under same name as Chuck, but in its own subtree.

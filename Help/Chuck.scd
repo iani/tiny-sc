@@ -12,11 +12,15 @@
 \test.free;
 
 600 =>.freq \test;
-(400..600).prand =>.freq \test;
+(100..6000).prand =>.freq \test;
 
 \test.play;
+//: Limit on an 2.3 GHz Intel Core i7 MacBook Pro: 500 plays per second
+//: Measured CPU load, on sclang: ca 18%, on scsynth: ca 6%
+0.002 *> \test;
+
 //:
-1 |> \test;
+0.02 *> \test;
 
 //:
 { [LFSaw, SinOsc, LFPulse].choose.ar(\freq.kr (800)) * 0.1 } => \test;

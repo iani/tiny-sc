@@ -48,6 +48,15 @@ TaskPlayer {
 	
 }
 
+XoPlayer {
+	var <chuck, <task, <pattern, stream;
+	
+	*> { | symbol |
+	
+	}
+}
+
+
 + Chuck {
 	addToTask { | task, filter |
 		^filter.connectChuckTask(this, task);
@@ -69,15 +78,39 @@ TaskPlayer {
 }
 
 + Object {
-	*> { | chuckName |
+	*> { | chuckName | // play immediately
 		^Chuck(chuckName).addToTask(TaskPlayer(chuckName))
 		.pattern_(this).play;
  	}
 
-	*>> { | symbol |
+	// analogous to ==>
+	**> { | symbol | // set pattern, but do not play
 		^TaskPlayer(symbol).pattern_(this);
 	}
+
+	// TODO: Implement
+	*>> { // play with synonymous filter of this task, instead of task
+		thisMethod.notImplemented;
+	}
 }
+
++ Ref {
+	// for: { func } ==> \chuckname *>.xofilter `taskName *> filterName;
+	receiveChuck { | chuck, filterPattern |
+		// ^ChuckFilterReceiver(chuck, TaskPlayer(value), filterPattern);
+	}
+}
+
+/*
+ChuckFilterReceiver {
+	var chuck, task, filterPattern;
+
+	*> { | filterName | 
+	filterPattern.asTaskFilter(filterName).connectChuckTask(chuck, task);
+	}
+
+}
+*/
 
 // ================ INCOMPLETE: ================
 /* // possibly:
@@ -98,6 +131,12 @@ Alternatively:
 
 { func } ==> \chuckname *>.xofilter taskNameOrPattern;
 
+To specify taskfilter by name: 
+
+{ func } ==> \chuckname *>.xofilter `taskName *> filterName;
+
+Task-filters: 
+Registry(TaskFilter, \taskname, \filtername, { ... });
 */
 
 
@@ -114,14 +153,4 @@ Alternatively:
 	}
 	*/
 	
-}
-
-XoPlayer {
-	var <chuck, <task, <pattern, stream;
-
-	
-	
-	*> { | symbol |
-	
-	}
 }

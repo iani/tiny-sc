@@ -4,10 +4,10 @@ Replaces ChuckProcess.
 
 */
 ChuckSource {
-	var <source;
+	var <source, <chuck;
 
-	*new { | source |
-		^this.newCopyArgs( (source ?? { ["x", 0] }).asStream)
+	*new { | source, chuck |
+		^this.newCopyArgs( (source ?? { ["x", 0] }).asStream, chuck)
 	}
 
 	play { | output, args |
@@ -61,19 +61,63 @@ ChuckSynthSource : ChuckSource {
 }
 
 ChuckFuncSynthSource : ChuckSynthSource {
+	var <defName;
+
+	*new { | source, chuck |
+		^super.new(source, chuck).makeSynthDef;
+	}
+
+	makeSynthDef {
+		var def;
+		def = source.asSynthDef(
+			fadeTime: chuck.args[\fadeTime],
+			name: this.makeDefName
+		);
+		def.doSend(chuck.args[\target].server);
+	}
 	
+	prPlay { | args |
+		// play func only the first time.
+		// thereafter, create synth from defName
+		if (defName.isNil) {
+			^source.cplay(
+				args [\target].next.asTarget,
+				args [\out].next,
+				args [\fadeTime].next,
+				args [\addAction].next,
+				args.getPairs,
+				this.makeDefName;
+			).register;
+		}{
+			^defName.play(
+				args [\target].next.asTarget,
+				args [\out].next,
+				args [\fadeTime].next,
+				args [\addAction].next,
+				args.getPairs
+			).register;
+		}
+	}
+
+	makeDefName {
+		var theName;
+		theName = format("<%>", chuck.name);
+		{ defName = theName }.defer(0.1);
+		^theName;
+	}
 }
 
+
 + Object {
-	asChuckSource { ^ChuckSource(this) }
+	asChuckSource { | chuck | ^ChuckSource(this, chuck) }
 }
 
 + Function {
-	asChuckSource { ^ChuckSynthSource(this) }
+	asChuckSource { | chuck | ^ChuckFuncSynthSource(this, chuck) }
 }
 
 + String {
-	asChuckSource { ^ChuckSynthSource(this) }
+	asChuckSource { | chuck |  ^ChuckSynthSource(this, chuck) }
 	play { | target, outbus, fadeTime, addAction, args |
 		^Synth (this, args ++ [out: outbus, fadeTime: fadeTime], target, addAction)
 	}

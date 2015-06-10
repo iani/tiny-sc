@@ -5,8 +5,8 @@ Simpler alternative to SynthTree?
 */
 
 Chuck {
-	var <name, <source, <argsTemplate, <args, <output, <count;
-	var <clock, <>durStream, <dur;
+	var <name, <source, <argsTemplate, <args, <output;
+	var <count, <clock, <>durStream, <dur; // these 4 vars will go to ChuckTask
 	classvar >parentArgs;
 
 	parentArgs { ^this.class.parentArgs }
@@ -28,7 +28,9 @@ Chuck {
 	
 	*new { | name, source, argsTemplate |
 		^Registry(Chuck, name, {
-			this.newCopyArgs(name, source.asChuckSource, argsTemplate ?? { () }).init;
+			this.newCopyArgs(name, source.asChuckSource, argsTemplate ?? {
+				(out: 0, fadeTime: 0.02)
+			}).init;
 		})
 	}
 
@@ -38,14 +40,14 @@ Chuck {
 			args[key] = value.asStream;
 		}
 	}
-			
+
 	play { | key, argCount, notification |
 		#output, count = source.play(output, args, this, notification).asArray;
 		this.changed(\play, key, count ? argCount ? 0);
 	}
 
 	source_ { | argSource |
-		source = argSource.asChuckSource;
+		source = argSource.asChuckSource(this);
 	}
 
 	sched { | argDur argClock pattern |
@@ -75,7 +77,6 @@ Chuck {
 				output.release(argDur ?? { args[\fadeTime].next })
 			}{
 				output.onStart (this, { | notification |
-					// postf("look in these contents for the real synth %\n", args);
  					if (notification.listener.isPlaying) {
 						notification.listener.release(argDur ?? { args[\fadeTime].next })
 					}
