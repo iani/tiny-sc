@@ -24,10 +24,13 @@ TaskFilter { // subclasses implement different filter methods
 	beat { thisMethod.subclassResponsibility }
 	stop {}
 	dur { ^parent.dur }
+	count { ^parent.count }
+	val { ^this.topval }
+	topval { ^parent.topval } // top value (TaskPlayer val ...)
 }
 
 Tox : TaskFilter {
-	var pattern, stream, val;
+	var pattern, stream, <val;
 
 	pattern_ { | argPattern |
 		pattern = argPattern;

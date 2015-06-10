@@ -50,5 +50,6 @@ TaskPlayer {
 		this.init;
 		this.play;
 	}
-	
+
+	topval { ^val }
 }
