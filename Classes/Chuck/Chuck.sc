@@ -41,9 +41,13 @@ Chuck {
 		}
 	}
 
-	play { | key, argCount, notification |
+	play { | argDur, key, argCount, notification |
+		/* Ad-hoc fix: prevent occasional re-release of synth
+			that ended through its envelope, by 
+			setting the dur to 0.01 less than argDur. */
+		argDur !? { args[\dur] = argDur - 0.01 max: 0.01 };
 		#output, count = source.play(output, args, this, notification).asArray;
-		this.changed(\play, key, count ? argCount ? 0);
+		this.changed(\play, argDur, key, count ? argCount ? 0);
 	}
 
 	source_ { | argSource |

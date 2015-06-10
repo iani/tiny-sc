@@ -86,8 +86,8 @@ IZ Wed, 26 Feb 2014 08:22:41
 	
 	sine { | dur = 1 level = 1.0 doneAction = 2 |
 		^(
-			this * EnvGen.kr(
-				Env.sine(\dur.kr(dur), \level.kr(level)),
+			this * EnvGen.kr( // - 0.01 is an experimental fix
+				Env.sine(\dur.kr(dur) /* - 0.01 */, \level.kr(level)),
 				doneAction: doneAction
 			)
 		);
@@ -160,7 +160,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 	perc { | dur = 1, attackTime=0.01, level=1.0, curve = -4.0, doneAction = 2 |
 		^(
 			this * EnvGen.kr(
-				Env.perc(attackTime, dur - attackTime max: 0.01, level, curve),
+				Env.perc(attackTime, \dur.kr(dur) - attackTime max: 0.01, level, curve),
 				doneAction: doneAction
 			)
 		);
@@ -168,8 +168,8 @@ IZ Wed, 26 Feb 2014 08:22:41
 
 	sine { | dur = 1 level = 1.0 doneAction = 2 |
 		^(
-			this * EnvGen.kr(
-				Env.sine(\dur.kr(dur), \level.kr(level)),
+			this * EnvGen.kr(  // - 0.01 is an experimental fix
+				Env.sine(\dur.kr(dur) /* - 0.01 */, \level.kr(level)),
 				doneAction: doneAction
 			)
 		);

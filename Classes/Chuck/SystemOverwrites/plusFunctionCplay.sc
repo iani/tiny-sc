@@ -3,11 +3,6 @@ Making Function:play create a static output channel synth is both brain dead and
 
 Fixing that.
 
-Tue, Jun  9 2015, 21:03 EEST:  This modification will be abandoned. 
-Instad, a new method cplay will be added that will work with ChuckFuncSynthSource 
-to create a synthdef and add it on the spot when creating a new instance of 
-ChuckFuncSynthSource. 
-
 */
 
 + Function {
@@ -77,23 +72,3 @@ ChuckFuncSynthSource.
 		})
 	}
 }
-
-/*
-+ SynthDef {
-	cdoSend { |server, completionMsg|
-		var bytes = this.asBytes;
-		if (bytes.size < (65535 div: 4)) {
-			server.sendMsg("/d_recv", bytes, completionMsg)
-		} {
-			if (server.isLocal) {
-				"SynthDef % too big for sending. Retrying via synthdef file".format(name).warn;
-				this.writeDefFile(synthDefDir);
-				server.sendMsg("/d_load", synthDefDir ++ name ++ ".scsyndef", completionMsg)
-			} {
-				"SynthDef % too big for sending.".format(name).warn;
-			}
-		}
-	}
-}
-*/
-

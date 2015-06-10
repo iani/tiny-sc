@@ -19,16 +19,25 @@ ChuckSource {
                  this.prPlay(args);
 			}
 		*/
-		if (output respondsTo: \release) {
+		if (output isKindOf: Node) {
 			if (output.isPlaying) {
+				// [thisMethod.name, "releasing playing output", output].postln;
 				output.release(args[\fadeTime].next)
-			}{  // TODO: replace this with onStart call for accuracy:
+			}{  
+				// [thisMethod.name, "sending onStart to non0 playing output", output].postln;
+				output.onStart (this, { | notification |
+ 					if (notification.listener.isPlaying) {
+						notification.listener.release(args[\fadeTime].next)
+					}
+				})
+				/*
 				SystemClock.sched (0.02, {
 					if (output.isPlaying) {
 						output.release(args[\fadeTime].next)
 					};
 					nil
-				});
+					});
+				*/
 			}
 		};
 		^this.prPlay(args)

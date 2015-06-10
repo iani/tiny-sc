@@ -56,7 +56,6 @@ XoPlayer {
 	}
 }
 
-
 + Chuck {
 	addToTask { | task, filter |
 		^filter.connectChuckTask(this, task);
