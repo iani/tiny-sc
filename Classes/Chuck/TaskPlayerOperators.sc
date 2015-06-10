@@ -1,9 +1,73 @@
+/* 
+
+
+Wed, Jun 10 2015, 20:35 EEST
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+INCOMPLETE - NOT TESTED! 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+See: file:./ChainingTaskOperators.org
+*/
+
++ Symbol {
+
+	*> { | taskName, xoPattern | // chuck -> task
+		^Chuck(this).addToTaskOrFilter(taskName, xoPattern, true);
+	}
+
+	**> { | taskName, xoPattern | // chuck -> task
+		^Chuck(this).addToTaskOrFilter(taskName, xoPattern, false);
+	}
+
+	/*
+	!> { | taskName |
+	
+	}
+	*/
+	
+}
+
 + Chuck {
-	addToTask { | task |
+
+	*> { | taskName, xoPattern |
+		this.addToTaskOrFilter(taskName, xoPattern, true);
+	}
+
+	**> { | taskName, xoPattern |
+		this.addToTaskOrFilter(taskName, xoPattern, false);
+	}
+
+	addToTaskOrFilter { | taskName, xoPattern, play = false | // chuck -> task
+		// TODO: integrate play switch!
+		if (xoPattern.isNil) {
+			^this.addToTask(taskName, play);
+		}{
+			^this.addToToxFilter(taskName, xoPattern, play);
+		}
+	}
+	
+	addToTask { | task, play = false |
+		task = TaskPlayer(task);
 		this.removePreviousTask;
 		this.addNotifier(task, \beat, { this.play(task.dur) });
 		this.addNotifier(task, \stop, { this.release });
+		if (play) { task.play };
 		^task;
+	}
+
+	addToFilter { | taskName, xoPattern, play = false |
+		var task, filterTask;
+		task = TaskPlayer(taskName);
+		if (task isKindOf: Tox) {
+			task.pattern = xoPattern;
+			task = task.top;
+			this.addToFilter(task);
+		}{
+			filterTask = Tox("_" ++ taskName, task, xoPattern);
+			this.addToFilter(filterTask);
+		};
+		if (play) { task.play }
 	}
 
 	removePreviousTask {
@@ -12,11 +76,6 @@
 		this.removeMessage(\stop);
 	}
 	
-	removeFromTask { | task |
-		// this.release; // called by other methods higher-up in the call chain?
-		this.removeNotifier(task, \beat);
-		this.removeNotifier(task, \stop);
-	}
 }
 
 + Object {
@@ -43,17 +102,3 @@
 	}
 }
 
-+ Symbol {
-
-	*> { | taskName, xoPattern | // chuck -> task
-		^Chuck(this).addToTask(taskName, XoPlayer(this, taskName, xoPattern))
-		
-	}
-
-	/*
-	!> { | taskName |
-	
-	}
-	*/
-	
-}

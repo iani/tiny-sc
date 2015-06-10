@@ -16,8 +16,6 @@ if \taskname is a Tox type filter, set its pattern, else create a subfilter and 
 
 as =*>=, except do not start playing.
 
-
-
 * 1
 : { func } ==> \chuckname *> <number or pattern>;
 

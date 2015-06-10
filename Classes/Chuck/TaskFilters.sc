@@ -2,8 +2,6 @@
 TaskFilter { // subclasses implement different filter methods
 	// for now, only one task or filter can be parent;
 	var parent;
-
-	
 	
 	addToTask { | task |
 		this.removeFromTask;
@@ -29,6 +27,7 @@ TaskFilter { // subclasses implement different filter methods
 	count { ^parent.count }
 	val { ^this.topval }
 	topval { ^parent.topval } // top value (TaskPlayer val ...)
+	top { ^parent.top }
 }
 
 TPatFilter : TaskFilter {
