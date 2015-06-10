@@ -2,6 +2,22 @@ QUESTION: That to do with TaskPlayers or <tox> patterns when Chuck changes to a 
 
 ANSWER: Most probably leave this to the responsibility of the user, as switching between running TaskPlayers and filters may make sense!  At most provide a method to post the list of existing TaskPlayers and filters, while marking those TaskPlayers that are currently playing.
 
+* 0
+
+: non-symbol, non-chuck *> \taskname;
+
+set pattern of \taskname task player and play
+
+: non-symbol, non-chuck *>.xopattern \taskname;
+
+if \taskname is a Tox type filter, set its pattern, else create a subfilter and connect it to taskplayer taskname, etc.
+
+: non-symbol, non-chuck **> \taskname;
+
+as =*>=, except do not start playing.
+
+
+
 * 1
 : { func } ==> \chuckname *> <number or pattern>;
 
@@ -20,7 +36,7 @@ or even:
 
 or even:
 
-: \chuckname *> \symbolAir;
+: \chuckname *> \symbol;
 
 
 1. Get TaskPlayer or TaskFilter named \symbol.
@@ -33,18 +49,17 @@ or even:
 
 1. Get TaskPlayer of same name as Chuck
 2. Set its duration pattern
-3. Get Tox named <chuckname> (enclose name of chuck in <>!)
+3. Get Tox named _chuckname (prepend _ to chuckname to indicate sub-pattern)
 4. Set Tox'es filter pattern to xopattern.
 5. Connect Tox to TaskPlayer
 6. Connect Chuck to Tox
 7. Start TaskPlayer
-
 * 4
 
 : { func } ==> \chuckname *>.xopattern \symbol;
 
 1. Get TaskPlayer or filter named by \symbol.
-2. If it is a TaskPlayer, then create Tox using <symbol> rule and connect it to the TaskPlayer.
+2. If it is a TaskPlayer, then create Tox using prepend _ rule and connect it to the TaskPlayer.
 3. Set Tox'es filter pattern to xopattern.
 4. Connect Tox to TaskPlayer
 5. Connect Chuck to Tox
@@ -64,3 +79,22 @@ How to create other types of filters and connect them to TaskPlayers / Chucks?
 Generally provide a name in creation of Task Filters like this:?
 
 : ClassName(filtername, parameters ...) ?????
+
+or:
+
+: ClassName(parameters...) *> \task-or-filtername ???
+
+Possibly keep adding _ to name, to denote level of chaining of filters...
+
+It becomes easy to notate the desired filter compctly
+
+: \chuckorchuckname *>.xopattern \a
+
+: \chuckorchuckname *>.xopattern \_a
+
+: \chuckorchuckname *>.xopattern \__a
+
+
+etc.
+
+Also it's possible to check if the parent pattern exists or the pattern to be modified/set etc exists. ...
