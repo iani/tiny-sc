@@ -13,43 +13,73 @@ This is version 1.0alpha (=retiny=).
 
 * Principles
 
-Tiny-sc uses class =Chuck= to define containers that can run synths or patterns. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.
+Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.  The difference is that any key of a pattern as well as the duration pattern can be changed at any time.  Furthermore, a Chuck can switch TaskPlayers at any time, and can also be made to respond to a TaskFilter which only plays at beats that match a given condition.  In this way, several Chuck instances can be synchronized by following the same TaskPlayer or its attached filters.  Finally, the audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request (using operator  '=>').
 
 * Tutorial
 
 ** Playing functions
+:PROPERTIES:
+:ID:       BBAE67F1-8F91-4D01-B5D9-F53E9DB05053
+:eval-id:  11
+:END:
 
 Start playing a function:
 
-: { SinOsc.arps(400) } => \mysound;
+#+BEGIN_SRC sclang
+{ SinOsc.arps(400) } ==> \mysound;
+#+END_SRC
 
 Replace it with another function:
 
-: { PinkNoise.arps.perc(0.5) } => \mysound;
+#+BEGIN_SRC sclang
+{ PinkNoise.arps.perc(0.5) } ==> \mysound;
+#+END_SRC
 
 Replay the previously stored function:
 
-: \mysound.play;
+#+BEGIN_SRC sclang
+\mysound.play;
+#+END_SRC
+
 
 ** Playing synthdefs
+:PROPERTIES:
+:ID:       C85BF4A1-62C2-4177-9BBC-238C999C5C19
+:eval-id:  3
+:END:
 
-: "default" => \mysound;
+#+BEGIN_SRC sclang
+"default" ==> \mysound;
+#+END_SRC
 
 ** Set play source without actually playing
+:PROPERTIES:
+:ID:       8098716E-FA7F-434D-96B8-72265944E415
+:eval-id:  10
+:END:
 
 Replace the play function without playing the synth:
 
-: { SinOsc.arps(Rand(400, 800)) } ==> \mysound;
-
+#+BEGIN_SRC sclang
+{ SinOsc.arps(Rand(400, 800)) } => \mysound;
+#+END_SRC
 Trigger manually at any point:
 
-: \mysound.play;
+#+BEGIN_SRC
+\mysound.play;
+#+END_SRC
 
 ** Releasing
+:PROPERTIES:
+:ID:       3A6A7AE9-41E9-483B-80E4-0E441D8249CA
+:eval-id:  2
+:END:
 
 Release with default time:
 
-: \mysound.release;
+#+BEGIN_SRC sclang
+\mysound.release;
+#+END_SRC
 
 Release with custom time:
 
@@ -62,24 +92,36 @@ Now release:
 : \mysound release: 5;
 
 ** Setting fade time (for cross fade)
+:PROPERTIES:
+:ID:       7EF85C8E-3E7C-4775-94FD-36AD8EBD29C5
+:eval-id:  24
+:END:
 
 : \mysound.fadeTime = 1;
 
 Try several different sounds with cross fade, one after the other:
 
-: { LFSaw.arps(Rand(400, 800)) } => \mysound;
-: { WhiteNoise.arps } => \mysound;
-: { PinkNoise.arps } => \mysound;
+#+BEGIN_SRC sclang
+{ Blip.arps(Line.kr(Rand(400, 500), Rand(500, 800), 0.2), 3) } ==> \mysound;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ WhiteNoise.arps } ==> \mysound;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ PinkNoise.arps } ==> \mysound;
+#+END_SRC
 
 ** Setting function/synth arguments (parameters)
 
 Set a parameter to use in the synth's arguments:
 
-: 600 =>.freq \mysound;
+600 =>.freq \mysound;
 
 Test it:
 
-: { SinOsc.arps(\freq.kr(400)) } => \mysound;
+{ SinOsc.arps(\freq.kr(400)) } => \mysound;
 
 Setting a new parameter value immediately sends it to the synth:
 
@@ -159,15 +201,15 @@ Example 2: Send source directly to output, bypassing effect1:
 
 Set a function to play the pattern with
 
-: { SinOsc.arps(\freq.kr(400)) } ==> \patsound;
+{ SinOsc.arps(\freq.kr(400)) } => \patsound;
 
 Obtain successive values of parameter =freq= from a pattern:
 
-: [60, 65, 67].midicps.pseq =>.freq \patsound;
+[60, 65, 67].midicps.pseq =>.freq \patsound;
 
 Try playing =patsound= repeatedly, to hear the sequence of values:
 
-: \patsound.play; // run this several times in sequence
+\patsound.play; // run this several times in sequence
 
 *** Timing sequences of play events in a Chuck
 

@@ -82,7 +82,22 @@ ChuckFuncSynthSource : ChuckSynthSource {
 			fadeTime: chuck.args[\fadeTime],
 			name: this.makeDefName
 		);
+		this.moveToNullGroupIfNeeded(def);
 		def.doSend(chuck.args[\target].server);
+	}
+
+	moveToNullGroupIfNeeded { | def |
+		"Effect Chuck's reading from 0 bus may bleed through.".postln;
+		thisMethod.notImplemented;
+		/*  TODO:
+            It is not possible to find the input ControlNames of UGens inside the SynthDef 
+            that are of Class In and rate \audio, because there is no indication
+            of the names of the controls inside the UGens content in the def. 
+			Therefore rely on convention: if args contains keys whose name starts with
+			"in", then assume these are *AUDIO* inputs.  If any values of these keys
+			are not BusLinks, then assume that the Chuck has not been linked. 
+			In that case, set its args[\target] to GroupLink.nullGroup.
+		*/
 	}
 	
 	prPlay { | args |
