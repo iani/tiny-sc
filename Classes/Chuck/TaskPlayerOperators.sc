@@ -52,13 +52,11 @@ See: file:./ChainingTaskOperators.org
 		if (xoPattern.isNil) {
 			^this.addToTask(taskName, play);
 		}{
-			^this.addToToxFilter(taskName, xoPattern, play);
+			^this.addToToxFilter(taskName, xoPattern.asString, play);
 		}
 	}
 	
-	addToTask { | object, play = false |
-		var task;
-		task = object.asTaskPlayer(this);
+	addToTask { | task, play = false |
 		this.removePreviousTask;
 		this.addNotifier(task, \beat, { this.play(task.dur) });
 		this.addNotifier(task, \stop, { this.release });
@@ -77,21 +75,16 @@ See: file:./ChainingTaskOperators.org
 		task = TaskPlayer(taskName);
 		if (task isKindOf: Tox) {
 			task.pattern = xoPattern;
-			task = task.top;
-			this.addToFilter(task);
+			this.addToTask(task, play);
 		}{
-			filterTask = Tox("_" ++ taskName, task, xoPattern);
-			this.addToFilter(filterTask);
+			filterTask = Tox("_" ++ taskName);
+			[thisMethod.name, "adding ", task, "as parent to", filterTask].postln;
+			filterTask.addToTask(task).pattern_(xoPattern);
+			[thisMethod.name, "the parent of ", filterTask, "is", filterTask.parent].postln;
+			this.addToTask(filterTask, play);
+			[thisMethod.name, filterTask, filterTask.parent, task].postln;
 		};
-		if (play) { task.play }
 	}
-
-	addToFilter {
-		thisMethod.notImplemented;
-		
-	}
-
-	
 }
 
 + Object {
@@ -114,6 +107,8 @@ See: file:./ChainingTaskOperators.org
 	*>> { // play with synonymous filter of this task, instead of task
 		thisMethod.notImplemented;
 	}
+
+	asToxPattern { ^this }
 }
 
 + Ref {
@@ -123,3 +118,6 @@ See: file:./ChainingTaskOperators.org
 	}
 }
 
++ String {
+	asToxPattern { | repeats = inf |  ^this.pseq(repeats) }
+}

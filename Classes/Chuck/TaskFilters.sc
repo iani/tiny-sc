@@ -1,15 +1,19 @@
 
 TaskFilter { // subclasses implement different filter methods
 	// for now, only one task or filter can be parent;
-	var parent;
+	var <parent;
+
+	*new { | name |
+		^Registry(TaskPlayer, name.asSymbol, { super.new });
+	}
 	
 	addToTask { | task |
 		this.removeFromTask;
 		parent = task; 
 		this.addNotifier(task, \start, { this.start });
-		this.addNotifier(task, \beat, { this.beat});
+		this.addNotifier(task, \beat, { this.beat });
 		this.addNotifier(task, \stop, { this.stop });
-		^task;
+		//	^task;
 	}
 	
 	removeFromTask { 
@@ -19,7 +23,8 @@ TaskFilter { // subclasses implement different filter methods
 		this.removeMessage(\stop);
 		parent = nil;
 	}
-	
+
+	play { parent.play }
 	start { this.changed(\start) }
 	beat { thisMethod.subclassResponsibility }
 	stop { this.changed(\stop) }
@@ -28,11 +33,12 @@ TaskFilter { // subclasses implement different filter methods
 	val { ^this.topval }
 	topval { ^parent.topval } // top value (TaskPlayer val ...)
 	top { ^parent.top }
+	asTaskPlayer { ^this }
 }
 
 TPatFilter : TaskFilter {
 	var pattern, stream, <val;
-
+	
 	pattern_ { | argPattern |
 		pattern = argPattern;
 		stream = pattern.asStream;
@@ -44,17 +50,26 @@ TPatFilter : TaskFilter {
 }
 
 Tox : TPatFilter {
+
+	pattern_ { | patternTemplate, repeats = inf |
+		super.pattern_(patternTemplate.asToxPattern(repeats) );
+	}
+	
 	beat {
 		super.beat;
-		switch (val,
-			$x, { this.changed(\beat) },
-			$o, { this.changed(\stop) }			
-		)
+		if (val.isNil) {
+			this.changed(\stop)
+		}{
+			switch (val,
+				$x, { this.changed(\beat); },
+				$o, { this.changed(\stop); }
+			)
+		}
 	}	
 }
 
 Tbartox : Tox {
-	var startBeat = 0;
+	var <>startBeat = 0;
 	var waiting = true;
 	beat {
 		if (waiting and: { startBeat != parent.val }) {

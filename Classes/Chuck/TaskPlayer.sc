@@ -2,9 +2,10 @@ TaskPlayer {
 	var <name, <pattern, <clock, stream, <dur;
 	var <task, <counter, <count;
 	var <valPattern, <valStream, <val;
+	var <atEnd = false;
 
 	*new { | name, pattern  = 1, clock |
-		^Registry(TaskPlayer, name, {
+		^Registry(TaskPlayer, name.asSymbol, {
 			this.newCopyArgs(
 				name,
 				pattern,
@@ -43,12 +44,18 @@ TaskPlayer {
 				this.changed(\beat);
 				dur.wait;
 			};
+			atEnd = true;
 			this.changed(\stop);
 		}, clock);
 	}
 
-	// resumes task if stopped, issues warning if already running
-	play { task.play; } // does not restart!
+	// resumes task if stopped, issues warning if already running.
+	// Restarts only if task has finished;
+	play {
+		// Note: using dur.isNil would lead to infinite loop with replay->playx
+		if (atEnd) { this.init };
+		task.play;
+	} // does not restart!
 
 	stop { task.stop; this.changed(\stop); } // pauses task. Does not reset.
 
@@ -63,4 +70,5 @@ TaskPlayer {
 	}
 	top { ^this }
 	topval { ^val }
+	asTaskPlayer { ^this }
 }

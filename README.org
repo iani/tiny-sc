@@ -17,6 +17,7 @@ This is version 1.0alpha (=retiny=).
 :eval-id:  121
 :END:
 
+** Synth Processes and their parameters
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
 #+BEGIN_SRC sclang
@@ -41,6 +42,7 @@ Or as patterns:
 Pwhite(100, 200, inf) =>.freq \test;
 #+END_SRC
 
+** Playing sequences of synth events
 A Chuck can play with a duration pattern, which may be a single number:
 
 #+BEGIN_SRC sclang
@@ -78,12 +80,17 @@ Stop the task, and all it's dependent Chucks:
 \test.stop;
 #+END_SRC
 
+** Linking audio inputs and outputs between synths
+:PROPERTIES:
+:ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
+:eval-id:  4
+:END:
 Finally, the audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request (using operator  '=>').
 
 Start a source and an effect:
 #+BEGIN_SRC sclang
 { PinkNoise.ar(0.1) } ==> \source;
-{ Resonz.arps(In.ar(\in.kr(0)) * 100, LFNoise0.kr(30).range(400, 2000), 0.001) } ==> \effect;
+{ Resonz.arps(In.ar(\in.kr(0)) * 500, LFNoise0.kr(30).range(400, 2000), 0.001) } ==> \effect;
 #+END_SRC
 
 Link the source to the effect:
@@ -103,7 +110,14 @@ Stop both source and effect:
 \effect.release;
 #+END_SRC
 
-Multiple voice example:
+** Multiple voice example
+:PROPERTIES:
+:ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
+:eval-id:  5
+:END:
+
+Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
+
 #+BEGIN_SRC sclang
   (
   { | n |

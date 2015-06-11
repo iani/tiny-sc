@@ -164,23 +164,16 @@ Chuck {
 		if (this.isAfter(writer).not) { // do not move to earlier group than currently
 			args[\target] = writer.target.getReaderGroup;
 			this.readersDo({ | reader writer | reader addAfter: writer });
-			// this.setTarget(writer.target.getReaderGroup); // ??????????? Examine this!
-			
+
 			targetGroup = this.target.group;
-			
+
 			if (targetGroup.isPlaying.not) {
-			
 				targetGroup.onStart(this, {
-			
 					if (output isKindOf: Node) { output moveToTail: this.target.group; };
 				});
 			}{
-
-					if (output isKindOf: Node) { output moveToTail: this.target.group; };
-
+				if (output isKindOf: Node) { output moveToTail: this.target.group; };
 			};
-			
-			
 		};
 	}
 	
