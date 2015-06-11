@@ -167,7 +167,7 @@ Obtain successive values of parameter =freq= from a pattern:
 
 Try playing =patsound= repeatedly, to hear the sequence of values:
 
-: \patsound.play;
+: \patsound.play; // run this several times in sequence
 
 *** Timing sequences of play events in a Chuck
 
@@ -238,7 +238,7 @@ Use a pattern as source of successive durations between events:
 *** Multiple voice example
 :PROPERTIES:
 :ID:       E5056ED9-4D0C-4BB4-A5B9-26429CD7FA11
-:eval-id:  12
+:eval-id:  14
 :END:
 
 #+BEGIN_SRC sclang
@@ -246,14 +246,15 @@ Use a pattern as source of successive durations between events:
   { | n |
       var name;
       name = format("multi%", n).asSymbol;
+      n = n % 4;
       {
           Blip.arps(
-              1 + n / 2 * Line.kr(Rand(100, 700), Rand(100, 700), Rand(0.1, 1)),
+              1 + n / 2 * Line.kr(Rand(20, 80).midicps, Rand(20, 80).midicps, Rand(0.1, 1)),
               Line.kr(Rand(5, 25), Rand(5, 25), 0.5)
           ).perform([\perc, \sine]@@n)
       } ==> name;
 
-      ([0.25.pn(14), 1, 2, 0.1 ! 10, 3] / (0.5 + (n / 4))).flat.prand *> name;
-  } ! 4;
+      ([0.25.pn(14), 5 ! 3, 1, 2, 0.1 ! 10, 3] / (0.5 + (n / 4))).flat.prand *> name;
+  } ! 8;
   )
 #+END_SRC

@@ -20,6 +20,7 @@ See: file:./ChainingTaskOperators.org
 		^Chuck(this).addToTaskOrFilter(taskName, xoPattern, false);
 	}
 
+	asTaskPlayer { ^TaskPlayer(this) }
 	/*
 	!> { | taskName |
 	
@@ -47,8 +48,9 @@ See: file:./ChainingTaskOperators.org
 		}
 	}
 	
-	addToTask { | task, play = false |
-		task = TaskPlayer(task);
+	addToTask { | object, play = false |
+		var task;
+		task = object.asTaskPlayer(this);
 		this.removePreviousTask;
 		this.addNotifier(task, \beat, { this.play(task.dur) });
 		this.addNotifier(task, \stop, { this.release });
@@ -56,7 +58,13 @@ See: file:./ChainingTaskOperators.org
 		^task;
 	}
 
-	addToFilter { | taskName, xoPattern, play = false |
+	removePreviousTask {
+		// this.removeMessage(\start); // not used for now
+		this.removeMessage(\beat);
+		this.removeMessage(\stop);
+	}
+
+	addToToxFilter { | taskName, xoPattern, play = false |
 		var task, filterTask;
 		task = TaskPlayer(taskName);
 		if (task isKindOf: Tox) {
@@ -70,15 +78,20 @@ See: file:./ChainingTaskOperators.org
 		if (play) { task.play }
 	}
 
-	removePreviousTask {
-		// this.removeMessage(\start); // not used for now
-		this.removeMessage(\beat);
-		this.removeMessage(\stop);
+	addToFilter {
+		thisMethod.notImplemented;
+		
 	}
+
 	
 }
 
 + Object {
+	asTaskPlayer { | chuck, xoPattern |
+		^TaskPlayer(chuck.name).pattern = this;
+	}
+
+	
 	*> { | chuckName | // play immediately
 		^Chuck(chuckName).addToTask(TaskPlayer(chuckName))
 		.pattern_(this).play;

@@ -1,8 +1,5 @@
 + Object {
 	=> { | chuckName, adverb | ^Chuck(chuckName).setArgs (adverb, this) }
-	|> { | chuckName, pattern | ^chuckName.sched (this.asStream, TempoClock (), pattern); }
-	==> { | symbol | ^Chuck (symbol).source = this; } // add adverb to play in parameter!
-	asBeatPattern { ^this }
 }
 
 + Event {
@@ -32,7 +29,7 @@
 }
 
 + Chuck {
-	|> { | master, pattern | ^this.playSubPattern (Chuck (master), pattern) }
+	//	|> { | master, pattern | ^this.playSubPattern (Chuck (master), pattern) }
 
 	playSubPattern { | master, pattern |
 		var stream;
@@ -83,44 +80,20 @@
 }
 
 + Function {
-	=> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
-
-	|> { | master, sub |  // TODO: Review this.
-		var playFunc;
-		sub = Chuck (sub);
-		
-		^sub.addNotifier (Chuck (master), \play, { | key, count, notifier |
-			if (this.(key, count, notifier)) { sub.play }
-		})
-	}
+	=> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
+	==> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
 }
 
 + Ref { // `{ } quotes function so that it evals rather than {}.plays
 	=> { | symbol |
+		^Chuck(symbol).source_(ChuckSource(value)) }
+	==> { | symbol |
 		^Chuck(symbol).source_(ChuckSource(value)).play }
 }
 
 + String {
-	=> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
-
-	|> { | master, sub |
-		var pattern, stream, func;
-		sub = Chuck (sub);
-		pattern = Pseq (this.ascii, inf);
-		func = { false };
-		^sub.addNotifier (Chuck (master), \play, { | notifier, value |
-			if (func.value) {
-				sub.play;
-			}{
-				if (value [1] == 0) { // wait till cycle start
-					stream = sub.asStream;
-					func = { stream.next == 120 }; // play if char == #x
-					if (func.value) { sub.play };
-				}
-			}
-		})
-	}
-	
+	=> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
+	==> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
 }
 
 + Method {

@@ -2,24 +2,7 @@ QUESTION: That to do with TaskPlayers or <tox> patterns when Chuck changes to a 
 
 ANSWER: Most probably leave this to the responsibility of the user, as switching between running TaskPlayers and filters may make sense!  At most provide a method to post the list of existing TaskPlayers and filters, while marking those TaskPlayers that are currently playing.
 
-* 0
-
-: non-symbol, non-chuck *> \taskname;
-
-set pattern of \taskname task player and play
-
-: non-symbol, non-chuck *>.xopattern \taskname;
-
-if \taskname is a Tox type filter, set its pattern, else create a subfilter and connect it to taskplayer taskname, etc.
-
-: non-symbol, non-chuck **> \taskname;
-
-as =*>=, except do not start playing.
-
-* 1
-: { func } ==> \chuckname *> <number or pattern>;
-
-or even:
+* \taskname *> pattern
 
 : \chuckname *> <number or pattern>;
 
@@ -28,22 +11,65 @@ or even:
 3. Connect Chuck to TaskPlayer
 4. Start TaskPlayer
 
-* 2
+** Tests
+:PROPERTIES:
+:ID:       C0C4BD75-C57F-4BE5-AD6D-EB205CCE2EBD
+:eval-id:  12
+:END:
 
-: { func } ==> \chuckname *> \symbol;
+#+BEGIN_SRC sclang
+\pock *> 0.3;
+#+END_SRC
 
-or even:
+* { function } => \chuckname
+:PROPERTIES:
+:ID:       0C23640F-3427-46A2-8A8A-D6A73BEDD837
+:eval-id:  6
+:END:
 
-: \chuckname *> \symbol;
+#+BEGIN_SRC sclang
+{ SinOsc.arps(Rand(200, 400)).perc } => \pock;
+#+END_SRC
 
+* { } => \name *> pattern
+:PROPERTIES:
+:ID:       163E95E1-CA37-4DAB-AA75-4971E2872E55
+:eval-id:  25
+:END:
 
-1. Get TaskPlayer or TaskFilter named \symbol.
-2. Connect Chuck to TaskPlayer or Filter.
-(3. ??? Start TaskPlayer or Filter ???)
+#+BEGIN_SRC sclang
+{ Resonz.arps(PinkNoise.ar(200), Rand(1500, 2500), 0.001) } => \whistle *> 0.1;
+#+END_SRC
 
-* 3
+* \chuckname *> \taskname
+:PROPERTIES:
+:ID:       7D06E4DE-45A7-40E9-976F-E073D32FBD3D
+:eval-id:  4
+:END:
 
-: { func } ==> \chuckname *>.xopattern <number or pattern>;
+#+BEGIN_SRC sclang
+\pock *> \whistle;
+#+END_SRC
+
+* { } => \chuckname *> \taskname
+:PROPERTIES:
+:ID:       0F9364F7-C623-4172-B22D-343C09C4CB30
+:eval-id:  4
+:END:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(\freq.kr(800)).sine } => \sine *> \whistle;
+#+END_SRC
+
+* \chuckname *>.filterpattern \taskname
+:PROPERTIES:
+:ID:       323F4572-818F-44AB-AD3A-7EB8FC336510
+:eval-id:  3
+:END:
+
+#+BEGIN_SRC sclang
+\sine *>.xo \whistle;
+#+END_SRC
 
 1. Get TaskPlayer of same name as Chuck
 2. Set its duration pattern
@@ -52,7 +78,7 @@ or even:
 5. Connect Tox to TaskPlayer
 6. Connect Chuck to Tox
 7. Start TaskPlayer
-* 4
+* 5
 
 : { func } ==> \chuckname *>.xopattern \symbol;
 
@@ -63,7 +89,7 @@ or even:
 5. Connect Chuck to Tox
 6. Start TaskPlayer
 
-* 5
+* 6
 
 How to create other types of filters and connect them to TaskPlayers / Chucks?
 
@@ -96,3 +122,41 @@ It becomes easy to notate the desired filter compctly
 etc.
 
 Also it's possible to check if the parent pattern exists or the pattern to be modified/set etc exists. ...
+
+* Alternative order of *>
+:PROPERTIES:
+:ID:       C02E10E7-D094-446C-A6CF-69181F973532
+:eval-id:  8
+:END:
+
+=0.1 *> \test= and =\test *> 0.1= both set the duration pattern of a task.  However, their meaning is different:
+
+=\chuckname *> pattern= will always switch the Chuck to the TaskPlayer with the same name.  Thus, if Chuck =chuckname= was previously playing under Task =anothertask=, it will stop playing with =anothertask= and start playing with Task =chuckname=.
+
+In order to just set the duration pattern of a TaskPlayer without affecting which Chucks are playing with it, use the revers order:
+
+#+BEGIN_SRC sclang
+0.1
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(Rand(500, 1000)) } => \test *> 0.1;
+#+END_SRC
+
+Therefore
+
+: non-symbol, non-chuck *> \taskname;
+
+Set pattern of \taskname task player and play
+
+#+BEGIN_SRC sclang
+[0.1.pn(20), 0.4.pn(5), 0.05.pn(40)].prand *> \test;
+#+END_SRC
+
+: non-symbol, non-chuck *>.xopattern \taskname;
+
+if \taskname is a Tox type filter, set its pattern, else create a subfilter and connect it to taskplayer taskname, etc.
+
+: non-symbol, non-chuck **> \taskname;
+
+as =*>=, except do not start playing.
