@@ -1,81 +1,4 @@
-QUESTION: That to do with TaskPlayers or <tox> patterns when Chuck changes to a different TaskPlayer? (use notifications to let TaskPlayers/tox patterns stop????? Too complicated?)
-
-ANSWER: Most probably leave this to the responsibility of the user, as switching between running TaskPlayers and filters may make sense!  At most provide a method to post the list of existing TaskPlayers and filters, while marking those TaskPlayers that are currently playing.
-
-* \taskname *> pattern
-
-: \chuckname *> <number or pattern>;
-
-1. Get TaskPlayer of same name as Chuck
-2. Set its duration pattern
-3. Connect Chuck to TaskPlayer
-4. Start TaskPlayer
-
-** Tests
-:PROPERTIES:
-:ID:       C0C4BD75-C57F-4BE5-AD6D-EB205CCE2EBD
-:eval-id:  14
-:END:
-
-#+BEGIN_SRC sclang
-\pock *> 0.3;
-#+END_SRC
-
-* { function } => \chuckname
-:PROPERTIES:
-:ID:       0C23640F-3427-46A2-8A8A-D6A73BEDD837
-:eval-id:  7
-:END:
-
-#+BEGIN_SRC sclang
-{ SinOsc.arps(Rand(200, 400)).perc } => \pock;
-#+END_SRC
-
-* { } => \name *> pattern
-:PROPERTIES:
-:ID:       163E95E1-CA37-4DAB-AA75-4971E2872E55
-:eval-id:  28
-:END:
-
-#+BEGIN_SRC sclang
-{ Resonz.arps(PinkNoise.ar(200), Rand(1500, 2500), 0.001) } => \whistle *> 0.1;
-#+END_SRC
-
-* \chuckname *> \taskname
-:PROPERTIES:
-:ID:       7D06E4DE-45A7-40E9-976F-E073D32FBD3D
-:eval-id:  6
-:END:
-
-#+BEGIN_SRC sclang
-\pock *> \whistle;
-#+END_SRC
-
-* { } => \chuckname *> \taskname
-:PROPERTIES:
-:ID:       0F9364F7-C623-4172-B22D-343C09C4CB30
-:eval-id:  53
-:END:
-
-#+BEGIN_SRC sclang
-{ SinOsc.arps(\freq.kr(800)).sine } => \sine *> \whistle;
-#+END_SRC
-
-#+BEGIN_SRC sclang
-[70, 75, 79, 80, 82, 63].midicps.prand =>.freq \sine;
-#+END_SRC
-
-#+BEGIN_SRC sclang
-\sine *> 0.15;
-#+END_SRC
-
-#+BEGIN_SRC sclang
-"default" => \sine;
-#+END_SRC
-
-#+BEGIN_SRC sclang
-{ f = \freq.kr(500); Blip.arps(Line.kr(f * 0.95, f, 0.1), Rand(3, 10)).perc } => \sine *> [0.1, 0.2].prand;
-#+End_src
+UNDER DEVELOPMENT
 
 * source *>.filterpattern task
 :PROPERTIES:
@@ -110,7 +33,7 @@ Variants:
 5. Connect Tox to TaskPlayer
 6. Connect Chuck to Tox
 7. Start TaskPlayer
-* 5
+** 5
 
 : { func } ==> \chuckname *>.xopattern \symbol;
 

@@ -99,7 +99,19 @@ Chuck {
 			keysValues = keysValues.add (key).add (value);
 			args [key] = value;
 		};
-		if (output isKindOf: Node and: { output.isPlaying }) { output.set(*keysValues) };
+		// if (output isKindOf: Node and: { output.isPlaying }) { output.set(*keysValues) };
+		if (output isKindOf: Node) {
+			if (output.isPlaying) {
+				// "IS PLAYING ".post; thisMethod.name.postln;
+				output.set(*keysValues)
+			}{
+				// "IS NOT PLAYING ".post; thisMethod.name.postln;
+				output.onStart(this, {
+					// "setting here".postln;
+					// [this, keysValues].postln;
+					output.set(*keysValues) })
+			}
+		};
 		this.changed (\args, args);
 	}
 
@@ -148,11 +160,27 @@ Chuck {
 	}
 
 	addAfter { | writer |
+		var targetGroup;
 		if (this.isAfter(writer).not) { // do not move to earlier group than currently
 			args[\target] = writer.target.getReaderGroup;
 			this.readersDo({ | reader writer | reader addAfter: writer });
 			// this.setTarget(writer.target.getReaderGroup); // ??????????? Examine this!
-			if (output isKindOf: Node) { output moveToTail: this.target.group; };
+			
+			targetGroup = this.target.group;
+			
+			if (targetGroup.isPlaying.not) {
+			
+				targetGroup.onStart(this, {
+			
+					if (output isKindOf: Node) { output moveToTail: this.target.group; };
+				});
+			}{
+
+					if (output isKindOf: Node) { output moveToTail: this.target.group; };
+
+			};
+			
+			
 		};
 	}
 	

@@ -35,14 +35,14 @@ GroupLink {
 
 	remakeReaderGroups {
 		readerGroup !? {
-			readerGroup.group = Group.after(group);
+			readerGroup.group = Group.after(group).register;
 			readerGroup.remakeReaderGroups;
 		}
 	}
 
 	remakeWriterGroups {
 		writerGroup !? {
-			writerGroup.group = Group.before(group);
+			writerGroup.group = Group.before(group).register;
 			writerGroup.remakeWriterGroups;
 		}
 	}
@@ -73,7 +73,7 @@ GroupLink {
 	asControlInput { ^group.nodeID }
 
 	getReaderGroup {
-		readerGroup ?? { readerGroup = GroupLink(Group.after(group)) };
+		readerGroup ?? { readerGroup = GroupLink(Group.after(group).register) };
 		^readerGroup;
 	}
 

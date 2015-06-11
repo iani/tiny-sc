@@ -1,0 +1,299 @@
+* Basics
+
+** Playing functions
+:PROPERTIES:
+:ID:       BBAE67F1-8F91-4D01-B5D9-F53E9DB05053
+:eval-id:  11
+:END:
+
+Start playing a function:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(400) } ==> \mysound;
+#+END_SRC
+
+Replace it with another function:
+
+#+BEGIN_SRC sclang
+{ PinkNoise.arps.perc(0.5) } ==> \mysound;
+#+END_SRC
+
+Replay the previously stored function:
+
+#+BEGIN_SRC sclang
+\mysound.play;
+#+END_SRC
+
+
+** Playing synthdefs
+:PROPERTIES:
+:ID:       C85BF4A1-62C2-4177-9BBC-238C999C5C19
+:eval-id:  3
+:END:
+
+#+BEGIN_SRC sclang
+"default" ==> \mysound;
+#+END_SRC
+
+** Set play source without actually playing
+:PROPERTIES:
+:ID:       8098716E-FA7F-434D-96B8-72265944E415
+:eval-id:  10
+:END:
+
+Replace the play function without playing the synth:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(Rand(400, 800)) } => \mysound;
+#+END_SRC
+Trigger manually at any point:
+
+#+BEGIN_SRC
+\mysound.play;
+#+END_SRC
+
+** Releasing
+:PROPERTIES:
+:ID:       3A6A7AE9-41E9-483B-80E4-0E441D8249CA
+:eval-id:  2
+:END:
+
+Release with default time:
+
+#+BEGIN_SRC sclang
+\mysound.release;
+#+END_SRC
+
+Release with custom time:
+
+(First, start the sound again:)
+
+: \mysound.play;
+
+Now release:
+
+: \mysound release: 5;
+
+** Setting fade time (for cross fade)
+:PROPERTIES:
+:ID:       7EF85C8E-3E7C-4775-94FD-36AD8EBD29C5
+:eval-id:  24
+:END:
+
+: \mysound.fadeTime = 1;
+
+Try several different sounds with cross fade, one after the other:
+
+#+BEGIN_SRC sclang
+{ Blip.arps(Line.kr(Rand(400, 500), Rand(500, 800), 0.2), 3) } ==> \mysound;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ WhiteNoise.arps } ==> \mysound;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ PinkNoise.arps } ==> \mysound;
+#+END_SRC
+
+** Setting function/synth arguments (parameters)
+
+Set a parameter to use in the synth's arguments:
+
+600 =>.freq \mysound;
+
+Test it:
+
+{ SinOsc.arps(\freq.kr(400)) } => \mysound;
+
+Setting a new parameter value immediately sends it to the synth:
+
+: 800 =>.freq \mysound;
+
+** UGen shortcuts
+
+(Incomplete)
+
+*** sine
+
+Multiply UGen or UGen array output with =EnvGen.kr(Env.sine(\dur.kr(dur), level))=.  This provides a sine-shaped envelope, whose duration is controlled by the value of =dur= in arguments.
+
+Set the function to play.
+: { SinOsc.arps(Rand(400, 800)).sine } ==> \envtest;
+
+Test using default duration value:
+: \envtest.play;
+
+Observe changing duration of envelope according to value of =dur= from timing pattern:
+
+: [0.05, 0.1, 0.5, 1].collect(_.pn(8)).pseq |> \envtest;
+
+Alternatively:
+
+: [1, 0.1, 0.5, 2, 0.1.pn(4)].prand |> \envtest;
+
+*** perc
+
+Like =sine= but with =Env.perc=.
+
+*** arp
+
+Create control name =amp= with default value 0.1 and multiply it with the receiver UGen or UGen array.
+
+*** arps
+
+Like arp, but send the output to an array of 2 channels.  Can be used to quickly convert a UGen functions output to stereo ouput + provide amplitude control.
+
+***
+
+** Linking output to input of other Chucks
+:PROPERTIES:
+:ID:       F7A5DD81-6DE3-49B6-908F-24687D1A8D97
+:eval-id:  56
+:END:
+
+Create a Chuck to be the source:
+
+#+BEGIN_SRC sclang
+{ PinkNoise.arp() } ==> \source;
+#+END_SRC
+
+Create an effect to play the source with:
+
+#+BEGIN_SRC sclang
+{ Resonz.ar(In.ar(\in.ar(0)) * 10, LFNoise0.ar(30).range(300, 8000), 0.01) } ==> \effect1;
+#+END_SRC
+
+Send source to effect:
+
+#+BEGIN_SRC sclang
+\source => \effect1;
+#+END_SRC
+
+Second effect:
+
+#+BEGIN_SRC sclang
+{ In.ar(\in.ar(0)) * 2 * Decay2.kr(Dust.kr(1.dup, 3), 0.05, 1) } ==> \effect2;
+#+END_SRC
+
+Send first effect to second effect, creating chain =source -> effect1 -> effect2=
+
+#+BEGIN_SRC sclang
+\effect1 => \effect2;
+#+END_SRC
+
+Unlink output and send to root channel output (Channel 0):
+
+Example 1: Send effect1 directly to output, bypassing effect2:
+
+#+BEGIN_SRC sclang
+\effect1.toRoot;
+#+END_SRC
+
+Example 2: Send source directly to output, bypassing effect1:
+
+#+BEGIN_SRC sclang
+\source.toRoot;
+#+END_SRC
+
+** Playing patterns
+
+*** Playing patterns in parameters
+:PROPERTIES:
+:ID:       7877F146-0496-4DB9-B291-E395D686E48E
+:eval-id:  3
+:END:
+
+Set a function to play the pattern with
+
+{ SinOsc.arps(\freq.kr(400)) } => \patsound;
+
+Obtain successive values of parameter =freq= from a pattern:
+
+[60, 65, 67].midicps.pseq =>.freq \patsound;
+
+Try playing =patsound= repeatedly, to hear the sequence of values:
+
+\patsound.play; // run this several times in sequence
+* Operator Combinations
+
+** \taskname *> pattern
+:PROPERTIES:
+:ID:       A08D0C9C-F2D0-4053-B458-650F51457F1E
+:eval-id:  3
+:END:
+
+: \chuckname *> <number or pattern>;
+
+1. Get TaskPlayer of same name as Chuck
+2. Set its duration pattern
+3. Connect Chuck to TaskPlayer
+4. Start TaskPlayer
+
+#+BEGIN_SRC sclang
+\pock *> 0.3;
+#+END_SRC
+
+** { function } => \chuckname
+:PROPERTIES:
+:ID:       0C23640F-3427-46A2-8A8A-D6A73BEDD837
+:eval-id:  12
+:END:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(Rand(200, 400)).perc } => \pock;
+#+END_SRC
+
+** { } => \name *> pattern
+:PROPERTIES:
+:ID:       163E95E1-CA37-4DAB-AA75-4971E2872E55
+:eval-id:  32
+:END:
+
+#+BEGIN_SRC sclang
+{ Resonz.arps(PinkNoise.ar(200), Rand(1500, 2500), 0.001) } => \whistle *> 0.1;
+#+END_SRC
+
+** \chuckname *> \taskname
+:PROPERTIES:
+:ID:       7D06E4DE-45A7-40E9-976F-E073D32FBD3D
+:eval-id:  10
+:END:
+
+#+BEGIN_SRC sclang
+\pock *> \whistle;
+#+END_SRC
+
+** { } => \chuckname *> \taskname
+:PROPERTIES:
+:ID:       0F9364F7-C623-4172-B22D-343C09C4CB30
+:eval-id:  80
+:END:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(\freq.kr(800)).sine } => \sine *> \whistle;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+[70, 75, 79, 80, 82, 63].midicps.prand =>.freq \sine;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+\sine *> 0.2;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+"default" => \sine;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ f = \freq.kr(500); Blip.arps(Line.kr(f * 0.95, f, 0.1), Rand(3, 10)).perc } => \sine *> [0.1, 0.2].prand;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+\sine *> \whistle;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+\si ne *> \pock;
+#+END_SRC
