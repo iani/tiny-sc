@@ -23,15 +23,19 @@ Tiny-sc uses class =Chuck= to define containers that can run synths. It also def
 { WhiteNoise.ar(0.1) } ==> \test; // ==> starts immediately
 #+END_SRC
 
+Play different synthdef, replace previous synth:
+
 #+BEGIN_SRC sclang
-"default" ==> \test;
+"default" ==> \test; //
 #+END_SRC
 
-Parameters of a Chuck's synth process can be set as numbers or patterns:
+Parameters of a Chuck's synth process can be set as numbers:
 
 #+BEGIN_SRC sclang
 1000 =>.freq \test;
 #+END_SRC
+
+Or as patterns:
 
 #+BEGIN_SRC sclang
 Pwhite(100, 200, inf) =>.freq \test;
@@ -49,6 +53,8 @@ or a pattern:
 \test *> Prand([Pn(0.05, 4), 0.3], inf);
 #+END_SRC
 
+Stop the pattern that drives the Chuck:
+
 #+BEGIN_SRC sclang
 \test.stop;
 #+END_SRC
@@ -60,12 +66,16 @@ A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.
 \twock *> \test; // Also restarts the task player.
 #+END_SRC
 
+Remove chuck named =test= from its task - but leave the other Chucks still attached:
+
 #+BEGIN_SRC sclang
 \test.removeTask;
 #+END_SRC
 
+Stop the task, and all it's dependent Chucks:
+
 #+BEGIN_SRC sclang
-\test.stop; // stop the task, and all it's dependent Chucks
+\test.stop;
 #+END_SRC
 
 Finally, the audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request (using operator  '=>').
@@ -87,6 +97,7 @@ Unlink ths source from the effect, and send it back to default output:
 \source.toRoot;
 #+END_SRC
 
+Stop both source and effect:
 #+BEGIN_SRC sclang
 \source.release;
 \effect.release;
