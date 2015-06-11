@@ -52,6 +52,10 @@ TaskPlayer {
 
 	stop { task.stop; this.changed(\stop); } // pauses task. Does not reset.
 
+	*stopAll {
+		Library.at(TaskPlayer) do: _.stop;
+	}
+
 	replay { // restart from the beginning;
 		task.stop;
 		this.init;

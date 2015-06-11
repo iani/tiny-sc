@@ -14,7 +14,7 @@ This is version 1.0alpha (=retiny=).
 * Principles
 :PROPERTIES:
 :ID:       C9CDEADF-7149-4422-B02C-8D7A1F0C940C
-:eval-id:  103
+:eval-id:  109
 :END:
 
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
@@ -26,7 +26,7 @@ Tiny-sc uses class =Chuck= to define containers that can run synths. It also def
 Play different synthdef, replace previous synth:
 
 #+BEGIN_SRC sclang
-"default" ==> \test; //
+"default" ==> \test;
 #+END_SRC
 
 Parameters of a Chuck's synth process can be set as numbers:
@@ -101,6 +101,30 @@ Stop both source and effect:
 #+BEGIN_SRC sclang
 \source.release;
 \effect.release;
+#+END_SRC
+
+Multiple voice example:
+#+BEGIN_SRC sclang
+  (
+  { | n |
+      var name;
+      name = format("multi%", n).asSymbol;
+      n = n % 4;
+      {
+          Blip.arps(
+              1 + n / 2 * Line.kr(Rand(20, 80).midicps, Rand(20, 80).midicps, Rand(0.1, 1)),
+              Line.kr(Rand(5, 25), Rand(5, 25), 0.5)
+          ).perform([\perc, \sine]@@n)
+      } ==> name;
+
+      ([0.25.pn(14), 5 ! 3, 1, 2, 0.1 ! 10, 3] / (0.5 + (n / 4))).flat.prand *> name;
+  } ! 8;
+  )
+#+END_SRC
+
+To end the sound, stop all tasks:
+#+BEGIN_SRC sclang
+TaskPlayer.stopAll;
 #+END_SRC
 
 * Tutorial
@@ -255,11 +279,11 @@ Like arp, but send the output to an array of 2 channels.  Can be used to quickly
 
 Create a Chuck to be the source:
 
-: { PinkNoise.arp() } => \source;
+: { PinkNoise.arp() } ==> \source;
 
 Create an effect to play the source with:
 
-: { Resonz.ar(In.ar(\in.ar(0)), LFNoise0.ar(30).range(300, 8000), 3) } => \effect1;
+: { Resonz.ar(In.ar(\in.ar(0)), LFNoise0.ar(30).range(300, 8000), 3) } ==> \effect1;
 
 Send source to effect:
 
@@ -267,7 +291,7 @@ Send source to effect:
 
 Second effect:
 
-: { In.ar(\in.ar(0)) * Decay2.kr(Dust.kr(3.dup, 3), 0.5, 2) } => \effect2;
+: { In.ar(\in.ar(0)) * Decay2.kr(Dust.kr(3.dup, 3), 0.5, 2) } ==> \effect2;
 
 Send first effect to second effect, creating chain =source -> effect1 -> effect2=
 
@@ -298,93 +322,3 @@ Obtain successive values of parameter =freq= from a pattern:
 Try playing =patsound= repeatedly, to hear the sequence of values:
 
 \patsound.play; // run this several times in sequence
-
-*** Timing sequences of play events in a Chuck
-
-Play =patsound= repeatetedly at duration intervals of 0.1 seconds:
-
-: 0.1 |> \patsound;
-
-Use a pattern as source of successive durations between events:
-
-: [0.2, 0.1].pseq |> \patsound;
-*** Triggering multiple instances from one pattern
-
-: \sub |>.xoxoxoxx \master;
-
-: { WhiteNoise.arps() } ==> \sub;
-
-: 0.1 |> \master;
-
-
-: \sub2 |>.oxoxxxoo \master;
-
-: { BrownNoise.arps() } ==> \sub2;
-
-
-
-: \sub3 |>.xoxxx___ \master;
-
-: { LFPulse.arps(\freq.kr(800)) } ==> \sub3;
-
-: [60, 64, 67, 69].midicps.pseq =>.freq \sub3;
-
-
-: \sub3 |>.x_xxxooo \sub2;
-
-: \sub4 |>.xo \sub3;
-
-: { SinOsc.arp([2500, 2000]).perc(0.3) * 2 } ==> \sub4;
-
-
-: 0.1 |> \m1;
-
-: \r1 |>.xox \m1;
-
-: { WhiteNoise.arps().perc } ==> \r1;
-
-: \r2 |>.xox \m1;
-
-: [60, 62].midicps.pseq =>.freq \r2
-
-: { SinOsc.arps(\freq.kr(400)) } ==> \r2;
-
-: \r2 |>.xox \r1;
-
-: [64, 65].midicps.pseq =>.freq \r3
-
-: { SinOsc.arp(\freq.kr(400) * [1, 1.2]) } ==> \r3;
-
-: \r3 |>.xox \m1;
-
-: \r3 |>.xox \r1;
-
-: \r3 |>.xox \r2;
-
-: \r3 |>.x_x \r2;
-
-: (40..80).midicps.prand =>.freq \r3;
-
-*** Multiple voice example
-:PROPERTIES:
-:ID:       E5056ED9-4D0C-4BB4-A5B9-26429CD7FA11
-:eval-id:  14
-:END:
-
-#+BEGIN_SRC sclang
-  (
-  { | n |
-      var name;
-      name = format("multi%", n).asSymbol;
-      n = n % 4;
-      {
-          Blip.arps(
-              1 + n / 2 * Line.kr(Rand(20, 80).midicps, Rand(20, 80).midicps, Rand(0.1, 1)),
-              Line.kr(Rand(5, 25), Rand(5, 25), 0.5)
-          ).perform([\perc, \sine]@@n)
-      } ==> name;
-
-      ([0.25.pn(14), 5 ! 3, 1, 2, 0.1 ! 10, 3] / (0.5 + (n / 4))).flat.prand *> name;
-  } ! 8;
-  )
-#+END_SRC
