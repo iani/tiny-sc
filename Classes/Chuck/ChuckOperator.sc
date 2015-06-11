@@ -12,7 +12,6 @@
 
 + Symbol {
 	=> { | reader, io = \in_out | ^Chuck (this).append (Chuck (reader), io); }
-	!> { | master | ^Chuck (this).removeNotifier (Chuck (master), \play); }
 	chuck { ^Chuck (this) }
 	// can use dur =>.fadeTime \symbol instead, but this is shorter:
 	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); }
@@ -22,12 +21,34 @@
 	release { | dur = 0.1 | ^Registry.doIfFound(Chuck, this, _.release (dur)); }
 	play { ^Chuck (this).play; }
 	sched { | dur = 1, clock | ^Chuck (this).sched (dur, clock ?? { TempoClock () }) }
-	|> { | master pattern | ^Chuck (this).playSubPattern (Chuck (master), pattern) }
+	//	|> { | master pattern | ^Chuck (this).playSubPattern (Chuck (master), pattern) }
 	asBeatPattern { ^Pseq(this.asString, inf) }
 	target { ^Chuck(this).target }
 	toRoot { ^Chuck(this).toRoot }
 }
 
++ Function {
+	=> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
+	==> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
+}
+
++ Ref { // `{ } quotes function so that it evals rather than {}.plays
+	=> { | symbol |
+		^Chuck(symbol).source_(ChuckSource(value)) }
+	==> { | symbol |
+		^Chuck(symbol).source_(ChuckSource(value)).play }
+}
+
++ String {
+	=> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
+	==> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
+}
+
++ Method {
+	notImplemented { postf ("% not implemented in %\n", name, ownerClass )}
+}
+
+/*
 + Chuck {
 	//	|> { | master, pattern | ^this.playSubPattern (Chuck (master), pattern) }
 
@@ -78,24 +99,4 @@
 		)
 	}
 }
-
-+ Function {
-	=> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
-	==> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
-}
-
-+ Ref { // `{ } quotes function so that it evals rather than {}.plays
-	=> { | symbol |
-		^Chuck(symbol).source_(ChuckSource(value)) }
-	==> { | symbol |
-		^Chuck(symbol).source_(ChuckSource(value)).play }
-}
-
-+ String {
-	=> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
-	==> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
-}
-
-+ Method {
-	notImplemented { postf ("% not implemented in %\n", name, ownerClass )}
-}
+*/

@@ -50,7 +50,7 @@ TaskPlayer {
 	// resumes task if stopped, issues warning if already running
 	play { task.play; } // does not restart!
 
-	stop { task.stop } // pauses task. Does not reset.
+	stop { task.stop; this.changed(\stop); } // pauses task. Does not reset.
 
 	replay { // restart from the beginning;
 		task.stop;

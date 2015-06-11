@@ -21,12 +21,20 @@ See: file:./ChainingTaskOperators.org
 	}
 
 	asTaskPlayer { ^TaskPlayer(this) }
-	/*
-	!> { | taskName |
 	
+	removeTask {
+		^Registry.doIfFound(Chuck, this, { | c |
+			c.removePreviousTask;
+			c.release;
+		})
 	}
-	*/
-	
+	stop {
+		^Registry.doIfFound(TaskPlayer, this, { | t | t.stop });
+	}
+
+	start {
+		^Registry.doIfFound(TaskPlayer, this, { | t | t.start });
+	}
 }
 
 + Chuck {
