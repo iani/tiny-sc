@@ -14,7 +14,7 @@ ANSWER: Most probably leave this to the responsibility of the user, as switching
 ** Tests
 :PROPERTIES:
 :ID:       C0C4BD75-C57F-4BE5-AD6D-EB205CCE2EBD
-:eval-id:  12
+:eval-id:  14
 :END:
 
 #+BEGIN_SRC sclang
@@ -24,7 +24,7 @@ ANSWER: Most probably leave this to the responsibility of the user, as switching
 * { function } => \chuckname
 :PROPERTIES:
 :ID:       0C23640F-3427-46A2-8A8A-D6A73BEDD837
-:eval-id:  6
+:eval-id:  7
 :END:
 
 #+BEGIN_SRC sclang
@@ -34,7 +34,7 @@ ANSWER: Most probably leave this to the responsibility of the user, as switching
 * { } => \name *> pattern
 :PROPERTIES:
 :ID:       163E95E1-CA37-4DAB-AA75-4971E2872E55
-:eval-id:  25
+:eval-id:  28
 :END:
 
 #+BEGIN_SRC sclang
@@ -44,7 +44,7 @@ ANSWER: Most probably leave this to the responsibility of the user, as switching
 * \chuckname *> \taskname
 :PROPERTIES:
 :ID:       7D06E4DE-45A7-40E9-976F-E073D32FBD3D
-:eval-id:  4
+:eval-id:  6
 :END:
 
 #+BEGIN_SRC sclang
@@ -54,18 +54,50 @@ ANSWER: Most probably leave this to the responsibility of the user, as switching
 * { } => \chuckname *> \taskname
 :PROPERTIES:
 :ID:       0F9364F7-C623-4172-B22D-343C09C4CB30
-:eval-id:  4
+:eval-id:  53
 :END:
 
 #+BEGIN_SRC sclang
 { SinOsc.arps(\freq.kr(800)).sine } => \sine *> \whistle;
 #+END_SRC
 
-* \chuckname *>.filterpattern \taskname
+#+BEGIN_SRC sclang
+[70, 75, 79, 80, 82, 63].midicps.prand =>.freq \sine;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+\sine *> 0.15;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+"default" => \sine;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ f = \freq.kr(500); Blip.arps(Line.kr(f * 0.95, f, 0.1), Rand(3, 10)).perc } => \sine *> [0.1, 0.2].prand;
+#+End_src
+
+* source *>.filterpattern task
 :PROPERTIES:
 :ID:       323F4572-818F-44AB-AD3A-7EB8FC336510
-:eval-id:  3
+:eval-id:  4
 :END:
+
+Variants:
+1. Play new source with filtered pattern on the task of a chuck
+
+: { func } *>.pattern \chuck;
+
+2. Play a chuck with filtered pattern on a named task
+
+: \chuck *>.pattern \task;
+
+3. Play a chuck with a filtered pattern on its own task, with a new time pattern
+: \chuck *>.pattern timepattern;
+
+4. (Extension of  3): Play new source to chuck and filter with pattern into new time pattern of own task
+
+: { func } => \chuck *>.pattern timepattern;
 
 #+BEGIN_SRC sclang
 \sine *>.xo \whistle;
