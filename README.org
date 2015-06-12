@@ -24,7 +24,7 @@ This is version 1.1alpha (=retiny=).
 ** Synth Processes and their parameters
 :PROPERTIES:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
-:eval-id:  33
+:eval-id:  51
 :END:
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
@@ -65,7 +65,7 @@ Release with custom fade-out duration:
 ** Playing sequences of synth events
 :PROPERTIES:
 :ID:       C169857C-C151-4D9B-8BC3-A588AD4FFE59
-:eval-id:  37
+:eval-id:  47
 :END:
 A Chuck can play with a duration pattern, which may be a single number:
 
@@ -88,7 +88,7 @@ Stop the pattern that drives the Chuck:
 ** Task Player filters
 :PROPERTIES:
 :ID:       33EC0959-E840-4DA0-9891-0692387E5332
-:eval-id:  303
+:eval-id:  331
 :END:
 
 Feature is still experimental.
@@ -97,15 +97,16 @@ A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.
 
 Start the test Chuck with a new SynthDef function, and a pattern:
 #+BEGIN_SRC sclang
-{ Blip.arps(\freq.kr(400), 3) } +> \test *> 0.1;
-(60..90).midicps.prand +>.freq \test;
+{ Blip.arps(\freq.kr(400), 3) } +> \test2 *> 0.1;
+(60..90).midicps.prand +>.freq \test2;
 #+END_SRC
 
 Add a second chuck to the same pattern:
 
+(Note: =+>= waits to be triggered, and =**>= does not restart the task)
+
 #+BEGIN_SRC sclang
-{ SinOsc.arps(Rand(2000, 3000)).perc } +> \twock; // +> waits to be triggered
-\twock **> \test; // Use **> to avoid re-starting the task
+{ SinOsc.arps(Rand(2000, 3000)).perc } +> \twock **> \test2;
 #+END_SRC
 
 Currently there is only one kind of filter, which is created by adding an adverb with its pattern to the =*>= operator.  The adverb may consist of characters =x=, =o= and =_=.  Their meanings are:
@@ -117,19 +118,19 @@ Currently there is only one kind of filter, which is created by adding an adverb
 Example:
 
 #+BEGIN_SRC sclang
-\test **>.xooox___x_xo \test; // **> : Do not start parent task
+\test2 **>.xooox___x_xo \test2; // **> : Do not start parent task
 #+END_SRC
 
 Remove chuck named =test= from its task - but leave the other Chucks still attached:
 
 #+BEGIN_SRC sclang
-\test.removeTask;
+\test2.removeTask;
 #+END_SRC
 
 Stop the task, and all it's dependent Chucks:
 
 #+BEGIN_SRC sclang
-\test.stop;
+\test2.stop;
 #+END_SRC
 
 Here is a more complex example:
@@ -183,9 +184,9 @@ Stop the master pattern:
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  70
+:eval-id:  88
 :END:
-Finally, the audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request (using operator  '+>').
+The audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request (using operator  '+>').
 
 Start a source and an effect:
 #+BEGIN_SRC sclang
@@ -242,7 +243,7 @@ Stop source and effects:
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  96
+:eval-id:  181
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
@@ -268,27 +269,68 @@ Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
 Use task filters to change density of the texture:
 
 #+BEGIN_SRC sclang
-\multi0 *>.xoooo \multi0;
-\multi1 *>.xoooo \multi1;
-\multi2 *>.xoooo \multi2;
-\multi3 *>.x \multi3;
-\multi4 *>.xoooo \multi4;
-\multi5 *>.xoooo \multi5;
-\multi6 *>.xoooo \multi6;
-\multi7 *>.xoooo \multi7;
+\multi0 **>.xoooo \multi0; // use **> to prevent re-starting the master Task
+\multi1 **>.xoooo \multi1;
+\multi2 **>.xoooo \multi2;
+\multi3 **>.x \multi3;
+\multi4 **>.xoooo \multi4;
+\multi5 **>.xoooo \multi5;
+\multi6 **>.xoooo \multi6;
+\multi7 **>.xoooo \multi7;
 #+END_SRC
 
-Variation:
+Variation 1:
 
 #+BEGIN_SRC sclang
-\multi0 *>.xoooo \multi0;
-\multi1 *>.o \multi1;
-\multi2 *>.o \multi2;
-\multi3 *>.x \multi3;
-\multi4 *>.o \multi4;
-\multi5 *>.o \multi5;
-\multi6 *>.o \multi6;
-\multi7 *>.xo \multi7;
+\multi0 **>.xoooo \multi0;
+\multi1 **>.o \multi1;
+\multi2 **>.o \multi2;
+\multi3 **>.x \multi3;
+\multi4 **>.o \multi4;
+\multi5 **>.o \multi5;
+\multi6 **>.o \multi6;
+\multi7 **>.xo \multi7;
+#+END_SRC
+
+Variation 2:
+
+#+BEGIN_SRC sclang
+\multi7 **> \multi7;
+\multi6 **>.xo \multi7;
+\multi5 **>>.xo \_multi7;
+\multi4 **>>.xo \__multi7;
+\multi3 **>>.xo \___multi7;
+\multi2 **>>.xo \____multi7;
+\multi1 **>>.xo \_____multi7;
+\multi0 **>>.xo \______multi7;
+#+END_SRC
+
+Variation 3:
+
+#+BEGIN_SRC sclang
+\multi7 *> 0.1;
+#+END_SRC
+
+Variation 4:
+
+#+BEGIN_SRC sclang
+([0.25.pn(14), 5 ! 3, 1, 0.4 ! 10, 0.1 ! 20, 3] / 4).flat.prand *> \multi7;
+{ | n | Pfunc({ 0.01 exprand: 0.35 }) +>.amp format("multi%", n).asSymbol } ! 8;
+#+END_SRC
+
+Variation 5:
+
+#+BEGIN_SRC sclang
+([0.25.pn(14), 5 ! 3, 1, 0.4 ! 10, 0.1 ! 20, 3] / 4).flat.prand *> \multi7;
+\multi7 **> \multi7;
+\multi6 **>.xo \multi7;
+\multi5 **>>.xo \_multi7;
+\multi4 **>>.xo \__multi7;
+([0.25.pn(14), 5 ! 3, 1, 0.4 ! 10, 0.1 ! 20, 3]).flat.prand *> \multi3;
+\multi3 **>.xoo \multi3;
+\multi2 **>>.xoo \_multi3;
+\multi1 **>>.xoo \__multi3;
+\multi0 **>>.xoo \___multi3;
 #+END_SRC
 
 To end the sound, stop all tasks:
@@ -306,19 +348,10 @@ Now gradually build some background texture and rhythms with the same synth sour
 #+END_SRC
 
 #+BEGIN_SRC sclang
-\multi2 *>.xo \multi1;
+\multi2 **>>.xo \multi1;
 0.5 +>.amp \multi2;
 #+END_SRC
 
 #+BEGIN_SRC sclang
-[2, 0.2, 0.2].pseq *> \multi3;
-\multi3 *>.xo \multi3;
-#+END_SRC
-
-#+BEGIN_SRC sclang
-0.2 +>.amp \multi2;
-#+END_SRC
-
-#+BEGIN_SRC sclang
-\multi1 *>.xxooxoxo \multi1;
+\multi3 **>>.xo \_multi1;
 #+END_SRC
