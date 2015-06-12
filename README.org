@@ -215,7 +215,7 @@ Stop source and effects:
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  26
+:eval-id:  31
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
@@ -231,7 +231,7 @@ Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
               1 + n / 2 * Line.kr(Rand(20, 80).midicps, Rand(20, 80).midicps, Rand(0.1, 1)),
               Line.kr(Rand(5, 25), Rand(5, 25), 0.5)
           ).perform([\perc, \sine]@@n)
-      } ==> name;
+      } => name;
 
       ([0.25.pn(14), 5 ! 3, 1, 2, 0.1 ! 10, 3] / (0.5 + (n / 4))).flat.prand *> name;
   } ! 8;
@@ -263,7 +263,6 @@ Variation:
 \multi6 *>.o \multi6;
 \multi7 *>.xo \multi7;
 #+END_SRC
-
 
 To end the sound, stop all tasks:
 #+BEGIN_SRC sclang
