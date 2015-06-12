@@ -2,7 +2,9 @@
 
 /Compact coding tools for SuperCollider, with Emacs Org-mode intergration/
 
-_Canis plenus et libum soldum_
+*Canis plenus et libum totum*
+
+*(Libum mandere et habere)*
 
 This is version 1.1alpha (=retiny=).
 
