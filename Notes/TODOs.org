@@ -108,3 +108,7 @@ Server.default.queryAllNodes;
 :PROPERTIES:
 :DATE:     <2015-06-12 Fri 11:58>
 :END:
+
+* TODO Debug Tox addition to Tox
+
+Possibly the *>> operators add double dependants so re-adding makes the pattern play twice.

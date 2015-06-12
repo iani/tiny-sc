@@ -23,11 +23,11 @@ Always create new Tox and add it as filter to task player named by argument.
 	}
 
 	*>> { | taskName, xoPattern |
-		^Chuck(this).addToxSubfilter(Task(taskName), xoPattern, true);
+		^Chuck(this).addToxSubfilter(TaskPlayer(taskName), xoPattern, true);
 	}
 
 	**>> { | taskName, xoPattern |
-		^Chuck(this).addToxSubfilter(Task(taskName), xoPattern, false);
+		^Chuck(this).addToxSubfilter(TaskPlayer(taskName), xoPattern, false);
 	}
 	
 	asTaskPlayer { ^TaskPlayer(this) }
@@ -43,7 +43,7 @@ Always create new Tox and add it as filter to task player named by argument.
 	}
 
 	start {
-		^Registry.doIfFound(TaskPlayer, this, { | t | t.start });
+		^Registry.doIfFound(TaskPlayer, this, { | t | t.play });
 	}
 }
 
@@ -58,11 +58,11 @@ Always create new Tox and add it as filter to task player named by argument.
 	}
 
 	*>> { | taskName, xoPattern |
-		this.addToxSubfilter(Task(taskName), xoPattern, true);
+		this.addToxSubfilter(TaskPlayer(taskName), xoPattern.asString, true);
 	}
 
 	**>> { | taskName, xoPattern |
-		this.addToxSubfilter(Task(taskName), xoPattern, false);
+		this.addToxSubfilter(TaskPlayer(taskName), xoPattern.asString, false);
 	}
 
 

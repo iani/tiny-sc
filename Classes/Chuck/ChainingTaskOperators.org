@@ -3,15 +3,56 @@ UNDER DEVELOPMENT /// tests
 * Adding Tox filters to Tox filters
 :PROPERTIES:
 :ID:       4B455210-DC5E-4F27-990C-8631E1AF52E2
-:eval-id:  12
+:eval-id:  34
 :END:
 
+** Example 1
 #+BEGIN_SRC sclang
 { SinOsc.arps(2000).perc } +> \level1 *> 0.1;
 #+END_SRC
 
 #+BEGIN_SRC sclang
-{ SinOsc.arps(1800).perc } +> \level2 **>>.xo \_level1;
+{ SinOsc.arps(1800).perc } +> \level2 **>.xo \level1;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(1600).perc } +> \level3 **>>.xo \_level1;
+#+END_SRC
+
+** Example 2
+:PROPERTIES:
+:ID:       A8822947-5653-4EB7-8628-6C835652BF5E
+:eval-id:  5
+:END:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(1800).perc } +> \level1 *> [0.1, 0.2].pseq;
+//:
+{ SinOsc.arps(1500).perc } +> \level2 **>.xoo \level1;
+//:
+{ SinOsc.arps(1200).perc } +> \level3 **>>.xoo \_level1;
+//:
+{ SinOsc.arps(900).perc } +> \level4 **>>.xoo \__level1;
+//:
+{ SinOsc.arps(600).perc } +> \level5 **>>.xoo \___level1;
+#+END_SRC
+
+** Example 3
+:PROPERTIES:
+:ID:       29092FD7-03B0-4E75-ABAB-55816D8858B4
+:eval-id:  2
+:END:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(Rand(400, 500) * 5) } +> \level1 *> [0.05, 0.1].pseq;
+//:
+{ SinOsc.arps(Rand(400, 500) * 2.5) } +> \level2 **>.x_o \level1;
+//:
+{ SinOsc.arps(Rand(400, 500) * 2) } +> \level3 **>>.x_o \_level1;
+//:
+{ SinOsc.arps(Rand(400, 500) * 1) } +> \level4 **>>.x_o \__level1;
+//:
+{ SinOsc.arps(Rand(400, 500) * 0.6) } +> \level5 **>>.x_o \___level1;
 #+END_SRC
 * source *>.filterpattern task
 :PROPERTIES:
