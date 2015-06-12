@@ -2,6 +2,8 @@
 
 /Compact coding tools for SuperCollider, with Emacs Org-mode intergration/
 
+_Canis plenus et libum soldum_
+
 This is version 1.0alpha (=retiny=).
 
 * Installation
@@ -18,6 +20,10 @@ This is version 1.0alpha (=retiny=).
 :END:
 
 ** Synth Processes and their parameters
+:PROPERTIES:
+:ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
+:eval-id:  6
+:END:
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
 #+BEGIN_SRC sclang
@@ -43,6 +49,10 @@ Pwhite(100, 200, inf) =>.freq \test;
 #+END_SRC
 
 ** Playing sequences of synth events
+:PROPERTIES:
+:ID:       C169857C-C151-4D9B-8BC3-A588AD4FFE59
+:eval-id:  17
+:END:
 A Chuck can play with a duration pattern, which may be a single number:
 
 #+BEGIN_SRC sclang
@@ -65,7 +75,11 @@ A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.
 
 #+BEGIN_SRC sclang
 { SinOsc.arps(Rand(2000, 3000)).perc } => \twock; // => waits to be triggered
-\twock *> \test; // Also restarts the task player.
+\twock *> \test; // Also starts the task player if not playing
+#+END_SRC
+
+#+BEGIN_SRC sclang
+\test *>.xooox___ \test;
 #+END_SRC
 
 Remove chuck named =test= from its task - but leave the other Chucks still attached:
@@ -80,17 +94,70 @@ Stop the task, and all it's dependent Chucks:
 \test.stop;
 #+END_SRC
 
+** Task Player filters
+:PROPERTIES:
+:ID:       33EC0959-E840-4DA0-9891-0692387E5332
+:eval-id:  194
+:END:
+
+Feature is still experimental.
+
+#+BEGIN_SRC sclang
+"default" => \high; // set source of chuck high
+Pwhite(70, 90, inf).midicps =>.freq \high; // set frequency pattern for high
+{ Blip.arps(Rand(100, 300), 3).perc } => \low; // set source of chuck low
+\high *> \low; // Make high follow task pattern of low
+\low *> 0.1;   // Set and start task pattern of low to play beats at 0.1 seconds
+#+END_SRC
+
+Let =high= play a sub-pattern of the TaskPlayer =low=.
+
+- x :: play new note.
+- o :: stop note, remain silent.
+- _ :: hold previous note (do not release).
+
+#+BEGIN_SRC sclang
+\high *>.xooox___x_x_x_xx \low; // creates filter \_low and attaches chuck \high to it
+#+END_SRC
+
+Change the duration pattern of master Task =low=:
+
+#+BEGIN_SRC sclang
+\low *> Prand([Pn(0.08, 4), 0.3], inf);
+#+END_SRC
+
+Make both =high= and =low= play on the same filter of =low= Task;
+#+BEGIN_SRC sclang
+\high *>.xooox___xx_x_xxxx \low; // create filter \_low and attaches chuck \low to it
+\low *> \_low; // also make chuck low follow filter \_low
+#+END_SRC
+
+Change base beat pattern and reset =low= to that root pattern:
+#+BEGIN_SRC sclang
+\low *> 0.2;
+#+END_SRC
+
+Change base beat pattern again:
+#+BEGIN_SRC sclang
+\low *> Prand([Pn(0.12, 4), 0.3, 0.6, Pn(0.06, 2)], inf);
+#+END_SRC
+
+Synch chuck =low= with chuck =high= again:
+#+BEGIN_SRC sclang
+\low *> \_low; // also make chuck low follow filter \_low
+#+END_SRC
+
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  4
+:eval-id:  20
 :END:
 Finally, the audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request (using operator  '=>').
 
 Start a source and an effect:
 #+BEGIN_SRC sclang
 { PinkNoise.ar(0.1) } ==> \source;
-{ Resonz.arps(In.ar(\in.kr(0)) * 500, LFNoise0.kr(30).range(400, 2000), 0.001) } ==> \effect;
+{ Resonz.arp(In.ar(\in.kr(0)) * 500, LFNoise0.kr(30).range(400, 2000), 0.001) } ==> \effect;
 #+END_SRC
 
 Link the source to the effect:
@@ -104,16 +171,43 @@ Unlink the source from the effect, and send it back to default output:
 \source.toRoot;
 #+END_SRC
 
-Stop both source and effect:
+#+BEGIN_SRC sclang
+{ In.ar(\in.kr) * 3 * Decay2.kr(Dust.kr([1, 1]), 0.1, 1.5) } ==> \effect2;
+#+END_SRC
+
+Create audio link chain: source -> effect -> effect;
+
+#+BEGIN_SRC slcang
+\source => \effect;
+\effect => \effect2;
+#+END_SRC
+
+Make effect send directly to output again:
+#+BEGIN_SRC sclang
+\effect.toRoot;
+#+END_SRC
+
+Make source send to both effect and effect2
+#+BEGIN_SRC sclang
+\source => \effect2;
+#+END_SRC
+
+Keep source sending to effect and effect2, and add effect to send to effect2:
+#+BEGIN_SRC sclang
+\effect => \effect2;
+#+END_SRC
+
+Stop source and effects:
 #+BEGIN_SRC sclang
 \source.release;
 \effect.release;
+\effect2.release;
 #+END_SRC
 
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  5
+:eval-id:  11
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.

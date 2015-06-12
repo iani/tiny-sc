@@ -57,6 +57,7 @@ See: file:./ChainingTaskOperators.org
 	}
 	
 	addToTask { | task, play = false |
+		task = task.asTaskPlayer(this);
 		this.removePreviousTask;
 		this.addNotifier(task, \beat, { this.play(task.dur) });
 		this.addNotifier(task, \stop, { this.release });
@@ -78,11 +79,11 @@ See: file:./ChainingTaskOperators.org
 			this.addToTask(task, play);
 		}{
 			filterTask = Tox("_" ++ taskName);
-			[thisMethod.name, "adding ", task, "as parent to", filterTask].postln;
+			//			[thisMethod.name, "adding ", task, "as parent to", filterTask].postln;
 			filterTask.addToTask(task).pattern_(xoPattern);
-			[thisMethod.name, "the parent of ", filterTask, "is", filterTask.parent].postln;
+			// [thisMethod.name, "the parent of ", filterTask, "is", filterTask.parent].postln;
 			this.addToTask(filterTask, play);
-			[thisMethod.name, filterTask, filterTask.parent, task].postln;
+			// [thisMethod.name, filterTask, filterTask.parent, task].postln;
 		};
 	}
 }

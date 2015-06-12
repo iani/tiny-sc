@@ -21,7 +21,6 @@ Chuck {
 		^parentArgs;
 	}
 
-	
 	clone { | childName |
 		^this.new(childName, source, argsTemplate)
 	}
