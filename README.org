@@ -86,7 +86,7 @@ Stop the pattern that drives the Chuck:
 ** Task Player filters
 :PROPERTIES:
 :ID:       33EC0959-E840-4DA0-9891-0692387E5332
-:eval-id:  253
+:eval-id:  271
 :END:
 
 Feature is still experimental.
@@ -96,14 +96,14 @@ A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.
 Start the test Chuck with a new SynthDef function, and a pattern:
 #+BEGIN_SRC sclang
 { Blip.arps(\freq.kr(400), 3) } +> \test *> 0.1;
+(60..90).midicps.prand +>.freq \test;
 #+END_SRC
 
 Add a second chuck to the same pattern:
 
 #+BEGIN_SRC sclang
 { SinOsc.arps(Rand(2000, 3000)).perc } +> \twock; // +> waits to be triggered
-(60..90).midicps.prand +>.freq \test;
-\twock *> \test; // Also starts the task player if not playing
+\twock **> \test; // Use **> to avoid re-starting the task
 #+END_SRC
 
 Currently there is only one kind of filter, which is created by adding an adverb with its pattern to the =*>= operator.  The adverb may consist of characters =x=, =o= and =_=.  Their meanings are:
@@ -115,7 +115,7 @@ Currently there is only one kind of filter, which is created by adding an adverb
 Example:
 
 #+BEGIN_SRC sclang
-\test *>.xooox___ \test;
+\test *>.xooox___x_xo \test;
 #+END_SRC
 
 Remove chuck named =test= from its task - but leave the other Chucks still attached:
