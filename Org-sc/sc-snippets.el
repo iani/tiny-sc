@@ -75,7 +75,7 @@ for evaluation after processing in Emacs."
   "Evaluate region between //: comments in sclang."
   (interactive)
   (sclang-eval-string
-   (format "{ %s } => (~st ?? { \\st0.asSynthTree });"
+   (format "{ %s } +> (~st ?? { \\st0.asSynthTree });"
            (sclang-get-current-snippet))))
 
 (defun sclang-goto-next-snippet ()

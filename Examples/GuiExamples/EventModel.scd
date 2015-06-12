@@ -8,7 +8,7 @@ For practical use with SynthTree, see file SliderExamples.scd
 */
 
 //:
-{ LFNoise2.ar(\freq.kr(1000)) } => \test;
+{ LFNoise2.ar(\freq.kr(1000)) } +> \test;
 
 //:
 
@@ -40,7 +40,7 @@ a.gui({ | w |
 });
 
 //:
-{ LFNoise2.ar(\freq.kr(1000)) } => \test;
+{ LFNoise2.ar(\freq.kr(1000)) } +> \test;
 //:
 \test.addNotifier(a, \freq, { | freq |
 	\test.set(\freq, freq);

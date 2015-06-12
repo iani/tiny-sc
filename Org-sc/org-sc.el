@@ -227,7 +227,7 @@ Acts as default for org-sc-chuck-selecting-into-synthtree.")
   "Chuck current SC expression into latest selected SynthTree."
   (interactive)
   (sclang-eval-string
-   (format "{ %s } => ~st;" (sclang-get-current-snippet))))
+   (format "{ %s } +> ~st;" (sclang-get-current-snippet))))
 
 (defun org-sc-chuck-selecting-into-synthtree (synthtree-list)
   "Select a synthtree returned from SC and chuck current SC expression into it.
@@ -242,7 +242,7 @@ org-sc-select-synthtree-then-chuck"
     (if (equal major-mode 'sclang-mode)
         (setq expression (sclang-get-current-snippet))
       (setq expression (org-sc-get-section-contents)))
-    (sclang-eval-string (format "{ %s } => \\%s" expression synthtree))))
+    (sclang-eval-string (format "{ %s } +> \\%s" expression synthtree))))
 
 (defun org-sc-select-synthtree-then-chuck ()
   "Select or enter a synthree, then chuck current snippet or org-mode section
@@ -399,7 +399,7 @@ property SYNTHTREE of current section (inheritable)."
   (let ((contents (org-sc-get-section-contents)))
     (sclang-eval-string
      (format
-      "SynthTree pushIfDifferent: '%s';\n{ %s } => (~st ?? { \\st0.asSynthTree })"
+      "SynthTree pushIfDifferent: '%s';\n{ %s } +> (~st ?? { \\st0.asSynthTree })"
       (or org-sc-section-synthtree "st0")
       contents))))
 

@@ -123,7 +123,7 @@ MultiControl : IdentityDictionary {
 	}
 
 	receivePatternChuck { | pattern |
-		// TODO: fix this to work with [100, 200].pseq => ~freq;
+		// TODO: fix this to work with [100, 200].pseq +> ~freq;
 		// should be like this: 
 		// this.playPattern(pattern.asPatternTask);
 		this.playPattern (pattern); // not like this!

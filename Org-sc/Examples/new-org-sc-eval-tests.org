@@ -10,9 +10,9 @@ WhiteNoise.ar;
 
 ** ! WhiteNoise.ar;
 
-** ! { SinOsc.ar } => ~st;
+** ! { SinOsc.ar } +> ~st;
 
-** ! { WhiteNoise.ar } => ~st;
+** ! { WhiteNoise.ar } +> ~st;
 
 * test2
 :PROPERTIES:
@@ -26,6 +26,6 @@ WhiteNoise.ar;
 
 ** ! WhiteNoise.ar;
 
-** ! { SinOsc.ar(400 + 400.rand) } => ~st;
+** ! { SinOsc.ar(400 + 400.rand) } +> ~st;
 
-** ! { WhiteNoise.ar } => ~st;
+** ! { WhiteNoise.ar } +> ~st;

@@ -4,17 +4,17 @@
 
 Tox(\tox).addToTask(TaskPlayer(\t)).pattern = Pstutter(4, "xoox___oooxoxoxx_".prand);
 
-{ SinOsc.arps(Rand(400, 1500)) } => \test;
+{ SinOsc.arps(Rand(400, 1500)) } +> \test;
 
 \test.chuck.addToTask(Tox(\tox));
 
 //:
-{ Mix(Blip.arp(Rand(400, 1500) * [0.5, 1, 1.2, 8/4, 3]/3, 5)).dup / 3 } => \test;
+{ Mix(Blip.arp(Rand(400, 1500) * [0.5, 1, 1.2, 8/4, 3]/3, 5)).dup / 3 } +> \test;
 
 //:
 
 0.1 *> \t;
-{ SinOsc.arps(Rand(400, 1500)) } => \test;
+{ SinOsc.arps(Rand(400, 1500)) } +> \test;
 \test *>.xox_ \t;
 
 //:

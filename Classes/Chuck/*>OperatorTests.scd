@@ -2,7 +2,7 @@
 
 
 
-{ SinOsc.arps(Rand(500, 1000)) } ==> \test;
+{ SinOsc.arps(Rand(500, 1000)) } ++> \test;
 
 
 

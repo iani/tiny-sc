@@ -30,7 +30,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 
 { WhiteNoise.ar }.xplay;
 
-{ WhiteNoise.ar } => \test;
+{ WhiteNoise.ar } +> \test;
 
 
 

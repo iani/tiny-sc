@@ -1,19 +1,19 @@
 + Object {
-	=> { | chuckName, adverb | ^Chuck(chuckName).setArgs (adverb, this) }
+	+> { | chuckName, adverb | ^Chuck(chuckName).setArgs (adverb, this) }
 }
 
 + Event {
-	=> { | chuckName | ^Chuck(chuckName).setArgs(*this.getPairs) }
+	+> { | chuckName | ^Chuck(chuckName).setArgs(*this.getPairs) }
 }
 
 + SequenceableCollection {
-	=> { | chuckName | ^Chuck(chuckName).setArgs(*this) }
+	+> { | chuckName | ^Chuck(chuckName).setArgs(*this) }
 }
 
 + Symbol {
-	=> { | reader, io = \in_out | ^Chuck (this).append (Chuck (reader), io); }
+	+> { | reader, io = \in_out | ^Chuck (this).append (Chuck (reader), io); }
 	chuck { ^Chuck (this) }
-	// can use dur =>.fadeTime \symbol instead, but this is shorter:
+	// can use dur +>.fadeTime \symbol instead, but this is shorter:
 	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); }
 	ft_ { | dur = 0.1 | ^this.chuck.setArgs (\fadeTime, dur) }
 	out_ { | bus = 0, slot = \out | ^this.chuck.setArgs(slot, bus); }
@@ -28,20 +28,20 @@
 }
 
 + Function {
-	=> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
-	==> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
+	+> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
+	++> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
 }
 
 + Ref { // `{ } quotes function so that it evals rather than {}.plays
-	=> { | symbol |
+	+> { | symbol |
 		^Chuck(symbol).source_(ChuckSource(value)) }
-	==> { | symbol |
+	++> { | symbol |
 		^Chuck(symbol).source_(ChuckSource(value)).play }
 }
 
 + String {
-	=> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
-	==> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
+	+> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
+	++> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
 }
 
 + Method {

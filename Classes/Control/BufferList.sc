@@ -190,7 +190,7 @@ BufferList {
 			and play it in a SynthTree with the same name. */
 		TinyEmacs.selectEval(
 			this.nameList(argServer),
-			"{ 'buf'.playBuf } => '%s'.buf",
+			"{ 'buf'.playBuf } +> '%s'.buf",
 			"Play buffer in SynthTree (default: %s): "
 		)
 	}

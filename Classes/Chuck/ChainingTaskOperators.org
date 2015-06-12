@@ -20,7 +20,7 @@ Variants:
 
 4. (Extension of  3): Play new source to chuck and filter with pattern into new time pattern of own task
 
-: { func } => \chuck *>.pattern timepattern;
+: { func } +> \chuck *>.pattern timepattern;
 
 #+BEGIN_SRC sclang
 \sine *>.xo \whistle;
@@ -35,7 +35,7 @@ Variants:
 7. Start TaskPlayer
 ** 5
 
-: { func } ==> \chuckname *>.xopattern \symbol;
+: { func } ++> \chuckname *>.xopattern \symbol;
 
 1. Get TaskPlayer or filter named by \symbol.
 2. If it is a TaskPlayer, then create Tox using prepend _ rule and connect it to the TaskPlayer.
@@ -52,7 +52,7 @@ How to create other types of filters and connect them to TaskPlayers / Chucks?
 
 : \chuckname *>.filtername ClassName (parameters) *> \taskplayerorfilter
 
-: { func } ==> \chuckname *>.filtername ClassName (parameters) *> \taskplayerorfilter
+: { func } ++> \chuckname *>.filtername ClassName (parameters) *> \taskplayerorfilter
 
 
 Generally provide a name in creation of Task Filters like this:?
@@ -95,7 +95,7 @@ In order to just set the duration pattern of a TaskPlayer without affecting whic
 #+END_SRC
 
 #+BEGIN_SRC sclang
-{ SinOsc.arps(Rand(500, 1000)) } => \test *> 0.1;
+{ SinOsc.arps(Rand(500, 1000)) } +> \test *> 0.1;
 #+END_SRC
 
 Therefore

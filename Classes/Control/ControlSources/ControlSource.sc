@@ -100,10 +100,12 @@ ControlOSC : ControlSource { // set parameter based on OSC input
 	}
 	*/
 	// Used to be ++> while under testing. 
+	/*
 	+> { | st param |
 		// THIS WILL REPLACE +> ABOVE, AFTER BEING TESTED
 		^st.asSynthTree.getParam(param).addKrFunc(this);
 	}
+	*/
 }
 
 /*

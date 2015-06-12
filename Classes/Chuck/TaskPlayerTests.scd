@@ -3,7 +3,7 @@
 
 \test *> \test;
 
-{ WhiteNoise.arps.perc } ==> \test;
+{ WhiteNoise.arps.perc } ++> \test;
 
 nil *> \test;
 

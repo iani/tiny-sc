@@ -83,7 +83,7 @@ Here are initial coding tests.
 
 *** Prototyping the table's environment
 #+BEGIN_SRC sclang
-  { WhiteNoise.arps } ==> \a;
+  { WhiteNoise.arps } ++> \a;
   //:
   ~a = (
       x: _.play,
@@ -105,22 +105,22 @@ The idea for the operators is: Adding an extra > to the operator makes the funct
 #+BEGIN_SRC sclang
 
   // Set the source of the chuck:
-  { WhiteNoise.arps } ==>> \a;
+  { WhiteNoise.arps } ++>> \a;
 
   // Play the huck with a new source:
-  { BrownNoise.arps } =>> \b;
+  { BrownNoise.arps } +>> \b;
 
   // Set amp parameter of the chuck:
-  0.02 =>>.amp \c;
+  0.02 +>>.amp \c;
 
   // Send some other chuck as input to this chuck
-  \another =>> \c;
+  \another +>> \c;
 
   // schedule the chuck
   0.2 |> \c;
 
   // Set parameters of chuck
-  (freq: [500, 600].prand, amp: [0.1, 0.2].prand) =>> \c;
+  (freq: [500, 600].prand, amp: [0.1, 0.2].prand) +>> \c;
 
   // Extra operator for sending any message to the chuck: !>>
 
@@ -140,8 +140,8 @@ Note: If we want to use this in the table, we can not use | inside an operator b
 |   | .                     | _.release                                           |
 |   | anything .            | _ release: anything                                 |
 |   | asymbol . anything    | _.asymbol(*anything)  (!!!???)                      |
-|   | anything =>           | anything => theColumnsChuck                         |
-|   | anything =>.adverb    | anything =>.adverb theColumnsChuck                  |
+|   | anything +>           | anything +> theColumnsChuck                         |
+|   | anything +>.adverb    | anything +>.adverb theColumnsChuck                  |
 |   | anything *>           | anything *> theColumnsChuck                         |
 |   | anything *>.adverb    | anything *>.adverb theColumnsChuck                  |
 |   | 'symbol other than x' | play function stored using extra operators above[1] |
@@ -155,7 +155,7 @@ An alternative that is more concise, more general, and easier to parse:
 |   | x                     | _.play     (where _ is the column's Chuck)          |
 |   | .                     | _.release                                           |
 |   | _ anything            | _.anything (may include message + argument)         |
-|   | anything _            | anything _ (eg: \src => _)                          |
+|   | anything _            | anything _ (eg: \src +> _)                          |
 |   | 'symbol other than x' | play function stored using extra operators above[1] |
 |---+-----------------------+-----------------------------------------------------|
 

@@ -99,7 +99,7 @@ See: file:./ChainingTaskOperators.org
 		.pattern_(this).play;
  	}
 
-	// analogous to ==>
+	// analogous to ++>
 	**> { | symbol | // set pattern, but do not play
 		^TaskPlayer(symbol).pattern_(this);
 	}
@@ -113,7 +113,7 @@ See: file:./ChainingTaskOperators.org
 }
 
 + Ref {
-	// for: { func } ==> \chuckname *>.xofilter `taskName *> filterName;
+	// for: { func } ++> \chuckname *>.xofilter `taskName *> filterName;
 	receiveChuck { | chuck, filterPattern |
 		// ^ChuckFilterReceiver(chuck, TaskPlayer(value), filterPattern);
 	}
