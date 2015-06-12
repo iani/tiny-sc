@@ -1,5 +1,18 @@
-UNDER DEVELOPMENT
+UNDER DEVELOPMENT /// tests
 
+* Adding Tox filters to Tox filters
+:PROPERTIES:
+:ID:       4B455210-DC5E-4F27-990C-8631E1AF52E2
+:eval-id:  12
+:END:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(2000).perc } +> \level1 *> 0.1;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(1800).perc } +> \level2 **>>.xo \_level1;
+#+END_SRC
 * source *>.filterpattern task
 :PROPERTIES:
 :ID:       323F4572-818F-44AB-AD3A-7EB8FC336510

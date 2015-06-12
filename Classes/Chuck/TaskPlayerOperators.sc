@@ -1,17 +1,19 @@
-/* 
+/*
 
+================ DONE: ================
 
-Wed, Jun 10 2015, 20:35 EEST
+*>.adverb, **>.adverb: 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-INCOMPLETE - NOT TESTED! 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+If task named by argument is Tox, then set new pattern.  Else create new Tox and set pattern
 
-See: file:./ChainingTaskOperators.org
+================ TODO: (Fri, Jun 12 2015, 12:11 EEST) ================
+
+*>>.adverb, **>>.adverb: 
+
+Always create new Tox and add it as filter to task player named by argument.
+
 */
-
 + Symbol {
-
 	*> { | taskName, xoPattern | // chuck -> task
 		^Chuck(this).addToTaskOrFilter(taskName, xoPattern, true);
 	}
@@ -20,6 +22,14 @@ See: file:./ChainingTaskOperators.org
 		^Chuck(this).addToTaskOrFilter(taskName, xoPattern, false);
 	}
 
+	*>> { | taskName, xoPattern |
+		^Chuck(this).addToxSubfilter(Task(taskName), xoPattern, true);
+	}
+
+	**>> { | taskName, xoPattern |
+		^Chuck(this).addToxSubfilter(Task(taskName), xoPattern, false);
+	}
+	
 	asTaskPlayer { ^TaskPlayer(this) }
 	
 	removeTask {
@@ -46,6 +56,15 @@ See: file:./ChainingTaskOperators.org
 	**> { | taskName, xoPattern |
 		this.addToTaskOrFilter(taskName, xoPattern, false);
 	}
+
+	*>> { | taskName, xoPattern |
+		this.addToxSubfilter(Task(taskName), xoPattern, true);
+	}
+
+	**>> { | taskName, xoPattern |
+		this.addToxSubfilter(Task(taskName), xoPattern, false);
+	}
+
 
 	addToTaskOrFilter { | taskName, xoPattern, play = false | // chuck -> task
 		// TODO: integrate play switch!
@@ -78,13 +97,15 @@ See: file:./ChainingTaskOperators.org
 			task.pattern = xoPattern;
 			this.addToTask(task, play);
 		}{
-			filterTask = Tox("_" ++ taskName);
-			//			[thisMethod.name, "adding ", task, "as parent to", filterTask].postln;
-			filterTask.addToTask(task).pattern_(xoPattern);
-			// [thisMethod.name, "the parent of ", filterTask, "is", filterTask.parent].postln;
-			this.addToTask(filterTask, play);
-			// [thisMethod.name, filterTask, filterTask.parent, task].postln;
+			this.addToxSubfilter(task, xoPattern, play);
 		};
+	}
+
+	addToxSubfilter { | task, xoPattern, play = false |
+		var filter;
+		filter = Tox("_" ++ task.name);
+		filter.addToTask(task).pattern_(xoPattern);
+		this.addToTask(filter, play);
 	}
 }
 
@@ -102,11 +123,6 @@ See: file:./ChainingTaskOperators.org
 	// analogous to ++>
 	**> { | symbol | // set pattern, but do not play
 		^TaskPlayer(symbol).pattern_(this);
-	}
-
-	// TODO: Implement
-	*>> { // play with synonymous filter of this task, instead of task
-		thisMethod.notImplemented;
 	}
 
 	asToxPattern { ^this }

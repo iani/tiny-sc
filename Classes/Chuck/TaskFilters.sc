@@ -1,10 +1,11 @@
 
 TaskFilter { // subclasses implement different filter methods
 	// for now, only one task or filter can be parent;
-	var <parent;
+	var <name, <parent;
 
 	*new { | name |
-		^Registry(TaskPlayer, name.asSymbol, { super.new });
+		name = name.asSymbol;
+		^Registry(TaskPlayer, name, { this.newCopyArgs(name) });
 	}
 	
 	addToTask { | task |

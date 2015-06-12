@@ -86,7 +86,7 @@ Stop the pattern that drives the Chuck:
 ** Task Player filters
 :PROPERTIES:
 :ID:       33EC0959-E840-4DA0-9891-0692387E5332
-:eval-id:  271
+:eval-id:  303
 :END:
 
 Feature is still experimental.
@@ -115,7 +115,7 @@ Currently there is only one kind of filter, which is created by adding an adverb
 Example:
 
 #+BEGIN_SRC sclang
-\test *>.xooox___x_xo \test;
+\test **>.xooox___x_xo \test; // **> : Do not start parent task
 #+END_SRC
 
 Remove chuck named =test= from its task - but leave the other Chucks still attached:
@@ -136,41 +136,41 @@ Here is a more complex example:
 "default" +> \high; // set source of chuck high
 Pwhite(70, 90, inf).midicps +>.freq \high; // set frequency pattern for high
 { Blip.arps(Rand(100, 300), 3).perc } +> \low; // set source of chuck low
-\high *> \low; // Make high follow task pattern of low
+\high **> \low; // Make high follow task pattern of low
 \low *> 0.1;   // Set and start task pattern of low to play beats at 0.1 seconds
 #+END_SRC
 
 Let =high= play a sub-pattern of the TaskPlayer =low=.
 
 #+BEGIN_SRC sclang
-\high *>.xooox___x_xoxoxx \low; // creates filter \_low and attaches chuck \high to it
+\high **>.xooox___x_xoxoxx \low; // creates filter \_low and attaches chuck \high to it
 #+END_SRC
 
 Change the duration pattern of master Task =low=:
 
 #+BEGIN_SRC sclang
-\low *> Prand([Pn(0.08, 4), 0.3], inf);
+\low **> Prand([Pn(0.08, 4), 0.3], inf);
 #+END_SRC
 
 Make both =high= and =low= play on the same filter of =low= Task;
 #+BEGIN_SRC sclang
-\high *>.xooox___xx_x_xxxx \low; // create filter \_low and attaches chuck \low to it
-\low *> \_low; // also make chuck low follow filter \_low
+\high **>.xooox___xx_x_xxxx \low; // create filter \_low and attaches chuck \low to it
+\low **> \_low; // also make chuck low follow filter \_low
 #+END_SRC
 
 Change base beat pattern and reset =low= to that root pattern:
 #+BEGIN_SRC sclang
-\low *> 0.2;
+\low **> 0.2;
 #+END_SRC
 
 Change base beat pattern again:
 #+BEGIN_SRC sclang
-\low *> Prand([Pn(0.12, 4), 0.3, 0.6, Pn(0.06, 2)], inf);
+\low **> Prand([Pn(0.12, 4), 0.3, 0.6, Pn(0.06, 2)], inf);
 #+END_SRC
 
 Synch chuck =low= with chuck =high= again:
 #+BEGIN_SRC sclang
-\low *> \_low; // also make chuck low follow filter \_low
+\low **> \_low; // also make chuck low follow filter \_low
 #+END_SRC
 
 Stop the master pattern:
@@ -181,7 +181,7 @@ Stop the master pattern:
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  61
+:eval-id:  70
 :END:
 Finally, the audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request (using operator  '+>').
 
@@ -240,7 +240,7 @@ Stop source and effects:
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  91
+:eval-id:  96
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
