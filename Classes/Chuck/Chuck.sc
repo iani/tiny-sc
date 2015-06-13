@@ -53,7 +53,8 @@ Chuck {
 	// TODO: use notification to encapsulate current output
 	// in order to prevent hanging synths when output is overwritten before release
 	release { | argDur |
-		if (output isKindOf: Node) {
+		source.release(argDur);
+		/*		if (output isKindOf: Node) {
 			if (output.isPlaying) {
 				output.release(argDur ?? { args[\fadeTime].next });
 				output = nil;
@@ -66,6 +67,7 @@ Chuck {
 				})
 			}
 		}
+		*/
 	}
 
 	setArgs { | ... newArgs |

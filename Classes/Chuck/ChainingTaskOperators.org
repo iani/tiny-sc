@@ -7,34 +7,48 @@ UNDER DEVELOPMENT /// tests
 :END:
 
 ** Example 1
+:PROPERTIES:
+:ID:       A5F476EA-3CC8-4DAE-877D-8920CC1B5F07
+:eval-id:  46
+:END:
 #+BEGIN_SRC sclang
-{ SinOsc.arps(2000).perc } +> \level1 *> 0.1;
+{ SinOsc.arps(2000).perc } +> \level1a *> 0.1;
 #+END_SRC
 
 #+BEGIN_SRC sclang
-{ SinOsc.arps(1800).perc } +> \level2 **>.xo \level1;
+{ SinOsc.arps(1800).perc } +> \level2a **>.xo \level1a;
 #+END_SRC
 
 #+BEGIN_SRC sclang
-{ SinOsc.arps(1600).perc } +> \level3 **>>.xo \_level1;
+{ SinOsc.arps(1500).perc } +> \level3a **>>.xo \_level1a;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+\level1a*>.xooxxoxxx \level1a; // this creates an empty chuck ....
+#+END_SRC
+
+
+Testing an error in coding here:
+#+BEGIN_SRC sclang
+\level1 *>.xooxxo \level1a; // this creates an empty chuck ....
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ WhiteNoise.arps.perc } +> \level1;
 #+END_SRC
 
 ** Example 2
 :PROPERTIES:
 :ID:       A8822947-5653-4EB7-8628-6C835652BF5E
-:eval-id:  5
+:eval-id:  8
 :END:
 
 #+BEGIN_SRC sclang
-{ SinOsc.arps(1800).perc } +> \level1 *> [0.1, 0.2].pseq;
-//:
-{ SinOsc.arps(1500).perc } +> \level2 **>.xoo \level1;
-//:
-{ SinOsc.arps(1200).perc } +> \level3 **>>.xoo \_level1;
-//:
-{ SinOsc.arps(900).perc } +> \level4 **>>.xoo \__level1;
-//:
-{ SinOsc.arps(600).perc } +> \level5 **>>.xoo \___level1;
+{ SinOsc.arps(1800).perc } +> \level1b *> [0.1, 0.2].pseq;
+{ SinOsc.arps(1500).perc } +> \level2b **>.xoo \level1b;
+{ SinOsc.arps(1200).perc } +> \level3b **>>.xoo \_level1b;
+{ SinOsc.arps(900).perc } +> \level4b **>>.xoo \__level1b;
+{ SinOsc.arps(600).perc } +> \level5b **>>.xoo \___level1b;
 #+END_SRC
 
 ** Example 3

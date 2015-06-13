@@ -28,12 +28,38 @@ ChuckSource {
                  this.prPlay(args);
 			}
 		*/
-		// Release previous synth
-		if ((previousHasNoDurControl ? hasNoDurControl) and: { output isKindOf: Node }) {
-				output.release(args[\fadeTime].next);
-		};
+		this.release; // Release previous synth
 		previousHasNoDurControl = nil;
 		^this.prPlay(args);
+	}
+
+	release { | argDur |
+		var output;
+		if (chuck.isNil) {
+			postf("% is trying to release with no chuck. This is abnormal\n");
+			
+			^nil;
+		};
+		output = chuck.output;
+		if (argDur.notNil) {
+			if (output isKindOf: Node) {
+				if (output.isPlaying) {
+					output.release(argDur);
+					output = nil;
+				}{
+					output.onStart (this, { | notification |
+						if (notification.listener.isPlaying) {
+							notification.listener.release(argDur);
+							output = nil;
+						}
+					})
+				}
+			}
+		}{
+			if ((previousHasNoDurControl ? hasNoDurControl) and: { output isKindOf: Node }) {
+				output.release(chuck.args[\fadeTime].next);
+			};
+		}
 	}
 
 	prPlay { | args |

@@ -255,6 +255,7 @@ Stop the master pattern:
 
 
 
+
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
