@@ -253,8 +253,49 @@ Stop the master pattern:
 
 ** Adding Task filters to Task filters
 
+=\name *>.pattern \othername= Adds a pattern filter to =othername=, *or substitutees the new pattern to an existing pattern filter =othername=*.  In order to add a new pattern filter under an existing pattern filter, use the operator =*>= or =**>>=.
 
+Examples:
 
+*** Example 1
+:PROPERTIES:
+:ID:       A5F476EA-3CC8-4DAE-877D-8920CC1B5F07
+:eval-id:  54
+:END:
+#+BEGIN_SRC sclang
+{ SinOsc.arps(2000).perc } +> \level1a *> 0.1;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(1800).perc } +> \level2a **>.xo \level1a;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(1500).perc } +> \level3a **>>.xo \_level1a;
+#+END_SRC
+
+Add =level1a= as pattern filter of the master task =leval1a=:
+
+#+BEGIN_SRC sclang
+\level1a*>.xooxxoxxx \level1a;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+\level1a.stop;
+#+END_SRC
+
+*** Example 2
+:PROPERTIES:
+:ID:       A8822947-5653-4EB7-8628-6C835652BF5E
+:eval-id:  13
+:END:
+#+BEGIN_SRC sclang
+{ SinOsc.arps(1800).sine } +> \level1b *> [0.1, 0.2].pseq;
+{ SinOsc.arps(1500).sine } +> \level2b **>.xoo \level1b;
+{ SinOsc.arps(1200).sine } +> \level3b **>>.xoo \_level1b;
+{ SinOsc.arps(900).sine } +> \level4b **>>.xoo \__level1b;
+{ SinOsc.arps(600).sine } +> \level5b **>>.xoo \___level1b;
+#+END_SRC
 
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
