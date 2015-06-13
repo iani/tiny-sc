@@ -3,14 +3,21 @@ Thu, Jun  4 2015, 12:29 EEST
 */
 ChuckSource {
 	var <source, <chuck;
-	var hasNoDurControl = true;
+	var <hasNoDurControl = false, <previousHasNoDurControl = false;
 	var hasAudioInputs = false;
 
 	*new { | source, chuck |
 		^this.newCopyArgs( (source ?? { ["x", 0] }).asStream, chuck).init
 	}
 
-	init {}
+	init {
+		if (chuck.notNil and: { chuck.source.notNil}) { 
+			previousHasNoDurControl = chuck.source.hasNoDurControl;
+		};
+		this.examineSource;
+	}
+
+	examineSource {}
 
 	play { | output, args |
 		/*
@@ -22,18 +29,11 @@ ChuckSource {
 			}
 		*/
 		// Release previous synth
-		if (hasNoDurControl and: { output isKindOf: Node }) {
-			if (output.isPlaying) {
-				output.release(args[\fadeTime].next)
-			}{  
-				output.onStart (this, { | notification |
- 					if (notification.listener.isPlaying) {
-						notification.listener.release(args[\fadeTime].next)
-					}
-				})
-			}
+		if ((previousHasNoDurControl ? hasNoDurControl) and: { output isKindOf: Node }) {
+				output.release(args[\fadeTime].next);
 		};
-		^this.prPlay(args)
+		previousHasNoDurControl = nil;
+		^this.prPlay(args);
 	}
 
 	prPlay { | args |
@@ -44,7 +44,7 @@ ChuckSource {
 }
 
 ChuckSynthSource : ChuckSource {
-	init {
+	examineSource {
 		var desc;
 		desc = SynthDescLib.at(source.asSymbol);
 		if (desc.notNil) {
@@ -79,7 +79,7 @@ ChuckFuncSynthSource : ChuckSynthSource {
 	//	^super.new(source, chuck).makeSynthDef;
 	// }
 
-	init {
+	examineSource {
 		var def, desc;
 		def = source.asSynthDef(
 			fadeTime: chuck.args[\fadeTime],

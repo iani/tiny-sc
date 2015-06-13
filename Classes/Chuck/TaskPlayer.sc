@@ -57,7 +57,14 @@ TaskPlayer {
 		task.play;
 	} // does not restart!
 
-	stop { task.stop; this.changed(\stop); } // pauses task. Does not reset.
+	stop {
+		task.stop;
+		{
+			this.changed(\stop);
+			0.01.wait;
+			this.changed(\stop); // trying to fix hanging synths for very fast patterns
+		}.fork(SystemClock)
+	} // pauses task. Does not reset.
 
 	*stopAll {
 		Library.at(TaskPlayer) do: _.stop;

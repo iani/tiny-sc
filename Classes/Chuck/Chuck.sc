@@ -6,7 +6,7 @@ Simpler alternative to SynthTree?
 
 Chuck {
 	var <name, <source, <argsTemplate, <args, <output;
-	var <count, <clock, <>durStream, <dur; // these 4 vars will go to ChuckTask
+	// var <count, <clock, <>durStream, <dur; // these 4 vars will go to ChuckTask
 	classvar >parentArgs;
 
 	parentArgs { ^this.class.parentArgs }
@@ -40,39 +40,14 @@ Chuck {
 		}
 	}
 
-	play { | argDur, key, argCount, notification |
-		/*  Ad-hoc fix: prevent occasional re-release of synth
-			that ended through its envelope, by 
-			setting the dur to 0.03 less than argDur. 
-			Note: 0.01 shorter is not enough! 30 ms is ok.
-		*/
-		argDur !? { args[\dur] = argDur - 0.03 max: 0.001 };
-		//		argDur !? { args[\dur] = argDur };
-		#output, count = source.play(output, args, this, notification).asArray;
-		this.changed(\play, argDur, key, count ? argCount ? 0);
+	play { | argDur, notification |
+		argDur !? { args[\dur] = argDur };
+		output = source.play(output, args, this, notification);
+		this.changed(\play, argDur);
 	}
 
 	source_ { | argSource |
 		source = argSource.asChuckSource(this);
-	}
-
-	sched { | argDur argClock pattern |
-		clock.stop;
-		clock = argClock;
-		durStream = argDur.asStream;
-		/* Following is a hack to avoid hanging synths when 
-			changing back from very short durations to longer ones
-			Shortest safe duration at the moment is 0.01 */
-		this.release;
-		clock.sched (
-			0.01, //	(dur ? 0.1) min: 0.1,  // end of hack
-			{
-				args[\dur] = dur = durStream.next;
-				if (dur.isNil) { this.release } { this.play };
-				dur;
-			}
-		);
-		this.changed(\sched, dur, argClock);
 	}
 
 	// TODO: use notification to encapsulate current output
@@ -80,11 +55,13 @@ Chuck {
 	release { | argDur |
 		if (output isKindOf: Node) {
 			if (output.isPlaying) {
-				output.release(argDur ?? { args[\fadeTime].next })
+				output.release(argDur ?? { args[\fadeTime].next });
+				output = nil;
 			}{
 				output.onStart (this, { | notification |
  					if (notification.listener.isPlaying) {
-						notification.listener.release(argDur ?? { args[\fadeTime].next })
+						notification.listener.release(argDur ?? { args[\fadeTime].next });
+						output = nil;
 					}
 				})
 			}

@@ -24,7 +24,7 @@ This is version 1.1alpha (=retiny=).
 ** QUOTE Basic concepts
 :PROPERTIES:
 :ID:       5236B8F2-072A-4F5E-8C86-A001532D82B2
-:eval-id:  60
+:eval-id:  287
 :END:
 
 Tiny-sc stores objects that create synths and tasks in Library under symbols, so that they can be recalled easily by their names, in order to play, start, stop, modify, and combine them.  There are two main types of objects: A =Chuck= is an object that can execute a function or create a synth.  A =TaskPlayer= is an object that plays tasks.  One can play a Chuck on its own, or one can attach a Chuck to a TaskPlayer in order to play a sequence of events.
@@ -74,7 +74,12 @@ Pfunc({ 0.01 rrand: 1.5 }) **> \test0;
 Testing another variant, with events of duration of 20ms each, at times:
 
 #+BEGIN_SRC sclang
-[Pn(0.005, 120) ! 10, Pn(0.1, 4) ! 5, 0.5, 1.5].flat.prand **> \test0;
+[Pn(0.005, 120) ! 10, Pn(0.1, 4) ! 5, 0.5, 1.5].flat.prand *> \test0;
+#+END_SRC
+
+Test the limits ...
+#+BEGIN_SRC sclang
+0.002 *> \test0 // 500 events per second ok. Please report any glitches ...
 #+END_SRC
 
 #+BEGIN_SRC sclang
@@ -84,7 +89,7 @@ Testing another variant, with events of duration of 20ms each, at times:
 ** Synth Processes and their parameters
 :PROPERTIES:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
-:eval-id:  71
+:eval-id:  88
 :END:
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
@@ -125,7 +130,7 @@ Release with custom fade-out duration:
 ** Playing sequences of synth events
 :PROPERTIES:
 :ID:       C169857C-C151-4D9B-8BC3-A588AD4FFE59
-:eval-id:  136
+:eval-id:  144
 :END:
 A Chuck can play with a duration pattern, which may be a single number:
 
@@ -154,7 +159,7 @@ Stop the pattern that drives the Chuck:
 ** Task Player filters
 :PROPERTIES:
 :ID:       33EC0959-E840-4DA0-9891-0692387E5332
-:eval-id:  376
+:eval-id:  402
 :END:
 
 A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.  The difference is that any key of a pattern as well as the duration pattern can be changed at any time.  Furthermore, a Chuck can switch TaskPlayers at any time, and can also be made to respond to a TaskFilter which only plays at beats that match a given condition.  In this way, several Chuck instances can be synchronized by following the same TaskPlayer or its attached filters.
@@ -253,7 +258,7 @@ Stop the master pattern:
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  134
+:eval-id:  143
 :END:
 The audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request.
 
