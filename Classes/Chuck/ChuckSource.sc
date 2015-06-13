@@ -1,14 +1,16 @@
 /*
 Thu, Jun  4 2015, 12:29 EEST
-Replaces ChuckProcess.
-
 */
 ChuckSource {
 	var <source, <chuck;
+	var hasNoDurControl = true;
+	var hasAudioInputs = false;
 
 	*new { | source, chuck |
-		^this.newCopyArgs( (source ?? { ["x", 0] }).asStream, chuck)
+		^this.newCopyArgs( (source ?? { ["x", 0] }).asStream, chuck).init
 	}
+
+	init {}
 
 	play { | output, args |
 		/*
@@ -19,25 +21,16 @@ ChuckSource {
                  this.prPlay(args);
 			}
 		*/
-		if (output isKindOf: Node) {
+		// Release previous synth
+		if (hasNoDurControl and: { output isKindOf: Node }) {
 			if (output.isPlaying) {
-				// [thisMethod.name, "releasing playing output", output].postln;
 				output.release(args[\fadeTime].next)
 			}{  
-				// [thisMethod.name, "sending onStart to non0 playing output", output].postln;
 				output.onStart (this, { | notification |
  					if (notification.listener.isPlaying) {
 						notification.listener.release(args[\fadeTime].next)
 					}
 				})
-				/*
-				SystemClock.sched (0.02, {
-					if (output.isPlaying) {
-						output.release(args[\fadeTime].next)
-					};
-					nil
-					});
-				*/
 			}
 		};
 		^this.prPlay(args)
@@ -51,6 +44,16 @@ ChuckSource {
 }
 
 ChuckSynthSource : ChuckSource {
+	init {
+		var desc;
+		desc = SynthDescLib.at(source.asSymbol);
+		if (desc.notNil) {
+			hasNoDurControl = desc.controlNames.includes(\dur).not;
+		}{
+			hasNoDurControl = true;
+		}
+	}
+
 	prPlay { | args |
 		^source.play(
 			args [\target].next.asTarget,
@@ -72,31 +75,32 @@ ChuckSynthSource : ChuckSource {
 ChuckFuncSynthSource : ChuckSynthSource {
 	var <defName;
 
-	*new { | source, chuck |
-		^super.new(source, chuck).makeSynthDef;
-	}
+	//	*new { | source, chuck |
+	//	^super.new(source, chuck).makeSynthDef;
+	// }
 
-	makeSynthDef {
-		var def;
+	init {
+		var def, desc;
 		def = source.asSynthDef(
 			fadeTime: chuck.args[\fadeTime],
 			name: this.makeDefName
-		);
+		).add; // add to SynthDescLib for use in ChuckSynthSource
+		desc = def.desc;
+		if (desc.controlNames includes: 'dur') {
+			hasNoDurControl = false;
+		}{
+			hasNoDurControl = true;
+		};
 		this.moveToNullGroupIfNeeded(def);
 		def.doSend(chuck.args[\target].server);
 	}
 
-	moveToNullGroupIfNeeded { | def |
+	moveToNullGroupIfNeeded { | desc |
 		"Effect Chuck's reading from 0 bus may bleed through.".postln;
 		thisMethod.notImplemented;
 		/*  TODO:
-            It is not possible to find the input ControlNames of UGens inside the SynthDef 
-            that are of Class In and rate \audio, because there is no indication
-            of the names of the controls inside the UGens content in the def. 
-			Therefore rely on convention: if args contains keys whose name starts with
-			"in", then assume these are *AUDIO* inputs.  If any values of these keys
-			are not BusLinks, then assume that the Chuck has not been linked. 
-			In that case, set its args[\target] to GroupLink.nullGroup.
+			Get the audio Inputs from SynthDesc.inputs, and if any of these are 
+			audio rate, then set chuck.args[\target] to GroupLink.nullGroup
 		*/
 	}
 	

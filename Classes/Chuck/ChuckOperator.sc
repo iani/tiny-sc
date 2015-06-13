@@ -10,6 +10,10 @@
 	+> { | chuckName | ^Chuck(chuckName).setArgs(*this) }
 }
 
++ Chuck {
+	+> { | reader, io = \in_out | ^this.append (Chuck (reader), io); }
+}
+
 + Symbol {
 	+> { | reader, io = \in_out | ^Chuck (this).append (Chuck (reader), io); }
 	chuck { ^Chuck (this) }
@@ -47,56 +51,3 @@
 + Method {
 	notImplemented { postf ("% not implemented in %\n", name, ownerClass )}
 }
-
-/*
-+ Chuck {
-	//	|> { | master, pattern | ^this.playSubPattern (Chuck (master), pattern) }
-
-	playSubPattern { | master, pattern |
-		var stream;
-		stream =  (pattern ? 'x').asBeatPattern.asStream;
-		// Only follow one pattern.  Otherwise hanging synths ensue:
-		this.removeMessage(\play); 
-		^this.addNotifier (master, \play, { | key, argCount, notifier |
-			if (argCount == 0) {
-				this.addNotifier (master, \play, { | key, argCount, notifier |
-					var matcher, initial;
-					matcher = stream.next.asString;
-					initial = matcher [0];
-					case
-					{ initial === $x } { this.play(key, argCount) }
-					{ initial === $o } { this.release; }
-					{ initial === $_ } { /* no release */ }
-					{ matcher includes: key } { this.play(key, argCount) }
-					{ this.release }
-				});
-			}}
-		)
-	}
-
-	// draft for hierarchical matching of all inherited subpatterns
-	playSubPattern2 { | master, pattern |
-		var stream;
-		stream =  (pattern ? 'x').asBeatPattern2.asStream;
-		// Only follow one pattern.  Otherwise hanging synths ensue:
-		this.removeMessage(\play); 
-		^this.addNotifier (master, \play, { | key, argCount, notifier |
-			if (argCount[0] == 0) {
-				this.addNotifier (master, \play, { | key, argCount, notifier |
-					var myCount, matcher, initial;
-					#matcher, myCount = stream.next;
-					matcher = matcher.asString;
-					initial = matcher [0];
-					case
-					{ initial === $x } { this.play(key, argCount) }
-					{ initial === $o } { this.release; }
-					{ initial === $_ } { /* no release */ }
-					{ matcher includes: key } {
-						this.play([matcher] ++ key, [myCount] ++ argCount) }
-					{ this.release }
-				});
-			}}
-		)
-	}
-}
-*/

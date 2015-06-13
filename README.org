@@ -21,10 +21,70 @@ This is version 1.1alpha (=retiny=).
 :eval-id:  121
 :END:
 
+** QUOTE Basic concepts
+:PROPERTIES:
+:ID:       5236B8F2-072A-4F5E-8C86-A001532D82B2
+:eval-id:  60
+:END:
+
+Tiny-sc stores objects that create synths and tasks in Library under symbols, so that they can be recalled easily by their names, in order to play, start, stop, modify, and combine them.  There are two main types of objects: A =Chuck= is an object that can execute a function or create a synth.  A =TaskPlayer= is an object that plays tasks.  One can play a Chuck on its own, or one can attach a Chuck to a TaskPlayer in order to play a sequence of events.
+
+=Chuck= and =TaskPlayer= each have their own type of operator:
+
+- +> :: Do something with a Chuck
+- *> :: Do something with a TaskPlayer
+
+One can combine these in a single expression like this:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(Rand(400, 1000)) } +> \test0 *> 0.1;
+#+END_SRC
+
+To stop type:
+
+#+BEGIN_SRC sclang
+\test0.stop;
+#+END_SRC
+
+There are two variants of the above operators:
+
+- ++> :: Send a new function or SynthDef name to a Chuck, and play it immediately.
+- **> :: Modify a TaskPlayer, but do not start it.
+
+For example:
+
+Send a new SynthDef function to Chuck =test0=, and play it:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arps(Rand(1000, 2000)).perc } ++> \test0;
+#+END_SRC
+
+Send duration 2 to TaskPlayer =test0= and start it:
+
+#+BEGIN_SRC sclang
+2 *> \test0;
+#+END_SRC
+
+Send a func pattern as duration to TaskPlayer =test0=, but do not start it. Change will take effect at the next event played by the already playing TaskPlayer:
+
+#+BEGIN_SRC sclang
+Pfunc({ 0.01 rrand: 1.5 }) **> \test0;
+#+END_SRC
+
+Testing another variant, with events of duration of 20ms each, at times:
+
+#+BEGIN_SRC sclang
+[Pn(0.005, 120) ! 10, Pn(0.1, 4) ! 5, 0.5, 1.5].flat.prand **> \test0;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+\test0.stop;
+#+END_SRC
+
 ** Synth Processes and their parameters
 :PROPERTIES:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
-:eval-id:  51
+:eval-id:  71
 :END:
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
@@ -65,33 +125,37 @@ Release with custom fade-out duration:
 ** Playing sequences of synth events
 :PROPERTIES:
 :ID:       C169857C-C151-4D9B-8BC3-A588AD4FFE59
-:eval-id:  47
+:eval-id:  136
 :END:
 A Chuck can play with a duration pattern, which may be a single number:
 
 #+BEGIN_SRC sclang
-\test *> 0.1;
+{Klank.arps(`[[80,100,140,170]*Rand(1,9),nil,(4..1)],PinkNoise.ar(0.1))}+>\test1*>1;
 #+END_SRC
 
 or a pattern:
 
 #+BEGIN_SRC sclang
-\test *> Prand([Pn(0.05, 4), 0.3], inf);
+\test1 *> Prand([Pn(0.05, 30), Pn(0.2, 10), Pn(2, 2)], inf);
+#+END_SRC
+
+Set the fadeTime to create texture of cross-fading tones:
+
+#+BEGIN_SRC sclang
+\test1.fadeTime = 1;
 #+END_SRC
 
 Stop the pattern that drives the Chuck:
 
 #+BEGIN_SRC sclang
-\test.stop;
+\test1.stop;
 #+END_SRC
 
 ** Task Player filters
 :PROPERTIES:
 :ID:       33EC0959-E840-4DA0-9891-0692387E5332
-:eval-id:  331
+:eval-id:  376
 :END:
-
-Feature is still experimental.
 
 A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.  The difference is that any key of a pattern as well as the duration pattern can be changed at any time.  Furthermore, a Chuck can switch TaskPlayers at any time, and can also be made to respond to a TaskFilter which only plays at beats that match a given condition.  In this way, several Chuck instances can be synchronized by following the same TaskPlayer or its attached filters.
 
@@ -181,12 +245,17 @@ Stop the master pattern:
 #+BEGIN_SRC sclang
 \low.stop;
 #+END_SRC
+
+** Adding Task filters to Task filters
+
+
+
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  88
+:eval-id:  134
 :END:
-The audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request (using operator  '+>').
+The audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request.
 
 Start a source and an effect:
 #+BEGIN_SRC sclang
@@ -213,7 +282,7 @@ Add a second effect:
 
 Create audio link chain: source -> effect -> effect;
 
-#+BEGIN_SRC slcang
+#+BEGIN_SRC sclang
 \source +> \effect;
 \effect +> \effect2;
 #+END_SRC
@@ -243,7 +312,7 @@ Stop source and effects:
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  181
+:eval-id:  235
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
