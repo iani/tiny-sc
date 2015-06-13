@@ -62,7 +62,7 @@ TaskPlayer {
 		{
 			this.changed(\stop);
 			0.01.wait;
-			this.changed(\stop); // trying to fix hanging synths for very fast patterns
+			//	this.changed(\stop); // trying to fix hanging synths for very fast patterns
 		}.fork(SystemClock)
 	} // pauses task. Does not reset.
 

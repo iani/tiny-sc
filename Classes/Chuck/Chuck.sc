@@ -5,7 +5,7 @@ Simpler alternative to SynthTree?
 */
 
 Chuck {
-	var <name, <source, <argsTemplate, <args, <output;
+	var <name, <source, <argsTemplate, <args, <>output;
 	// var <count, <clock, <>durStream, <dur; // these 4 vars will go to ChuckTask
 	classvar >parentArgs;
 

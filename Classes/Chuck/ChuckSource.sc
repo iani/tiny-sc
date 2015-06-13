@@ -81,21 +81,24 @@ ChuckSynthSource : ChuckSource {
 	}
 
 	prPlay { | args |
-		^source.play(
-			args [\target].next.asTarget,
-			args [\out].next,
-			args [\fadeTime].next,
-			args [\addAction].next,
-			args.getPairs
-		).register;
+		^this.prepareSynth(
+			source.play(
+				args [\target].next.asTarget,
+				args [\out].next,
+				args [\fadeTime].next,
+				args [\addAction].next,
+				args.getPairs
+			)
+		);
 	}
 
-	/*
-		prPlay { | args |
-		^Synth (this,
-           args.getPairs ++ [out: outbus, fadeTime: fadeTime], target, addAction)
-		}
-	*/
+	prepareSynth { | synth |
+		^synth.onEnd(this, {
+			if (chuck.output === synth) {
+				chuck.output = nil;
+			}
+		})
+	}
 }
 
 ChuckFuncSynthSource : ChuckSynthSource {
@@ -133,24 +136,26 @@ ChuckFuncSynthSource : ChuckSynthSource {
 	prPlay { | args |
 		// play func only the first time.
 		// thereafter, create synth from defName
-		if (defName.isNil) {
-			^source.cplay(
-				args [\target].next.asTarget,
-				args [\out].next,
-				args [\fadeTime].next,
-				args [\addAction].next,
-				args.getPairs,
-				this.makeDefName;
-			).register;
-		}{
-			^defName.play(
-				args [\target].next.asTarget,
-				args [\out].next,
-				args [\fadeTime].next,
-				args [\addAction].next,
-				args.getPairs
-			).register;
-		}
+		^this.prepareSynth(
+			if (defName.isNil) {
+				source.cplay(
+					args [\target].next.asTarget,
+					args [\out].next,
+					args [\fadeTime].next,
+					args [\addAction].next,
+					args.getPairs,
+					this.makeDefName;
+				);
+			}{
+				defName.play(
+					args [\target].next.asTarget,
+					args [\out].next,
+					args [\fadeTime].next,
+					args [\addAction].next,
+					args.getPairs
+				)
+			}
+		)
 	}
 
 	makeDefName {

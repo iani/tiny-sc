@@ -21,10 +21,10 @@ This is version 1.1alpha (=retiny=).
 :eval-id:  121
 :END:
 
-** QUOTE Basic concepts
+** Basic concepts
 :PROPERTIES:
 :ID:       5236B8F2-072A-4F5E-8C86-A001532D82B2
-:eval-id:  287
+:eval-id:  358
 :END:
 
 Tiny-sc stores objects that create synths and tasks in Library under symbols, so that they can be recalled easily by their names, in order to play, start, stop, modify, and combine them.  There are two main types of objects: A =Chuck= is an object that can execute a function or create a synth.  A =TaskPlayer= is an object that plays tasks.  One can play a Chuck on its own, or one can attach a Chuck to a TaskPlayer in order to play a sequence of events.
@@ -89,7 +89,7 @@ Test the limits ...
 ** Synth Processes and their parameters
 :PROPERTIES:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
-:eval-id:  88
+:eval-id:  178
 :END:
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
@@ -112,7 +112,7 @@ Parameters of a Chuck's synth process can be set as numbers:
 Or as patterns:
 
 #+BEGIN_SRC sclang
-Pwhite(100, 200, inf) +>.freq \test;
+(50..40).midicps.pseq +>.freq \test;
 #+END_SRC
 
 Play again, using the next values from argument patterns:
@@ -130,18 +130,18 @@ Release with custom fade-out duration:
 ** Playing sequences of synth events
 :PROPERTIES:
 :ID:       C169857C-C151-4D9B-8BC3-A588AD4FFE59
-:eval-id:  144
+:eval-id:  158
 :END:
-A Chuck can play with a duration pattern, which may be a single number:
+A Chuck can play with a duration pattern, which runs in a TaskPlayer.  , which may be a single number:
 
 #+BEGIN_SRC sclang
-{Klank.arps(`[[80,100,140,170]*Rand(1,9),nil,(4..1)],PinkNoise.ar(0.1))}+>\test1*>1;
+{Klank.arps(`[[60,100,120,160]*Rand(1,9),nil,(4..1)],PinkNoise.ar(0.1))}+>\test1*>1;
 #+END_SRC
 
 or a pattern:
 
 #+BEGIN_SRC sclang
-\test1 *> Prand([Pn(0.05, 30), Pn(0.2, 10), Pn(2, 2)], inf);
+\test1 *> [Pn(0.05, 50) ! 2, Pn(0.2, 10), Pn(2, 2)].flat.prand;
 #+END_SRC
 
 Set the fadeTime to create texture of cross-fading tones:
@@ -159,7 +159,7 @@ Stop the pattern that drives the Chuck:
 ** Task Player filters
 :PROPERTIES:
 :ID:       33EC0959-E840-4DA0-9891-0692387E5332
-:eval-id:  402
+:eval-id:  453
 :END:
 
 A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.  The difference is that any key of a pattern as well as the duration pattern can be changed at any time.  Furthermore, a Chuck can switch TaskPlayers at any time, and can also be made to respond to a TaskFilter which only plays at beats that match a given condition.  In this way, several Chuck instances can be synchronized by following the same TaskPlayer or its attached filters.
@@ -207,7 +207,7 @@ Here is a more complex example:
 #+BEGIN_SRC sclang
 "default" +> \high; // set source of chuck high
 Pwhite(70, 90, inf).midicps +>.freq \high; // set frequency pattern for high
-{ Blip.arps(Rand(100, 300), 3).perc } +> \low; // set source of chuck low
+{ Blip.arps(Rand(50, 200), Rand(1, 10)).perc * 1.2 } +> \low; // set source of chuck low
 \high **> \low; // Make high follow task pattern of low
 \low *> 0.1;   // Set and start task pattern of low to play beats at 0.1 seconds
 #+END_SRC
@@ -260,7 +260,7 @@ Examples:
 *** Example 1
 :PROPERTIES:
 :ID:       A5F476EA-3CC8-4DAE-877D-8920CC1B5F07
-:eval-id:  54
+:eval-id:  67
 :END:
 #+BEGIN_SRC sclang
 { SinOsc.arps(2000).perc } +> \level1a *> 0.1;
@@ -277,7 +277,7 @@ Examples:
 Add =level1a= as pattern filter of the master task =leval1a=:
 
 #+BEGIN_SRC sclang
-\level1a*>.xooxxoxxx \level1a;
+\level1a *>.xooxxoxxx \level1a;
 #+END_SRC
 
 #+BEGIN_SRC sclang
@@ -287,10 +287,11 @@ Add =level1a= as pattern filter of the master task =leval1a=:
 *** Example 2
 :PROPERTIES:
 :ID:       A8822947-5653-4EB7-8628-6C835652BF5E
-:eval-id:  13
+:eval-id:  26
 :END:
 #+BEGIN_SRC sclang
-{ SinOsc.arps(1800).sine } +> \level1b *> [0.1, 0.2].pseq;
+[1800, 2000, 2400].pseq +>.freq \level1b;
+{ SinOsc.arps(\freq.kr(400)).sine } +> \level1b *> [0.1, 0.2].pseq;
 { SinOsc.arps(1500).sine } +> \level2b **>.xoo \level1b;
 { SinOsc.arps(1200).sine } +> \level3b **>>.xoo \_level1b;
 { SinOsc.arps(900).sine } +> \level4b **>>.xoo \__level1b;
@@ -300,9 +301,9 @@ Add =level1a= as pattern filter of the master task =leval1a=:
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  143
+:eval-id:  154
 :END:
-The audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background, by responding to a linking request.
+The audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background.
 
 Start a source and an effect:
 #+BEGIN_SRC sclang
@@ -359,7 +360,7 @@ Stop source and effects:
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  235
+:eval-id:  245
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
