@@ -5,7 +5,7 @@ Simpler alternative to SynthTree?
 */
 
 Chuck {
-	var <name, <argsTemplate, <source, <args, <>output;
+	var <name, <argsTemplate, <source, <args, <>output, <maps;
 	// var <count, <clock, <>durStream, <dur; // these 4 vars will go to ChuckTask
 	classvar >parentArgs;
 
@@ -21,7 +21,7 @@ Chuck {
 		^parentArgs;
 	}
 
-	clone { | childName | // untested!
+	clone { | childName | // untested!  - need to see what happens with args, maps!
 		^this.new(childName, source, argsTemplate)
 	}
 	
@@ -39,6 +39,7 @@ Chuck {
 			args[key] = value.asStream;
 		};
 		source = argSource.asChuckSource(this);
+		maps = IdentityDictionary();
 	}
 
 	play { | argDur, notification |
@@ -231,6 +232,25 @@ Chuck {
 		this.setArgs(outParam, 0);
 	}
 
+	map { | param bus |
+		this.unmap(param); // remove old bus if present!
+		args[param] = nil;  // but do we want to keep a copy for restoring maybe?
+		maps[param] = bus;
+		bus add: this;
+		if (output isKindOf: Node) { output.map(param, bus.index) };
+	}
+
+	unmap { | param |
+		bus = maps[param];
+		bus !? {
+			bus remove: this;
+			maps[param] = nil;
+			// IS this correct? map -1 is unmap?
+			if (output isKindOf: Node) { output.map(param, -1) };
+		};
+		// Here restore previous value of arg maybe?
+		
+	}
 	permanent { | yes = true |
 		if (yes) {
 			this.addNotifier(GroupLink, \inited, { this.play })
