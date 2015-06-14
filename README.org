@@ -152,6 +152,26 @@ Release with custom fade-out duration:
 \test.release(3);
 #+END_SRC
 
+** Starting and stopping, Tasks and Chucks
+
+- Chuck :: =play= to start playing, =release= to stop playing
+- TaskPlayer or Task filter :: =start= to start playing, =stop= to stop playing
+
+In other words:
+
+Play Chuck:
+: \symbol.play
+
+Start TaskPlayer or Task Filter:
+: \symbol.start
+
+Release (stop) Chuck:
+: \symbol.release
+
+Stop TaskPlayer or Task Filter
+
+: \symbol.stop
+
 ** Playing sequences of synth events
 :PROPERTIES:
 :ID:       C169857C-C151-4D9B-8BC3-A588AD4FFE59

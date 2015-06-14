@@ -55,8 +55,11 @@ TaskFilter { // subclasses implement different filter methods
 
 		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	*/
-	play { parent.play }
-	start { this.changed(\start) }
+	start {
+		this.connectToParent;
+		parent.start;
+	}
+	// start { this.changed(\start) }
 	beat { thisMethod.subclassResponsibility }
 	stop { this.changed(\stop) }
 	dur { ^parent.dur }

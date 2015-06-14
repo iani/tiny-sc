@@ -51,7 +51,7 @@ TaskPlayer {
 
 	// resumes task if stopped, issues warning if already running.
 	// Restarts only if task has finished;
-	play {
+	start {
 		// Note: using dur.isNil would lead to infinite loop with replay->playx
 		if (atEnd) { this.init };
 		task.play;
@@ -70,10 +70,10 @@ TaskPlayer {
 		Library.at(TaskPlayer) do: _.stop;
 	}
 
-	replay { // restart from the beginning;
+	restart { // restart from the beginning;
 		task.stop;
 		this.init;
-		this.play;
+		this.start;
 	}
 	top { ^this }
 	topval { ^val }

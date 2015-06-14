@@ -43,7 +43,7 @@ Always create new Tox and add it as filter to task player named by argument.
 	}
 
 	start {
-		^Registry.doIfFound(TaskPlayer, this, { | t | t.play });
+		^Registry.doIfFound(TaskPlayer, this, { | t | t.start });
 	}
 }
 
@@ -66,21 +66,21 @@ Always create new Tox and add it as filter to task player named by argument.
 	}
 
 
-	addToTaskOrFilter { | taskName, xoPattern, play = false | // chuck -> task
-		// TODO: integrate play switch!
+	addToTaskOrFilter { | taskName, xoPattern, start = false | // chuck -> task
+		// TODO: integrate start switch!
 		if (xoPattern.isNil) {
-			^this.addToTask(taskName, play);
+			^this.addToTask(taskName, start);
 		}{
-			^this.addToToxFilter(taskName, xoPattern.asString, play);
+			^this.addToToxFilter(taskName, xoPattern.asString, start);
 		}
 	}
 	
-	addToTask { | task, play = false |
+	addToTask { | task, start = false |
 		task = task.asTaskPlayer(this);
 		this.removePreviousTask;
-		this.addNotifier(task, \beat, { this.play(task.dur) });
-		this.addNotifier(task, \stop, { this.release }); // make sure if playing very fast
-		if (play) { task.play };
+		this.addNotifier(task, \beat, { this.start(task.dur) });
+		this.addNotifier(task, \stop, { this.release }); // make sure if starting very fast
+		if (start) { task.start };
 		^task;
 	}
 
@@ -90,22 +90,22 @@ Always create new Tox and add it as filter to task player named by argument.
 		this.removeMessage(\stop);
 	}
 
-	addToToxFilter { | taskName, xoPattern, play = false |
+	addToToxFilter { | taskName, xoPattern, start = false |
 		var task, filterTask;
 		task = TaskPlayer(taskName);
 		if (task isKindOf: Tox) {
 			task.pattern = xoPattern;
-			this.addToTask(task, play);
+			this.addToTask(task, start);
 		}{
-			this.addToxSubfilter(task, xoPattern, play);
+			this.addToxSubfilter(task, xoPattern, start);
 		};
 	}
 
-	addToxSubfilter { | task, xoPattern, play = false |
+	addToxSubfilter { | task, xoPattern, start = false |
 		var filter;
 		filter = Tox("_" ++ task.name);
 		filter.addToTask(task).pattern_(xoPattern);
-		this.addToTask(filter, play);
+		this.addToTask(filter, start);
 	}
 }
 
@@ -115,13 +115,13 @@ Always create new Tox and add it as filter to task player named by argument.
 	}
 
 	
-	*> { | chuckName | // play immediately
+	*> { | chuckName | // start immediately
 		^Chuck(chuckName).addToTask(TaskPlayer(chuckName))
-		.pattern_(this).play;
+		.pattern_(this).start;
  	}
 
 	// analogous to ++>
-	**> { | symbol | // set pattern, but do not play
+	**> { | symbol | // set pattern, but do not start
 		^TaskPlayer(symbol).pattern_(this);
 	}
 
