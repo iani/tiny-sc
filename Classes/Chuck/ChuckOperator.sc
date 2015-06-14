@@ -12,6 +12,15 @@
 
 + Chuck {
 	+> { | reader, io = \in_out | ^this.append (Chuck (reader), io); }
+	receiveFunc { | func, param |
+		case
+		{ param.isNil } { this.source_(func) }
+		{ param isKindOf: SimpleNumber } {
+			this.args[\dur] = param;
+			this.source_(func);
+		}
+		{ this.setArgs(param, func) };
+	}
 }
 
 + Symbol {
@@ -32,8 +41,8 @@
 }
 
 + Function {
-	+> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
-	++> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
+	+> { | symbol, adverb |  ^Chuck(symbol).receiveFunc(this, adverb); }
+	++> { | symbol, adverb |  ^Chuck(symbol).receiveFunc(this, adverb).play; }
 }
 
 + Ref { // `{ } quotes function so that it evals rather than {}.plays

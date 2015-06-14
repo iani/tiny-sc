@@ -1,0 +1,44 @@
+Compare to JITLib to see differences and where improvements should be made.
+
+** Example from JITLib
+:PROPERTIES:
+:ID:       A930C773-00CA-4320-B69F-02A521655500
+:eval-id:  124
+:END:
+
+Here is a "port" of the first example from the Ndef help file, to show the correspondences:
+
+#+BEGIN_SRC sclang
+\a.fadeTime = 2;
+{ SinOsc.ar([350, 351.3], 0, 0.2) } ++> \a;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+{ Pulse.ar([350, 351.3] / 4, 0.4) * 0.2 } ++> \a;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+"default" ++> \a;
+Pbrown(0, 1, 0.1, inf).linexp(0, 1, 200, 350) +>.freq \a *> 0.03;
+#+END_SRC
+
+Compare:
+#+BEGIN_SRC sclang
+Ndef(\a, Pbind(\dur, 0.03, \freq, Pbrown(0, 1, 0.1, inf).linexp(0, 1, 200, 350)) ).play;
+#+END_SRC
+
+Point 1: ++> Made to disconnect from running task!
+
+Varying the above
+#+BEGIN_SRC sclang
+{ Pulse.ar(\freq.kr(350) * [0.25, 0.2501], 0.4) * 0.2 } +> \a;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+\a.fadeTime = 0.3;
+Pbrown(0, 1, 0.1, inf).linexp(0, 1, 200, 350) +>.freq \a *> 0.03;
+#+END_SRC
+
+Point 2: Worth providing this syntax?
+
+(source: "default", freq: Pbrown(0, 1, 0.1, inf).linexp(0, 1, 200, 350), dur: 0.03) ++> \a

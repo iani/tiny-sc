@@ -41,6 +41,8 @@ Chuck {
 	}
 
 	play { | argDur, notification |
+		// experimental: remove from task if played without duration:
+		argDur ?? { this.removePreviousTask };
 		argDur !? { args[\dur] = argDur };
 		output = source.play(output, args, this, notification);
 		this.changed(\play, argDur);
