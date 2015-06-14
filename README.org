@@ -197,7 +197,7 @@ Start the test2 Chuck with a SynthDef function, and a pattern:
 
 Add a second chuck to the same pattern:
 
-(Note: =+>= waits to be triggered, ansd =**>= does not restart the task)
+(Note: =+>= waits to be triggered, and =**>= does not restart the task)
 
 #+BEGIN_SRC sclang
 { SinOsc.arps(Rand(2000, 3000)).perc } +> \twock **> \test2;
@@ -227,7 +227,7 @@ Stop the task, and all it's dependent Chucks:
 \test2.stop;
 #+END_SRC
 
-Here is a more complex example:
+Here is a more complicated example:
 
 #+BEGIN_SRC sclang
 "default" +> \high; // set source of chuck high
@@ -278,7 +278,7 @@ Stop the master pattern:
 
 ** Adding Task filters to Task filters
 
-=\name *>.pattern \othername= Adds a pattern filter to =othername=, *or substitutees the new pattern to an existing pattern filter =othername=*.  In order to add a new pattern filter under an existing pattern filter, use the operator =*>= or =**>>=.
+=\name *>.pattern \othername= Adds a pattern filter to =othername=, *or substitutees the new pattern to an existing pattern filter =othername=*.  In order to add a new pattern filter under an existing pattern filter, use the operator =*>>= or =**>>=.
 
 Examples:
 
