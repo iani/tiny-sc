@@ -21,7 +21,9 @@ GroupLink {
 			default.remakeReaderGroups;
 			default.remakeWriterGroups;
 			Server.default.queryAllNodes;
+			0.1.wait;
 			"GroupLink inited - can start using tiny-sc".postln;
+			this.changed(\inited);
 		}.fork;
 	}
 

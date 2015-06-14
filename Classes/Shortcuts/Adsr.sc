@@ -1,5 +1,5 @@
 /*
-ADSR envelope shortcut
+Envelope and input shortcuts
  
 IZ Tue, 25 Feb 2014 16:23:39 
 
@@ -57,9 +57,9 @@ Sine {
 }
 
 Inp { 
-	*ar { | inputName = \in, channelNum, numChannels = 1 |
+	*ar { | inputName = \in, channelNum = 0, numChannels = 1 |
 		^In.ar(
-			inputName.kr(channelNum ?? { Server.default.options.numInputBusChannels }),
+			inputName.kr(channelNum),
 			numChannels
 		);
 	}

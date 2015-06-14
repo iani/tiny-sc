@@ -5,7 +5,7 @@ Simpler alternative to SynthTree?
 */
 
 Chuck {
-	var <name, <source, <argsTemplate, <args, <>output;
+	var <name, <argsTemplate, <source, <args, <>output;
 	// var <count, <clock, <>durStream, <dur; // these 4 vars will go to ChuckTask
 	classvar >parentArgs;
 
@@ -21,23 +21,24 @@ Chuck {
 		^parentArgs;
 	}
 
-	clone { | childName |
+	clone { | childName | // untested!
 		^this.new(childName, source, argsTemplate)
 	}
 	
 	*new { | name, source, argsTemplate |
 		^Registry(Chuck, name, {
-			this.newCopyArgs(name, source.asChuckSource, argsTemplate ?? {
+			this.newCopyArgs(name, argsTemplate ?? {
 				(out: 0, fadeTime: 0.02)
-			}).init;
+			}).init(source);
 		})
 	}
 
-	init {
+	init { | argSource |
 		args = ().parent_(this.parentArgs);
 		argsTemplate keysValuesDo: { | key value |
 			args[key] = value.asStream;
-		}
+		};
+		source = argSource.asChuckSource(this);
 	}
 
 	play { | argDur, notification |
@@ -52,8 +53,6 @@ Chuck {
 		source = argSource.asChuckSource(this);
 	}
 
-	// TODO: use notification to encapsulate current output
-	// in order to prevent hanging synths when output is overwritten before release
 	release { | argDur |
 		source.release(argDur);
 		/*		if (output isKindOf: Node) {
@@ -230,6 +229,14 @@ Chuck {
 	
 	setOutput2Root { | outParam = \out |
 		this.setArgs(outParam, 0);
+	}
+
+	permanent { | yes = true |
+		if (yes) {
+			this.addNotifier(GroupLink, \inited, { this.play })
+		}{
+			this.removeNotifier(GroupLink);
+		}
 	}
 	
 	printOn { arg stream;

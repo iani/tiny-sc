@@ -78,4 +78,13 @@ TaskPlayer {
 	top { ^this }
 	topval { ^val }
 	asTaskPlayer { ^this }
+
+	permanent { | yes = true |
+		if (yes) {
+			this.addNotifier(GroupLink, \inited, { this.start })
+		}{
+			this.removeNotifier(GroupLink);
+		}
+	}
+
 }

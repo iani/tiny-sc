@@ -14,10 +14,10 @@ ChuckSource {
 		if (chuck.notNil and: { chuck.source.notNil}) { 
 			previousHasNoDurControl = chuck.source.hasNoDurControl;
 		};
-		this.examineSource;
+		this.makeSource;
 	}
 
-	examineSource {}
+	makeSource {}
 
 	play { | output, args |
 		/*
@@ -35,11 +35,6 @@ ChuckSource {
 
 	release { | argDur |
 		var output;
-		if (chuck.isNil) {
-			postf("% is trying to release with no chuck. This is abnormal\n");
-			
-			^nil;
-		};
 		output = chuck.output;
 		if (argDur.notNil) {
 			if (output isKindOf: Node) {
@@ -70,7 +65,7 @@ ChuckSource {
 }
 
 ChuckSynthSource : ChuckSource {
-	examineSource {
+	makeSource {
 		var desc;
 		desc = SynthDescLib.at(source.asSymbol);
 		if (desc.notNil) {
@@ -98,6 +93,11 @@ ChuckSynthSource : ChuckSource {
 				chuck.output = nil;
 			}
 		})
+		/* // Better investigate sending map messages in bundle at creation time
+		.onStart(this, { // notify for conrolbusses to map
+			chuck.changed(\synthStarted);
+		})
+		*/
 	}
 }
 
@@ -108,7 +108,7 @@ ChuckFuncSynthSource : ChuckSynthSource {
 	//	^super.new(source, chuck).makeSynthDef;
 	// }
 
-	examineSource {
+	makeSource {
 		var def, desc;
 		def = source.asSynthDef(
 			fadeTime: chuck.args[\fadeTime],
