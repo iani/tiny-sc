@@ -1,3 +1,12 @@
+/* 
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	TODO: 
+	
+	Rewrite start/stop to disconnect / reconnect to parent when starting/stopping
+	
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+*/
 
 TaskFilter { // subclasses implement different filter methods
 	// for now, only one task or filter can be parent;
@@ -10,11 +19,18 @@ TaskFilter { // subclasses implement different filter methods
 	
 	addToTask { | task |
 		this.removeFromTask;
-		parent = task; 
+		parent = task;
 		this.addNotifier(task, \start, { this.start });
 		this.addNotifier(task, \beat, { this.beat });
 		this.addNotifier(task, \stop, { this.stop });
 		//	^task;
+	}
+
+	// NEW:
+	connectToParent {
+		this.addNotifier(parent, \start, { this.start });
+		this.addNotifier(parent, \beat, { this.beat });
+		this.addNotifier(parent, \stop, { this.stop });		
 	}
 	
 	removeFromTask { 
@@ -25,6 +41,20 @@ TaskFilter { // subclasses implement different filter methods
 		parent = nil;
 	}
 
+	// NEW:
+	disconnectFromParent {
+		this.removeMessage(\start);
+		this.removeMessage(\beat);
+		this.removeMessage(\stop);
+	}
+
+	/* 
+		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+		Rewrite these to disconnect / reconnect to parent when starting/stopping
+
+		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	*/
 	play { parent.play }
 	start { this.changed(\start) }
 	beat { thisMethod.subclassResponsibility }

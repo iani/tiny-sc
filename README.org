@@ -209,6 +209,10 @@ Currently there is only one kind of filter, which is created by adding an adverb
 - o :: stop note, remain silent.
 - _ :: hold previous note (do not release).
 
+*Important: The subfilter to a Task is registered under its own name, which is created automatically by prepending underscore =_= to the name of the parent task.*
+
+In the example below, the filter task of =test2= has the name =_test2=.
+
 Example:
 
 #+BEGIN_SRC sclang
@@ -285,7 +289,7 @@ Examples:
 *** Example 1
 :PROPERTIES:
 :ID:       A5F476EA-3CC8-4DAE-877D-8920CC1B5F07
-:eval-id:  72
+:eval-id:  94
 :END:
 #+BEGIN_SRC sclang
 { SinOsc.arps(2000).perc } +> \level1a *> 0.1;
@@ -312,7 +316,7 @@ Add =level1a= as pattern filter of the master task =leval1a=:
 *** Example 2
 :PROPERTIES:
 :ID:       A8822947-5653-4EB7-8628-6C835652BF5E
-:eval-id:  32
+:eval-id:  37
 :END:
 #+BEGIN_SRC sclang
 [1800, 2000, 2400].pseq +>.freq \level1b;
@@ -322,6 +326,9 @@ Add =level1a= as pattern filter of the master task =leval1a=:
 { SinOsc.arps(900).sine } +> \level4b **>>.xoo \__level1b;
 { SinOsc.arps(600).sine } +> \level5b **>>.xoo \___level1b;
 #+END_SRC
+
+As explained above, the task-filters are stored under names generated automatically by prepending =_= to the name of the parent task.
+
 
 #+BEGIN_SRC sclang
 \level1b.stop;
