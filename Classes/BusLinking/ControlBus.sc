@@ -4,6 +4,7 @@ Container for a Control Bus, and operators for linking it it to output from Cont
 
 ControlBus {
 	var <name, numChannels = 1, <server, <bus;
+	var <writers, <readers;
 
 	*all { ^Library.at(ControlBus).values }
 
@@ -16,7 +17,9 @@ ControlBus {
 
 	init {
 		this.makeBus;
-		ServerBootCheck add: { this.makeBus }
+		ServerBootCheck add: { this.makeBus };
+		writers = Set();
+		readers = Set();
 	}
 	
 	makeBus {  bus = Bus.control(server, numChannels) }
@@ -24,12 +27,17 @@ ControlBus {
 	index { ^bus.index }
 
 	free {
-		// besides freeing, notify with "changed" so that chucks unmap?
-		this.changed(\free);
-		bus.free;
-		//		this.remove;
+		/* never initiate free from here.
+			Instged, remove writers and readers, and let this remove
+			itself when it no longer has any readers or writers!
+		*/
 		this.objectClosed; // this should also remove ... ?
 	}
+
+	addReader { }
+	removeReader { }
+	addWriter { }
+	removeWriter { }
 }
 
 /*

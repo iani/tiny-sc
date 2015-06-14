@@ -6,8 +6,7 @@ Simpler alternative to SynthTree?
 
 Chuck {
 	var <name, <argsTemplate, <source, <args, <>output, <maps;
-	// var <count, <clock, <>durStream, <dur; // these 4 vars will go to ChuckTask
-	classvar >parentArgs;
+§	classvar >parentArgs;
 
 	parentArgs { ^this.class.parentArgs }
 	*parentArgs {
@@ -232,18 +231,25 @@ Chuck {
 		this.setArgs(outParam, 0);
 	}
 
+	krOut { | bus |
+		// connect to kr bus. See ControlBus
+		// different from append, because no Groups involved (? really? - must check !?)
+		thisMethod.notImplemented;
+		
+	}
+	
 	map { | param bus |
 		this.unmap(param); // remove old bus if present!
 		args[param] = nil;  // but do we want to keep a copy for restoring maybe?
 		maps[param] = bus;
-		bus add: this;
+		bus addReader: this;
 		if (output isKindOf: Node) { output.map(param, bus.index) };
 	}
 
 	unmap { | param |
 		bus = maps[param];
 		bus !? {
-			bus remove: this;
+			bus removeReader: this;
 			maps[param] = nil;
 			// IS this correct? map -1 is unmap?
 			if (output isKindOf: Node) { output.map(param, -1) };
@@ -251,6 +257,7 @@ Chuck {
 		// Here restore previous value of arg maybe?
 		
 	}
+
 	permanent { | yes = true |
 		if (yes) {
 			this.addNotifier(GroupLink, \inited, { this.play })
@@ -266,4 +273,9 @@ Chuck {
 		stream << "Chuck(" << name << ")";
 	}
 
+	remove {
+		// TODO! MORE STUFF MUST BE DONE HERE!
+		
+		this.objectClosed;
+	}
 }
