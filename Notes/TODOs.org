@@ -1,50 +1,28 @@
-* DONE Optimize ChuckSynthSource
-:LOGBOOK:
-- State "DONE"       from "DELEGATED"  [2015-06-11 Thu 15:58] \\
-  Done!
-:END:
-:PROPERTIES:
-:DATE:     <2015-06-09 Tue 12:51>
-:END:
+* !!! REDO Bus linking using @> and buslinks bound to symbols
 
-Extend ChuckSynthSource with new subclass ChuckFuncSynthSource to add the SynthDef of the Synth source function when a new ChuckFuncSynthSource is created, and create synths with =Synth()= instead of ={ ... }.play=.
+For audio busses:
 
-This is easy: =Chuck:source({ ... })= (called by: ={ ... } +> \aChuck=) always creates a new ChuckSynthSource instance.
+- \bus @>.input \chuck :: Chuck reads from this bus at parameter named by adverb ('input').
+- \bus <@.output \chuck :: Chuck writes to this bus at parameter named by adverb ('output').
 
-Method ChuckFuncSynthSource:new:
+For control busses
 
-- Construct the name of the SynthDef like this =format("<%>", name)=.
-- Immediately construct and =add= the SynthDef, using Function:asSynthDef, possibly with modification of GraphBuilder.wrapOut to add fadeTime as control instead of as one-time-only (fixed) value.
-- Use modified Function:play method (possibly named =add=) to /store synth name and notify the containing chuck (!) that it has completed loading/.
+- \bus %>.input \chuck :: Chuck reads from this bus at parameter named by adverb ('input').
+- \bus <%.output \chuck :: Chuck writes to this bus at parameter named by adverb ('output').
 
-Method ChuckFuncSynthSource:prPlay:
+But you can also use shortcuts:
 
-Check if synthdef name is set.
-- If it is nil, add ChuckFuncSynthSource instance as listener to the containing Chuck instance on message =defloaded= and create the new synth then.
-- If it is not nil, play the new synth using the stored synthdef name string.
+'source.out>bus.numchans@effect1.in>bus.numchans@effect2'.alink; // shortcut: al // = ar
 
-Note: The ChuckSource class hierarchy becomes:
-- ChuckSource
-  - Chucksynthsource :: play strings as DefNames with Synth()
-    - ChuckFuncSynthSource :: play functions by adding them as SynthDefs and storing the string to play synths as soon as the def is loaded on the server.
+'source.out>bus.numchans@effect1.in>bus.numchans@effect2'.klink; // shortcut: kl // = kr
 
-* DONE Chuck: Store =out=, =fadeTime= in event, not parent
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2015-06-11 Thu 15:59] \\
-  done
-:END:
-:PROPERTIES:
-:DATE:     <2015-06-09 Tue 14:04>
-:END:
-
-So that they be always included in args when playing ChuckSynthSource with new methods resulting from [[*Optimize%20ChuckSynthSource][Optimize ChuckSynthSource]].
 
 * TODO Chuck: Store =target= in extra instance var?
 :PROPERTIES:
 :DATE:     <2015-06-09 Tue 14:04>
 :END:
 
-* DONE Chuck: Rewrite scheduling using a separate class.
+** DONE Chuck: Rewrite scheduling using a separate class.
 :LOGBOOK:
 - State "DONE"       from "STARTED"    [2015-06-12 Fri 11:42] \\
   done
@@ -109,6 +87,75 @@ Server.default.queryAllNodes;
 :DATE:     <2015-06-12 Fri 11:58>
 :END:
 
-* TODO Debug Tox addition to Tox
+* TODO Complete implementation of BusLink unlink method
+
+* TODO Investigate use of ().play as play method in ChuckSource
+
+* STARTED Investigate event sharing/filtering in Chuck (like in Tiny 0)
+
+This is linked to using ().play as play method
+
+Task could be generating the events to be shared. But how to access the shared data?
+
+First steps:
+
+- Passing task as argument to Chuck.play, and having task process Chucks args with its own data.
+
+Next:
+
+Design new class EventFilter that will either be a subclass of Event or contain one, and will respond to method =passArgs=
+
+* All DONE tasks
+** DONE Optimize ChuckSynthSource
+:LOGBOOK:
+- State "DONE"       from "DELEGATED"  [2015-06-11 Thu 15:58] \\
+  Done!
+:END:
+:PROPERTIES:
+:DATE:     <2015-06-09 Tue 12:51>
+:END:
+
+Extend ChuckSynthSource with new subclass ChuckFuncSynthSource to add the SynthDef of the Synth source function when a new ChuckFuncSynthSource is created, and create synths with =Synth()= instead of ={ ... }.play=.
+
+This is easy: =Chuck:source({ ... })= (called by: ={ ... } +> \aChuck=) always creates a new ChuckSynthSource instance.
+
+Method ChuckFuncSynthSource:new:
+
+- Construct the name of the SynthDef like this =format("<%>", name)=.
+- Immediately construct and =add= the SynthDef, using Function:asSynthDef, possibly with modification of GraphBuilder.wrapOut to add fadeTime as control instead of as one-time-only (fixed) value.
+- Use modified Function:play method (possibly named =add=) to /store synth name and notify the containing chuck (!) that it has completed loading/.
+
+Method ChuckFuncSynthSource:prPlay:
+
+Check if synthdef name is set.
+- If it is nil, add ChuckFuncSynthSource instance as listener to the containing Chuck instance on message =defloaded= and create the new synth then.
+- If it is not nil, play the new synth using the stored synthdef name string.
+
+Note: The ChuckSource class hierarchy becomes:
+- ChuckSource
+  - Chucksynthsource :: play strings as DefNames with Synth()
+    - ChuckFuncSynthSource :: play functions by adding them as SynthDefs and storing the string to play synths as soon as the def is loaded on the server.
+
+** DONE Chuck: Store =out=, =fadeTime= in event, not parent
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2015-06-11 Thu 15:59] \\
+  done
+:END:
+:PROPERTIES:
+:DATE:     <2015-06-09 Tue 14:04>
+:END:
+
+So that they be always included in args when playing ChuckSynthSource with new methods resulting from [[*Optimize%20ChuckSynthSource][Optimize ChuckSynthSource]].
+
+** DONE Debug Tox addition to Tox
+:LOGBOOK:
+- State "DONE"       from "DELEGATED"  [2015-06-15 Mon 10:17] \\
+  done
+- State "DELEGATED"  from "WAITING"    [2015-06-15 Mon 10:17]
+:END:
+:PROPERTIES:
+:ID:       4606C6B7-6175-46CB-B0F7-52434245CFBA
+:eval-id:  4
+:END:
 
 Possibly the *>> operators add double dependants so re-adding makes the pattern play twice.

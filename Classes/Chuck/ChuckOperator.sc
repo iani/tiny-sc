@@ -24,7 +24,14 @@
 }
 
 + Symbol {
-	+> { | reader, io = \in_out | ^Chuck (this).append (Chuck (reader), io); }
+	+> { | reader, io = \in_out |
+		^Chuck (this).append (Chuck (reader),
+			*io.asString.split($_).collect(_.asSymbol));
+	}
+	!> { | reader, io = \in_out |
+		^Chuck (this).removeReader (Chuck(reader),
+			*io.asString.split($_).collect(_.asSymbol));
+	}
 	chuck { ^Chuck (this) }
 	// can use dur +>.fadeTime \symbol instead, but this is shorter:
 	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); }

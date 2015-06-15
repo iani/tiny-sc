@@ -78,7 +78,7 @@ Always create new Tox and add it as filter to task player named by argument.
 	addToTask { | task, start = false |
 		task = task.asTaskPlayer(this);
 		this.removePreviousTask;
-		this.addNotifier(task, \beat, { this.start(task.dur) });
+		this.addNotifier(task, \beat, { this.play(task) });
 		this.addNotifier(task, \stop, { this.release }); // make sure if starting very fast
 		if (start) { task.start };
 		^task;

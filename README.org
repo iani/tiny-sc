@@ -204,7 +204,7 @@ Stop the pattern that drives the Chuck:
 ** Task Player filters
 :PROPERTIES:
 :ID:       33EC0959-E840-4DA0-9891-0692387E5332
-:eval-id:  516
+:eval-id:  523
 :END:
 
 A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.  The difference is that any key of a pattern as well as the duration pattern can be changed at any time.  Furthermore, a Chuck can switch TaskPlayers at any time, and can also be made to respond to a TaskFilter which only plays at beats that match a given condition.  In this way, several Chuck instances can be synchronized by following the same TaskPlayer or its attached filters.
@@ -309,7 +309,7 @@ Examples:
 *** Example 1
 :PROPERTIES:
 :ID:       A5F476EA-3CC8-4DAE-877D-8920CC1B5F07
-:eval-id:  94
+:eval-id:  99
 :END:
 #+BEGIN_SRC sclang
 { SinOsc.arps(2000).perc } +> \level1a *> 0.1;
@@ -336,7 +336,7 @@ Add =level1a= as pattern filter of the master task =leval1a=:
 *** Example 2
 :PROPERTIES:
 :ID:       A8822947-5653-4EB7-8628-6C835652BF5E
-:eval-id:  37
+:eval-id:  40
 :END:
 #+BEGIN_SRC sclang
 [1800, 2000, 2400].pseq +>.freq \level1b;
@@ -349,7 +349,6 @@ Add =level1a= as pattern filter of the master task =leval1a=:
 
 As explained above, the task-filters are stored under names generated automatically by prepending =_= to the name of the parent task.
 
-
 #+BEGIN_SRC sclang
 \level1b.stop;
 #+END_SRC
@@ -357,14 +356,14 @@ As explained above, the task-filters are stored under names generated automatica
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  159
+:eval-id:  617
 :END:
 The audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background.
 
 Start a source and an effect:
 #+BEGIN_SRC sclang
 { PinkNoise.ar(0.1) } ++> \source;  // this will be heard without effect - not linked yet!
-{ Resonz.arp(In.ar(\in.kr(0)) * 500, LFNoise0.kr(30).range(400, 2000), 0.001) } ++> \effect;
+{ Resonz.arp(In.ar(\in.ar(0)) * 350, LFNoise0.kr(30).range(400, 2000), 0.001) } ++> \effect;
 #+END_SRC
 
 Link the source to the effect:
@@ -375,13 +374,13 @@ Link the source to the effect:
 Unlink the source from the effect, and send it back to default output:
 
 #+BEGIN_SRC sclang
-\source.toRoot;
+\source.toRoot;  // now is "unlink" - need to provide both unlink and toRoot
 #+END_SRC
 
 Add a second effect:
 
 #+BEGIN_SRC sclang
-{ In.ar(\in.kr) * 3 * Decay2.kr(Dust.kr([1, 1]), 0.01, 1.0) } ++> \effect2;
+{ In.ar(\in.kr(0)).abs * 7 * Decay.kr(Dust.kr([1.5, 1.5]), 1.5) } ++> \effect2;
 #+END_SRC
 
 Create audio link chain: source -> effect -> effect;
@@ -396,7 +395,7 @@ Make the first effect send directly to output again, bypassing the second effect
 \effect.toRoot;
 #+END_SRC
 
-Make source send to both effect and effect2
+Add source to effect2.
 #+BEGIN_SRC sclang
 \source +> \effect2;
 #+END_SRC
@@ -404,6 +403,11 @@ Make source send to both effect and effect2
 Keep source sending to effect and effect2, and make effect send to effect2:
 #+BEGIN_SRC sclang
 \effect +> \effect2;
+#+END_SRC
+
+NEEDS CORRECTION! Remove source from effect2
+#+BEGIN_SRC sclang
+\source !> \effect2; // also removes from effect!
 #+END_SRC
 
 Stop source and effects:

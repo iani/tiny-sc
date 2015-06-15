@@ -34,6 +34,14 @@ TaskPlayer {
 	makeValStream { valStream = valPattern.asStream; }
 	
 	makeStream { stream = pattern.asStream }
+
+	passArgs { | args |
+		//	val.passArgs(args); // Not this one, but the next line:
+		// args.passArgs(val); // Yes, this one gets values from val and filters them.
+		// See EventFilter class in notes TODOs.org
+		args[\dur] = dur;
+	}
+	
 	makeTask {
 		if (task.isPlaying) { task.stop };
 		task = Task({
@@ -87,4 +95,12 @@ TaskPlayer {
 		}
 	}
 
+}
+
++ Event {
+	passArgs { | args |
+		args ? [] keysValuesDo: { | key, value |
+			this[key] = value;
+		}
+	}
 }

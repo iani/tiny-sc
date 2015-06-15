@@ -48,6 +48,9 @@ TaskFilter { // subclasses implement different filter methods
 		this.removeMessage(\stop);
 	}
 
+	passArgs { | args |
+		args[\dur] = this.dur;
+	}
 	/* 
 		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

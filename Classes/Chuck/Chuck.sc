@@ -6,7 +6,7 @@ Simpler alternative to SynthTree?
 
 Chuck {
 	var <name, <argsTemplate, <source, <args, <>output, <maps;
-§	classvar >parentArgs;
+	classvar >parentArgs;
 
 	parentArgs { ^this.class.parentArgs }
 	*parentArgs {
@@ -41,14 +41,16 @@ Chuck {
 		maps = IdentityDictionary();
 	}
 
-	play { | argDur, notification |
-		// experimental: remove from task if played without duration:
-		argDur ?? { this.removePreviousTask };
-		argDur !? { args[\dur] = argDur };
-		output = source.play(output, args, this, notification);
-		this.changed(\play, argDur);
+	play { | task |
+		if (task.isNil) { // disengage from task if played directly
+			{ this.removePreviousTask } 	
+		}{
+			task.passArgs(args);
+		};
+		output = source.play(output, args, this);
+		this.changed(\play, task);
 	}
-
+	
 	source_ { | argSource |
 		source = argSource.asChuckSource(this);
 	}
@@ -122,27 +124,33 @@ Chuck {
 		}
 	}
 	
-	append { | reader, io = \in_out |
-		var in, out;
-		#in, out = io.asString.split($_).collect(_.asSymbol);
+	append { | reader, in = \in, out = \out |
 		if (reader.hasDirectWriter(this, in)) {
 			postf ("% is already a writer of %\n", this, reader);
 			^this;
 		};
+		//		[this, thisMethod.name, "starting execution next - wait for crash"].postln;
 		if (reader.readers includes: this) {
 			postf("!!!% is a reader of %. Cannot add it as writer!!!\n", this, reader);
 			^this;
 		};
+		// "================================================================".postln;
+		[this, thisMethod.name, "SURVIVED"].postln;
 		reader addAfter: this;
 		BusLink.linkAudio(this, reader, in, out);
 		this.changed(\append, reader, in, out);
 	}
 
 	addAfter { | writer |
+			// TODO: first find the *writer with the deepest target group amongst all
+			// writers of this chuck*.  Then set the target to the readergroup of that target.
+		var latestWriter; // TO TEST
 		var targetGroup;
-		if (this.isAfter(writer).not) { // do not move to earlier group than currently
-			args[\target] = writer.target.getReaderGroup;
-			this.readersDo({ | reader writer | reader addAfter: writer });
+		latestWriter = this.getLatestWriter(writer);
+		if (this.isAfter(latestWriter).not) { // do not move to earlier group than currently
+			args[\target] = latestWriter.target.getReaderGroup;
+
+			this.readersDo({ | r w | r addAfter: w });
 
 			targetGroup = this.target.group;
 
@@ -155,7 +163,37 @@ Chuck {
 			};
 		};
 	}
-	
+
+	getLatestWriter { | writer |
+		// debugging
+		// ^writer;
+		
+		var latest;
+		latest = writer;
+		this.writers do: { | w | if (w isAfter: latest) { latest = w; } };
+		^latest;
+		
+	}
+
+	writers { | set |
+		var directWriters;
+		set ?? { set = Set (); }; 
+		directWriters = this.directWriters;
+		set addAll: directWriters;
+		directWriters do: _.writers (set);
+		^set;
+	}
+
+	directWriters {
+		var set;
+		set = Set ();
+		args do: { | v |
+			if (v isKindOf: BusLink and: { v.readers includes: this}) {
+				set addAll: v.writers;
+			}
+		};
+		^set;
+	}
 	target { ^args[\target] }
 
 	isAfter { | writer |
@@ -166,6 +204,16 @@ Chuck {
 		var directReaders;
 		set ?? { set = Set (); }; 
 		directReaders = this.directReaders;
+		// [thisMethod.name, "current set:", set, "direct readers:", directReaders].postln;
+		directReaders do: { | r |
+			// postf("checking for cycle. next reader is: %", r);
+			if (set includes: r) {
+				{" ================ GODDAM CYCLE ================".postln; } ! 10;
+				^set;
+			}{
+				" - was OK".postln;
+			}
+		};
 		set addAll: directReaders;
 		directReaders do: _.readers (set);
 		^set;
@@ -206,6 +254,9 @@ Chuck {
 	}
 
 	setInput2Null { | inParam = \in |
+		var bus;
+		bus = args[inParam];
+		if (bus.isKindOf(BusLink)) { bus.readers.remove(this) };
 		this setTarget: GroupLink.nullGroup;
 		this.setArgs(inParam, 0);
 	}
@@ -223,12 +274,25 @@ Chuck {
 				bus.unlinkAudio(this, reader, reader.getInParam(bus), outParam);
 			};
 		};
+		// args[outParam].unlinkAudio(this, nil);
 	}
 
 	getInParam { | bus | ^args.findKeyForValue(bus) }
 	
 	setOutput2Root { | outParam = \out |
 		this.setArgs(outParam, 0);
+	}
+
+	removeReader { | reader, in = \in, out = \out |
+		var b;
+		b = args[out];
+		if (b isKindOf: BusLink and: { b.readers includes: reader}) {
+			 b.unlinkAudio(this, reader, in, out);
+			this.changed(\removeReader, reader, in, out);
+		}{
+			postf("% does not contain % as reader at %/%. Cannot unlink\n",
+				this, reader, in, out);
+		};		
 	}
 
 	krOut { | bus |
@@ -247,6 +311,7 @@ Chuck {
 	}
 
 	unmap { | param |
+		var bus;
 		bus = maps[param];
 		bus !? {
 			bus removeReader: this;

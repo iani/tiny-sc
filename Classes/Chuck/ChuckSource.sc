@@ -125,8 +125,8 @@ ChuckFuncSynthSource : ChuckSynthSource {
 	}
 
 	moveToNullGroupIfNeeded { | desc |
-		"Effect Chuck's reading from 0 bus may bleed through.".postln;
-		thisMethod.notImplemented;
+		// "Effect Chuck's reading from 0 bus may bleed through.".postln;
+		// thisMethod.notImplemented;
 		/*  TODO:
 			Get the audio Inputs from SynthDesc.inputs, and if any of these are 
 			audio rate, then set chuck.args[\target] to GroupLink.nullGroup
