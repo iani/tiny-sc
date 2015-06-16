@@ -57,22 +57,32 @@ MiniSteno {
 		postf("%)\n", levels);
 	}
 
-	connect { // create busses, connect chucks, create and set target groups
-		var inBus;
-		if (parent.isNil) {
-			inBus = BusLink.nullBus;
-		}{
-			inBus = parent.outBus;
-		};
+	inBus {
+		if (parent.isNil) { ^BusLink.nullBus } { ^parent.outBus };
 	}
+
+	outBus { ^tree.last.outBus }
 }
 
 Par : MiniSteno {
-
+	setBusses {
+		var inBus, outBus;
+		inBus = this.inBus;
+		tree do: { | branch |
+			branch.setInBus(inBus);
+			branch.set
+		}
+	}
 }
 
 Ser : MiniSteno {
-	
+	setBusses {
+		var inBus;
+		inBus = super.connect;
+		tree do: { | branch |
+			inBus = branch.setBusses(inBus);
+		}
+	}	
 }
 
 + String { miniSteno { ^MiniSteno.fromString(this) }}

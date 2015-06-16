@@ -2,7 +2,8 @@
 BusLink {
 	var index, <numChannels = 1, <server, <writers, <readers;
 	var <bus;
-	classvar nullBus;
+	classvar nullBus; // this is problematic because only audio rate is covered.
+	// How to deal with this?
 
 	*initClass {
 		ServerBootCheck addStartup: { this.init }

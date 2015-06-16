@@ -12,7 +12,7 @@ Chuck {
 	*parentArgs {
 		parentArgs ?? {
 			parentArgs = (
-				out: 0,
+				out: BusLink.nullBus,
 				fadeTime: 0.02,
 				addAction: \addToHead,
 			)
@@ -27,7 +27,7 @@ Chuck {
 	*new { | name, source, argsTemplate |
 		^Registry(Chuck, name, {
 			this.newCopyArgs(name, argsTemplate ?? {
-				(out: 0, fadeTime: 0.02)
+				(out: BusLink.nullBus, fadeTime: 0.02)
 			}).init(source);
 		})
 	}
@@ -340,7 +340,8 @@ Chuck {
 
 	remove {
 		// TODO! MORE STUFF MUST BE DONE HERE!
-		
 		this.objectClosed;
 	}
+
+	outBus { ^args[\out] }
 }
