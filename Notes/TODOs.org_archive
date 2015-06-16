@@ -1,0 +1,32 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /Users/iani/Documents/Dev/SuperCollider/tiny-sc/Notes/TODOs.org
+
+
+* OBSOLETE REDO Bus linking using @> and buslinks bound to symbols
+:LOGBOOK:
+- State "OBSOLETE"   from "!!!"        [2015-06-16 Tue 08:47] \\
+  replaced by MiniSteno
+:END:
+:PROPERTIES:
+:ARCHIVE_TIME: 2015-06-16 Tue 08:48
+:ARCHIVE_FILE: ~/Documents/Dev/SuperCollider/tiny-sc/Notes/TODOs.org
+:ARCHIVE_CATEGORY: TODOs
+:ARCHIVE_TODO: OBSOLETE
+:END:
+For audio busses:
+
+- \bus @>.input \chuck :: Chuck reads from this bus at parameter named by adverb ('input').
+- \bus <@.output \chuck :: Chuck writes to this bus at parameter named by adverb ('output').
+
+For control busses
+
+- \bus %>.input \chuck :: Chuck reads from this bus at parameter named by adverb ('input').
+- \bus <%.output \chuck :: Chuck writes to this bus at parameter named by adverb ('output').
+
+But you can also use shortcuts:
+
+"source.out>bus.numchans@effect1.in>bus.numchans@effect2".alink; // shortcut: al // = ar
+
+"source.out>bus.numchans@effect1.in>bus.numchans@effect2".klink; // shortcut: kl // = kr

@@ -1,0 +1,1 @@
+"source.out>bus.numchans@.in.effect1.out>bus.numchans@.in.effect2".alink;
