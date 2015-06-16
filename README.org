@@ -8,6 +8,8 @@
 
 This is version 1.1alpha (=retiny=).
 
+Note: As of Tue, Jun 16 2015, 23:08 EEST a new audio-linking mechanism is under development here, inspired by Steno of Julian Rohrhuber.  The old linking mechanism is broken, but the rest of the library is intact.
+
 * Installation
 
 - Download the library from http://github.com/iani/tiny-sc.
@@ -353,11 +355,16 @@ As explained above, the task-filters are stored under names generated automatica
 \level1b.stop;
 #+END_SRC
 
-** Linking audio inputs and outputs between synths
+** COMMENT Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
 :eval-id:  617
 :END:
+
+*THIS IS IN PROCESS OF BEING REPLACED BY A STENO-TYPE BASED MECHANISM*
+
+Following examples do not work.
+
 The audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background.
 
 Start a source and an effect:
