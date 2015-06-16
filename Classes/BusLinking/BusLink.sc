@@ -42,12 +42,13 @@ BusLink {
 		bus.free;
 	}
 
-	addReader { | chuck |
-
+	add { | chuck, role |
+		this.perform(role) add: chuck;
 	}
 
-	addWriter { | chuck |
-
+	remove { | chuck, role |
+		this.perform(role) remove: chuck;
+		if (readers.size == 0 and: { writers.size == 0}) { this.free }
 	}
 
 	asControlInput { ^bus.index }

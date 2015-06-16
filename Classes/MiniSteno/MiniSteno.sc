@@ -10,13 +10,21 @@ a = "b[(abc)[ax]]".miniSteno;
 a.pp;
 a.inspect;
 
-b = "(abc)[ax]de(fgh[ij])".miniSteno;
+b = "(abc)[x]de(fgh[ij])".miniSteno;
+b.findContainerOf(\a.chuck);
+
 b.pp;
  b.inspect;
 
 "a".miniSteno;
 "[a]".miniSteno;
 
+"(ab)".arlink;
+"a".arlink;
+Chuck.initInactive;
+Chuck.inactive;
+{ WhiteNoise.arps(0.1) } ++> \a;
+{ Resonz.ar(In.ar(\in.kr(0)), LFNoise0.kr([10, 20]).range(30, 3000), 4.0) } ++> \b;
 */
 
 MiniSteno {
@@ -36,8 +44,20 @@ MiniSteno {
 	*new { | ... specs |
 		^this.newCopyArgs(specs collect: { | s |
 			if (s isKindOf: Symbol) { Chuck(s) } { s }
-		}); // .init
+		});
 	}
+
+	push {
+		var nullGroup;
+		nullGroup = GroupLink.nullGroup;
+		Library.put(MiniSteno, \current, this);
+		Chuck.initInactive;
+		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default);
+		Chuck.inactive do: _.setTarget(nullGroup);
+		
+	}
+
+	*current { ^Library.at(MiniSteno, \current) }
 
 	pp { | levels = "" | // prettyprint
 		postf ("% (        // % % %\n", levels, levels, this.class, levels);
@@ -50,11 +70,48 @@ MiniSteno {
 		};
 		postf("% )\n", levels);
 	}
+
+	// TODO: Changing the structure of the tree after it was created:
+	addBefore { | chuck, asSibling = false |
+
+	}
+
+	addAfter { | chuck, asSibling = false |
+
+	}
+
+	addSibling { | newChuck oldChuck |
+
+	}
+
+	remove { | chuck, sendToNullGroup = false |
+		/* rearrange tree by removing chuck from it, if it exists. */
+		var container;
+		container = tree findContainerOf: chuck;
+		
+	}
+
+	findContainerOf { | element |
+		var found, func;
+		func = { | ms |
+			if (ms.tree includes: element) { found = ms }; 
+		};
+		this.traverseDoing(func);
+		^found;
+	}
+
+	traverseDoing { | func |
+		this.postln;
+		func.(this);
+		tree do: { | x |
+			if (x isKindOf: MiniSteno) { x.traverseDoing(func) }
+		}
+	}
 }
 
 Par : MiniSteno {
 	setBussesAndGroups { | inBus, outBus, group |
-		tree do: { | branch | branch.setBusses(inBus, outBus, group) }
+		tree do: { | branch | branch.setBussesAndGroups(inBus, outBus, group) }
 	}
 }
 
@@ -64,7 +121,7 @@ Ser : MiniSteno {
 		busArray = [inBus];
 		groupArray = [group];
 		tree.size - 1 do: {
-			busArray = busArray add: ArLinkBus();
+			busArray = busArray add: ArBusLink();
 			groupArray = groupArray add: (group = group.getReaderGroup);
 		};
 		busArray = busArray add: outBus;
@@ -74,4 +131,8 @@ Ser : MiniSteno {
 	}	
 }
 
-+ String { miniSteno { ^MiniSteno.fromString(this) }}
++ String {
+	miniSteno { ^MiniSteno.fromString(this) }
+	arlink { ^this.miniSteno.push }
+
+}

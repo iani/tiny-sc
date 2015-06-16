@@ -1,12 +1,20 @@
 /*
 Tue, May 26 2015, 09:37 CEST
 
-Simpler alternative to SynthTree?
 */
 
 Chuck {
 	var <name, <argsTemplate, <source, <args, <>output, <maps;
 	classvar >parentArgs;
+	classvar inactive;
+
+	inactive { ^this.class.inactive }
+	*inactive {
+		inactive ?? { inactive = List() };
+		^inactive;
+	}
+	*initInactive { inactive = this.all }
+	*all { ^Library.at(Chuck).values}
 
 	parentArgs { ^this.class.parentArgs }
 	*parentArgs {
@@ -27,7 +35,7 @@ Chuck {
 	*new { | name, source, argsTemplate |
 		^Registry(Chuck, name, {
 			this.newCopyArgs(name, argsTemplate ?? {
-				(out: BusLink.nullBus, fadeTime: 0.02)
+				(in: ArBusLink.nullBus, out: ArBusLink.nullBus, fadeTime: 0.02)
 			}).init(source);
 		})
 	}
@@ -342,18 +350,30 @@ Chuck {
 		// TODO! MORE STUFF MUST BE DONE HERE!
 		this.objectClosed;
 	}
-
+	
 	setBussesAndGroups { | inBus, outBus, group | // used by MiniStereo
-		var oldBus;
-		oldBus = args[\in];
-		if (oldBus isKindOf: BusLink) { oldBus.removeReader(this) };
-		args[\in] = inBus;
-		oldBus = args[\out];
-		if (oldBus isKindOf: BusLink) { oldBus.removeWriter(this) };
-		args[\out] = outBus;
+		this setInBus: inBus;
+		this setOutBus: outBus;
 		this setTarget: group;
+		this.inactive remove: this;
 	}
 
+	setInBus { | bus, param = \in |
+		this.setBus(bus, param, \readers);
+	}
+
+	setOutBus { | bus, param = \out |
+		this.setBus(bus, param, \writers);		
+	}
+
+	setBus { | bus param role |
+		var oldBus;
+		oldBus = args[param];
+		if (oldBus isKindOf: BusLink) { oldBus.remove(this, role) };
+		bus.add(this, role);
+		this.setArgs(param, bus);
+	}
+	
 	inBus { ^args[\in] }
 	outBus { ^args[\out] }
 }
