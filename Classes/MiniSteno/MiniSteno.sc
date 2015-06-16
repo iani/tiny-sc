@@ -10,9 +10,9 @@ a = "b[(abc)[ax]]".miniSteno;
 a.pp;
 a.inspect;
 
-b = "[(abc)[ax]]".miniSteno;
+b = "(abc)[ax]de(fgh[ij])".miniSteno;
 b.pp;
-b.inspect;
+ b.inspect;
 
 "a".miniSteno;
 "[a]".miniSteno;
@@ -20,9 +20,8 @@ b.inspect;
 */
 
 MiniSteno {
-	var <tree, <>parent;
+	var <tree; // , <>parent;
 	*fromString { | string |
-		if ("[(".includes(string[0]).not) { string = "(" ++ string ++ ")" };
 		string = string.inject(" ", { | a, x |
 			a ++ (if ("[]()".includes(x)) { x } { format("'%', ", x) })
 		});
@@ -31,57 +30,47 @@ MiniSteno {
 		.replace(")", "), ")
 		.replace("]", "), ")
 		.replace(", )", ")");
-		^string[0..string.size - 3].postln.interpret;
+		^format("Par( % )", string).postln.interpret;
 	}
 
 	*new { | ... specs |
 		^this.newCopyArgs(specs collect: { | s |
 			if (s isKindOf: Symbol) { Chuck(s) } { s }
-		}).init
-	}
-
-	init {
-		tree do: { | x | if (x isKindOf: MiniSteno ) { x.parent = this } }
+		}); // .init
 	}
 
 	pp { | levels = "" | // prettyprint
-		postf ("%( // ---- % ----\n", levels, this.class);
+		postf ("% (        // % % %\n", levels, levels, this.class, levels);
 		tree do: { | x |
 			if (x isKindOf: Chuck) {
-				postf("% %\n", levels, x);
+				postf("  % % % % %\n", levels, x, x.target, x.inBus, x.outBus);
 			}{
-				//		x.postln;
-				x.pp(levels ++ " ");
+				x.pp(levels ++ "-");
 			};
 		};
-		postf("%)\n", levels);
+		postf("% )\n", levels);
 	}
-
-	inBus {
-		if (parent.isNil) { ^BusLink.nullBus } { ^parent.outBus };
-	}
-
-	outBus { ^tree.last.outBus }
 }
 
 Par : MiniSteno {
-	setBusses {
-		var inBus, outBus;
-		inBus = this.inBus;
-		tree do: { | branch |
-			branch.setInBus(inBus);
-			branch.set
-		}
+	setBussesAndGroups { | inBus, outBus, group |
+		tree do: { | branch | branch.setBusses(inBus, outBus, group) }
 	}
 }
 
 Ser : MiniSteno {
-	setBusses {
-		var inBus;
-		inBus = super.connect;
-		tree do: { | branch |
-			inBus = branch.setBusses(inBus);
-		}
+	setBussesAndGroups { | inBus, outBus, group |
+		var busArray, groupArray;
+		busArray = [inBus];
+		groupArray = [group];
+		tree.size - 1 do: {
+			busArray = busArray add: ArLinkBus();
+			groupArray = groupArray add: (group = group.getReaderGroup);
+		};
+		busArray = busArray add: outBus;
+		tree do: { | branch, i |
+			branch.setBussesAndGroups(busArray[i], busArray[i + 1], groupArray[i])
+		};
 	}	
 }
 

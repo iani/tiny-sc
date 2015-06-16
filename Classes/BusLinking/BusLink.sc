@@ -24,10 +24,11 @@ BusLink {
 		.makeBus
 	}
 
-	nullBus {
-		nullBus ?? { nullBus = this.new(0, 1, Server.default) };
+	*nullBus {
+		nullBus ?? { nullBus = ArBusLink(0, 1, Server.default) };
 		^nullBus;
 	}
+
 	makeBus {
 		// re-allocate bus on server boot, to correctly set allocation of server
 		if (index.isNil) {
@@ -52,10 +53,10 @@ BusLink {
 	asControlInput { ^bus.index }
 
 	printOn { arg stream;
-		stream << this.class << "(" << bus.index << ")";
+		stream << this.class.name << "(" << bus.index << ")";
 	}
 	storeOn { arg stream;
-		stream << this.class << "(" << bus.index << ")";
+		stream << this.class.name << "(" << bus.index << ")";
 	}
 
 }

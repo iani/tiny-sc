@@ -343,5 +343,17 @@ Chuck {
 		this.objectClosed;
 	}
 
+	setBussesAndGroups { | inBus, outBus, group | // used by MiniStereo
+		var oldBus;
+		oldBus = args[\in];
+		if (oldBus isKindOf: BusLink) { oldBus.removeReader(this) };
+		args[\in] = inBus;
+		oldBus = args[\out];
+		if (oldBus isKindOf: BusLink) { oldBus.removeWriter(this) };
+		args[\out] = outBus;
+		this setTarget: group;
+	}
+
+	inBus { ^args[\in] }
 	outBus { ^args[\out] }
 }

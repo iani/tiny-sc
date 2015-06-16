@@ -94,5 +94,4 @@ GroupLink {
 	storeOn { arg stream;
 		stream << "GroupLink(" << group.nodeID << ")";
 	}
-
 }
