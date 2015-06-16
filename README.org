@@ -8,8 +8,6 @@
 
 This is version 1.1alpha (=retiny=).
 
-Note: As of Tue, Jun 16 2015, 23:08 EEST a new audio-linking mechanism is under development here, inspired by Steno of Julian Rohrhuber.  The old linking mechanism is broken, but the rest of the library is intact.
-
 * Installation
 
 - Download the library from http://github.com/iani/tiny-sc.
@@ -355,74 +353,48 @@ As explained above, the task-filters are stored under names generated automatica
 \level1b.stop;
 #+END_SRC
 
-** COMMENT Linking audio inputs and outputs between synths
+** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  617
+:eval-id:  647
 :END:
 
-*THIS IS IN PROCESS OF BEING REPLACED BY A STENO-TYPE BASED MECHANISM*
+A mechanism for linking inputs and outputs and of audio and control-rate Chucks based on /Steno/ by Julian Rohrhuber is under development. (See https://github.com/telephon/Steno)
 
-Following examples do not work.
+Currently, the mechanism works with Chucks whose names are only single letters, as is the case with /Steno/, and is only implemented for audio-rate Chucks.
 
-The audio output of a Chuck can be linked to the input of another Chuck.  Many-to-one and one-to-many audio link configurations are possible.  The library deals with bus allocation and synth order management in the background.
+Facilities for modifying the tree structure created by compiling a Steno string are under preparation.  These will allow to add Chucks with longer names to the tree, and to link Chucks without running a Steno string.
 
-Start a source and an effect:
-#+BEGIN_SRC sclang
-{ PinkNoise.ar(0.1) } ++> \source;  // this will be heard without effect - not linked yet!
-{ Resonz.arp(In.ar(\in.ar(0)) * 350, LFNoise0.kr(30).range(400, 2000), 0.001) } ++> \effect;
-#+END_SRC
+First example:
 
-Link the source to the effect:
-#+BEGIN_SRC sclang
-\source +> \effect;
-#+END_SRC
-
-Unlink the source from the effect, and send it back to default output:
+Add 2 chucks =a= and =b= linked together in series:
 
 #+BEGIN_SRC sclang
-\source.toRoot;  // now is "unlink" - need to provide both unlink and toRoot
+"(ab)".arlink;
+{ WhiteNoise.arps(0.01) } ++> \a;
+{ Ringz.ar(In.ar(\in.kr(0)), LFNoise2.kr(10).range(30, 1000), 1) } ++> \b;
 #+END_SRC
 
-Add a second effect:
+Remove the effect from the audible tree:
 
 #+BEGIN_SRC sclang
-{ In.ar(\in.kr(0)).abs * 7 * Decay.kr(Dust.kr([1.5, 1.5]), 1.5) } ++> \effect2;
+"a".arlink
 #+END_SRC
 
-Create audio link chain: source -> effect -> effect;
+Bring back the effect and add a second effect to it, serially:
 
 #+BEGIN_SRC sclang
-\source +> \effect;
-\effect +> \effect2;
+"(abc)".arlink;
+{ In.ar(\in.ar(0)).abs * 3 * Decay.kr(Dust.kr([2, 2])) } ++> \c;
 #+END_SRC
 
-Make the first effect send directly to output again, bypassing the second effect:
+Change the arrangement to send a both to b and to c in parallel:
 #+BEGIN_SRC sclang
-\effect.toRoot;
+"a[bc]".arlink;
 #+END_SRC
 
-Add source to effect2.
-#+BEGIN_SRC sclang
-\source +> \effect2;
-#+END_SRC
+Note: This is not yet correct.  The parallel mechanism is wrong because all parallel synths read from and write to the same bus, thereby processing each other's output according to they  order that they were created.  Next it's needed to copy the signals to separate busses and reunite them at the end.  This can be done by inserting a Ser for each element of the tree of a Par, which encloses the element in a head and a tail Chuck with automatically generated id, which copy the signal from the input to the elements in the Ser, so that they have their own bus, and then copy it back to the output of the Par.
 
-Keep source sending to effect and effect2, and make effect send to effect2:
-#+BEGIN_SRC sclang
-\effect +> \effect2;
-#+END_SRC
-
-NEEDS CORRECTION! Remove source from effect2
-#+BEGIN_SRC sclang
-\source !> \effect2; // also removes from effect!
-#+END_SRC
-
-Stop source and effects:
-#+BEGIN_SRC sclang
-\source.release;
-\effect.release;
-\effect2.release;
-#+END_SRC
 
 ** Multiple voice example
 :PROPERTIES:
