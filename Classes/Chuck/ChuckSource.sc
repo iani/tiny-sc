@@ -120,17 +120,7 @@ ChuckFuncSynthSource : ChuckSynthSource {
 		}{
 			hasNoDurControl = true;
 		};
-		this.moveToNullGroupIfNeeded(def);
 		def.doSend(chuck.args[\target].server);
-	}
-
-	moveToNullGroupIfNeeded { | desc |
-		// "Effect Chuck's reading from 0 bus may bleed through.".postln;
-		// thisMethod.notImplemented;
-		/*  TODO:
-			Get the audio Inputs from SynthDesc.inputs, and if any of these are 
-			audio rate, then set chuck.args[\target] to GroupLink.nullGroup
-		*/
 	}
 	
 	prPlay { | args |
@@ -138,6 +128,7 @@ ChuckFuncSynthSource : ChuckSynthSource {
 		// thereafter, create synth from defName
 		^this.prepareSynth(
 			if (defName.isNil) {
+				// [this, thisMethod.name, "Not yet compatible with ().play"].postln;
 				source.cplay(
 					args [\target].next.asTarget,
 					args [\out].next,
@@ -161,7 +152,8 @@ ChuckFuncSynthSource : ChuckSynthSource {
 	makeDefName {
 		var theName;
 		theName = format("<%>", chuck.name);
-		{ defName = theName }.defer(0.1);
+		// defName = theName;
+		{ 0.1.wait; defName = theName }.fork; //.defer(0.1);
 		^theName;
 	}
 }
