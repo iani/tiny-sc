@@ -33,13 +33,13 @@ MiniSteno {
  	}
 
 	push { // use this instance as the global tree of linked Chucks
-		var nullGroup;
-		nullGroup = GroupLink.nullGroup;
 		Library.put(MiniSteno, \current, this);
 		this.initRootTree;
 	}
 
 	initRootTree {
+		var nullGroup;
+		nullGroup = GroupLink.nullGroup;
 		Chuck.initInactive;
 		tree do: _.insertSerInPar;
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default, 0);
