@@ -363,7 +363,7 @@ A mechanism for linking inputs and outputs and of audio and control-rate Chucks 
 
 Currently, the mechanism works with Chucks whose names are only single letters, as is the case with /Steno/, and is only implemented for audio-rate Chucks.
 
-Facilities for modifying the tree structure created by compiling a Steno string are under preparation.  These will allow to add Chucks with longer names to the tree, and to link Chucks without running a Steno string.
+/(Note: Facilities for modifying the tree structure created by compiling a Steno string are under preparation.  When completed, these will allow to add Chucks with longer names to the tree, and to link Chucks without running a Steno string.)/
 
 First example:
 
@@ -373,8 +373,6 @@ Add 2 chucks =a= and =b= linked together in series:
 "(ab)".arlink;
 { WhiteNoise.arps(0.1) } ++> \a;
 { Ringz.ar(Inp.ar, LFNoise2.kr(1).range(30, 1000), 1) } ++> \b;
-// \a.chuck.permanent;
-// \b.chuck.permanent;
 #+END_SRC
 
 Remove the effect from the audible tree:
