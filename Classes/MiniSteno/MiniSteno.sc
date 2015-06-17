@@ -4,14 +4,14 @@ Tue, Jun 16 2015, 03:08 EEST
 Inspired by Steno of Julian Rohrhuber. 
 https://github.com/telephon/Steno
 
-A much simpler draft that only creates chucks and puts them in Groups and links them with Busses. 
+A simpler version that only creates chucks and puts them in Groups and links them with Busses. 
 
 */
 
 MiniSteno {
-	var <tree; // , <>parent;
-	var <>level; // for sorting of group levels - checking the algorithm under development
+	var <tree;
 	classvar <numLinkChucks; // for naming system-created link Chucks
+
 	*fromString { | string |
 		numLinkChucks = 0;
 		string = string.inject(" ", { | a, x |
@@ -28,38 +28,26 @@ MiniSteno {
 	*new { | ... specs |
 		var linkChuck;
 		^this.newCopyArgs(specs collect: { | s |
-			if (s isKindOf: Symbol) {
-				if (s === '%') {
-					linkChuck = Chuck(numLinkChucks.asSymbol);
-					linkChuck.source = { Inp.ar };
-					linkChuck.permanent;
-					numLinkChucks = numLinkChucks + 1;
-					// linkChuck.play;
-					linkChuck;
-				} {
-					Chuck(s)
-				}
-			} { s }
+			if (s isKindOf: Symbol) { Chuck(s) } { s }
 		});
  	}
 
-	init {}
-
-	push {
+	push { // use this instance as the global tree of linked Chucks
 		var nullGroup;
 		nullGroup = GroupLink.nullGroup;
 		Library.put(MiniSteno, \current, this);
+		this.initRootTree;
+	}
+
+	initRootTree {
 		Chuck.initInactive;
 		tree do: _.insertSerInPar;
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default, 0);
-			numLinkChucks do: { | i |
-			Chuck(i.asSymbol).playIfNotPlaying;
-		};
+		numLinkChucks do: { | i | Chuck(i.asSymbol).playIfNotPlaying };
 		Chuck.inactive do: _.setTarget(nullGroup);
 		"================================================================".postln;
 		MiniSteno.current.pp;
-		"================================================================".postln;
-		
+		"================================================================".postln;	
 	}
 
 	*current { ^Library.at(MiniSteno, \current) }
@@ -77,6 +65,7 @@ MiniSteno {
 		postf("% )\n", levels);
 	}
 
+	// ================================================================
 	// TODO: Changing the structure of the tree after it was created:
 	addBefore { | chuck, asSibling = false |
 
@@ -97,21 +86,25 @@ MiniSteno {
 		
 	}
 
+	doIfFound { | element, foundFunc, missingFunc |
+		var container;
+		container = this.findContainerOf(element);
+		if (container.isNil) {
+			missingFunc.(element, this);
+		}{
+			foundFunc.(container, element, this);
+		}
+	}
+	
 	findContainerOf { | element |
-		var found, func;
-		func = { | ms |
-			if (ms.tree includes: element) { found = ms }; 
-		};
-		this.traverseDoing(func);
+		var found;
+		this.traverseDoing({ | ms | if (ms.tree includes: element) { found = ms } });
 		^found;
 	}
 
 	traverseDoing { | func |
-		// this.postln;
 		func.(this);
-		tree do: { | x |
-			if (x isKindOf: MiniSteno) { x.traverseDoing(func) }
-		}
+		tree do: { | x | if (x isKindOf: MiniSteno) { x.traverseDoing(func) } }
 	}
 }
 
@@ -131,9 +124,9 @@ Par : MiniSteno {
 		^linkChuck;
 	}
 	
-	setBussesAndGroups { | inBus, outBus, group, argLevel |
+	setBussesAndGroups { | inBus, outBus, group |
 		tree do: { | branch, i |
-			branch.setBussesAndGroups(inBus, outBus, group, level);
+			branch.setBussesAndGroups(inBus, outBus, group);
 		};
 	}
 }
@@ -141,7 +134,7 @@ Par : MiniSteno {
 Ser : MiniSteno {
 	insertSerInPar { tree do: _.insertSerInPar }
 
-	setBussesAndGroups { | inBus, outBus, group, argLevel |
+	setBussesAndGroups { | inBus, outBus, group |
 		var busArray;
 		this.flatten; // remove Ser in Ser nestings because they mess up Group+Bus link order
 		busArray = [inBus];
@@ -151,8 +144,7 @@ Ser : MiniSteno {
 		};
 		busArray = busArray add: outBus;		
 		tree do: { | branch, i |
-			branch.setBussesAndGroups(busArray[i], busArray[i + 1], group, argLevel
-			);
+			branch.setBussesAndGroups(busArray[i], busArray[i + 1], group);
 			group = group.getReaderGroup;
 		};
 	}

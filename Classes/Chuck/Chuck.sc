@@ -7,7 +7,6 @@ Chuck {
 	var <name, <argsTemplate, <source, <args, <>output, <maps;
 	classvar >parentArgs;
 	classvar inactive;
-	var <>level; // checking how to sort graph; for MiniSteno
 	
 	inactive { ^this.class.inactive }
 	*inactive {
@@ -360,12 +359,11 @@ Chuck {
 		this.objectClosed;
 	}
 	
-	setBussesAndGroups { | inBus, outBus, group, argLevel | // used by MiniStereo
+	setBussesAndGroups { | inBus, outBus, group | // used by MiniStereo
 		this setInBus: inBus;
 		this setOutBus: outBus;
 		this setTarget: group;
 		this.inactive remove: this;
-		//	level = argLevel;
 	}
 
 	setInBus { | bus, param = \in |
