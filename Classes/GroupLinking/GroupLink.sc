@@ -81,6 +81,9 @@ GroupLink {
 		^readerGroup;
 	}
 
+	isAfter { | otherGroup |
+		^level > otherGroup.level;
+	}
 	/* // not used
 	getWriterGroup {
 		writerGroup ?? { writerGroup = GroupLink(Group.before(group)) };

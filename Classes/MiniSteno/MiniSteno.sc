@@ -41,7 +41,10 @@ MiniSteno {
 		var nullGroup;
 		nullGroup = GroupLink.nullGroup;
 		Chuck.initInactive;
-		tree do: _.insertSerInPar;
+		// TODO: Free all audio busses here to re-allocate fresh and reconnect?
+		tree do: _.insertSerInPar; // Indispensable. Keep.
+		// TO TEST: Groups are now ordered so that Ser nested in Par work for next Ser...
+		// See draft in Par:setBussesAndGroups method below.
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default, 0);
 		numLinkChucks do: { | i | Chuck(i.asSymbol).playIfNotPlaying };
 		Chuck.inactive do: _.setTarget(nullGroup);
@@ -111,7 +114,16 @@ MiniSteno {
 Par : MiniSteno {
 	insertSerInPar {
 		tree = tree collect: { | el |
-			Ser(this.makeLinkChuck, el, this.makeLinkChuck)
+			// TODO: Test following commented version
+			// Wed, Jun 17 2015, 22:01 EEST - still TODO:
+			// Not needed to insert link-chucks, if this is already a Ser?
+			// But what if the ser only contains one element?
+			// So it is easier and safer to always insert the link chucks ...
+			// if(el idKindOf: Ser) {
+			///	el
+			// }{
+				Ser(this.makeLinkChuck, el, this.makeLinkChuck)
+			//}
 		};
 	}
 
@@ -125,9 +137,14 @@ Par : MiniSteno {
 	}
 	
 	setBussesAndGroups { | inBus, outBus, group |
+		// TODO: Test this new order - should work with Par-Ser-Par-Ser nestings
+		var outGroup, newOutGroup;
+		outGroup = group;
 		tree do: { | branch, i |
-			branch.setBussesAndGroups(inBus, outBus, group);
+			newOutGroup = branch.setBussesAndGroups(inBus, outBus, group);
+			if (newOutGroup isAfter: outGroup) { outGroup = newOutGroup };
 		};
+		^outGroup;
 	}
 }
 
@@ -137,6 +154,8 @@ Ser : MiniSteno {
 	setBussesAndGroups { | inBus, outBus, group |
 		var busArray;
 		this.flatten; // remove Ser in Ser nestings because they mess up Group+Bus link order
+		// TODO: Implement better solution where sers in ser will end in nullgroup instead.
+		// This enables one to "branch out" of a ser, directly to root output ...
 		busArray = [inBus];
 
 		tree.size - 1 do: {
@@ -144,9 +163,9 @@ Ser : MiniSteno {
 		};
 		busArray = busArray add: outBus;		
 		tree do: { | branch, i |
-			branch.setBussesAndGroups(busArray[i], busArray[i + 1], group);
-			group = group.getReaderGroup;
+			group = branch.setBussesAndGroups(busArray[i], busArray[i + 1], group);
 		};
+		^group;
 	}
 
 	flatten {

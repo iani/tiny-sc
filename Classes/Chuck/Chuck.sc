@@ -364,6 +364,7 @@ Chuck {
 		this setOutBus: outBus;
 		this setTarget: group;
 		this.inactive remove: this;
+		^group.getReaderGroup;
 	}
 
 	setInBus { | bus, param = \in |
