@@ -356,7 +356,7 @@ As explained above, the task-filters are stored under names generated automatica
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  647
+:eval-id:  810
 :END:
 
 A mechanism for linking inputs and outputs and of audio and control-rate Chucks based on /Steno/ by Julian Rohrhuber is under development. (See https://github.com/telephon/Steno)
@@ -371,30 +371,51 @@ Add 2 chucks =a= and =b= linked together in series:
 
 #+BEGIN_SRC sclang
 "(ab)".arlink;
-{ WhiteNoise.arps(0.01) } ++> \a;
-{ Ringz.ar(In.ar(\in.kr(0)), LFNoise2.kr(10).range(30, 1000), 1) } ++> \b;
+{ WhiteNoise.arps(0.1) } ++> \a;
+{ Ringz.ar(Inp.ar, LFNoise2.kr(1).range(30, 1000), 1) } ++> \b;
+// \a.chuck.permanent;
+// \b.chuck.permanent;
 #+END_SRC
 
 Remove the effect from the audible tree:
 
 #+BEGIN_SRC sclang
 "a".arlink
-#+END_SRC
+#+End_src
 
 Bring back the effect and add a second effect to it, serially:
 
 #+BEGIN_SRC sclang
 "(abc)".arlink;
-{ In.ar(\in.ar(0)).abs * 3 * Decay.kr(Dust.kr([2, 2])) } ++> \c;
+{ Inp.ar * LFNoise0.kr(10) } ++> \c;
 #+END_SRC
 
-Change the arrangement to send a both to b and to c in parallel:
+Linking effects in parallel:
+
+First listen to a single effect in series
 #+BEGIN_SRC sclang
-"a[bc]".arlink;
+"(ab)".arlink;
+{ Blip.arp(140, 5) * 4 } ++> \a;
+{ Ringz.ar(Inp.ar, LFNoise1.kr(25).range(30, 1000)) * 0.1 } ++> \b;
 #+END_SRC
 
-Note: This is not yet correct.  The parallel mechanism is wrong because all parallel synths read from and write to the same bus, thereby processing each other's output according to they  order that they were created.  Next it's needed to copy the signals to separate busses and reunite them at the end.  This can be done by inserting a Ser for each element of the tree of a Par, which encloses the element in a head and a tail Chuck with automatically generated id, which copy the signal from the input to the elements in the Ser, so that they have their own bus, and then copy it back to the output of the Par.
+Add a second effect in series
+#+BEGIN_SRC sclang
+"(abc)".arlink;
+{ Inp.ar.abs * LFNoise0.kr([10, 20]) * 2 } ++> \c;
+#+END_SRC
 
+Now in parallel
+#+BEGIN_SRC sclang
+"(a[bc])".arlink;
+{ Inp.ar.abs.sqrt * LFNoise0.kr([10, 20]) * 5 } ++> \c;
+#+END_SRC
+
+Vary the effects:
+#+BEGIN_SRC sclang
+{ Ringz.ar(Inp.ar, LFNoise0.kr(50).range(300, 400)) * 0.4 } ++> \b;
+{ Inp.ar.sqrt.abs * SinOsc.ar(1200) * 2 * LFNoise0.kr([5, 10]) * 2 } ++> \c;
+#+END_SRC
 
 ** Multiple voice example
 :PROPERTIES:

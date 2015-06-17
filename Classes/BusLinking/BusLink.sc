@@ -39,6 +39,7 @@ BusLink {
 	}
 
 	free { // may do more stuff later
+		if (this === BusLink.nullBus) { ^this };
 		bus.free;
 	}
 

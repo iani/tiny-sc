@@ -1,6 +1,7 @@
 GroupLink {
 	classvar default, <nullGroup;
 	var <>group, /* <>members, */ <readerGroup, <writerGroup;
+	var <>level = 0;
 
 	*initClass {
 		ServerBootCheck addStartup: { this.init; };
@@ -76,6 +77,7 @@ GroupLink {
 
 	getReaderGroup {
 		readerGroup ?? { readerGroup = GroupLink(Group.after(group).register) };
+		readerGroup.level = level + 1;
 		^readerGroup;
 	}
 
@@ -89,9 +91,9 @@ GroupLink {
 	server { ^group.server }
 
 	printOn { arg stream;
-		stream << "GroupLink(" << group.nodeID << ")";
+		stream << "GroupLink *" << level << "* (" << group.nodeID << ")";
 	}
 	storeOn { arg stream;
-		stream << "GroupLink(" << group.nodeID << ")";
+		stream << "GroupLink *" << level << "* (" << group.nodeID << ")";
 	}
 }
