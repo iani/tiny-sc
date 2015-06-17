@@ -60,6 +60,10 @@ Chuck {
 		this.changed(\play, task);
 	}
 
+	playIfNotPlaying {
+		if (output.isPlaying.not) { this.play };
+	}
+	
 	isPlaying {
 		^output.isPlaying;
 	}

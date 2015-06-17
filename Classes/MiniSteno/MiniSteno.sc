@@ -50,15 +50,16 @@ MiniSteno {
 		nullGroup = GroupLink.nullGroup;
 		Library.put(MiniSteno, \current, this);
 		Chuck.initInactive;
-		this.tree do: _.insertSerInPar;
+		tree do: _.insertSerInPar;
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default, 0);
-		numLinkChucks do: { | i |
-			Chuck(i.asSymbol).play;
+			numLinkChucks do: { | i |
+			Chuck(i.asSymbol).playIfNotPlaying;
 		};
 		Chuck.inactive do: _.setTarget(nullGroup);
 		"================================================================".postln;
 		MiniSteno.current.pp;
 		"================================================================".postln;
+		
 	}
 
 	*current { ^Library.at(MiniSteno, \current) }
@@ -118,7 +119,7 @@ Par : MiniSteno {
 	insertSerInPar {
 		tree = tree collect: { | el |
 			Ser(this.makeLinkChuck, el, this.makeLinkChuck)
-		}
+		};
 	}
 
 	makeLinkChuck {
@@ -127,7 +128,7 @@ Par : MiniSteno {
 		linkChuck.source = { Inp.ar };
 		linkChuck.permanent;
 		numLinkChucks = numLinkChucks + 1;
-		linkChuck;
+		^linkChuck;
 	}
 	
 	setBussesAndGroups { | inBus, outBus, group, argLevel |
@@ -138,7 +139,8 @@ Par : MiniSteno {
 }
 
 Ser : MiniSteno {
-	insertSerInPar { }
+	insertSerInPar { tree do: _.insertSerInPar }
+
 	setBussesAndGroups { | inBus, outBus, group, argLevel |
 		var busArray;
 		this.flatten; // remove Ser in Ser nestings because they mess up Group+Bus link order

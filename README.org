@@ -356,7 +356,7 @@ As explained above, the task-filters are stored under names generated automatica
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  810
+:eval-id:  958
 :END:
 
 A mechanism for linking inputs and outputs and of audio and control-rate Chucks based on /Steno/ by Julian Rohrhuber is under development. (See https://github.com/telephon/Steno)
@@ -371,8 +371,8 @@ Add 2 chucks =a= and =b= linked together in series:
 
 #+BEGIN_SRC sclang
 "(ab)".arlink;
-{ WhiteNoise.arps(0.1) } ++> \a;
-{ Ringz.ar(Inp.ar, LFNoise2.kr(1).range(30, 1000), 1) } ++> \b;
+{ WhiteNoise.arp } ++> \a;
+{ Ringz.arp(Inp.ar, LFNoise2.kr(1).range(30, 1000), 1) * 0.2 } ++> \b;
 #+END_SRC
 
 Remove the effect from the audible tree:
@@ -385,7 +385,7 @@ Bring back the effect and add a second effect to it, serially:
 
 #+BEGIN_SRC sclang
 "(abc)".arlink;
-{ Inp.ar * LFNoise0.kr(10) } ++> \c;
+{ Inp.ar.abs * LFNoise0.kr(10) } ++> \c;
 #+END_SRC
 
 Linking effects in parallel:
@@ -393,32 +393,40 @@ Linking effects in parallel:
 First listen to a single effect in series
 #+BEGIN_SRC sclang
 "(ab)".arlink;
-{ Blip.arp(140, 5) * 4 } ++> \a;
-{ Ringz.ar(Inp.ar, LFNoise1.kr(25).range(30, 1000)) * 0.1 } ++> \b;
+{ Blip.arp(LFNoise2.kr(1).range(40, 400), 5) * 2 } ++> \a;
+{ Ringz.ar(Inp.ar, LFNoise1.kr(25).range(30, 1000)) * 0.002 } ++> \b;
 #+END_SRC
 
 Add a second effect in series
 #+BEGIN_SRC sclang
 "(abc)".arlink;
-{ Inp.ar.abs * LFNoise0.kr([10, 20]) * 2 } ++> \c;
+{ Inp.ar.abs * LFNoise0.kr(10) } ++> \c;
 #+END_SRC
 
 Now in parallel
 #+BEGIN_SRC sclang
 "(a[bc])".arlink;
-{ Inp.ar.abs.sqrt * LFNoise0.kr([10, 20]) * 5 } ++> \c;
+{ Inp.ar.abs.sqrt * LFNoise0.kr(5) * 0.1 } ++> \c;
 #+END_SRC
 
 Vary the effects:
 #+BEGIN_SRC sclang
-{ Ringz.ar(Inp.ar, LFNoise0.kr(50).range(300, 400)) * 0.4 } ++> \b;
-{ Inp.ar.sqrt.abs * SinOsc.ar(1200) * 2 * LFNoise0.kr([5, 10]) * 2 } ++> \c;
+{ Limiter.ar(Ringz.ar(Inp.ar, LFNoise1.kr(10).range(300, 4000)), 0.1) } ++> \b;
+{ Inp.ar.sqrt.abs * SinOsc.ar(LFNoise0.kr(10).range(1000, 2000)) * 0.2 } ++> \c;
 #+END_SRC
+
+Add slow variations in amplitude to distinguish:
+#+BEGIN_SRC sclang
+{ Limiter.ar(Ringz.ar(Inp.ar, LFNoise1.kr(10).range(300, 4000)), 0.1) * LFNoise1.kr(0.3) } ++> \b;
+{ Inp.ar.sqrt.abs * SinOsc.ar(LFNoise0.kr(10).range(1000, 2000)) * 0.2 * LFNoise1.kr(0.3) } ++> \c;
+#+END_SRC
+
+
 
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  245
+:eval-id:  257
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
