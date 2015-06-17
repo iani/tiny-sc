@@ -41,10 +41,10 @@ MiniSteno {
 		var nullGroup;
 		nullGroup = GroupLink.nullGroup;
 		Chuck.initInactive;
-		// TODO: Free all audio busses here to re-allocate fresh and reconnect?
 		tree do: _.insertSerInPar; // Indispensable. Keep.
-		// TO TEST: Groups are now ordered so that Ser nested in Par work for next Ser...
+		// Being TESTED: Groups are now ordered so that Ser nested in Par work for next Ser...
 		// See draft in Par:setBussesAndGroups method below.
+		// Note: Re-use of busses at re-allocation is not optimal, but close to optimal.
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default, 0);
 		numLinkChucks do: { | i | Chuck(i.asSymbol).playIfNotPlaying };
 		Chuck.inactive do: _.setTarget(nullGroup);
@@ -151,24 +151,32 @@ Par : MiniSteno {
 Ser : MiniSteno {
 	insertSerInPar { tree do: _.insertSerInPar }
 
-	setBussesAndGroups { | inBus, outBus, group |
+	setBussesAndGroups { | inBus, outBus, group, parent | // if parent is a Ser, end in 0
 		var busArray;
-		this.flatten; // remove Ser in Ser nestings because they mess up Group+Bus link order
-		// TODO: Implement better solution where sers in ser will end in nullgroup instead.
-		// This enables one to "branch out" of a ser, directly to root output ...
+		this.flatten; // TODO: Remove this when figuring out the bus linking for nested Ser:
+		// TODO: the parent check below enables 
+		// one to "branch out" of a ser, directly to root output ... Group order is OK now. 
+		// But in the following node must read from the output of the previous one
+		// skipping this one.  How to do this?
 		busArray = [inBus];
-
 		tree.size - 1 do: {
 			busArray = busArray add: ArBusLink();
 		};
-		busArray = busArray add: outBus;		
+		busArray = busArray add: if (parent isKindOf: Ser ) {
+			BusLink.nullBus; // will occur in nested Ser, when we disable "flatten"
+		}{
+			outBus;
+		};
 		tree do: { | branch, i |
-			group = branch.setBussesAndGroups(busArray[i], busArray[i + 1], group);
+			group = branch.setBussesAndGroups(busArray[i], busArray[i + 1], group, this);
+			// TODO : Test this for the not - flattened variety:
+			// #inBus, group = branch.setBus ...
 		};
 		^group;
 	}
 
 	flatten {
+		// will become obsolete when skipping busses for nested ser in ser is implemented
 		var newTree;
 		tree do: { | el |
 			if (el isKindOf: Ser) {
