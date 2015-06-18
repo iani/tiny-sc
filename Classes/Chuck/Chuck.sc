@@ -75,20 +75,6 @@ Chuck {
 	
 	release { | argDur |
 		source.release(argDur);
-		/*		if (output isKindOf: Node) {
-			if (output.isPlaying) {
-				output.release(argDur ?? { args[\fadeTime].next });
-				output = nil;
-			}{
-				output.onStart (this, { | notification |
- 					if (notification.listener.isPlaying) {
-						notification.listener.release(argDur ?? { args[\fadeTime].next });
-						output = nil;
-					}
-				})
-			}
-		}
-		*/
 	}
 
 	setArgs { | ... newArgs |
@@ -98,16 +84,11 @@ Chuck {
 			keysValues = keysValues.add (key).add (value);
 			args [key] = value;
 		};
-		// if (output isKindOf: Node and: { output.isPlaying }) { output.set(*keysValues) };
 		if (output isKindOf: Node) {
 			if (output.isPlaying) {
-				// "IS PLAYING ".post; thisMethod.name.postln;
 				output.set(*keysValues)
 			}{
-				// "IS NOT PLAYING ".post; thisMethod.name.postln;
 				output.onStart(this, {
-					// "setting here".postln;
-					// [this, keysValues].postln;
 					output.set(*keysValues) })
 			}
 		};

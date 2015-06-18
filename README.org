@@ -24,7 +24,7 @@ This is version 1.2alpha (=retiny=).
 ** Basic concepts
 :PROPERTIES:
 :ID:       5236B8F2-072A-4F5E-8C86-A001532D82B2
-:eval-id:  787
+:eval-id:  822
 :END:
 
 Tiny-sc stores objects that create synths and tasks in the global Library under symbols, so that they can be recalled easily by their names, in order to play, start, stop, modify, and combine them.  There are two main types of objects: A =Chuck= is an object that can execute a function or create a synth.  A =TaskPlayer= is an object that plays tasks.  One can play a Chuck on its own, or one can attach a Chuck to a TaskPlayer in order to play a sequence of events.
@@ -91,9 +91,9 @@ Stop:
 ** Synth Processes and their parameters
 :PROPERTIES:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
-:eval-id:  244
+:eval-id:  257
 :END:
-Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
+Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
 #+BEGIN_SRC sclang
 { WhiteNoise.ar(0.1) } ++> \test; // ++> starts immediately
@@ -130,31 +130,55 @@ Release with custom fade-out duration:
 #+END_SRC
 
 ** Starting and stopping, Tasks and Chucks
+:PROPERTIES:
+:ID:       54ABF720-6AB1-45C1-B48B-89FB79CC384F
+:eval-id:  17
+:END:
 
-- Chuck :: =play= to start playing, =release= to stop playing
-- TaskPlayer or Task filter :: =start= to start playing, =stop= to stop playing
+Overview of methods (messages) sent to symbols to play with Chuck and TaskPlayer instances:
+
+- To play Chucks named by a symbol: :: send that symbol messages =play= to start, =release= to stop.
+- To play tasks named by a symbol: :: send that symbol =start= to start playing, =stop= to stop playing
 
 In other words:
 
-Play Chuck:
-: \symbol.play
+Examples:
 
-Start TaskPlayer or Task Filter:
-: \symbol.start
+#+BEGIN_SRC sclang
+"default" +> \c; // set source of Chuck c to SynthDef "default", but do not play
+\c.play;         // play Chuck c
+#+END_SRC
 
 Release (stop) Chuck:
-: \symbol.release
 
-Stop TaskPlayer or Task Filter
+#+BEGIN_SRC sclang
+\c.release;      // stop playing chuck c
+#+END_SRC
 
-: \symbol.stop
+#+BEGIN_SRC sclang
+\c **> \c; // attach chuck c to task c, without starting
+\c.start;  // start task c explicitly. Default event duration is 1 second
+#+END_SRC
+
+#+BEGIN_SRC sclang
+\c.stop; // stop task c
+#+END_SRC
+
+TaskPlayers stop when their duration pattern ends:
+
+#+BEGIN_SRC sclang
+[60, 65, 67, 72].midicps.pseq +>.freq \c; // set an endless frequency patern to c
+0.1.pn(16) *> \c;  // Play the c chuck with a task using a duration pattern of 16 events
+#+END_SRC
 
 ** Playing sequences of synth events
 :PROPERTIES:
 :ID:       C169857C-C151-4D9B-8BC3-A588AD4FFE59
-:eval-id:  194
+:eval-id:  198
 :END:
-A Chuck can play with a duration pattern, which runs in a TaskPlayer.  , which may be a single number:
+A Chuck can play with a duration pattern, which runs in a TaskPlayer.
+
+It which may be a single number:
 
 #+BEGIN_SRC sclang
 {Klank.arps(`[[40,120,200]*Rand(1,9),nil,(3..1)],PinkNoise.ar(0.1))}+>\test1*>1;
