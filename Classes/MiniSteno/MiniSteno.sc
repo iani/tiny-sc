@@ -1,11 +1,9 @@
-/*
-Tue, Jun 16 2015, 03:08 EEST
+/* Tue, Jun 16 2015, 03:08 EEST
 
 Inspired by Steno of Julian Rohrhuber. 
 https://github.com/telephon/Steno
 
 A simpler version that only creates chucks and puts them in Groups and links them with Busses. 
-
 */
 
 MiniSteno {
@@ -42,9 +40,8 @@ MiniSteno {
 		nullGroup = GroupLink.nullGroup;
 		Chuck.initInactive;
 		tree do: _.insertSerInPar; // Indispensable. Keep.
-		// Being TESTED: Groups are now ordered so that Ser nested in Par work for next Ser...
-		// See draft in Par:setBussesAndGroups method below.
-		// Note: Re-use of busses at re-allocation is not optimal, but close to optimal.
+		// Groups are now ordered so that Ser nested in Par work for next Ser...
+		// Note: Re-use of busses at re-allocation is not optimal, but acceptable.
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default, 0);
 		numLinkChucks do: { | i | Chuck(i.asSymbol).playIfNotPlaying };
 		Chuck.inactive do: _.setTarget(nullGroup);
@@ -151,44 +148,33 @@ Par : MiniSteno {
 Ser : MiniSteno {
 	insertSerInPar { tree do: _.insertSerInPar }
 
-	setBussesAndGroups { | inBus, outBus, group, parent | // if parent is a Ser, end in 0
-		var busArray;
-		this.flatten; // TODO: Remove this when figuring out the bus linking for nested Ser:
-		// TODO: the parent check below enables 
-		// one to "branch out" of a ser, directly to root output ... Group order is OK now. 
-		// But in the following node must read from the output of the previous one
-		// skipping this one.  How to do this?
-		busArray = [inBus];
-		tree.size - 1 do: {
-			busArray = busArray add: ArBusLink();
-		};
-		busArray = busArray add: if (parent isKindOf: Ser ) {
-			BusLink.nullBus; // will occur in nested Ser, when we disable "flatten"
-		}{
-			outBus;
+	setBussesAndGroups { | inBus, outBus, group | // if parent is a Ser, end in 0
+		// Here a nested Ser allows one to "branch out" of a ser, directly to root output.
+		var end, busses, nextBus;
+		busses = [];
+		nextBus = inBus;
+		end = tree.size - 1;
+		tree do: { | branch, i |
+			if (branch isKindOf: Ser) {
+				busses = busses add: nextBus;
+				busses = busses add: BusLink.nullBus;
+			}{
+				busses = busses add: nextBus;
+				busses = busses add: if (i == end) {
+					outBus
+				}{
+					nextBus = ArBusLink()
+				}
+			}
 		};
 		tree do: { | branch, i |
-			group = branch.setBussesAndGroups(busArray[i], busArray[i + 1], group, this);
-			// TODO : Test this for the not - flattened variety:
-			// #inBus, group = branch.setBus ...
+			group = branch.setBussesAndGroups(
+				busses[i * 2],
+				busses[i * 2 + 1],
+				group);
 		};
 		^group;
 	}
-
-	flatten {
-		// will become obsolete when skipping busses for nested ser in ser is implemented
-		var newTree;
-		tree do: { | el |
-			if (el isKindOf: Ser) {
-				el.flatten;
-				el.tree do: { | el2 | newTree = newTree add: el2 };
-			}{
-				newTree = newTree add: el;
-			}
-		};
-		tree = newTree;
-	}
-	
 }
 
 + String {
