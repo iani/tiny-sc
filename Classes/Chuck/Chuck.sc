@@ -55,7 +55,7 @@ Chuck {
 		}{
 			task.passArgs(args);
 		};
-		output = source.play(output, args, this);
+		source.play(output, args, this);
 		this.changed(\play, task);
 	}
 
@@ -71,6 +71,8 @@ Chuck {
 		source = argSource.asChuckSource(this);
 	}
 
+	defLoaded { | synthDefLoader | source.defLoaded(synthDefLoader) }
+	
 	release { | argDur |
 		source.release(argDur);
 		/*		if (output isKindOf: Node) {

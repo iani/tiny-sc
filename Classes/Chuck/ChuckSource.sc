@@ -30,7 +30,7 @@ ChuckSource {
 		*/
 		this.release; // Release previous synth
 		previousHasNoDurControl = nil;
-		^this.prPlay(args);
+		this.prPlay(args);
 	}
 
 	release { | argDur |
@@ -58,103 +58,80 @@ ChuckSource {
 	}
 
 	prPlay { | args |
-		^args use: source;
+		chuck.output = args use: source;
 	}
 
 	asChuckSource { ^this }
+
+	defLoaded {
+		postf("% WARNING: A def was loaded for %, but I am unable to process it\n",
+			this, chuck);
+	} 
 }
 
 ChuckSynthSource : ChuckSource {
-	makeSource {
-		var desc;
-		desc = SynthDescLib.at(source.asSymbol);
+	makeSource { this processDesc: SynthDescLib.at(source.asSymbol) }
+
+	processDesc { | desc |
 		if (desc.notNil) {
 			hasNoDurControl = desc.controlNames.includes(\dur).not;
+			
 		}{
 			hasNoDurControl = true;
 		}
 	}
 
-	prPlay { | args |
-		^this.prepareSynth(
-			source.play(
+	prPlay { | args | this makeSynth: source }
+
+	makeSynth { | argDefName |
+		var synth, args;
+		// TODO 1: Replace this by args.play using default Event play mechanism
+		// TODO 2: Incorporate bus mapping in synth creation by sending map with bundle
+		args = chuck.args;
+		synth = argDefName.play(
 				args [\target].next.asTarget,
 				args [\out].next,
 				args [\fadeTime].next,
 				args [\addAction].next,
 				args.getPairs
-			)
 		);
-	}
-
-	prepareSynth { | synth |
-		^synth.onEnd(this, {
-			if (chuck.output === synth) {
-				chuck.output = nil;
-			}
-		})
-		/* // Better investigate sending map messages in bundle at creation time
-		.onStart(this, { // notify for conrolbusses to map
-			chuck.changed(\synthStarted);
-		})
-		*/
+		chuck.output = synth.onEnd(this, {
+			if (chuck.output === synth) { chuck.output = nil; }
+		});
 	}
 }
 
 ChuckFuncSynthSource : ChuckSynthSource {
 	var <defName;
 
-	//	*new { | source, chuck |
-	//	^super.new(source, chuck).makeSynthDef;
-	// }
-
 	makeSource {
 		var def, desc;
 		def = source.asSynthDef(
 			fadeTime: chuck.args[\fadeTime],
-			name: this.makeDefName
-		).add; // add to SynthDescLib for use in ChuckSynthSource
-		desc = def.desc;
-		if (desc.controlNames includes: 'dur') {
-			hasNoDurControl = false;
-		}{
-			hasNoDurControl = true;
-		};
-		def.doSend(chuck.args[\target].server);
+			name: format("<%>", chuck.name)
+		); // add to SynthDescLib for use in ChuckSynthSource
+		desc = def.asSynthDesc;
+		this processDesc: desc;
+		SynthDescLib.default add: desc;
+		SynthDefLoader.add(chuck, def, { this.defName = def.name; });
+	}
+
+	defLoaded { | synthDefLoader | this.defName = synthDefLoader.synthDef.name; }
+	
+	defName_ { | argDefName |
+		defName = argDefName.asString;
+		this.changed(\defName);
 	}
 	
 	prPlay { | args |
-		// play func only the first time.
-		// thereafter, create synth from defName
-		^this.prepareSynth(
-			if (defName.isNil) {
-				// [this, thisMethod.name, "Not yet compatible with ().play"].postln;
-				source.cplay(
-					args [\target].next.asTarget,
-					args [\out].next,
-					args [\fadeTime].next,
-					args [\addAction].next,
-					args.getPairs,
-					this.makeDefName;
-				);
-			}{
-				defName.play(
-					args [\target].next.asTarget,
-					args [\out].next,
-					args [\fadeTime].next,
-					args [\addAction].next,
-					args.getPairs
-				)
-			}
-		)
-	}
-
-	makeDefName {
-		var theName;
-		theName = format("<%>", chuck.name);
-		// defName = theName;
-		{ 0.1.wait; defName = theName }.fork; //.defer(0.1);
-		^theName;
+		// If SynthDef not yet loaded, wait for it to load.
+		if (defName.isNil) {
+			this.addNotifierOneShot(this, \defName, {
+				this.makeSynth(this.defName)
+			})
+		}{
+			this.makeSynth(defName);
+		}
 	}
 }
 

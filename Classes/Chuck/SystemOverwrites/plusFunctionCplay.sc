@@ -26,6 +26,7 @@ Fixing that.
 		^synth
 	}
 
+	// overwriting default play to remove init-rate i_out argument.
 	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
 		var def, synth, server, bytes, synthMsg;
 		target = target.asTarget;

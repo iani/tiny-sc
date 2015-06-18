@@ -24,7 +24,7 @@ This is version 1.1alpha (=retiny=).
 ** Basic concepts
 :PROPERTIES:
 :ID:       5236B8F2-072A-4F5E-8C86-A001532D82B2
-:eval-id:  627
+:eval-id:  699
 :END:
 
 Tiny-sc stores objects that create synths and tasks in the global Library under symbols, so that they can be recalled easily by their names, in order to play, start, stop, modify, and combine them.  There are two main types of objects: A =Chuck= is an object that can execute a function or create a synth.  A =TaskPlayer= is an object that plays tasks.  One can play a Chuck on its own, or one can attach a Chuck to a TaskPlayer in order to play a sequence of events.
@@ -34,7 +34,15 @@ Tiny-sc stores objects that create synths and tasks in the global Library under 
 - +> :: Do something with a Chuck
 - *> :: Do something with a TaskPlayer
 
+#+BEGIN_SRC sclang
+{ SinOsc.arps(Rand(400, 1000)) } ++> \test0;
+#+END_SRC
+
 One can use these separately, or one may combine them in a single expression.  The first example shows a combined use:
+
+#+BEGIN_SRC sclang;
+
+#+END_SRC
 
 #+BEGIN_SRC sclang
 { SinOsc.arps(Rand(400, 1000)) } +> \test0 *> 0.1;
@@ -56,7 +64,7 @@ For example:
 Send a new SynthDef function to Chuck =test0=, and play it:
 
 #+BEGIN_SRC sclang
-{ SinOsc.arps(Rand(1000, 2000)).perc } ++>.2 \test0;
+{ SinOsc.arps(Rand(1000, 2000)).perc } ++> \test0;
 #+END_SRC
 
 Send duration 2 to TaskPlayer =test0= and start it:
@@ -79,7 +87,7 @@ Stop:
 ** Speed Limits
 :PROPERTIES:
 :ID:       0CE4F19D-DD04-439B-86AE-CDC6343E5882
-:eval-id:  81
+:eval-id:  89
 :END:
 
 The safe speed limits on my MacBook Pro are: 0.01 duration for events with self-releasing envelope and 0.02 duration for those without self-releaseing envelope  (see =perc=, =sine=). but they depend on the load of other processes.  At 500 events per second, the scheduler may get stuck occasionally when switching from one pattern to another. The following example with 0.005 duration may be risky on your computer:
@@ -118,7 +126,7 @@ Stop:
 ** Synth Processes and their parameters
 :PROPERTIES:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
-:eval-id:  211
+:eval-id:  216
 :END:
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
@@ -208,7 +216,7 @@ Stop the pattern that drives the Chuck:
 ** Task Player filters
 :PROPERTIES:
 :ID:       33EC0959-E840-4DA0-9891-0692387E5332
-:eval-id:  539
+:eval-id:  555
 :END:
 
 A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.  The difference is that any key of a pattern as well as the duration pattern can be changed at any time.  Furthermore, a Chuck can switch TaskPlayers at any time, and can also be made to respond to a TaskFilter which only plays at beats that match a given condition.  In this way, several Chuck instances can be synchronized by following the same TaskPlayer or its attached filters.
