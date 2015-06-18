@@ -307,7 +307,7 @@ Add =level1a= as pattern filter of the master task =leval1a=:
 *** Example 2
 :PROPERTIES:
 :ID:       A8822947-5653-4EB7-8628-6C835652BF5E
-:eval-id:  53
+:eval-id:  56
 :END:
 #+BEGIN_SRC sclang
 [1800, 2000, 2400].pseq +>.freq \level1b;
@@ -395,7 +395,7 @@ Add slow variations in amplitude to distinguish:
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  292
+:eval-id:  306
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
