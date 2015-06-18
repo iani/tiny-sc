@@ -49,7 +49,7 @@
 
 + Function {
 	+> { | symbol, adverb |  ^Chuck(symbol).receiveFunc(this, adverb); }
-	++> { | symbol, adverb |  ^Chuck(symbol).receiveFunc(this, adverb).play; }
+	++> { | symbol, adverb | ^Chuck(symbol).receiveFunc(this, adverb).play }
 }
 
 + Ref { // `{ } quotes function so that it evals rather than {}.plays

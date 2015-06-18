@@ -2,7 +2,8 @@
 
 Evaluate a function strictly after a synthdef has been loaded. 
 
-Note: Must avoid race situation where the same object asks for a new synthdef to be loaded before its own old request has been completed. 
+Prevents race situation where the same object asks for a new 
+synthdef to be loaded before its own old request has been completed. 
 
 Current implementation is only for the local server as default server.
 
@@ -21,31 +22,21 @@ SynthDefLoader {
 		StartUp add: {
 			OSCFunc(
 				{ | ... args |
-					// args.postln;
-					
-					//					[thisMethod.name, "waiting is:", waiting, "args are:", args].postln;
-					
 					sent !? {
 						sent.defLoaded(this);
-							
 						if (waiting.size > 0) {
-							// [thisMethod.name, "taking 1st of waiting, which is:", waiting[1]].postln;
 							waiting[0].send;
 							waiting = waiting[1..];
 						}{
 							sent = nil;
 						};
-												
 					};
-
 				},
 				"/done",
 				argTemplate: [{ | pattern |
 					['/d_load', '/d_recv'] includes: pattern
 				}]
-				
 			).permanent_(true);
-						
 		}
 	}
 	
@@ -62,7 +53,6 @@ SynthDefLoader {
 
 	send {
 		sent = this;
-		// [this, thisMethod.name, "sending to server now once!"].postln;
 		synthDef.doSend(server);
 	}
 

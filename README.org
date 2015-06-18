@@ -54,7 +54,7 @@ The above creates a Chuck =test0= playing the function as source, and schedules 
 
 There are two variants of the above operators:
 
-- ++> :: Send a new function or SynthDef name to a Chuck, and play it immediately.
+- ++> :: Send a new function or SynthDef name to a Chuck, and play it immediately. *NOTE: This also disconnects the Chuck from any task that it may be attached to.*
 - **> :: Modify a TaskPlayer, but do not start it.
 
 For example:
@@ -85,7 +85,7 @@ Stop:
 ** Synth Processes and their parameters
 :PROPERTIES:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
-:eval-id:  226
+:eval-id:  233
 :END:
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, Pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
@@ -395,7 +395,7 @@ Add slow variations in amplitude to distinguish:
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  280
+:eval-id:  292
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.

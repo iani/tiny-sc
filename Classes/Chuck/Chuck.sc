@@ -51,7 +51,7 @@ Chuck {
 
 	play { | task |
 		if (task.isNil) { // disengage from task if played directly
-			{ this.removePreviousTask } 	
+			this.removePreviousTask
 		}{
 			task.passArgs(args);
 		};
