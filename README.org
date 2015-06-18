@@ -82,45 +82,6 @@ Stop:
 \test0.stop;
 #+END_SRC
 
-** Speed Limits
-:PROPERTIES:
-:ID:       0CE4F19D-DD04-439B-86AE-CDC6343E5882
-:eval-id:  96
-:END:
-
-The safe speed limits on my MacBook Pro are: 0.01 duration for events with self-releasing envelope and 0.02 duration for those without self-releaseing envelope  (see =perc=, =sine=). but they depend on the load of other processes.  At 500 events per second, the scheduler may get stuck occasionally when switching from one pattern to another. The following example with 0.005 duration may be risky on your computer:
-
-#+BEGIN_SRC sclang
-{ SinOsc.arps(Rand(1000, 2000)).perc } +> \test0;
-[Pn(0.005, 120) ! 10, Pn(0.1, 4) ! 5, 0.5, 1.5].flat.prand *> \test0;
-#+END_SRC
-
-Here are some stress-tests.  Please report if your system encounters limits with these:
-
-#+BEGIN_SRC sclang
-{ SinOsc.arps(Rand(400, 5000)).perc } +> \test0 *> [0.01.pn(50), 0.05.pn(30), 1].prand;
-#+END_SRC
-
-With nodes released at each new event, the safety threshold is at about 50 events per second:
-#+BEGIN_SRC sclang
-{ SinOsc.arps(Rand(100, 5000)) } +> \test0 *> [0.02.pn(50), 0.2.pn(10), 1].prand;
-#+END_SRC
-
-Testing the limits ...:
-#+BEGIN_SRC sclang
-0.001 *> \test0;  // Can be unstable depending on general CPU load
-#+END_SRC
-
-#+BEGIN_SRC sclang
-{ SinOsc.arps(Rand(100, 200)) } +> \test0 *> 0.001;
-#+END_SRC
-
-Stop:
-
-#+BEGIN_SRC sclang
-\test0.stop;
-#+END_SRC
-
 ** Synth Processes and their parameters
 :PROPERTIES:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
@@ -546,3 +507,10 @@ Now gradually build some background texture and rhythms with the same synth sour
 #+BEGIN_SRC sclang
 \multi3 **>>.xo \_multi1;
 #+END_SRC
+** Speed Limits
+:PROPERTIES:
+:ID:       0CE4F19D-DD04-439B-86AE-CDC6343E5882
+:eval-id:  96
+:END:
+
+Using the precise SynthDef loading method of =SynthDefLoader= as of v1.2.2alpha, playing patterns with up to 500 events per second is safe, with light-weight SynthDefs. when this there is only one task-thread playing, and dependent on general CPU capacity and other load on the machine.  See: StressTests.scd.
