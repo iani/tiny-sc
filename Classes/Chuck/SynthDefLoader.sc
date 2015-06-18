@@ -44,7 +44,7 @@ SynthDefLoader {
 					['/d_load', '/d_recv'] includes: pattern
 				}]
 				
-			);
+			).permanent_(true);
 						
 		}
 	}

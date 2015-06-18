@@ -97,7 +97,7 @@ IZ Wed, 26 Feb 2014 08:22:41
 		^(
 			this * EnvGen.kr(
 				Env.perc(attackTime, \dur.kr(dur) - attackTime max: 0.01, level, curve),
-				doneAction: doneAction.kr
+				doneAction: doneAction
 			)
 		);
 	}
