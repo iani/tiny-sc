@@ -1,3 +1,4 @@
+//: Jaeh
 (
 {
 	{ SinOsc.arps(Rand(1000, 2000)).perc } +> \test0 *> 0.01;
@@ -19,7 +20,7 @@
 }.fork
 )
 
-//: 500 and 10 events per second, alternating at random. Stable ?
+//: 500 and 100 events per second, alternating at random. Stable ?
 (
 {
 	0.002 *> \test0; // Initialize at 500 events / second;
@@ -107,7 +108,7 @@
 )
 //:
 
-// More stress-tests.  Please report if your system encounters limits with these:
+// More stress-tests. 
 
 (
 { SinOsc.arps(Rand(400, 5000)).perc } +> \test0 *> [0.01.pn(50), 0.05.pn(30), 1].prand;

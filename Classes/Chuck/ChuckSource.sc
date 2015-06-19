@@ -136,34 +136,9 @@ ChuckFuncSynthSource : ChuckSynthSource {
 }
 
 ChuckPatternSource : ChuckSynthSource {
-	/* plays Event as EventPattern
-		The Event is stored in an EventPattern.
-		The EventPattern is stored in source.
-		The EventPattern is played through an EventStreamPlayer.
-		The EventStreamPlayer is stored in player, and contains the EventStream that
-		creates the Events.
-		The ChuckPatternSource also creates a synth whose function 
-		is to fade the output of the entire pattern in and out at beginning and end
-		using the Chuck's fadeTime.	
-		The Synth is used as Target for the EventStreamPlayer's synths, that 
-		play with addAction "addBefore" relative to it.
-		It is created inside the GroupLink group of the Chuck's args.
-		It is stored as the Chuck's output.  When it stops,
-		it also frees any synths created inside it by the pattern, and notifies the 
-		pattern to stop. --- or maybe not it only relies on its fade env.
-		- this simplifies things a bit.
-		We still need a groupwhere everything is created in order to move everything around
-		ar once when recobfiguring the synth tree.
-
-		Since a new patternplayer may have started in the meanwhile, the stopping
-		must be done by connecting the fadeSynth with Notification to the 
-		EventStreamPlayer.
-		The output of the EventPattern is directed to a private bus, that is the input of the 
-		fadeSynth.
-		group and bus are persistent.  Only the fade synth is started/sopped at each play 
-		of the chuck.
-	*/
+	/* plays Event as EventPattern. See notes in file TODOs.org	*/
 	var <player;
 	var <bus, <group;
+
 	
 }
