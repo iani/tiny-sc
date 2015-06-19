@@ -164,6 +164,6 @@ ChuckPatternSource : ChuckSynthSource {
 		of the chuck.
 	*/
 	var <player;
-	var <bus; <group;
+	var <bus, <group;
 	
 }

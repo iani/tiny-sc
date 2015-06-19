@@ -24,7 +24,7 @@ This is version 1.2alpha (=retiny=).
 ** Basic concepts
 :PROPERTIES:
 :ID:       5236B8F2-072A-4F5E-8C86-A001532D82B2
-:eval-id:  822
+:eval-id:  823
 :END:
 
 Tiny-sc stores objects that create synths and tasks in the global Library under symbols, so that they can be recalled easily by their names, in order to play, start, stop, modify, and combine them.  There are two main types of objects: A =Chuck= is an object that can execute a function or create a synth.  A =TaskPlayer= is an object that plays tasks.  One can play a Chuck on its own, or one can attach a Chuck to a TaskPlayer in order to play a sequence of events.
