@@ -24,7 +24,7 @@ This is version 1.2alpha (=retiny=).
 ** Basic concepts
 :PROPERTIES:
 :ID:       5236B8F2-072A-4F5E-8C86-A001532D82B2
-:eval-id:  823
+:eval-id:  831
 :END:
 
 Tiny-sc stores objects that create synths and tasks in the global Library under symbols, so that they can be recalled easily by their names, in order to play, start, stop, modify, and combine them.  There are two main types of objects: A =Chuck= is an object that can execute a function or create a synth.  A =TaskPlayer= is an object that plays tasks.  One can play a Chuck on its own, or one can attach a Chuck to a TaskPlayer in order to play a sequence of events.
@@ -91,7 +91,7 @@ Stop:
 ** Synth Processes and their parameters
 :PROPERTIES:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
-:eval-id:  257
+:eval-id:  272
 :END:
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
@@ -132,7 +132,7 @@ Release with custom fade-out duration:
 ** Starting and stopping, Tasks and Chucks
 :PROPERTIES:
 :ID:       54ABF720-6AB1-45C1-B48B-89FB79CC384F
-:eval-id:  17
+:eval-id:  22
 :END:
 
 Overview of methods (messages) sent to symbols to play with Chuck and TaskPlayer instances:
@@ -174,7 +174,7 @@ TaskPlayers stop when their duration pattern ends:
 ** Playing sequences of synth events
 :PROPERTIES:
 :ID:       C169857C-C151-4D9B-8BC3-A588AD4FFE59
-:eval-id:  198
+:eval-id:  202
 :END:
 A Chuck can play with a duration pattern, which runs in a TaskPlayer.
 
@@ -205,7 +205,7 @@ Stop the pattern that drives the Chuck:
 ** Task Player filters
 :PROPERTIES:
 :ID:       33EC0959-E840-4DA0-9891-0692387E5332
-:eval-id:  600
+:eval-id:  613
 :END:
 
 A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.  The difference is that any key of a pattern as well as the duration pattern can be changed at any time.  Furthermore, a Chuck can switch TaskPlayers at any time, and can also be made to respond to a TaskFilter which only plays at beats that match a given condition.  In this way, several Chuck instances can be synchronized by following the same TaskPlayer or its attached filters.
@@ -310,7 +310,7 @@ Examples:
 *** Example 1
 :PROPERTIES:
 :ID:       A5F476EA-3CC8-4DAE-877D-8920CC1B5F07
-:eval-id:  118
+:eval-id:  123
 :END:
 #+BEGIN_SRC sclang
 { SinOsc.arps(2000).perc } +> \level1a *> 0.1;
@@ -337,7 +337,7 @@ Add =level1a= as pattern filter of the master task =leval1a=:
 *** Example 2
 :PROPERTIES:
 :ID:       A8822947-5653-4EB7-8628-6C835652BF5E
-:eval-id:  56
+:eval-id:  59
 :END:
 #+BEGIN_SRC sclang
 [1800, 2000, 2400].pseq +>.freq \level1b;
@@ -357,7 +357,7 @@ As explained above, the task-filters are stored under names generated automatica
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  1026
+:eval-id:  1047
 :END:
 
 A mechanism for linking inputs and outputs and of audio and control-rate Chucks based on /Steno/ by Julian Rohrhuber is under development. (See https://github.com/telephon/Steno)
@@ -407,7 +407,7 @@ Add a second effect in series
 Now in parallel
 #+BEGIN_SRC sclang
 "(a[bc])".arlink;
-{ Inp.ar.abs.sqrt * LFNoise1.kr(5) * 0.1 } ++> \c;
+{ Inp.ar.abs.sqrt * LFPulse.kr(LFDNoise1.kr(0.3).range(0.6, 20), 0, 0.8, 0.03) } ++> \c;
 #+END_SRC
 
 Vary the effects:
@@ -422,10 +422,18 @@ Add slow variations in amplitude to distinguish:
 { Inp.ar.sqrt.abs * SinOsc.ar(LFNoise0.kr(10).range(90, 200)) * 0.05 * LFNoise1.kr(0.3) } ++> \c;
 #+END_SRC
 
+Release with different durations:
+
+#+BEGIN_SRC sclang
+\a.release(10);
+\b.release(5);
+\c.release(2);
+#+END_SRC
+
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  306
+:eval-id:  319
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
@@ -543,4 +551,4 @@ Now gradually build some background texture and rhythms with the same synth sour
 :eval-id:  96
 :END:
 
-Using the precise SynthDef loading method of =SynthDefLoader= as of v1.2.2alpha, playing patterns with up to 500 events per second is safe, with light-weight SynthDefs. when this there is only one task-thread playing, and dependent on general CPU capacity and other load on the machine.  See: StressTests.scd.
+Using the precise SynthDef loading method of =SynthDefLoader= as of v1.2.2alpha, playing patterns with up to 500 events per second is safe, with light-weight SynthDefs, when there is only one task-thread playing, and dependent on general CPU capacity and other load on the machine.  See: StressTests.scd.
