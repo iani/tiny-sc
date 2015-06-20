@@ -339,9 +339,21 @@ Chuck {
 
 	remove {
 		// TODO! MORE STUFF MUST BE DONE HERE!
-		this.objectClosed;
+		/*
+		 	source.remove; // frees output and any private groups or busses
+		*/
+		this.objectClosed; // Also removes from Registry/Library
 	}
-	
+
+	/*
+	free {
+		/*
+			output.free;
+			source.
+		*/
+	}
+	*/
+
 	setBussesAndGroups { | inBus, outBus, group | // used by MiniStereo
 		this setInBus: inBus;
 		this setOutBus: outBus;

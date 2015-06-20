@@ -92,11 +92,18 @@ Design new class EventFilter that will either be a subclass of Event or contain 
 
 
 * Todo
-** TODO ChuckSynthSource+arp, perc: Use release for safer synth stopping
+** TODO MiniSteno Par: Use pre-loaded SynthDef for Link synths
 :PROPERTIES:
-:DATE:     <2015-06-12 Fri 11:58>
+:DATE:     <2015-06-19 Fri 14:24>
 :END:
-
+** TODO Test+write examples for Ser(Ser) nesting in MiniSteno
+:PROPERTIES:
+:DATE:     <2015-06-19 Fri 13:29>
+:END:
+** TODO Implement stopping (detaching/disabling) of Task Filters
+:PROPERTIES:
+:DATE:     <2015-06-19 Fri 13:29>
+:END:
 ** TODO Chuck: Enable functions in args for dur filtering etc
 :PROPERTIES:
 :DATE:     <2015-06-12 Fri 11:58>
@@ -269,4 +276,12 @@ But you can also use shortcuts:
   obsolete rather than cancelled - because overtaken by ChuckPatternSource
 - State "CANCELLED"  from "TODO"       [2015-06-19 Fri 12:52] \\
   Mushy mushy mushy.  Behavior not so clear as current implementation with synth creation.  Instead, now defining new subclass of ChuckSynthSource, called ChuckPatternSource, which plays EventPatterns.
+:END:
+** CANCELLED ChuckSynthSource+arp, perc: Use release for safer synth stopping
+:LOGBOOK:
+- State "CANCELLED"  from "TODO"       [2015-06-19 Fri 13:06] \\
+  Current scheme with SynthDefLoader, dur self-freeing envelopes and release behaves well under all stress-tests so far.
+:END:
+:PROPERTIES:
+:DATE:     <2015-06-12 Fri 11:58>
 :END:

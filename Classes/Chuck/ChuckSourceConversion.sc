@@ -13,3 +13,7 @@
 		^Synth (this, args ++ [out: outbus, fadeTime: fadeTime], target, addAction)
 	}
 }
+
++ Event {
+	asChuckSource { | chuck | ^ChuckPatternSource(this, chuck) }
+}

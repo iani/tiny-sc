@@ -66,7 +66,7 @@ ChuckSource {
 	defLoaded {
 		postf("% WARNING: A def was loaded for %, but I am unable to process it\n",
 			this, chuck);
-	} 
+	}
 }
 
 ChuckSynthSource : ChuckSource {
@@ -81,13 +81,12 @@ ChuckSynthSource : ChuckSource {
 		}
 	}
 
-	prPlay { | args | this makeSynth: source }
+	prPlay {  | args | this.makeSynth(source, args) } // TODO: use args????
 
-	makeSynth { | argDefName |
-		var synth, args;
+	makeSynth { | argDefName, args |
+		var synth;
 		// TODO 1: Replace this by args.play using default Event play mechanism
 		// TODO 2: Incorporate bus mapping in synth creation by sending map with bundle
-		args = chuck.args;
 		synth = argDefName.play(
 				args [\target].next.asTarget,
 				args [\out].next,
@@ -109,10 +108,11 @@ ChuckFuncSynthSource : ChuckSynthSource {
 		def = source.asSynthDef(
 			fadeTime: chuck.args[\fadeTime],
 			name: format("<%>", chuck.name)
-		); // add to SynthDescLib for use in ChuckSynthSource
+		);
 		desc = def.asSynthDesc;
+		SynthDescLib.default add: desc; // make def available to other Chucks
 		this processDesc: desc;
-		SynthDescLib.default add: desc;
+		// Send SynthDef to Server and notify when done:
 		SynthDefLoader.add(chuck, def, { this.defName = def.name; });
 	}
 
@@ -124,10 +124,9 @@ ChuckFuncSynthSource : ChuckSynthSource {
 	}
 	
 	prPlay { | args |
-		// If SynthDef not yet loaded, wait for it to load.
-		if (defName.isNil) {
+		if (defName.isNil) { // If SynthDef not yet loaded, wait for it to load.
 			this.addNotifierOneShot(this, \defName, {
-				this.makeSynth(this.defName)
+				this.makeSynth(defName, args)
 			})
 		}{
 			this.makeSynth(defName);
@@ -140,5 +139,26 @@ ChuckPatternSource : ChuckSynthSource {
 	var <player;
 	var <bus, <group;
 
+	*new { | event, chuck |
+		if (chuck.source isKindOf: this) {
+			^chuck.source.addEvent(event);
+		}{
+			^this.newCopyArgs(event, chuck).init;
+		}
+	}
+
+	makeSource {
+		hasNoDurControl = true;
+		source = EventPatternPlayer(source);
+	}
+
+	prPlay {
+		
+	}
+	/*
+	*new { | source, chuck |
+		^this.newCopyArgs( (source ?? { ["x", 0] }).asStream, chuck).init
+	}
+	*/
 	
 }

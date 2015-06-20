@@ -1,5 +1,5 @@
 GroupLink {
-	classvar default, <nullGroup;
+	classvar <default, <nullGroup;
 	var <>group, /* <>members, */ <readerGroup, <writerGroup;
 	var <>level = 0;
 
@@ -10,6 +10,7 @@ GroupLink {
 	*init {
 		Chuck.parentArgs[\target] = this.default;
 		nullGroup = GroupLink();
+		default = GroupLink();
 		this.remakeGroups;
 	}
 
@@ -17,7 +18,7 @@ GroupLink {
 		{
 			0.1.wait;  // Must defer after CmdPeriod, else groups are still destroyed
 			default.group = Group();
-			nullGroup.group = Group.before(default.group.group);
+			nullGroup.group = Group.before(Server.default.defaultGroup);
 			postf("Default group is now %\n", default.group);
 			default.remakeReaderGroups;
 			default.remakeWriterGroups;
@@ -50,10 +51,12 @@ GroupLink {
 		}
 	}
 
+	/*
 	*default {
 		default ?? { default = GroupLink() };
 		^default;
 	}
+	*/
 
 	readerGroups {
 		if (readerGroup.isNil) {
