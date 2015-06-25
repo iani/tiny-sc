@@ -9,7 +9,7 @@
             {   // 200 events per second
                 [Pn(0.005, 120) ! 10, Pn(0.1, 4) ! 5, 0.5, 1.5].flat.prand **> \test0;
             },
-            {    // 100 events per second
+            {    // 100, 1000, 5, 1 events per second
                 [0.01.pn(50), 0.001.pn(100), 0.2.pn(10), 1].prand **> \test0;
             },
             { 0.001 **> \test0; } // 1000 events per second
