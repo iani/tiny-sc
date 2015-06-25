@@ -1,3 +1,14 @@
+/* 
+Conclusions from the tests below: 
+
+1000 events per second, while also changing rates at any moment are safe, *if one does not also load new synthdef functions while playing the task*.  The CPU load on an I7 Intel Mac can be under 20%. 
+
+If loading new SynthDef functions, then the rate of events may fall as low as 100 events per second.  
+
+To make that safer, the SynthDef loading mechanism has to be combined with the Synth starting and freeing mechanism.  This is not high on the priority list at the moment. 
+
+*/
+
 //: Jaeh
 (
 {
