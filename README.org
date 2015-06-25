@@ -24,7 +24,7 @@ This is version 1.2alpha (=retiny=).
 ** Basic concepts
 :PROPERTIES:
 :ID:       5236B8F2-072A-4F5E-8C86-A001532D82B2
-:eval-id:  831
+:eval-id:  842
 :END:
 
 Tiny-sc stores objects that create synths and tasks in the global Library under symbols, so that they can be recalled easily by their names, in order to play, start, stop, modify, and combine them.  There are two main types of objects: A =Chuck= is an object that can execute a function or create a synth.  A =TaskPlayer= is an object that plays tasks.  One can play a Chuck on its own, or one can attach a Chuck to a TaskPlayer in order to play a sequence of events.
@@ -43,7 +43,7 @@ Basic example: Set the source of a Chuck, and then play it:
 Tiny-sc is written so that one can achieve an audible change in the sound with a single statement, as far as possible.  The example above can be written in one statement like this:
 
 #+BEGIN_SRC sclang
-{ SinOsc.arps(Rand(400, 1000)).perc } ++> \test0; // set the source and play
+{ SinOsc.arps(Rand(400, 1000)).perc } ++> \test0; // ++> = set the source and play
 #+END_SRC
 
 One can combine a sound-source and a task expression in one statement like this:
@@ -91,7 +91,7 @@ Stop:
 ** Synth Processes and their parameters
 :PROPERTIES:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
-:eval-id:  272
+:eval-id:  285
 :END:
 Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 

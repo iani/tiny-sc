@@ -1,5 +1,5 @@
 * Underway
-** STARTED ChuckPatternSource, EventPatternPlayer, FadeSynth
+** STARTED ChuckPatternSource, EventPatternSynth
 :PROPERTIES:
 :DATE:     <2015-06-22 Mon 00:54>
 :END:
@@ -19,7 +19,6 @@ Notes:
 :PROPERTIES:
 :DATE:     <2015-06-25 Thu 00:55>
 :END:
-
 
 Subclass of Synth
 1. uses its own SynthDef, which copies signal from input to output wrapping it in a fade-envelope.

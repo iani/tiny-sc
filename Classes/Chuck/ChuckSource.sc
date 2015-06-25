@@ -129,7 +129,7 @@ ChuckFuncSynthSource : ChuckSynthSource {
 				this.makeSynth(defName, args)
 			})
 		}{
-			this.makeSynth(defName);
+			this.makeSynth(defName, args);
 		}
 	}
 }
