@@ -6,6 +6,10 @@ IZ Mon, Apr 21 2014, 09:58 EEST
 
 EventPattern((dur: 0.1, degree: [-5, 12, 1].pbrown + [0, [-2, 3]].prand)).play;
 
+shortcut: 
+
+(dur: 0.1, degree: [-5, 12, 2].pbrown + [0, [-2, 3]].prand).ep;
+
 */
 
 EventPattern : Pattern {
@@ -57,16 +61,38 @@ EvtStream : Stream {
 	}	
 }
 
-EventPatternPlayer {
-	/* Used as source in ChuckPatternSource.
-		pattern: An EventPattern.
-		player: an EventStreamPlayer.
-		group: Group for running the FadeSynth and all synths produced by the EventStreamPlayer
-	*/
-	var <pattern, <player, <group, <bus;
 
-	*new { | event |
-		^this.newCopyArgs(event).init;
+// !!!!!!!!!!!!!!!! NOT DONE !!!!!!!!!!!!!!!!
+
+EventPatternSynth : Synth {
+	classvar <defName = "*arlink1*";
+	var <pattern; // EventPattern: Its target is set to my group after that is started
+	var <player, <bus;
+
+		*initClass {
+		StartUp add: {
+			this.makeSynthDefs;
+		}
+	}
+
+	*makeSynthDefs {
+		SynthDef(defName, { | fadeIn = 0 out = 0 fadeTime = 0.02 |
+			Out.ar(out, In.ar(fadeIn) * // from GraphBuilder:makeFadeEnv:
+				EnvGen.kr(Env.new([fadeTime <= 0, 1, 0], #[1, 1], \lin, 1),
+					\gate.kr(1.0), 1.0, 0.0, fadeTime, 2));	
+		}).add;
+	}
+	
+	*new { | source, args |
+		/*  create own group
+			allocate bus
+			set source's eventpattern's fadeBus and target
+			then send self
+			start playing eventpattern
+			doneAction is free self, group, and synths contained in group
+			onEnd: free bus and stop EventStreamPlayer
+			set source's chuck's output to newly created instance of self.
+		*/
 	}
 
 	init {
@@ -79,6 +105,7 @@ EventPatternPlayer {
 		// Called by ChuckPatternSource:makeSynth
 		//	player = pattern.
 		thisMethod.notImplemented;
+		/*
 		^FadeSynth(FadeSynth.defName,
 			args ++ [fadeIn: bus.index, fadeTime: fadeTime],
 			target, \addToTail
@@ -88,25 +115,8 @@ EventPatternPlayer {
 		})
 		.onEnd(this, {
 			player.stop;
-		});
-	}
-}
-
-FadeSynth : Synth {
-	/* Created by EventPatternPlayer to pass as output to Chuck */
-	classvar <defName = "*arlink1*";
-	*initClass {
-		StartUp add: {
-			this.makeSynthDefs;
-		}
-	}
-
-	*makeSynthDefs {
-		SynthDef(defName, { | fadeIn = 0 out = 0 fadeTime = 0.02 |
-			Out.ar(out, In.ar(fadeIn) * // from GraphBuilder:makeFadeEnv:
-				EnvGen.kr(Env.new([fadeTime <= 0, 1, 0], #[1, 1], \lin, 1),
-					\gate.kr(1.0), 1.0, 0.0, fadeTime, 2));	
-		}).add;
+		})
+		*/
 	}	
 
 

@@ -136,8 +136,8 @@ ChuckFuncSynthSource : ChuckSynthSource {
 
 ChuckPatternSource : ChuckSynthSource {
 	/* plays Event as EventPattern. See notes in file TODOs.org	*/
-	var <player;
-	var <bus, <group;
+	//	var <player;
+	//	var <bus, <group;
 
 	*new { | event, chuck |
 		if (chuck.source isKindOf: this) {
@@ -149,16 +149,19 @@ ChuckPatternSource : ChuckSynthSource {
 
 	makeSource {
 		hasNoDurControl = true;
-		source = EventPatternPlayer(source);
+		source = EventPattern(source);
 	}
 
-	prPlay {
-		
+	makeSynth { | source, args |
+		/* source is an EventPattern.
+			Args are indispensable for bus and target!
+			Therefore copied to the event of EventPattern in source before playing.
+			new target group inside Chuck's target, new bus, and fade synth
+			are created each time that the pattern plays with makeSynth. 
+			1. Alloc new bus (happens immediately).
+			2. Create group (is asynchronous - must use onStart to start synth after it)
+			3. Create fade synth (asynchronous, use onStart to start pattern after it)
+			4. Start playing EventPattern, 
+		*/
 	}
-	/*
-	*new { | source, chuck |
-		^this.newCopyArgs( (source ?? { ["x", 0] }).asStream, chuck).init
-	}
-	*/
-	
 }
