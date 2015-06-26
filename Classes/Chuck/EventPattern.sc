@@ -93,6 +93,15 @@ EventPatternSynth : Synth {
 			onEnd: free bus and stop EventStreamPlayer
 			set source's chuck's output to newly created instance of self.
 		*/
+
+		var synth, target, group;
+		/*
+			var target;
+			target = args[target]
+		synth = this.basicNew(defName, args
+
+		Synth
+		*/
 	}
 
 	init {

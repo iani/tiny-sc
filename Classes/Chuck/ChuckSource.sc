@@ -94,9 +94,13 @@ ChuckSynthSource : ChuckSource {
 				args [\addAction].next,
 				args.getPairs
 		);
+		this.setSynth (synth);
+	}
+
+	setSynth { | synth |
 		chuck.output = synth.onEnd(this, {
 			if (chuck.output === synth) { chuck.output = nil; }
-		});
+		})
 	}
 }
 
@@ -163,5 +167,6 @@ ChuckPatternSource : ChuckSynthSource {
 			3. Create fade synth (asynchronous, use onStart to start pattern after it)
 			4. Start playing EventPattern, 
 		*/
+		this.setSynth (EventPatternSynth(source, args));
 	}
 }
