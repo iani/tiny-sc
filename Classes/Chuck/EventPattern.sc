@@ -94,18 +94,32 @@ EventPatternSynth : Synth {
 			set source's chuck's output to newly created instance of self.
 		*/
 
-		var synth, target, group;
+		var synth, target, group, bus, addNum, server, defname;
 		/*
-			var target;
-			target = args[target]
-		synth = this.basicNew(defName, args
+			// see Synth:basicNew and modify ... !!!
+			target = args[target].asTarget;
+			server = target.server;
+			bus = Bus.audio(server, 1);
+			defname = this.defName(args)
+			synth = this.basicNew(defname, server);
+			group = Group.tail(target);
+			group.onStart(this, {
+			server.sendMsg(9, defname, synth.nodeID, addNum, target.nodID, *[...]);
+			synth.onStart({
+			... 
+			
+			})
+			})
+		
 
-		Synth
+		
 		*/
 	}
 
-	init {
-		group = GroupLink.inside(pattern.event[\target]).permanent;
+	init { | source args |
+		var target;
+		
+		group = Group.tail(target);
 		bus = Bus.audio(Server.default, 1);
 		pattern.event[\out] = bus.index;
 	}
