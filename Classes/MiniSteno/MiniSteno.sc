@@ -39,9 +39,7 @@ MiniSteno {
 		var nullGroup;
 		nullGroup = GroupLink.nullGroup;
 		Chuck.initInactive;
-		tree do: _.insertSerInPar; // Indispensable. Keep.
-		// Groups are now ordered so that Ser nested in Par work for next Ser...
-		// Note: Re-use of busses at re-allocation is not optimal, but acceptable.
+		tree do: _.insertSerInPar; 
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default, 0);
 		numLinkChucks do: { | i | Chuck(i.asSymbol).playIfNotPlaying };
 		Chuck.inactive do: _.setTarget(nullGroup);

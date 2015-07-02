@@ -58,12 +58,12 @@ Thoughts for further refinement:
 
 Read from the default audio output of chuck =x=.
 #+BEGIN_SRC sclang
-\x.ain
+\x.ain  // or just: \x.a
 #+END_SRC
 
 Read from the audio output of chuck =x= named =out2=.
 #+BEGIN_SRC sclang
-\x.ain(\out2)
+\x.ain(\out2) // or just: \z.a(\out2)
 #+END_SRC
 
 Read from the default audio output of chuck =x= with an input of 2 channels.
@@ -73,14 +73,14 @@ Read from the default audio output of chuck =x= with an input of 2 channels.
 
 Read from the default audio output of chuck =x=, with =InFeedback.ar=:
 #+BEGIN_SRC sclang
-\x.fin
+\x.fin // or just \x.af
 #+END_SRC
 
 etc.
 
 Read from the default control output of (control rate) chuck =x=.
 #+BEGIN_SRC sclang
-\x.kin
+\x.kin // or just: \x.k
 #+END_SRC
 
 etc.
