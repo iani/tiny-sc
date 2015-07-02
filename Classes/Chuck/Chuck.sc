@@ -6,14 +6,6 @@ Tue, May 26 2015, 09:37 CEST
 Chuck {
 	var <name, <argsTemplate, <source, <args, <>output, <maps;
 	classvar >parentArgs;
-	classvar inactive;
-	
-	inactive { ^this.class.inactive }
-	*inactive {
-		inactive ?? { inactive = List() };
-		^inactive;
-	}
-	*initInactive { inactive = this.all }
 	*all { ^Library.at(Chuck).values}
 
 	parentArgs { ^this.class.parentArgs }
@@ -358,7 +350,7 @@ Chuck {
 		this setInBus: inBus;
 		this setOutBus: outBus;
 		this setTarget: group;
-		this.inactive remove: this;
+		MiniSteno.inactive remove: this;
 		^group.getReaderGroup;
 	}
 
@@ -380,5 +372,5 @@ Chuck {
 	
 	inBus { ^args[\in] }
 	outBus { ^args[\out] }
-	insertSerInPar {}
+	//	insertSerInPar {}
 }

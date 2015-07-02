@@ -8,10 +8,17 @@ A simpler version that only creates chucks and puts them in Groups and links the
 
 MiniSteno {
 	var <tree;
-	classvar <numLinkChucks; // for naming system-created link Chucks. TO BE REMOVED!
+	classvar inactive;
+	
+	inactive { ^this.class.inactive }
+	*inactive {
+		inactive ?? { inactive = Set() };
+		^inactive;
+	}
+   
+	initInactive { inactive = Chuck.all }
 
 	*fromString { | string |
-		numLinkChucks = 0;
 		string = string.inject(" ", { | a, x |
 			a ++ (if ("[]()".includes(x)) { x } { format("'%', ", x) })
 		});
@@ -24,12 +31,11 @@ MiniSteno {
 	}
 
 	*new { | ... specs |
-		var linkChuck;
-		^this.newCopyArgs(specs collect: { | s |
-			if (s isKindOf: Symbol) { Chuck(s) } { s }
-		});
+		^this.newCopyArgs(specs collect: _.asSteno);
  	}
 
+	asSteno {}
+   
 	push { // use this instance as the global tree of linked Chucks
 		Library.put(MiniSteno, \current, this);
 		this.initRootTree;
@@ -38,11 +44,10 @@ MiniSteno {
 	initRootTree {
 		var nullGroup;
 		nullGroup = GroupLink.nullGroup;
-		Chuck.initInactive;
-		// Tree Do: _.insertSerInPar; 
+		this.initInactive;
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default /*, 0 */);
 		numLinkChucks do: { | i | Chuck(i.asSymbol).playIfNotPlaying };
-		Chuck.inactive do: _.setTarget(nullGroup);
+		this.inactive do: _.setTarget(nullGroup);
 		"================================================================".postln;
 		MiniSteno.current.pp;
 		"================================================================".postln;	
@@ -154,4 +159,8 @@ Ser : MiniSteno {
 + String {
 	miniSteno { ^MiniSteno.fromString(this) }
 	arlink { ^this.miniSteno.push }
+}
+
++ Symbol {
+	asSteno { ^Chuck (this) }
 }

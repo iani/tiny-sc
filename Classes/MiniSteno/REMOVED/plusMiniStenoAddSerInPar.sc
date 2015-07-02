@@ -15,6 +15,7 @@
 		};
 	}
 
+	/*
 	makeLinkChuck {
 		// This method could be useful in other contexts,
 		// besides the obsolete insertSerInPar
@@ -25,6 +26,7 @@
 		numLinkChucks = numLinkChucks + 1;
 		^linkChuck;
 	}
+	*/
 }
 
 + Ser {
