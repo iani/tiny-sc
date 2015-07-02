@@ -40,7 +40,7 @@ MiniSteno {
 		nullGroup = GroupLink.nullGroup;
 		Chuck.initInactive;
 		tree do: _.insertSerInPar; 
-		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default, 0);
+		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default /*, 0 */);
 		numLinkChucks do: { | i | Chuck(i.asSymbol).playIfNotPlaying };
 		Chuck.inactive do: _.setTarget(nullGroup);
 		"================================================================".postln;
