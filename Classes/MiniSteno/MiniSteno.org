@@ -16,12 +16,15 @@
 ** TODO Provide example showing how this fails if no Ser is inserted
 :PROPERTIES:
 :ID:       13071C42-67A8-41D2-BF1D-4C93D896692F
-:eval-id:  2
+:eval-id:  22
 :END:
 ([2015-07-02 Thu]) Need to review this! Do Par tree members read from and write to the same bus? One would expect the output bus to be different from the input bus. Suspect that the problem described above only occurs if a par's synths are placed at the very top of the tree, and therefore read from the nullbus (0, ArLinkBus.nullBus). In this case, one can leave it to the programers responsibility to not place synths that process input at the top of the tree.  Counterexample to test:
 
 #+BEGIN_SRC sclang
 "(a[bc])".arlink;
+{ WhiteNoise.arp } ++> \a;
+{ Decay.kr(Impulse.kr(1)) * Inp.ar } ++> \b;
+{ Resonz.ar(Inp.ar, LFNoise0.kr(4).range(40, 2000)) } ++> \c;
 #+END_SRC
 
 Here b and c read in parallel from a.
@@ -37,10 +40,30 @@ There is no problem since b does not read from the output of c nor vice versa.
 Next examples to analyse:
 
 #+BEGIN_SRC sclang
+"(a[bc]d)".arlink;
+{ WhiteNoise.arp } ++> \a;
+{ Decay.kr(Impulse.kr(1)) * Inp.ar } ++> \b;
+{ Resonz.ar(Inp.ar, LFNoise0.kr(4).range(40, 2000)) } ++> \c;
+{ Inp.ar.sqrt.abs * LFPulse.kr(0.5, 0, 0.7, 0.3) } ++> \d;
+#+END_SRC
+
+
+
+#+BEGIN_SRC sclang
+"(a[bc]d)".arlink;
+#+END_SRC
+
+#+BEGIN_SRC sclang
 "(a[bc(de)])".arlink;
 #+END_SRC
 
 
 #+BEGIN_SRC sclang
 "(a[bc(de[fg])])".arlink;
+#+END_SRC
+
+Not valid:
+
+#+BEGIN_SRC sclang
+"[ab]".arlink;
 #+END_SRC

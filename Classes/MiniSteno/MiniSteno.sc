@@ -8,7 +8,7 @@ A simpler version that only creates chucks and puts them in Groups and links the
 
 MiniSteno {
 	var <tree;
-	classvar <numLinkChucks; // for naming system-created link Chucks
+	classvar <numLinkChucks; // for naming system-created link Chucks. TO BE REMOVED!
 
 	*fromString { | string |
 		numLinkChucks = 0;
@@ -39,7 +39,7 @@ MiniSteno {
 		var nullGroup;
 		nullGroup = GroupLink.nullGroup;
 		Chuck.initInactive;
-		tree do: _.insertSerInPar; 
+		// Tree Do: _.insertSerInPar; 
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default /*, 0 */);
 		numLinkChucks do: { | i | Chuck(i.asSymbol).playIfNotPlaying };
 		Chuck.inactive do: _.setTarget(nullGroup);
@@ -107,30 +107,7 @@ MiniSteno {
 }
 
 Par : MiniSteno {
-	insertSerInPar {
-		tree = tree collect: { | el |
-			// TODO: Test following commented version
-			// Wed, Jun 17 2015, 22:01 EEST - still TODO:
-			// Not needed to insert link-chucks, if this is already a Ser?
-			// But what if the ser only contains one element?
-			// So it is easier and safer to always insert the link chucks ...
-			// if(el idKindOf: Ser) {
-			///	el
-			// }{
-				Ser(this.makeLinkChuck, el, this.makeLinkChuck)
-			//}
-		};
-	}
 
-	makeLinkChuck {
-		var linkChuck;
-		linkChuck = Chuck(numLinkChucks.asSymbol);
-		linkChuck.source = { Inp.ar };
-		linkChuck.permanent;
-		numLinkChucks = numLinkChucks + 1;
-		^linkChuck;
-	}
-	
 	setBussesAndGroups { | inBus, outBus, group |
 		// TODO: Test this new order - should work with Par-Ser-Par-Ser nestings
 		var outGroup, newOutGroup;
@@ -144,7 +121,6 @@ Par : MiniSteno {
 }
 
 Ser : MiniSteno {
-	insertSerInPar { tree do: _.insertSerInPar }
 
 	setBussesAndGroups { | inBus, outBus, group | // if parent is a Ser, end in 0
 		// Here a nested Ser allows one to "branch out" of a ser, directly to root output.
