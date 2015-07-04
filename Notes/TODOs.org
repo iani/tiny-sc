@@ -97,6 +97,25 @@ Note that these shortcuts must be attached to the source chucks with notificatio
 - While building the mini-steno tree, keep track of which chucks have been added to it.  Use this to:
   - Prevent that a chuck is added twice to the tree.
   - Move chucks that are no longer part of the tree to the nullGroup.
+*** MiniSteno extended
+:PROPERTIES:
+:DATE:     <2015-07-04 Sat 22:58>
+:END:
+
+Use . as a separator for names of chucks
+
+#+BEGIN_SRC sclang
+  f = { | string |
+      string = string.inject(" ", { | a, x |
+          a ++ (if ("[]()".includes(x)) { x } { format("'%', ", x) })
+      });
+  };
+
+  f.("ab(c[de(f)])");
+
+  //:
+#+END_SRC
+
 
 ** STARTED Investigate event sharing/filtering in Chuck (like in Tiny 0)
 

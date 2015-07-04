@@ -46,7 +46,7 @@ MiniSteno {
 		nullGroup = GroupLink.nullGroup;
 		this.initInactive;
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default /*, 0 */);
-		numLinkChucks do: { | i | Chuck(i.asSymbol).playIfNotPlaying };
+		// numLinkChucks do: { | i | Chuck(i.asSymbol).playIfNotPlaying };
 		this.inactive do: _.setTarget(nullGroup);
 		"================================================================".postln;
 		MiniSteno.current.pp;
