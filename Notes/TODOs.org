@@ -1,3 +1,4 @@
+#+TODO: TODO STARTED | DONE CANCELED OBSOLETE REJECTED
 * Underway
 ** STARTED ChuckPatternSource, EventPatternSynth
 :PROPERTIES:
@@ -101,22 +102,72 @@ Note that these shortcuts must be attached to the source chucks with notificatio
 :PROPERTIES:
 :DATE:     <2015-07-04 Sat 22:58>
 :END:
-
-Use . as a separator for names of chucks
+**** DONE Use . as a separator for names of chucks
+:PROPERTIES:
+:DATE:     <2015-07-04 Sat 23:45>
+:END:
 
 #+BEGIN_SRC sclang
   f = { | string |
-      string = string.inject(" ", { | a, x |
-          a ++ (if ("[]()".includes(x)) { x } { format("'%', ", x) })
-      });
+      string = string.replace (".", "', '");
+      string = string
+      .replace("(", "', Ser('")
+      .replace("[", "', Par('")
+      .replace(")", "'), '")
+      .replace("]", "'), '")
+      .replace(", '')", ")");
+      format("Par('%')", string);
   };
 
-  f.("ab(c[de(f)])");
+  f.("a.b(c[de(f)]x)abra.cadabra");
 
   //:
+  // "a.b.c".replace (".", "', '")
+#+END_SRC
+**** TODO Modify the MiniSteno tree at any moment
+:PROPERTIES:
+:DATE:     <2015-07-04 Sat 23:45>
+:END:
+***** TODO Create named steno branches
+:PROPERTIES:
+:DATE:     <2015-07-06 Mon 12:05>
+:END:
+
+- "stenostring" &> \branchame; :: parses stenostring and puts the resulting subtree at the top level branch of the root tree (Par), replacing any previously existing tree in that position.
+- \branchname.remove; :: ...?
+- "stenostring" &> \root :: the root branch is the entire active tree.
+
+***** Link two chucks on-the-fly
+:PROPERTIES:
+:DATE:     <2015-07-06 Mon 12:05>
+:END:
+
+- \source &> \effect :: Add \effect serially after \source.  If another chuck \previous is already connected serially to the output of \source, then add \effect in parallel to the existing one: (source.previous) becomes (source[effect.previous])
+- \source ^> \effect :: Add \effect serially after \source.  If another chuck \previous is already connected serially to the output of \source, then add \effect between \source and \previous.  (source.previous) becomes (source.effect.previous)
+
+
+Shortcuts:
+***** STARTED Direct creation of link in synth-function code { \sourcechuck.a ... } ++> \fxchuck
+:PROPERTIES:
+:DATE:     <2015-07-05 Sun 19:55>
+:END:
+
+Implementation requires storing the link request in a class var and then executing the link request after compiling the function to a SynthDef but before adding the resulting synthdef to the server via SynthDefLoader.
+
+#+BEGIN_SRC sclang
+{ \sourcechuck.a ... } ++> \fxchuck
 #+END_SRC
 
+Add \fxchuck serially after \sourcechuck.
 
+: { \sourcechuck.a ... } ++> \fxchuck;
+
+is a shortcut for:
+
+#+BEGIN_SRC sclang
+{ Inp.ar ... } ++> \fxchuck;
+\sourcechuck &> \fxchuck;
+#+END_SRC
 ** STARTED Investigate event sharing/filtering in Chuck (like in Tiny 0)
 
 This is linked to using ().play as play method
@@ -298,7 +349,7 @@ But you can also use shortcuts:
 "source.out>bus.numchans@effect1.in>bus.numchans@effect2".alink; // shortcut: al // = ar
 
 "source.out>bus.numchans@effect1.in>bus.numchans@effect2".klink; // shortcut: kl // = kr
-** CANCELLED Complete implementation of BusLink unlink method
+** CANCELED Complete implementation of BusLink unlink method
 :LOGBOOK:
 - State "CANCELLED"  from "TODO"       [2015-06-18 Thu 10:27] \\
   Covered by MiniSteno
@@ -318,7 +369,7 @@ But you can also use shortcuts:
 - State "CANCELLED"  from "TODO"       [2015-06-19 Fri 12:52] \\
   Mushy mushy mushy.  Behavior not so clear as current implementation with synth creation.  Instead, now defining new subclass of ChuckSynthSource, called ChuckPatternSource, which plays EventPatterns.
 :END:
-** CANCELLED ChuckSynthSource+arp, perc: Use release for safer synth stopping
+** CANCELED ChuckSynthSource+arp, perc: Use release for safer synth stopping
 :LOGBOOK:
 - State "CANCELLED"  from "TODO"       [2015-06-19 Fri 13:06] \\
   Current scheme with SynthDefLoader, dur self-freeing envelopes and release behaves well under all stress-tests so far.

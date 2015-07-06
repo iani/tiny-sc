@@ -19,15 +19,15 @@ MiniSteno {
 	initInactive { inactive = Chuck.all }
 
 	*fromString { | string |
-		string = string.inject(" ", { | a, x |
-			a ++ (if ("[]()".includes(x)) { x } { format("'%', ", x) })
-		});
-		string = string.replace("(", "Ser( ")
-		.replace("[", "Par( ")
-		.replace(")", "), ")
-		.replace("]", "), ")
-		.replace(", )", ")");
-		^format("Par( % )", string).postln.interpret;
+		string = string.replace (".", "', '");
+		string = string
+		.replace("(", "', Ser('")
+		.replace("[", "', Par('")
+		.replace(")", "'), '")
+		.replace("]", "'), '")
+		.replace(", '')", ")");
+		string = format("Par('%')", string);
+		string.postln.interpret;
 	}
 
 	*new { | ... specs |

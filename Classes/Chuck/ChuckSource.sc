@@ -105,6 +105,7 @@ ChuckSynthSource : ChuckSource {
 }
 
 ChuckFuncSynthSource : ChuckSynthSource {
+	classvar <linkRequest; // set by \chuck.a calls inside source func
 	var <defName;
 
 	makeSource {
@@ -113,6 +114,10 @@ ChuckFuncSynthSource : ChuckSynthSource {
 			fadeTime: chuck.args[\fadeTime],
 			name: format("<%>", chuck.name)
 		);
+		linkRequest !? {
+			linkRequest &> chuck;
+			linkRequest = nil;
+		};
 		desc = def.asSynthDesc;
 		SynthDescLib.default add: desc; // make def available to other Chucks
 		this processDesc: desc;
