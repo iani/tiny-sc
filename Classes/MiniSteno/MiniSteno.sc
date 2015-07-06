@@ -26,8 +26,10 @@ MiniSteno {
 		.replace(")", "'), '")
 		.replace("]", "'), '")
 		.replace(", '')", ")");
-		string = format("Par('%')", string);
-		string.postln.interpret;
+		string = format("Par('%')", string)
+		.replace (", ''", "")
+		.replace ("'', ", "");
+		^string.postln.interpret;
 	}
 
 	*new { | ... specs |

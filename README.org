@@ -357,21 +357,37 @@ As explained above, the task-filters are stored under names generated automatica
 ** Linking audio inputs and outputs between synths
 :PROPERTIES:
 :ID:       EA903FD5-9FE9-4B0A-BEE0-B38C8807810E
-:eval-id:  1078
+:eval-id:  1093
 :END:
 
-A mechanism for linking inputs and outputs and of audio and control-rate Chucks based on /Steno/ by Julian Rohrhuber is under development. (See https://github.com/telephon/Steno)
+*** MiniSteno
+:PROPERTIES:
+:ID:       82520500-1254-4796-A642-7F2141509061
+:eval-id:  2
+:END:
 
-Currently, the mechanism works with Chucks whose names are only single letters, as is the case with /Steno/, and is only implemented for audio-rate Chucks.
+With MiniSteno one can specify the interconnections of several chuck instances to create a tree consisting of parallel and serial branches. The tree is written as a string.  The names of the chucks are separated by ".".  Parentheses () indicate serial interconnections.  Brackets [] indicate parallel intereconnections.  Thus:
 
-/(Note: Facilities for modifying the tree structure created by compiling a Steno string are under preparation.  When completed, these will allow to add Chucks with longer names to the tree, and to link Chucks without running a Steno string.)/
+#+BEGIN_SRC sclang
+"(source.effect)".miniSteno;
+#+END_SRC
 
-First example:
+... creates a serial interconnection between =source= and =effect=.  =effect= reads its input from the output of =source=.
+
+#+BEGIN_SRC sclang
+"[c1.c2]".miniSteno;
+#+END_SRC
+
+... creates a group of parallel chucks. =c1= and =c2= read from the same input and write to the same output bus.  Thus:
+
+Note: MiniSteno is inspired by syntax of /Steno/ by Julian Rohrhuber. (See https://github.com/telephon/Steno)
+
+To install a MiniSteno tree as the root tree that is currently played, send it the message =arlink=.   Examples:
 
 Add 2 chucks =a= and =b= linked together in series:
 
 #+BEGIN_SRC sclang
-"(ab)".arlink;
+"(a.b)".arlink;
 { WhiteNoise.arp } ++> \a;
 { Ringz.arp(Inp.ar, LFNoise2.kr(1).range(30, 1000), 1) * 0.2 } ++> \b;
 #+END_SRC
@@ -385,7 +401,7 @@ Remove the effect from the audible tree:
 Bring back the effect and add a second effect to it, serially:
 
 #+BEGIN_SRC sclang
-"(abc)".arlink;
+"(a.b.c)".arlink;
 { Inp.ar.abs * Decay2.kr(Dust.kr(3), 0.1, 0.7) } ++> \c;
 #+END_SRC
 
@@ -393,20 +409,20 @@ Linking effects in parallel:
 
 First listen to a single effect in series
 #+BEGIN_SRC sclang
-"(ab)".arlink;
+"(a.b)".arlink;
 { Blip.arp(LFNoise2.kr(1).range(40, 400), 5) * 2 } ++> \a;
 { Ringz.ar(Inp.ar, LFNoise1.kr(25).range(30, 1000)) * 0.002 } ++> \b;
 #+END_SRC
 
 Add a second effect in series
 #+BEGIN_SRC sclang
-"(abc)".arlink;
+"(a.b.c)".arlink;
 { Inp.ar.abs * LFNoise0.kr(10) } ++> \c;
 #+END_SRC
 
 Now in parallel
 #+BEGIN_SRC sclang
-"(a[bc])".arlink;
+"(a[b.c])".arlink;
 { Inp.ar.abs.sqrt * LFPulse.kr(LFDNoise1.kr(0.3).range(0.6, 20), 0, 0.8, 0.03) } ++> \c;
 #+END_SRC
 
