@@ -168,6 +168,30 @@ is a shortcut for:
 { Inp.ar ... } ++> \fxchuck;
 \sourcechuck &> \fxchuck;
 #+END_SRC
+***** TODO prevent duplicate chucks in the steno tree
+:PROPERTIES:
+:DATE:     <2015-07-07 Tue 12:16>
+:END:
+
+See notes in: Symbol.asSteno.
+
+***** TODO silence chucks removed from the steno tree
+:PROPERTIES:
+:DATE:     <2015-07-07 Tue 12:16>
+:END:
+
+The following needs to be run for the branch that is modified (branches above or besides this branch are not modified, and therefore do not need to run the following):
+
+1. Get l = list of chucks contained in the branch before the modification.
+2. Modify or rebuild (substitute) the branch and store it in var n.
+3. For each chuck c in l: If c is not in n, then move c to null-group.  Note: The null group must have a tail synth that silences all outputs.
+
+***** TODO Note: Only the tree being modified needs to be re-rendered for groups and busses
+:PROPERTIES:
+:DATE:     <2015-07-07 Tue 13:18>
+:END:
+
+
 ** STARTED Investigate event sharing/filtering in Chuck (like in Tiny 0)
 
 This is linked to using ().play as play method

@@ -5,7 +5,7 @@ Conclusions from the tests below:
 
 If loading new SynthDef functions while playing the task, then using rates above 100 or 200 events per second may result in hanging notes.
 
-Future work: To make that safer, the SynthDef loading mechanism has to be combined with the Synth starting and freeing mechanism.  This is not high on the priority list at the moment. 
+Future work: xTo make that safer, the SynthDef loading mechanism has to be combined with the Synth starting and freeing mechanism.  This is not high on the priority list at the moment. 
 
 */
 

@@ -164,5 +164,18 @@ Ser : MiniSteno {
 }
 
 + Symbol {
-	asSteno { ^Chuck (this) }
+	asSteno {
+		/*
+			var chuck;
+			chuck = Chuck(this);
+			if (MiniSteno.root.includes(chuck) {
+			    silently remove from previous location
+			    / or remove from previous location and issue warning
+                / or issue error????
+			}
+
+		*/
+		
+		^Chuck (this)
+	}
 }
