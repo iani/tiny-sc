@@ -143,8 +143,7 @@ Note that these shortcuts must be attached to the source chucks with notificatio
 :END:
 
 - \source &> \effect :: Add \effect serially after \source.  If another chuck \previous is already connected serially to the output of \source, then add \effect in parallel to the existing one: (source.previous) becomes (source[effect.previous])
-- \source ^> \effect :: Add \effect serially after \source.  If another chuck \previous is already connected serially to the output of \source, then add \effect between \source and \previous.  (source.previous) becomes (source.effect.previous)
-
+- \source &>> \effect :: Add \effect serially after \source.  If another chuck \previous is already connected serially to the output of \source, then add \effect between \source and \previous.  (source.previous) becomes (source.effect.previous)
 
 Shortcuts:
 ***** STARTED Direct creation of link in synth-function code { \sourcechuck.a ... } ++> \fxchuck
