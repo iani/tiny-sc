@@ -142,8 +142,30 @@ Note that these shortcuts must be attached to the source chucks with notificatio
 :DATE:     <2015-07-06 Mon 12:05>
 :END:
 
-- \source &> \effect :: Add \effect serially after \source.  If another chuck \previous is already connected serially to the output of \source, then add \effect in parallel to the existing one: (source.previous) becomes (source[effect.previous])
-- \source &>> \effect :: Add \effect serially after \source.  If another chuck \previous is already connected serially to the output of \source, then add \effect between \source and \previous.  (source.previous) becomes (source.effect.previous)
+- \source &> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another chuck \previous is already connected serially to the output of \source, then add \effect in parallel to the existing one: (source.previous) becomes (source[effect.previous]).  But note:
+     ([source.source2]previous) becomes:
+     ([(source.effect)source2]previous)
+- \source &>> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another chuck \previous is already connected serially to the output of \source, then add \effect between \source and \previous.  (source.previous) becomes (source.effect.previous)
+
+We may want to introduce also <& and <<& for adding siblings to the head of the pair.  Analysis:
+
+Adding \w &> \r to the following trees, results:
+
+****** case 1
+before: x.y
+
+after: x.y(w.r)
+
+****** case 2
+before: x.w
+
+after x(w.r)
+
+****** case 3
+
+before:
+
+after:
 
 Shortcuts:
 ***** STARTED Direct creation of link in synth-function code { \sourcechuck.a ... } ++> \fxchuck
@@ -167,6 +189,9 @@ is a shortcut for:
 { Inp.ar ... } ++> \fxchuck;
 \sourcechuck &> \fxchuck;
 #+END_SRC
+
+Possible second shortcut =.ap= for =&>>=
+
 ***** TODO prevent duplicate chucks in the steno tree
 :PROPERTIES:
 :DATE:     <2015-07-07 Tue 12:16>
@@ -189,6 +214,20 @@ The following needs to be run for the branch that is modified (branches above or
 :PROPERTIES:
 :DATE:     <2015-07-07 Tue 13:18>
 :END:
+
+***** TODO How many different insertion methods need to be implemented?
+:PROPERTIES:
+:DATE:     <2015-07-09 Thu 13:49>
+:END:
+
+What is the minimum number of methods needed to insert any chuck or subtree anywhere in the root tree?  Enumerate cases:
+
+| writer status  | reader status | action                           |
+| new in tree    | new in tree   | add (writer.reader) to root tree |
+| already writer | of reader     | issue message, do not change     |
+|                |               |                                  |
+
+
 
 
 ** STARTED Investigate event sharing/filtering in Chuck (like in Tiny 0)

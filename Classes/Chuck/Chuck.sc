@@ -372,5 +372,6 @@ Chuck {
 	
 	inBus { ^args[\in] }
 	outBus { ^args[\out] }
+	chucks { ^[this] }
 	//	insertSerInPar {}
 }

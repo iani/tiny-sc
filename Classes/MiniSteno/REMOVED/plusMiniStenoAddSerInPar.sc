@@ -27,6 +27,22 @@
 		^linkChuck;
 	}
 	*/
+
+	/* findContainerOf always traverses the entire tree. 
+	   parentOf is a better solution, because it stops traversing 
+		as soon as the element is found  */
+
+	findContainerOf { | element |
+		var found;
+		this.traverseDoing({ | ms | if (ms.tree includes: element) { found = ms } });
+		^found;
+	}
+
+	traverseDoing { | func |
+		func.(this);
+		tree do: { | x | if (x isKindOf: MiniSteno) { x.traverseDoing(func) } }
+	}
+
 }
 
 + Ser {
