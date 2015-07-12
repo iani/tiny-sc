@@ -9,9 +9,28 @@ https://github.com/telephon/Steno
 MiniSteno {
 	var <tree; // child branches contained in me: chucks, other MiniStenos
 	var <>parent; // MiniSteno containing me.  Needed for remove.
-	classvar <previous; // chucks traced during build
+	classvar <>verbose = true;
 
-	named {  | server | ^Library.at (MiniSteno, server.asTarget.server ) }
+    addBranch { | name = \root, server |
+		var oldBranch, oldChucks, newChucks, nullGroup;
+		server = server.asTarget.server;
+		oldBranch = this.named (name, server);
+		oldBranch !? { oldChucks = oldBranch.chucks };
+		nullGroup = GroupLink.nullGroup;
+		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default);
+		oldChucks do: { | p |
+			if (newChucks.includes (p).not) { p.setTarget(nullGroup) } // also free busses? !
+		};
+		Library.put (MiniSteno, server, name, this);
+		if (verbose) {
+			"================================================================".postln;
+			this.pp;
+			"================================================================".postln;
+		};	
+	}
+  
+	named {  | name, server | ^Library.at (MiniSteno, server.asTarget.server, name ) }
+
 	*includes { | chuck | ^this.root includes: chuck }
 	includes { | chuck |
 		^this.findParentOf (chuck).notNil;
@@ -32,6 +51,8 @@ MiniSteno {
 		^nil;
 	}
 
+
+	
 	storePrevious { previous = this.chucks }
 
 	chucks {
@@ -63,25 +84,6 @@ MiniSteno {
 	}
 	
 	asSteno {}
-	
-	push { // make this instance the root, and initialize it
-		Library.put(MiniSteno, Server.default, \root, this);
-		this.initTree;
-	}
-
-	initTree {
-		var nullGroup, current;
-		nullGroup = GroupLink.nullGroup;
-		this.storePrevious;
-		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default);
-		current = this.chucks;
-		previous do: { | p |
-			if (current.includes (p).not) { p.setTarget(nullGroup) }
-		};
-		"================================================================".postln;
-		this.pp;
-		"================================================================".postln;	
-	}
 
 	*root { | server | ^Library.at(MiniSteno, server.asTarget.server, \root) }
 
@@ -124,10 +126,6 @@ MiniSteno {
 		}
 	}
 
-	addTree {
-
-		
-	}
 	insertAfter { | existingChuck, newChuck |
 
 	}
@@ -142,8 +140,7 @@ MiniSteno {
 
 	doIfFound { | element, foundFunc, missingFunc |
 		var container;
-		container = this.findPare
-ntOf(element);
+		container = this.findParentOf(element);
 		if (container.isNil) {
 			missingFunc.(element, this);
 		}{
@@ -199,7 +196,7 @@ Ser : MiniSteno {
 
 + String {
 	miniSteno { ^MiniSteno.fromString(this) }
-	arlink { ^this.miniSteno.push }
+	arlink { ^this.miniSteno.addBranch }
 }
 
 + Symbol {
@@ -217,7 +214,9 @@ Ser : MiniSteno {
 		
 		^Chuck (this)
 	}
-}//:
+}
+
+//:
 /* Tue, Jun 16 2015, 03:08 EEST
 
 Inspired by Steno of Julian Rohrhuber. 

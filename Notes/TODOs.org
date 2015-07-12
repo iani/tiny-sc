@@ -142,6 +142,23 @@ Note that these shortcuts must be attached to the source chucks with notificatio
 :DATE:     <2015-07-06 Mon 12:05>
 :END:
 
+Two basic operators/operations only:
+
+1. \writer &> \reader :: compose Ser (writer.reader).  Cases:
+  1. neither writer nor reader are
+  2. writer is already in the tree but reader is not.  In this case insert reader after writer as follows:
+     1. If writer is not in a ser, then create a ser:
+        [x.writer...] becomes [x(writer.reader)...]
+     2. If writer is in a ser (a.b.writer....), Insert reader after writer in existing ser: (a.b.writer.reader...).
+  3. reader is already in a ser, but writer is not.  In this case
+     1. asdf
+  4. both reader and writer are already in the global ministeno tree.  In that case, do not change the tree, but issue a warning that the tree must be edited with an explicit ministeno specification.
+2. \a <&> \b :: compose a and b in parallel.   The rules are analogous to 1 above.
+
+****** earlier draft:
+:PROPERTIES:
+:DATE:     <2015-07-09 Thu 15:15>
+:END:
 - \source &> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another chuck \previous is already connected serially to the output of \source, then add \effect in parallel to the existing one: (source.previous) becomes (source[effect.previous]).  But note:
      ([source.source2]previous) becomes:
      ([(source.effect)source2]previous)
@@ -151,17 +168,17 @@ We may want to introduce also <& and <<& for adding siblings to the head of the 
 
 Adding \w &> \r to the following trees, results:
 
-****** case 1
+******* case 1
 before: x.y
 
 after: x.y(w.r)
 
-****** case 2
+******* case 2
 before: x.w
 
 after x(w.r)
 
-****** case 3
+******* case 3
 
 before:
 
