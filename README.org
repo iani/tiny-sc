@@ -383,15 +383,15 @@ With MiniSteno one can specify the interconnections of several chuck instances t
 
 ... creates a group of parallel chucks. =c1= and =c2= read from the same input and write to the same output bus.
 
-The examples above show the syntax for parallel [] and serial () interconnections.  The
-
 **** Playing link configurations
 :PROPERTIES:
 :ID:       B8BE21AE-0694-46D3-8695-65E5BD5B770F
 :eval-id:  10
 :END:
 
-To install a MiniSteno tree as the root tree that is currently played, send it the message =arlink=.   Examples:
+Use the message =addBranch= to add link configurations to a global tree for playing.  The default branch of the tree is =root=, and adding a branch to =root= replaces the previous root, thus changing the global configuration.  Thus, to install a MiniSteno tree as the root tree that is currently played, send it the message =addBranch=.
+
+Examples:
 
 Add 2 chucks =a= and =b= linked together in series:
 
@@ -463,11 +463,15 @@ Release with different durations:
 
 Connect the reading Chuck instance in multiple serial branches, and use ":" as separator between chuck name and input name to indicate the name of the input.
 
+Create source and effect synths, and listen to the 2 source synths separately:
+
 #+BEGIN_SRC sclang
 { SinOsc.arp (300 * LFPulse.kr(1).range (4, 5)) } ++> \sine;
 { SinOsc.arp (400) } ++> \pulse;
 { Inp.ar (\in1) * Inp.ar (\in2) * 5 } ++> \ringmod;
 #+END_SRC
+
+Link the output of the first source to =in1= and the output of the second source to =in2=:
 
 #+BEGIN_SRC sclang
 "(sine.ringmod:in1)(pulse.ringmod:in2)".arlink
