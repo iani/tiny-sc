@@ -350,7 +350,6 @@ Chuck {
 		this setInBus: inBus;
 		this setOutBus: outBus;
 		this setTarget: group;
-		MiniSteno.inactive remove: this;
 		^group.getReaderGroup;
 	}
 
