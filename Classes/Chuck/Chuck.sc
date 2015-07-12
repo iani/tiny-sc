@@ -346,13 +346,6 @@ Chuck {
 	}
 	*/
 
-	setBussesAndGroups { | inBus, outBus, group | // used by MiniStereo
-		this setInBus: inBus;
-		this setOutBus: outBus;
-		this setTarget: group;
-		^group.getReaderGroup;
-	}
-
 	setInBus { | bus, param = \in |
 		this.setBus(bus, param, \readers);
 	}
@@ -369,8 +362,8 @@ Chuck {
 		this.setArgs(param, bus);
 	}
 	
-	inBus { ^args[\in] }
+	inBus { | busName = \in | ^args[busName] }
 	outBus { ^args[\out] }
-	chucks { ^[this] }
+	chucks { ^[this] } // to go to ChuckLink
 	//	insertSerInPar {}
 }

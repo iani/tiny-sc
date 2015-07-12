@@ -363,11 +363,12 @@ As explained above, the task-filters are stored under names generated automatica
 *** MiniSteno
 :PROPERTIES:
 :ID:       82520500-1254-4796-A642-7F2141509061
-:eval-id:  22
+:eval-id:  31
 :END:
 
 Note: MiniSteno is inspired by syntax of /Steno/ by Julian Rohrhuber. (See https://github.com/telephon/Steno)
 
+**** Syntax for creating link configurations from strings
 With MiniSteno one can specify the interconnections of several chuck instances to create a tree consisting of parallel and serial branches. The tree is written as a string.  The names of the chucks are separated by ".".  Parentheses () indicate serial interconnections.  Brackets [] indicate parallel intereconnections.  Thus:
 
 #+BEGIN_SRC sclang
@@ -382,12 +383,20 @@ With MiniSteno one can specify the interconnections of several chuck instances t
 
 ... creates a group of parallel chucks. =c1= and =c2= read from the same input and write to the same output bus.
 
+The examples above show the syntax for parallel [] and serial () interconnections.  The
+
+**** Playing link configurations
+:PROPERTIES:
+:ID:       B8BE21AE-0694-46D3-8695-65E5BD5B770F
+:eval-id:  10
+:END:
+
 To install a MiniSteno tree as the root tree that is currently played, send it the message =arlink=.   Examples:
 
 Add 2 chucks =a= and =b= linked together in series:
 
 #+BEGIN_SRC sclang
-"(a.b)".arlink;
+"(a.b)".addBranch;
 { WhiteNoise.arp } ++> \a;
 { Ringz.arp(Inp.ar, LFNoise2.kr(1).range(30, 1000), 1) * 0.2 } ++> \b;
 #+END_SRC
@@ -395,13 +404,13 @@ Add 2 chucks =a= and =b= linked together in series:
 Remove the effect from the audible tree:
 
 #+BEGIN_SRC sclang
-"a".arlink
-#+End_src
+"a".addBranch
+#+END_SRC
 
 Bring back the effect and add a second effect to it, serially:
 
 #+BEGIN_SRC sclang
-"(a.b.c)".arlink;
+"(a.b.c)".addBranch;
 { Inp.ar.abs * Decay2.kr(Dust.kr(3), 0.1, 0.7) } ++> \c;
 #+END_SRC
 
@@ -409,20 +418,20 @@ Linking effects in parallel:
 
 First listen to a single effect in series
 #+BEGIN_SRC sclang
-"(a.b)".arlink;
+"(a.b)".addBranch;
 { Blip.arp(LFNoise2.kr(1).range(40, 400), 5) * 2 } ++> \a;
 { Ringz.ar(Inp.ar, LFNoise1.kr(25).range(30, 1000)) * 0.002 } ++> \b;
 #+END_SRC
 
 Add a second effect in series
 #+BEGIN_SRC sclang
-"(a.b.c)".arlink;
+"(a.b.c)".addBranch;
 { Inp.ar.abs * LFNoise0.kr(10) } ++> \c;
 #+END_SRC
 
 Now in parallel
 #+BEGIN_SRC sclang
-"(a[b.c])".arlink;
+"(a[b.c])".addBranch;
 { Inp.ar.abs.sqrt * LFPulse.kr(LFDNoise1.kr(0.3).range(0.6, 20), 0, 0.8, 0.03) } ++> \c;
 #+END_SRC
 
@@ -444,6 +453,24 @@ Release with different durations:
 \a.release(10);
 \b.release(5);
 \c.release(2);
+#+END_SRC
+
+**** Linking to multiple inputs of one Chuck
+:PROPERTIES:
+:ID:       51712FCB-D988-472C-AB8E-B775DD24DF89
+:eval-id:  7
+:END:
+
+Connect the reading Chuck instance in multiple serial branches, and use ":" as separator between chuck name and input name to indicate the name of the input.
+
+#+BEGIN_SRC sclang
+{ SinOsc.arp (300 * LFPulse.kr(1).range (4, 5)) } ++> \sine;
+{ SinOsc.arp (400) } ++> \pulse;
+{ Inp.ar (\in1) * Inp.ar (\in2) * 5 } ++> \ringmod;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+"(sine.ringmod:in1)(pulse.ringmod:in2)".arlink
 #+END_SRC
 
 ** Multiple voice example

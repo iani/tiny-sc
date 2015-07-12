@@ -40,7 +40,7 @@ MiniSteno {
 	findParentOf { | chuck |
 		var found;
 		tree do: { | l |
-			if (l === chuck) {
+			if (l === chuck) {  // l.chuck === chuck !!!
 				^this
 			}{
 				if (l isKindOf: MiniSteno) {
@@ -91,9 +91,9 @@ MiniSteno {
 	pp { | levels = "" | // prettyprint
 		postf ("% (        // % % %\n", levels, levels, this.class, levels);
 		tree do: { | x |
-			if (x isKindOf: Chuck) {
-				postf("*%* % % % % %\n", x.target.level,
-					levels, x, x.target, x.inBus, x.outBus);
+			if (x isKindOf: ChuckLink) {
+				postf("*%* % % % % % %\n", x.target.level,
+					levels, x.chuck.name, x.target, x.inputName, x.inBus, x.outBus);
 			}{
 				x.pp(levels ++ "-");
 			};
@@ -198,6 +198,7 @@ Ser : MiniSteno {
 + String {
 	miniSteno { ^MiniSteno.fromString(this) }
 	arlink { ^("[" ++ this ++ "]").miniSteno.addBranch }
+	addBranch { ^this.miniSteno.addBranch }
 }
 
 + Symbol {
@@ -213,6 +214,9 @@ Ser : MiniSteno {
 
 		*/
 		
-		^Chuck (this)
+			^ChuckLink(*this.asString.split($:));
+		
+		
+		//	^Chuck (this)
 	}
 }
