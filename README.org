@@ -474,13 +474,13 @@ Create source and effect synths, and listen to the 2 source synths separately:
 Link the output of the first source to =in1= and the output of the second source to =in2=:
 
 #+BEGIN_SRC sclang
-"(sine.ringmod:in1)(pulse.ringmod:in2)".arlink
+"(sine.ringmod:in1)(pulse.ringmod:in2)".addBranch;
 #+END_SRC
 
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  362
+:eval-id:  377
 :END:
 
 Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.

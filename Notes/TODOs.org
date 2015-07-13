@@ -48,7 +48,211 @@ Implementation notes for =new= method:
 
 See MiniSteno.sc, MiniSteno class.
 
-Thoughts for further refinement:
+*** MiniSteno extended
+:PROPERTIES:
+:DATE:     <2015-07-04 Sat 22:58>
+:END:
+**** DONE Use . as a separator for names of chucks
+:PROPERTIES:
+:DATE:     <2015-07-04 Sat 23:45>
+:END:
+
+#+BEGIN_SRC sclang
+  f = { | string |
+      string = string.replace (".", "', '");
+      string = string
+      .replace("(", "', Ser('")
+      .replace("[", "', Par('")
+      .replace(")", "'), '")
+      .replace("]", "'), '")
+      .replace(", '')", ")");
+      format("Par('%')", string);
+  };
+
+  f.("a.b(c[de(f)]x)abra.cadabra");
+
+  //:
+  // "a.b.c".replace (".", "', '")
+#+END_SRC
+**** DONE Use : separator to enable multiple custom inputs in one chuck
+:PROPERTIES:
+:DATE:     <2015-07-13 Mon 10:58>
+:END:
+
+#+BEGIN_SRC sclang
+{ SinOsc.arp (300 * LFPulse.kr(1).range (4, 5)) } ++> \sine;
+{ SinOsc.arp (400) } ++> \pulse;
+{ Inp.ar (\in1) * Inp.ar (\in2) * 5 } ++> \ringmod;
+#+END_SRC
+
+#+BEGIN_SRC sclang
+"(sine.ringmod:in1)(pulse.ringmod:in2)".addBranch
+#+END_SRC
+**** TODO Enable I/O to named busses for any branch
+:PROPERTIES:
+:DATE:     <2015-07-13 Mon 11:03>
+:END:
+**** TODO implement addBefore, addAfter analogous to addBranch
+:PROPERTIES:
+:DATE:     <2015-07-13 Mon 11:12>
+:END:
+
+
+**** TODO implement output copy links in ChuckLink
+:PROPERTIES:
+:DATE:     <2015-07-13 Mon 11:13>
+:END:
+
+**** Syntax drafts for named busses and output-copy-links
+:PROPERTIES:
+:DATE:     <2015-07-13 Mon 11:31>
+:END:
+
+***** Try 2
+
+Use Par only for grouping one or more chucks that need named input or output
+
+[inbus@chuck1.chuck2>outbus]
+
+With optional input name specification for chucks chuck1:in1.chuck2:in1 etc.
+
+For output-copy links use %:
+
+[inbus@chuck1.chuck2%outbus]
+
+***** REJECTED Try 1
+1. for single chucks:
+
+inbus@input:chuck>outbus
+
+2. For whole MiniStenos
+
+()
+
+[]
+
+
+**** STARTED Direct creation of link in synth-function code { \sourcechuck.a ... } ++> \fxchuck
+:PROPERTIES:
+:DATE:     <2015-07-05 Sun 19:55>
+:END:
+
+Implementation requires storing the link request in a class var and then executing the link request after compiling the function to a SynthDef but before adding the resulting synthdef to the server via SynthDefLoader.
+
+#+BEGIN_SRC sclang
+{ \sourcechuck.a ... } ++> \fxchuck
+#+END_SRC
+
+Add \fxchuck serially after \sourcechuck.
+
+: { \sourcechuck.a ... } ++> \fxchuck;
+
+is a shortcut for:
+
+#+BEGIN_SRC sclang
+{ Inp.ar ... } ++> \fxchuck;
+\sourcechuck &> \fxchuck;
+#+END_SRC
+
+Possible second shortcut =.ap= for =&>>=
+
+*** OBSOLETE Modify the MiniSteno tree at any moment
+:PROPERTIES:
+:DATE:     <2015-07-04 Sat 23:45>
+:END:
+See above ...
+**** STARTED Create named steno branches
+:PROPERTIES:
+:DATE:     <2015-07-06 Mon 12:05>
+:END:
+
+- "stenostring" &> \branchame; :: parses stenostring and puts the resulting subtree at the top level branch of the root tree (Par), replacing any previously existing tree in that position.
+- \branchname.remove; :: ...?
+- "stenostring" &> \root :: the root branch is the entire active tree.
+
+**** Link two chucks on-the-fly
+:PROPERTIES:
+:DATE:     <2015-07-06 Mon 12:05>
+:END:
+
+Two basic operators/operations only:
+
+1. \writer &> \reader :: compose Ser (writer.reader).  Cases:
+  1. neither writer nor reader are
+  2. writer is already in the tree but reader is not.  In this case insert reader after writer as follows:
+     1. If writer is not in a ser, then create a ser:
+        [x.writer...] becomes [x(writer.reader)...]
+     2. If writer is in a ser (a.b.writer....), Insert reader after writer in existing ser: (a.b.writer.reader...).
+  3. reader is already in a ser, but writer is not.  In this case
+     1. asdf
+  4. both reader and writer are already in the global ministeno tree.  In that case, do not change the tree, but issue a warning that the tree must be edited with an explicit ministeno specification.
+2. \a <&> \b :: compose a and b in parallel.   The rules are analogous to 1 above.
+
+***** earlier draft:
+:PROPERTIES:
+:DATE:     <2015-07-09 Thu 15:15>
+:END:
+- \source &> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another chuck \previous is already connected serially to the output of \source, then add \effect in parallel to the existing one: (source.previous) becomes (source[effect.previous]).  But note:
+     ([source.source2]previous) becomes:
+     ([(source.effect)source2]previous)
+- \source &>> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another chuck \previous is already connected serially to the output of \source, then add \effect between \source and \previous.  (source.previous) becomes (source.effect.previous)
+
+We may want to introduce also <& and <<& for adding siblings to the head of the pair.  Analysis:
+
+Adding \w &> \r to the following trees, results:
+
+****** case 1
+before: x.y
+
+after: x.y(w.r)
+
+****** case 2
+before: x.w
+
+after x(w.r)
+
+****** case 3
+
+before:
+
+after:
+
+Shortcuts:
+**** TODO prevent duplicate chucks in the steno tree
+:PROPERTIES:
+:DATE:     <2015-07-07 Tue 12:16>
+:END:
+
+See notes in: Symbol.asSteno.
+
+**** TODO silence chucks removed from the steno tree
+:PROPERTIES:
+:DATE:     <2015-07-07 Tue 12:16>
+:END:
+
+The following needs to be run for the branch that is modified (branches above or besides this branch are not modified, and therefore do not need to run the following):
+
+1. Get l = list of chucks contained in the branch before the modification.
+2. Modify or rebuild (substitute) the branch and store it in var n.
+3. For each chuck c in l: If c is not in n, then move c to null-group.  Note: The null group must have a tail synth that silences all outputs.
+
+**** TODO Note: Only the tree being modified needs to be re-rendered for groups and busses
+:PROPERTIES:
+:DATE:     <2015-07-07 Tue 13:18>
+:END:
+
+**** TODO How many different insertion methods need to be implemented?
+:PROPERTIES:
+:DATE:     <2015-07-09 Thu 13:49>
+:END:
+
+What is the minimum number of methods needed to insert any chuck or subtree anywhere in the root tree?  Enumerate cases:
+
+| writer status  | reader status | action                           |
+| new in tree    | new in tree   | add (writer.reader) to root tree |
+| already writer | of reader     | issue message, do not change     |
+|                |               |                                  |
+*** Thoughts for further refinement
 
 - use "astring".asteno for audio config and "astring".ksteno for control config
 - Do not use { } @>.param \chuck, because of the problem of naming the created k-chucks.  Stick with ksteno.  Perhaps use: { } @> \kchuck @>.param \achuck or:
@@ -98,151 +302,6 @@ Note that these shortcuts must be attached to the source chucks with notificatio
 - While building the mini-steno tree, keep track of which chucks have been added to it.  Use this to:
   - Prevent that a chuck is added twice to the tree.
   - Move chucks that are no longer part of the tree to the nullGroup.
-*** MiniSteno extended
-:PROPERTIES:
-:DATE:     <2015-07-04 Sat 22:58>
-:END:
-**** DONE Use . as a separator for names of chucks
-:PROPERTIES:
-:DATE:     <2015-07-04 Sat 23:45>
-:END:
-
-#+BEGIN_SRC sclang
-  f = { | string |
-      string = string.replace (".", "', '");
-      string = string
-      .replace("(", "', Ser('")
-      .replace("[", "', Par('")
-      .replace(")", "'), '")
-      .replace("]", "'), '")
-      .replace(", '')", ")");
-      format("Par('%')", string);
-  };
-
-  f.("a.b(c[de(f)]x)abra.cadabra");
-
-  //:
-  // "a.b.c".replace (".", "', '")
-#+END_SRC
-**** TODO Modify the MiniSteno tree at any moment
-:PROPERTIES:
-:DATE:     <2015-07-04 Sat 23:45>
-:END:
-***** TODO Create named steno branches
-:PROPERTIES:
-:DATE:     <2015-07-06 Mon 12:05>
-:END:
-
-- "stenostring" &> \branchame; :: parses stenostring and puts the resulting subtree at the top level branch of the root tree (Par), replacing any previously existing tree in that position.
-- \branchname.remove; :: ...?
-- "stenostring" &> \root :: the root branch is the entire active tree.
-
-***** Link two chucks on-the-fly
-:PROPERTIES:
-:DATE:     <2015-07-06 Mon 12:05>
-:END:
-
-Two basic operators/operations only:
-
-1. \writer &> \reader :: compose Ser (writer.reader).  Cases:
-  1. neither writer nor reader are
-  2. writer is already in the tree but reader is not.  In this case insert reader after writer as follows:
-     1. If writer is not in a ser, then create a ser:
-        [x.writer...] becomes [x(writer.reader)...]
-     2. If writer is in a ser (a.b.writer....), Insert reader after writer in existing ser: (a.b.writer.reader...).
-  3. reader is already in a ser, but writer is not.  In this case
-     1. asdf
-  4. both reader and writer are already in the global ministeno tree.  In that case, do not change the tree, but issue a warning that the tree must be edited with an explicit ministeno specification.
-2. \a <&> \b :: compose a and b in parallel.   The rules are analogous to 1 above.
-
-****** earlier draft:
-:PROPERTIES:
-:DATE:     <2015-07-09 Thu 15:15>
-:END:
-- \source &> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another chuck \previous is already connected serially to the output of \source, then add \effect in parallel to the existing one: (source.previous) becomes (source[effect.previous]).  But note:
-     ([source.source2]previous) becomes:
-     ([(source.effect)source2]previous)
-- \source &>> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another chuck \previous is already connected serially to the output of \source, then add \effect between \source and \previous.  (source.previous) becomes (source.effect.previous)
-
-We may want to introduce also <& and <<& for adding siblings to the head of the pair.  Analysis:
-
-Adding \w &> \r to the following trees, results:
-
-******* case 1
-before: x.y
-
-after: x.y(w.r)
-
-******* case 2
-before: x.w
-
-after x(w.r)
-
-******* case 3
-
-before:
-
-after:
-
-Shortcuts:
-***** STARTED Direct creation of link in synth-function code { \sourcechuck.a ... } ++> \fxchuck
-:PROPERTIES:
-:DATE:     <2015-07-05 Sun 19:55>
-:END:
-
-Implementation requires storing the link request in a class var and then executing the link request after compiling the function to a SynthDef but before adding the resulting synthdef to the server via SynthDefLoader.
-
-#+BEGIN_SRC sclang
-{ \sourcechuck.a ... } ++> \fxchuck
-#+END_SRC
-
-Add \fxchuck serially after \sourcechuck.
-
-: { \sourcechuck.a ... } ++> \fxchuck;
-
-is a shortcut for:
-
-#+BEGIN_SRC sclang
-{ Inp.ar ... } ++> \fxchuck;
-\sourcechuck &> \fxchuck;
-#+END_SRC
-
-Possible second shortcut =.ap= for =&>>=
-
-***** TODO prevent duplicate chucks in the steno tree
-:PROPERTIES:
-:DATE:     <2015-07-07 Tue 12:16>
-:END:
-
-See notes in: Symbol.asSteno.
-
-***** TODO silence chucks removed from the steno tree
-:PROPERTIES:
-:DATE:     <2015-07-07 Tue 12:16>
-:END:
-
-The following needs to be run for the branch that is modified (branches above or besides this branch are not modified, and therefore do not need to run the following):
-
-1. Get l = list of chucks contained in the branch before the modification.
-2. Modify or rebuild (substitute) the branch and store it in var n.
-3. For each chuck c in l: If c is not in n, then move c to null-group.  Note: The null group must have a tail synth that silences all outputs.
-
-***** TODO Note: Only the tree being modified needs to be re-rendered for groups and busses
-:PROPERTIES:
-:DATE:     <2015-07-07 Tue 13:18>
-:END:
-
-***** TODO How many different insertion methods need to be implemented?
-:PROPERTIES:
-:DATE:     <2015-07-09 Thu 13:49>
-:END:
-
-What is the minimum number of methods needed to insert any chuck or subtree anywhere in the root tree?  Enumerate cases:
-
-| writer status  | reader status | action                           |
-| new in tree    | new in tree   | add (writer.reader) to root tree |
-| already writer | of reader     | issue message, do not change     |
-|                |               |                                  |
 
 
 
