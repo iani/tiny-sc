@@ -57,18 +57,21 @@ MiniSteno {
 	}
 
 	*fromString { | string |
-		string = string.replace (".", "', '");
+		string = string
+		.replace (".", "', '");
 		string = string
 		.replace("(", "', Ser('")
 		.replace("[", "', Par('")
 		.replace(")", "'), '")
 		.replace("]", "'), '")
-		.replace(", '')", ")");
+		.replace(", '')", ")")
+		.replace ("@'", "'.alink")
+		.replace ("@", "'.alink, '");
 		if (string [..2] == "', ") {
 			string = string [3..];
-			string = string [..(string.size-4)];
+  			string = string [..(string.size-4)];
 		};
-		string = string // format("Par('%')", string)
+		string = string
 		.replace (", ''", "")
 		.replace ("'', ", "");
 		^string.postln.interpret;
@@ -151,16 +154,38 @@ MiniSteno {
 }
 
 Par : MiniSteno {
+	var <xIn, <xOut;   // optional custom in and out busses;
 
+	init {
+		if (tree [0] isKindOf: ArBusLink) {
+			xIn = tree [0];
+			tree = tree [1..];
+		};
+		if (tree.last isKindOf: ArBusLink) {
+			xIn = tree.last;
+			tree = tree [..tree.size - 2];			
+		};
+		super.init;
+	}
+	
 	setBussesAndGroups { | inBus, outBus, group |
-		// TODO: Test this new order - should work with Par-Ser-Par-Ser nestings
 		var outGroup, newOutGroup;
 		outGroup = group;
+		xIn !? { inBus = xIn };
+		xOut !? { outBus = xOut };
 		tree do: { | branch, i |
 			newOutGroup = branch.setBussesAndGroups(inBus, outBus, group);
 			if (newOutGroup isAfter: outGroup) { outGroup = newOutGroup };
 		};
 		^outGroup;
+	}
+
+	makeOutBus { | inBus |
+		^if (xIn.notNil or: { xOut.notNil }) {
+			inBus
+		} {
+			ArBusLink ()
+		}; 
 	}
 }
 
@@ -181,7 +206,7 @@ Ser : MiniSteno {
 				busses = busses add: if (i == end) {
 					outBus
 				}{
-					nextBus = ArBusLink()
+					nextBus = branch.makeOutBus (nextBus);
 				}
 			}
 		};
@@ -214,8 +239,7 @@ Ser : MiniSteno {
 
 		*/
 		
-			^ChuckLink(*this.asString.split($:));
-		
+		^ChuckLink(*this.asString.split($:));
 		
 		//	^Chuck (this)
 	}

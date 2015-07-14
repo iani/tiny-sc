@@ -48,11 +48,126 @@ Implementation notes for =new= method:
 
 See MiniSteno.sc, MiniSteno class.
 
-*** MiniSteno extended
+*** TODO redo of MiniSteno with incremental addition of connections
+:PROPERTIES:
+:DATE:     <2015-07-14 Tue 10:04>
+:END:
+
+**** TODO New re-simplified syntax and semantics
+- Keep the syntax of () and []
+- Connections act cumulatively. I.e. (a.c)(b.c) makes [a.b]c.  This makes it possible to write: ([a.b]x)([b.c]y) to create cross-connections.
+- @ and / (cross-link and branch-out/copy-signal) become obsolete, since their configurations can be represented by () and [] alone, given the cumulative principle above.
+- Use 2 messages: =addBranches= and =setTrees= to:
+  1. Cumulatively add new connections with each new statement (=addBranches=)
+  2. Reset all connections, creating a new global tree/forest (=setTrees=)
+
+To consider: Pairwise operations:
+
+- a removeReader: b
+- a removeWriter: b
+- a addReader: b
+- a addWriter: b
+
+**** REJECTED Examples of rejected syntax from previous version
+***** Link across to other branches of a tree
+
+Using ser in ser (()) to branch out:
+#+BEGIN_SRC sclang
+"([a.b](c)(d.e))".addBranch;
+#+END_SRC
+
+Using cross-links to named busses to implement the same configuration as the previous example:
+
+#+BEGIN_SRC sclang
+"([a.b][c[d.x@]])[x@e]".addBranch;
+#+END_SRC
+
+Second example comparing cross-links to branch-out with ser in ser (())
+
+#+BEGIN_SRC sclang
+"(a[b.x@])(c[d[e.x@]])[x@f]".addBranch;
+#+END_SRC
+
+Following is equivalent to previous:
+
+#+BEGIN_SRC sclang
+"([(a.b)(c(d)e)]f)"
+#+END_SRC
+
+An example that cannot be coded using [] and () alone (with the old syntax)
+
+#+BEGIN_SRC sclang
+"((b[[l.x@][m.y@]])(a[x@x])(c[y@y]))"
+#+END_SRC
+
+With the new simplified syntax this would be:
+
+#+BEGIN_SRC sclang
+"(a.x)(b[(l.x)(m.y)])(c.y)"
+#+END_SRC
+
+***** Branching output out to a second bus
+
+#+BEGIN_SRC sclang
+"([a.b/y]x)([c.y@][y@y])"
+#+END_SRC
+
+Equivalent in new simplified syntax:
+
+#+BEGIN_SRC sclang
+"([a.b]x)([b.c]y)"
+#+END_SRC
+
+**** New chuck interconnection principle: Check for cycles before adding each reader
+
+IMPORTANT: Checking of cycles must be done for each chuck, BEFORE ADDING IT TO THE BRANCH, by checking amongst its writers, if it is already there.
+
+Therefore: Before adding any chuck =r= as reader to some other chuck =w=, check do a backtrace of all writers of =w=. If =w= any of the writers of =w= (and their writers, recursively), are equal to =r= then:
+
+1. Post a warning that =r= will not be added because it would create a cycle.
+2. Skip =r=, i.e. do not add it as writer to =w=, but continue with adding any remaining chucks in the branch-construction process.
+
+**** New tree sorting algorithm
+
+For all those chucks that have no writers:
+
+1. Place each chuck to head group (0)
+2. For all its readers:
+   - If
+     1. the chuck encountered already has a group
+     2. *AND* that group is higher or equal to that of the group of the parent (writer) + 1,
+   - then do nothing - skip the current reader chuck and all its readers
+   - else set the group of the current reader to writer + 1, and iterete the process with the readers of the reader.
+
+**** Compute necessary signal branch cross-links
+
+Iterate through all chucks (in any order, once) doing this:
+
+For all readers of each chuck (in any order, once):
+
+If the reader has not been connected,
+
+1. If neither the reader nor the writer has a bus ... (to be continued)
+2. If the writer has a bus ... (to be continued)
+3. If the reader has a bus ... (to be continued)
+4. If both the reader has a bus and the writer has a bus ... (to be continued)
+
+In cases 2, 3, 4 above, must check if it is needed to create a split-bus copy signal link, depending on the existence of other readers/writers of the busses and chucks in question.
+
+(to be continued)
+
+Additionally, write a method that posts all readers and writers of each chuck by tracing the actual bus interconnections, to aid in manual debugging and checkign the correctness of the algorithm .
+
+*** Previous Work: MiniSteno version 0.1
+:PROPERTIES:
+:DATE:     <2015-07-14 Tue 10:04>
+:END:
+
+**** MiniSteno extended
 :PROPERTIES:
 :DATE:     <2015-07-04 Sat 22:58>
 :END:
-**** DONE Use . as a separator for names of chucks
+***** DONE Use . as a separator for names of chucks
 :PROPERTIES:
 :DATE:     <2015-07-04 Sat 23:45>
 :END:
@@ -74,7 +189,7 @@ See MiniSteno.sc, MiniSteno class.
   //:
   // "a.b.c".replace (".", "', '")
 #+END_SRC
-**** DONE Use : separator to enable multiple custom inputs in one chuck
+***** DONE Use : separator to enable multiple custom inputs in one chuck
 :PROPERTIES:
 :DATE:     <2015-07-13 Mon 10:58>
 :END:
@@ -88,27 +203,15 @@ See MiniSteno.sc, MiniSteno class.
 #+BEGIN_SRC sclang
 "(sine.ringmod:in1)(pulse.ringmod:in2)".addBranch
 #+END_SRC
-**** TODO Enable I/O to named busses for any branch
+***** TODO Enable I/O to named busses for any branch
 :PROPERTIES:
 :DATE:     <2015-07-13 Mon 11:03>
 :END:
-**** TODO implement addBefore, addAfter analogous to addBranch
-:PROPERTIES:
-:DATE:     <2015-07-13 Mon 11:12>
-:END:
 
-
-**** TODO implement output copy links in ChuckLink
-:PROPERTIES:
-:DATE:     <2015-07-13 Mon 11:13>
-:END:
-
-**** Syntax drafts for named busses and output-copy-links
+****** Syntax for named busses and output-copy-links
 :PROPERTIES:
 :DATE:     <2015-07-13 Mon 11:31>
 :END:
-
-***** Try 2
 
 Use Par only for grouping one or more chucks that need named input or output
 
@@ -120,7 +223,7 @@ For output-copy links use %:
 
 [inbus@chuck1.chuck2%outbus]
 
-***** REJECTED Try 1
+******* REJECTED Try 1
 1. for single chucks:
 
 inbus@input:chuck>outbus
@@ -131,8 +234,25 @@ inbus@input:chuck>outbus
 
 []
 
+****** Bus allocation algorithm for named busses and output-copy-links
 
-**** STARTED Direct creation of link in synth-function code { \sourcechuck.a ... } ++> \fxchuck
+******* In Par: [... [in@..>out] ...]
+
+******* In Ser: (... [in@..>out] ...)
+
+***** TODO implement addBefore, addAfter analogous to addBranch
+:PROPERTIES:
+:DATE:     <2015-07-13 Mon 11:12>
+:END:
+
+
+***** TODO implement output copy links in ChuckLink
+:PROPERTIES:
+:DATE:     <2015-07-13 Mon 11:13>
+:END:
+
+
+***** STARTED Direct creation of link in synth-function code { \sourcechuck.a ... } ++> \fxchuck
 :PROPERTIES:
 :DATE:     <2015-07-05 Sun 19:55>
 :END:
@@ -155,13 +275,13 @@ is a shortcut for:
 #+END_SRC
 
 Possible second shortcut =.ap= for =&>>=
-
-*** OBSOLETE Modify the MiniSteno tree at any moment
+u
+**** OBSOLETE Modify the MiniSteno tree at any moment
 :PROPERTIES:
 :DATE:     <2015-07-04 Sat 23:45>
 :END:
 See above ...
-**** STARTED Create named steno branches
+***** STARTED Create named steno branches
 :PROPERTIES:
 :DATE:     <2015-07-06 Mon 12:05>
 :END:
@@ -170,7 +290,7 @@ See above ...
 - \branchname.remove; :: ...?
 - "stenostring" &> \root :: the root branch is the entire active tree.
 
-**** Link two chucks on-the-fly
+***** Link two chucks on-the-fly
 :PROPERTIES:
 :DATE:     <2015-07-06 Mon 12:05>
 :END:
@@ -188,7 +308,7 @@ Two basic operators/operations only:
   4. both reader and writer are already in the global ministeno tree.  In that case, do not change the tree, but issue a warning that the tree must be edited with an explicit ministeno specification.
 2. \a <&> \b :: compose a and b in parallel.   The rules are analogous to 1 above.
 
-***** earlier draft:
+****** earlier draft:
 :PROPERTIES:
 :DATE:     <2015-07-09 Thu 15:15>
 :END:
@@ -201,31 +321,31 @@ We may want to introduce also <& and <<& for adding siblings to the head of the 
 
 Adding \w &> \r to the following trees, results:
 
-****** case 1
+******* case 1
 before: x.y
 
 after: x.y(w.r)
 
-****** case 2
+******* case 2
 before: x.w
 
 after x(w.r)
 
-****** case 3
+******* case 3
 
 before:
 
 after:
 
 Shortcuts:
-**** TODO prevent duplicate chucks in the steno tree
+***** TODO prevent duplicate chucks in the steno tree
 :PROPERTIES:
 :DATE:     <2015-07-07 Tue 12:16>
 :END:
 
 See notes in: Symbol.asSteno.
 
-**** TODO silence chucks removed from the steno tree
+***** TODO silence chucks removed from the steno tree
 :PROPERTIES:
 :DATE:     <2015-07-07 Tue 12:16>
 :END:
@@ -236,12 +356,12 @@ The following needs to be run for the branch that is modified (branches above or
 2. Modify or rebuild (substitute) the branch and store it in var n.
 3. For each chuck c in l: If c is not in n, then move c to null-group.  Note: The null group must have a tail synth that silences all outputs.
 
-**** TODO Note: Only the tree being modified needs to be re-rendered for groups and busses
+***** TODO Note: Only the tree being modified needs to be re-rendered for groups and busses
 :PROPERTIES:
 :DATE:     <2015-07-07 Tue 13:18>
 :END:
 
-**** TODO How many different insertion methods need to be implemented?
+***** TODO How many different insertion methods need to be implemented?
 :PROPERTIES:
 :DATE:     <2015-07-09 Thu 13:49>
 :END:
@@ -252,7 +372,7 @@ What is the minimum number of methods needed to insert any chuck or subtree anyw
 | new in tree    | new in tree   | add (writer.reader) to root tree |
 | already writer | of reader     | issue message, do not change     |
 |                |               |                                  |
-*** Thoughts for further refinement
+**** Thoughts for further refinement
 
 - use "astring".asteno for audio config and "astring".ksteno for control config
 - Do not use { } @>.param \chuck, because of the problem of naming the created k-chucks.  Stick with ksteno.  Perhaps use: { } @> \kchuck @>.param \achuck or:

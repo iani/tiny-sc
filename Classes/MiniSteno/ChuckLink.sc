@@ -1,6 +1,9 @@
 
 ChuckLink {
 	var <chuck, <inputName;
+	// Not yet implemented:
+	var <xBus, <xBusLinkSynth; // optional branch out to other bus
+	
 	*new { | chuckName, inputName = \in |
 		^this.newCopyArgs (Chuck (chuckName.asSymbol), inputName.asSymbol);
 	}
@@ -18,4 +21,6 @@ ChuckLink {
 	inBus { ^chuck inBus: inputName }
 
 	outBus { ^chuck.outBus }
+
+	makeOutBus { ^ArBusLink () }
 }
