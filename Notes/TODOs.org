@@ -68,6 +68,8 @@ To consider: Pairwise operations:
 - a addReader: b
 - a addWriter: b
 
+Note: When adding branch, reader or writer, only the branch under the newly added top writers must be re-compiled / reconfigured.  Not the entire interconnection forest.
+
 **** REJECTED Examples of rejected syntax from previous version
 ***** Link across to other branches of a tree
 
@@ -112,6 +114,8 @@ With the new simplified syntax this would be:
 "([a.b/y]x)([c.y@][y@y])"
 #+END_SRC
 
+Note ([2015-07-15 Wed 09:09]): Above - not correct equivalent to =([a.b]x)([b.c]y)=.  The above sends the output of a also to y (because of the parallel connection, and shared output bus of a and b. Therefore y would also get the output of a.  But we want y to get only the input of b and c, not of a, b and c. Therefore output of =b= must necessarily branch out both to x and to y with 2 signal-copy-links separately, because otherwise y would also get the input of a.  This shows the limits of this notation.  The algorithm for computing signal branch cross-links [[file:TODOs.org::*Compute%20necessary%20signal%20branch%20cross-links][below]] would create the correct configuration based on the short notation =([a.b]x)([b.c]y)=.
+
 Equivalent in new simplified syntax:
 
 #+BEGIN_SRC sclang
@@ -122,7 +126,7 @@ Equivalent in new simplified syntax:
 
 IMPORTANT: Checking of cycles must be done for each chuck, BEFORE ADDING IT TO THE BRANCH, by checking amongst its writers, if it is already there.
 
-Therefore: Before adding any chuck =r= as reader to some other chuck =w=, check do a backtrace of all writers of =w=. If =w= any of the writers of =w= (and their writers, recursively), are equal to =r= then:
+Therefore: Before adding any chuck =r= as reader to some other chuck =w=, check do a backtrace of all writers of =w=. If =w= any of the writers of =w= (and their writers, recursively), are identical with =r= then:
 
 1. Post a warning that =r= will not be added because it would create a cycle.
 2. Skip =r=, i.e. do not add it as writer to =w=, but continue with adding any remaining chucks in the branch-construction process.
@@ -157,6 +161,66 @@ In cases 2, 3, 4 above, must check if it is needed to create a split-bus copy si
 (to be continued)
 
 Additionally, write a method that posts all readers and writers of each chuck by tracing the actual bus interconnections, to aid in manual debugging and checkign the correctness of the algorithm .
+
+The 4 cases one-by-one:
+
+***** 1. Neither the writer nor the reader have a bus
+
+Alloc new bus, add writer and reader to it.
+
+***** 2. The writer has no out bus but the reader has an in bus
+
+"Bringing in a new writer"
+
+- Get all the readers attached to the reader's in bus.
+- Check if all readers attached to the reader's in bus also have the new writer as writer.
+  - If yes, then set the new writer's out bus to the old reader's in bus.
+  - If no, then:
+    1. For those readers that do not have the new writer as writer:  They keep reading from the old bus which was right for them anyway.
+    2. Create a new bus that connects the new writer to the reader, bring in the old signals to the input of the reader, and also bring in any further readers from the previous siblings of the reader that may also want to share the input from the new writer:
+       1. Create a new bus.
+       2. Set the output of the new writer to the new bus
+       3. Set the input of the reader to the new bus
+       4. Add a spliced copy of the signal of the previous reader's in bus to the new bus, thereby bringing in all existing outputs from previous writers.
+       5. Set the inbus of those readers that also have the new writer as writer to the new bus which has both the new writer and any old writers.
+
+***** 3. The writer has an out bus but the reader has no in bus yet
+
+"Bringing in a new reader"
+
+- Get all the writers attached to the writer's out bus.
+- Check if all writers attached to the writer's out bus also have the new reader as reader.
+- If all writers attached to the new writer's out bus are also writers of the new reader, then set the new reader's in bus to the existing out bus of the new writer.
+- Else
+  1. For those writers that do not have the new reader as reader: They keep writing to the old bus.
+  2. Create a new bus that connects the old writer to the new reader, send out the old writers signal to the old readers, and also bring in any other writers to the new reader that it may be require.
+     1. Create a new bus
+     2. Set the output of the writer and the input of the new reader to the new bus.
+     3. Add a spliced copy of the signal of the new writer's out bus to the old output bus, so that previous readers do not lose the old writer.
+     4. Set the outbus of those writers that also have the new reader as reader to the new bus.
+
+
+***** 4. Both the writer has an out bus and the reader has an in bus
+
+- If the out bus of the writer is the same as the in bus of the reader, then the reader and the writer are already connected.  No need to do anything
+- Else:
+  - ... (combine 2 and 3 above)
+
+**** Tests of the above algorithm.
+:PROPERTIES:
+:DATE:     <2015-07-15 Wed 09:18>
+:END:
+
+=([a.b]x)([b.c]y)=
+
+...
+
+**** Alternative algorithm - sweeping all connection pairs to greate groupings?
+
+???
+
+
+
 
 *** Previous Work: MiniSteno version 0.1
 :PROPERTIES:
