@@ -70,8 +70,119 @@ To consider: Pairwise operations:
 
 Note: When adding branch, reader or writer, only the branch under the newly added top writers must be re-compiled / reconfigured.  Not the entire interconnection forest.
 
-**** REJECTED Examples of rejected syntax from previous version
-***** Link across to other branches of a tree
+***** Implementation draft/notes
+:PROPERTIES:
+:DATE:     <2015-07-16 Thu 20:23>
+:END:
+
+=setTree= : remove all buses and set group of all chucks to 0.  Then rebuild tree according to the specification given by the statement =specs.setTree=.
+
+=addBranches= : add the configuration specified by the spec-string to the existing root tree.  Store the configuration under a name.  If a previous configuration exists under that name, then replace that configuration with the new one.
+
+#+BEGIN_SRC sclang
+"specs" addBranches \name;
+#+END_SRC
+
+An instance of MiniSteno is stored under =Library.put(MiniSteno, server, name, thesteno)=.
+
+The new version of MiniSteno stores two additional data items:
+
+1. specstring : The string from which the mini steno was created.
+2. connections : a list of pairs of connections, possibly as associations =reader->writer=, or for faster access as a dictionary with keys 'reader->writer' and values the associations =reader->writer=.  These are used for finding which the connections which should be removed and which should be added, when replacing the current MiniSteno with a new one, to be stored under the same name as the previous one.
+
+The connections are used to when replacing the old configuration with a new one, as follows:
+
+1. Form a difference of the previous connections with the new ones, by creating three lists:
+   1. toRemove: List of connections to be removed
+   2. toAdd: List of connections to be added
+   3. toKeep: List of connections that are the same
+2. Remove all connections in list =toRemove=.
+3. Add all connections in list =toAdd=.
+4. Check that connections to be kept have not been removed and restore as needed.
+
+****** Algorithm for removing connections
+:PROPERTIES:
+:DATE:     <2015-07-16 Thu 20:42>
+:END:
+
+Given that one wants to remove the connection =w->r=.
+1. Collect in =rw= all reader-writer pairs that are connected through the bus which connects =w= to =r= (directly or indirectly through signal-copy link).
+2. Set the output of =w= to nil and the input of =r= to nil (and also update readers/writers variables of the bus in question and free that bus if appropriate.)
+3. Remove =w->r= from the list of reader-writer pairs collected in 1.
+4. Reconnect all reader-writer pairs in =rw=.
+
+Testing this algorithm with following configuration:
+
+Start configuration:
+
+=([a.b.c][x.y.z])=
+
+#+BEGIN_ASCII
+a      b      c
+|\     |     /|
+| \\   |    //|
+|      |      |
+|//   \|/   \\|
+x      y      z
+#+END_ASCII
+
+The bus configuration is:
+
+#+BEGIN_ASCII
+a b c
+ \|/
+  |
+ /|\
+x y z
+#+END_ASCII
+
+Deleting connection of c to z.  New configuration:
+
+=([a.b][x.y.z])(c[x.y])=
+
+Target bus configuration is:
+
+#+BEGIN_ASCII
+  c   a  b
+  |    \/
+  |---<|
+  |    |
+  /\   |
+ x  y  z
+#+END_ASCII
+
+Steps:
+
+1. The reader-writer pairs in rw are: a->x, b->x, c->x, a->y, b->y, c->y, a->z, b->z, c->z.
+2. Remove output bus from c and input bus from z.
+3. Remove c->z from rw, the remaining pairs are: a->x, b->x, c->x, a->y, b->y, c->y, a->z, b->z.
+4. Add writer a to x:
+   1. a has bus and x has bus, and the bus is the same. do nothing.
+5. Add a to y
+   1. a has bus and y has bus, and the bus is the same. do nothing.
+6. Add a to z:
+   1. a has bus, but z not.  Therefore introduce new reader z (case 3 below).
+   2. writers of a's out bus are: a and b.
+   3. a and b do have z as reader. Therefore, set z to the outbus of a
+7. Add b to x: (already connected)
+8. Add b to y: (already connected)
+9. Add b to z: (already connected)
+10. Add c to x:
+    1. c has no out bus but x has one. Case 2: new writer
+    2. readers attached to x inbus are: x, y, z. But c should not write to z. Thus:
+       1. create new bus
+       2. connect c to x through new bus
+       3. add spliced copy of the bus a-z to the new bus c-x
+11. Add c to y:
+    1. c has outbus and y has inbus, This is case 4. Thus:
+       1. c's outbus is not the same as y's inbus.
+       2. Moving c to y would result in leaving x without input
+       3. Moving y to c is compatible.  Proceed.
+
+DONE
+
+***** REJECTED Examples of rejected syntax from previous version
+****** Link across to other branches of a tree
 
 Using ser in ser (()) to branch out:
 #+BEGIN_SRC sclang
@@ -108,7 +219,7 @@ With the new simplified syntax this would be:
 "(a.x)(b[(l.x)(m.y)])(c.y)"
 #+END_SRC
 
-***** Branching output out to a second bus
+****** Branching output out to a second bus
 
 #+BEGIN_SRC sclang
 "([a.b/y]x)([c.y@][y@y])"
@@ -172,55 +283,191 @@ Alloc new bus, add writer and reader to it.
 
 "Bringing in a new writer"
 
-- Get all the readers attached to the reader's in bus.
+- Get all the readers attached to the reader's in bus. *NOTE: IMPORTANT:* Must include also those readers connected indirectly through link-copies to other buses.
 - Check if all readers attached to the reader's in bus also have the new writer as writer.
   - If yes, then set the new writer's out bus to the old reader's in bus.
   - If no, then:
     1. For those readers that do not have the new writer as writer:  They keep reading from the old bus which was right for them anyway.
-    2. Create a new bus that connects the new writer to the reader, bring in the old signals to the input of the reader, and also bring in any further readers from the previous siblings of the reader that may also want to share the input from the new writer:
+    2. Create a new bus that connects the new writer to the reader, and bring in the old signals to the input of the reader.
        1. Create a new bus.
        2. Set the output of the new writer to the new bus
        3. Set the input of the reader to the new bus
        4. Add a spliced copy of the signal of the previous reader's in bus to the new bus, thereby bringing in all existing outputs from previous writers.
-       5. Set the inbus of those readers that also have the new writer as writer to the new bus which has both the new writer and any old writers.
 
 ***** 3. The writer has an out bus but the reader has no in bus yet
 
 "Bringing in a new reader"
 
-- Get all the writers attached to the writer's out bus.
-- Check if all writers attached to the writer's out bus also have the new reader as reader.
-- If all writers attached to the new writer's out bus are also writers of the new reader, then set the new reader's in bus to the existing out bus of the new writer.
+- Get all the writers attached to the writer's out bus.  *NOTE: IMPORTANT:* Must include also those writers connected indirectly through link-copies to other buses.
+- Check if all writers writing to the writer's out bus also have the new reader as reader.
+- If all writers writing to the writer's out bus are also writers of the new reader, then set the new reader's in bus to the existing out bus of the new writer.
 - Else
   1. For those writers that do not have the new reader as reader: They keep writing to the old bus.
-  2. Create a new bus that connects the old writer to the new reader, send out the old writers signal to the old readers, and also bring in any other writers to the new reader that it may be require.
+  2. Create a new bus that connects the old writer to the new reader and send out the old writers signal to the old readers.
      1. Create a new bus
-     2. Set the output of the writer and the input of the new reader to the new bus.
-     3. Add a spliced copy of the signal of the new writer's out bus to the old output bus, so that previous readers do not lose the old writer.
-     4. Set the outbus of those writers that also have the new reader as reader to the new bus.
-
+     2. Set the output of the writer to the new bus.
+     3. Set the input of the new reader to the new bus.
+     4. Add a spliced copy of the signal of the new writer's out bus to the old output bus, so that previous readers do not lose the old writer.
 
 ***** 4. Both the writer has an out bus and the reader has an in bus
 
-- If the out bus of the writer is the same as the in bus of the reader, then the reader and the writer are already connected.  No need to do anything
+- If the out bus of the writer is the same as the in bus of the reader, then the reader and the writer are already connected.  No need to do anything.
 - Else:
-  - ... (combine 2 and 3 above)
+  1. Check if moving the writer to the readers bus or the reader to the writers bus would create a compatible connection
+  2. Else create new bus and cross-copy previous reader and writer signals from their respective buses
 
-**** Tests of the above algorithm.
+**** Tests of the above algorithm 1.
 :PROPERTIES:
 :DATE:     <2015-07-15 Wed 09:18>
 :END:
 
 =([a.b]x)([b.c]y)=
 
+***** Starting with writer =a=
+
+1. a has one reader: x.
+   1. connect a to x: both a and x have no bus, therefore create one and connect a to x through it.
+2. proceed to b:
+   1. connect b to x
+      1. b has no bus, but x has a bus. Therefore introduce new writer b (case 2 above)
+      2. Check if all readers attached to the reader's in bus also have the new writer as writer:
+         The readers attached to the reader's in bus are x only.  X has the new writer as writer. Therefore:
+         Set the out bus of the new writer (b) to the old readers bus (x).
+   2. connect b to y:
+      1. b has a bus but y has no bus.  Therefore introduce new reader y (case 3 above)
+      2. Check if all writers writing to the writer's out bus  are also writers of the new reader
+         The writers of the writer's out bus are: =a= and =b=.  Of these =a= is not a writer of y.  Therefore:
+         1. Create new bus.
+         2. Set the output of b to the new bus
+         3. Set the input of y to the new bus
+         4. Add a spliced copy of the new bus to the old output bus (the one connecting a to x). (x thus continues to receive/read signal from a and from b).
+            (Note: Cannot add c to this new bus, because it would result in c being also sent to x, through the copy-link).
+   3. Connect c to y
+      1. c has no bus, but y has a bus, therefore introduce new writer =c=. (case 2 above).
+      2. Check if all readers attached to the reader (y) in bus also have the new writer as writer:
+         The readers attached to the the reader's in bus are y *AND X* (throught the copy-link on bus b-y which sends to x).
+         Of these, the reader =x= does not have =c= as writer.  Thererfore:
+         1. Create a new bus
+         2. Set the output of c to the new bus
+         3. Set the input of y to the new bus
+         4. Add a spliced copy of the signal of the old bus (b-y) to the new bus, so that y still receives the output of b.
+
+The configuration created by the above algorithm should be:
+
+#+BEGIN_ASCII
+a    b    c
+ \   |   /
+  \ < > /
+   |   |
+   x   y
+#+END_ASCII
+
+***** Starting with writer =b=
+
+1. Start by connecting =b= with its first reader =x=.
+   1. connect b to x: both a and x have no bus, therefore create one and connect b to x through it. (Case 1 above.)
+2. proceed to the second reader of =b=, which is =y=.
+   1. =b= has a bus, but =y= has no bus. Therefore introduce new reader =y= (case 3 above).
+   2. Check if all writers writing to the writer's =x= out bus also have the new reader as reader.
+      The only writer is =b=.  It has the new reader =y= as reader. Therefore:
+   3. Connect =x= to =y=.
+
+3. Proceed to =c=: Connect =c= to its only reader, =y=.
+   1. =c= has no bus but =y= has a bus.  Therefore proceed to add new writer =c= (case 2 above).
+   2. Check if all readers attached to the reader's =y= bus also have the new writer as writer:
+      The readers attached to the reader's =y= bus are =x= and =y=.  =x= does not have the new writer =c= as writer.  Therefore:
+      1. Create new bus.
+      2. Set the output of =c= to the new bus
+      3. Set the input of =y= to the new bus
+      4. Splice a copy of the old bus (b-y) to the new bus (c-y). (=y= thus continues to receive/read signal from =b=).
+
+4. Proceed to =a=.  Connect =a= to its only reader, =x=.
+   1. =a= has no bus, but =x= has a bus, therefore introduce new writer =a=. (case 2 above).
+   2. Check if all readers attached to the reader's (=x=) in bus also have the new writer as writer:
+      The readers attached to the the reader's in bus are =x= and =y= (see steps 1, 2  and 3 above).  Note: =y= receives the output of =b= through a spliced copy, created in step 3.2.4 above.
+      Of these, the reader =y= does not have =a= as writer.  Therefore:
+      1. Create a new bus
+      2. Set the output of =a= to the new bus
+      3. Set the input of =x= to the new bus
+      4. Add a spliced copy of the signal of the old bus (b-x) to the new bus, so that =x= still receives the output of =b=.
+
+***** Starting with writer =c=
+
+This should be symmetrical to starting with =a=.
+
+**** Second test of same algorithm
+
+=(a.x)([a.b]y)(b.z)=
+
 ...
 
-**** Alternative algorithm - sweeping all connection pairs to greate groupings?
 
-???
+#+BEGIN_ASCII
+a   b
+|   |
+|> <|
+| | |
+x y z
+#+END_ASCII
+
+**** Algorithm for deleting a link
+:PROPERTIES:
+:DATE:     <2015-07-16 Thu 20:22>
+:END:
 
 
 
+***** Checking reconfiguration for *deleting* a link
+
+Start configuration:
+
+=([a.b.c][x.y.z])=
+
+#+BEGIN_ASCII
+a   b   c
+
+
+x   y   z
+#+END_ASCII
+
+
+Deleting connection of c to z.  New configuration:
+
+=([a.b][x.y.z])(c.[x.y])=
+
+**** CANCELED Alternative algorithm 1: Finding all shareable bus groups and bus-link pairs
+:PROPERTIES:
+:DATE:     <2015-07-15 Wed 11:52>
+:END:
+
+1. Start with any unvisited chuck (chucks already visited by the algorithm must be marked during the first time that they are visited)
+2. Put the chuck in a new object =signal-sharer= contaning two sets of chucks (=writers= and =readers=), which forms a new candidate group for sharing a bus.  The sets of shared bus chucks are collected themselves in a list called =shared=.
+3. For all its unvisited readers
+   1. Check if they have the same writers.
+   2. Check if their writers have the same readers.  As long as the same set of writers and readers is found, add the visited chuck to the current =signal-sharer= object, putting it in either the =writers= or the =readers= sets, according to its function when found in the traversal.
+   3. When a chuck has been found that has a reader or a writer which is not shared by all the other chucks in the examined group:
+      1. Mark the chuck just visited as =split-end-point=
+      2. and the chuck from which this chuck was reached as =splice-point=, forming a pair that needs a signal-copying bus link to be created. (and also add it to a list of pairs that need copy-links, called =splits=)
+      3. Also mark the chuck that no longer belongs to the readers or writers of the group being investigated as =bus-to-next-group=
+   4. Continue with all other readers of the chuck and their writers
+4. Repreat the process from 1 with the next unvisited chuck.
+
+During the above traversal, mark each visited chuck, so that it does not need to be visited twice.
+
+When all chucks have been visited:
+
+1. Each =signal-sharer= object in the list =shared= is a group of readers and writers that can share one bus.  Link these accordingly.
+2. For each pair in the list =splits=: (THE FOLLOWING NEEDS CHECKING:)
+   1. create a new bus.
+   2. attach it to the input or the ouput of the chuck marked as =split-end-point= and link it with a copy-bus to =splice-point=.  Create bus and link =split-end-point= to =bus-to-next-group= with it.
+
+**** CANCELED Alternative Algorithm 2
+:PROPERTIES:
+:DATE:     <2015-07-15 Wed 22:13>
+:END:
+
+Find common subsets of readers and writers pairs ...
+Problem: Which subsets are more economical?XS
 
 *** Previous Work: MiniSteno version 0.1
 :PROPERTIES:
