@@ -406,7 +406,7 @@ When all chucks have been visited:
 :END:
 
 Find common subsets of readers and writers pairs ...
-Problem: Which subsets are more economical?XS
+Problem: Which subsets are more economical?
 
 *** Previous Work: MiniSteno version 0.1
 :PROPERTIES:
