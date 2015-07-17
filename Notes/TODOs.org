@@ -1,4 +1,5 @@
 #+TODO: TODO STARTED | DONE CANCELED OBSOLETE REJECTED
+#+OPTIONS: todo:t
 * Underway
 
 ** STARTED MiniSteno
@@ -64,87 +65,6 @@ Only for the root-MiniSteno, the connections are used when replacing the old con
 3. Add all connections in list =toAdd=.
 Not needed? :
 [4. Check that connections to be kept have not been removed and restore as needed.]
-
-****** Algorithm for removing connections
-:PROPERTIES:
-:DATE:     <2015-07-16 Thu 20:42>
-:END:
-
-Given that one wants to remove the connection =w->r=.
-1. Collect in list =rw= all reader-writer pairs that are connected through the bus which connects =w= to =r= (directly or indirectly through signal-copy link).
-2. Set the output of =w= to nil and the input of =r= to nil (and also update readers/writers variables of the bus in question and free that bus if appropriate.)
-3. Remove =w->r= from the list of reader-writer pairs collected in 1.
-4. Reconnect all reader-writer pairs in =rw=.
-
-Testing this algorithm with following configuration:
-
-Start configuration:
-
-=([a.b.c][x.y.z])=
-
-#+BEGIN_EXAMPLE
-a      b      c
-|\     |     /|
-| \\   |    //|
-|      |      |
-|//   \|/   \\|
-x      y      z
-#+END_EXAMPLE
-
-The bus configuration is:
-
-#+BEGIN_EXAMPLE
-a b c
- \|/
-  |
- /|\
-x y z
-#+END_EXAMPLE
-
-Deleting connection of c to z.  New configuration:
-
-=([a.b][x.y.z])(c[x.y])=
-
-Target bus configuration is:
-
-#+BEGIN_EXAMPLE
-  c   a  b
-  |    \/
-  |---<|
-  |    |
-  /\   |
- x  y  z
-#+END_EXAMPLE
-
-Steps:
-
-1. The reader-writer pairs in rw are: a->x, b->x, c->x, a->y, b->y, c->y, a->z, b->z, c->z.
-2. Remove output bus from c and input bus from z.
-3. Remove c->z from rw, the remaining pairs are: a->x, b->x, c->x, a->y, b->y, c->y, a->z, b->z.
-4. Add writer a to x:
-   1. a has bus and x has bus, and the bus is the same. do nothing.
-5. Add a to y
-   1. a has bus and y has bus, and the bus is the same. do nothing.
-6. Add a to z:
-   1. a has bus, but z not.  Therefore introduce new reader z (case 3 below).
-   2. writers of a's out bus are: a and b.
-   3. a and b do have z as reader. Therefore, set z to the outbus of a
-7. Add b to x: (already connected)
-8. Add b to y: (already connected)
-9. Add b to z: (already connected)
-10. Add c to x:
-    1. c has no out bus but x has one. Case 2: new writer
-    2. readers attached to x inbus are: x, y, z. But c should not write to z. Thus:
-       1. create new bus
-       2. connect c to x through new bus
-       3. add spliced copy of the bus a-z to the new bus c-x
-11. Add c to y:
-    1. c has outbus and y has inbus, This is case 4. Thus:
-       1. c's outbus is not the same as y's inbus.
-       2. Moving c to y would result in leaving x without input
-       3. Moving y to c is compatible.  Proceed.
-
-DONE
 
 ***** REJECTED Examples of rejected syntax from previous version
 ****** Link across to other branches of a tree
@@ -373,30 +293,86 @@ a   b
 x y z
 #+END_EXAMPLE
 
-**** Algorithm for deleting a link
+**** Algorithm for removing connections (deleting links)
 :PROPERTIES:
-:DATE:     <2015-07-16 Thu 20:22>
+:DATE:     <2015-07-16 Thu 20:42>
 :END:
 
+Given that one wants to remove the connection =w->r=.
+1. Collect in list =rw= all reader-writer pairs that are connected through the bus which connects =w= to =r= (directly or indirectly through signal-copy link).
+2. Set the output of =w= to nil and the input of =r= to nil (and also update readers/writers variables of the bus in question and free that bus if appropriate.)
+3. Remove =w->r= from the list of reader-writer pairs collected in 1.
+4. Reconnect all reader-writer pairs in =rw=.
 
-
-***** Checking reconfiguration for *deleting* a link
+Testing this algorithm with following configuration:
 
 Start configuration:
 
 =([a.b.c][x.y.z])=
 
 #+BEGIN_EXAMPLE
-a   b   c
-
-
-x   y   z
+a      b      c
+|\     |     /|
+| \\   |    //|
+|      |      |
+|//   \|/   \\|
+x      y      z
 #+END_EXAMPLE
 
+The bus configuration is:
+
+#+BEGIN_EXAMPLE
+a b c
+ \|/
+  |
+ /|\
+x y z
+#+END_EXAMPLE
 
 Deleting connection of c to z.  New configuration:
 
-=([a.b][x.y.z])(c.[x.y])=
+=([a.b][x.y.z])(c[x.y])=
+
+Target bus configuration is:
+
+#+BEGIN_EXAMPLE
+  c   a  b
+  |    \/
+  |---<|
+  |    |
+  /\   |
+ x  y  z
+#+END_EXAMPLE
+
+Steps:
+
+1. The reader-writer pairs in rw are: a->x, b->x, c->x, a->y, b->y, c->y, a->z, b->z, c->z.
+2. Remove output bus from c and input bus from z.
+3. Remove c->z from rw, the remaining pairs are: a->x, b->x, c->x, a->y, b->y, c->y, a->z, b->z.
+4. Add writer a to x:
+   1. a has bus and x has bus, and the bus is the same. do nothing.
+5. Add a to y
+   1. a has bus and y has bus, and the bus is the same. do nothing.
+6. Add a to z:
+   1. a has bus, but z not.  Therefore introduce new reader z (case 3 below).
+   2. writers of a's out bus are: a and b.
+   3. a and b do have z as reader. Therefore, set z to the outbus of a
+7. Add b to x: (already connected)
+8. Add b to y: (already connected)
+9. Add b to z: (already connected)
+10. Add c to x:
+    1. c has no out bus but x has one. Case 2: new writer
+    2. readers attached to x inbus are: x, y, z. But c should not write to z. Thus:
+       1. create new bus
+       2. connect c to x through new bus
+       3. add spliced copy of the bus a-z to the new bus c-x
+11. Add c to y:
+    1. c has outbus and y has inbus, This is case 4. Thus:
+       1. c's outbus is not the same as y's inbus.
+       2. Moving c to y would result in leaving x without input
+       3. Moving y to c is compatible.  Proceed.
+
+DONE
 
 **** CANCELED Alternative algorithm 1: Finding all shareable bus groups and bus-link pairs
 :PROPERTIES:
