@@ -49,14 +49,12 @@ Not available is:
 "specs".addBranches;
 #+END_SRC
 
-An instance of MiniSteno is stored under =Library.put(MiniSteno, server, name, thesteno)=.
-
 The new version of MiniSteno stores two additional data items:
 
 1. specstring : The string from which the mini steno was created.
 2. connections : a list of pairs of connections, possibly as associations =reader->writer=, or for faster access as a dictionary with keys 'reader->writer' and values the associations =reader->writer=.
 
-Only for the root-MiniSteno, the connections are used to when replacing the old configuration with a new one, as follows:
+Only for the root-MiniSteno, the connections are used when replacing the old configuration with a new one, as follows:
 
 1. Form a difference of the previous connections with the new ones, by creating three lists:
    1. toRemove: List of connections to be removed
@@ -64,7 +62,8 @@ Only for the root-MiniSteno, the connections are used to when replacing the old 
    3. toKeep: List of connections that are the same
 2. Remove all connections in list =toRemove=.
 3. Add all connections in list =toAdd=.
-4. Check that connections to be kept have not been removed and restore as needed.
+Not needed? :
+[4. Check that connections to be kept have not been removed and restore as needed.]
 
 ****** Algorithm for removing connections
 :PROPERTIES:
