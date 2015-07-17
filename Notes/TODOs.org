@@ -227,14 +227,12 @@ For all readers of each chuck (in any order, once):
 
 If the reader has not been connected,
 
-1. If neither the reader nor the writer has a bus ... (to be continued)
-2. If the writer has a bus ... (to be continued)
-3. If the reader has a bus ... (to be continued)
-4. If both the reader has a bus and the writer has a bus ... (to be continued)
+1. If neither the reader nor the writer has a bus (... see details below)
+2. If the writer has a bus (... see details below)
+3. If the reader has a bus (... see details below)
+4. If both the reader has a bus and the writer has a bus (... see details below)
 
 In cases 2, 3, 4 above, must check if it is needed to create a split-bus copy signal link, depending on the existence of other readers/writers of the busses and chucks in question.
-
-(to be continued)
 
 Additionally, write a method that posts all readers and writers of each chuck by tracing the actual bus interconnections, to aid in manual debugging and checkign the correctness of the algorithm .
 
