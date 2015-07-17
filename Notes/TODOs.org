@@ -117,24 +117,24 @@ Start configuration:
 
 =([a.b.c][x.y.z])=
 
-#+BEGIN_ASCII
+#+BEGIN_EXAMPLE
 a      b      c
 |\     |     /|
 | \\   |    //|
 |      |      |
 |//   \|/   \\|
 x      y      z
-#+END_ASCII
+#+END_EXAMPLE
 
 The bus configuration is:
 
-#+BEGIN_ASCII
+#+BEGIN_EXAMPLE
 a b c
  \|/
   |
  /|\
 x y z
-#+END_ASCII
+#+END_EXAMPLE
 
 Deleting connection of c to z.  New configuration:
 
@@ -142,14 +142,14 @@ Deleting connection of c to z.  New configuration:
 
 Target bus configuration is:
 
-#+BEGIN_ASCII
+#+BEGIN_EXAMPLE
   c   a  b
   |    \/
   |---<|
   |    |
   /\   |
  x  y  z
-#+END_ASCII
+#+END_EXAMPLE
 
 Steps:
 
@@ -354,13 +354,13 @@ Alloc new bus, add writer and reader to it.
 
 The configuration created by the above algorithm should be:
 
-#+BEGIN_ASCII
+#+BEGIN_EXAMPLE
 a    b    c
  \   |   /
   \ < > /
    |   |
    x   y
-#+END_ASCII
+#+END_EXAMPLE
 
 ***** Starting with writer =b=
 
@@ -402,13 +402,13 @@ This should be symmetrical to starting with =a=.
 ...
 
 
-#+BEGIN_ASCII
+#+BEGIN_EXAMPLE
 a   b
 |   |
 |> <|
 | | |
 x y z
-#+END_ASCII
+#+END_EXAMPLE
 
 **** Algorithm for deleting a link
 :PROPERTIES:
@@ -423,12 +423,12 @@ Start configuration:
 
 =([a.b.c][x.y.z])=
 
-#+BEGIN_ASCII
+#+BEGIN_EXAMPLE
 a   b   c
 
 
 x   y   z
-#+END_ASCII
+#+END_EXAMPLE
 
 
 Deleting connection of c to z.  New configuration:
