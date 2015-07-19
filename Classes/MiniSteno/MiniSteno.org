@@ -1,19 +1,30 @@
-* Syntax, usage
+* API (Syntax, Usage)
 :PROPERTIES:
 :DATE:     <2015-07-02 Thu 13:24>
 :END:
 
+- aString.setTrees ::
+- aString.addBranches ::
+- \chuck1 addReader: \chuck2 ::
+- \chuck1 removeReader: \chuck2 ::
+
+
+
 #+BEGIN_SRC sclang
-"abc(def[gh])ij".arlink; // initialize root MiniSteno tree from string
+"abc(def[gh])ij".setTrees;
 #+END_SRC
 
-* Why insertSerInPar
+* REJECTED : rejected points
+:PROPERTIES:
+:DATE:     <2015-07-18 Sat 19:23>
+:END:
+** Why insertSerInPar (Here proof that it is not needed)
 :PROPERTIES:
 :DATE:     <2015-07-02 Thu 13:09>
 :END:
 
  The parallel mechanism needs an insertion of a "Ser" tree in all branches of a "Par" because if all parallel synths read from and write to the same bus, they would process each other's output according to they order that they were created.  Therefore it is necessary to copy the signals to separate busses and reunite them at the end.  This is done by inserting a Ser for each element of the tree of a Par, which encloses the element in a head and a tail Chuck with automatically generated id, which copy the signal from the input to the elements in the Ser, so that they have their own bus, and then copy it back to the output of the Par.
-** TODO Provide example showing how this fails if no Ser is inserted
+*** TODO Provide example showing how this fails if no Ser is inserted
 :PROPERTIES:
 :ID:       13071C42-67A8-41D2-BF1D-4C93D896692F
 :eval-id:  22

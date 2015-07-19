@@ -22,9 +22,13 @@ See MiniSteno.sc, MiniSteno class.
 To consider: Pairwise operations:
 
 - a removeReader: b
-- a removeWriter: b
 - a addReader: b
+
+
+Note: cancelled:
+
 - a addWriter: b
+- a removeWriter: b
 
 ***** Implementation draft/notes
 :PROPERTIES:
@@ -278,7 +282,7 @@ a    b    c
 
 This should be symmetrical to starting with =a=.
 
-**** Second test of same algorithm
+**** TODO Second test of same algorithm
 
 =(a.x)([a.b]y)(b.z)=
 
