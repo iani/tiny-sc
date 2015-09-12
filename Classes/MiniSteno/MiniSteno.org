@@ -3,18 +3,24 @@
 :DATE:     <2015-07-02 Thu 13:24>
 :END:
 
-- aString.setTrees ::
-- aString.addBranches ::
-- \chuck1 addReader: \chuck2 ::
-- \chuck1 removeReader: \chuck2 ::
-
-
+- aString.setTrees(server) :: Compile into a set of writer-reader connections, erase all previous connections, and install the new set of connections for =server=.
+- aString.addBranches(server) :: Compile into a set of writer-reader connections and add all connections to =server=.
+- \chuck1 addReader: \chuck2 :: Add writer-reader connection to current set of connections and install.
+- \chuck1 removeReader: \chuck2 :: Remove writer-reader connection from current set and uninstall.
 
 #+BEGIN_SRC sclang
 "abc(def[gh])ij".setTrees;
 #+END_SRC
+* Implementation notes
+:PROPERTIES:
+:DATE:     <2015-07-25 Sat 12:05>
+:END:
+** aString.addBranches
 
-* REJECTED : rejected points
+
+
+
+* REJECTED parts
 :PROPERTIES:
 :DATE:     <2015-07-18 Sat 19:23>
 :END:

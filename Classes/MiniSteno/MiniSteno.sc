@@ -1,4 +1,5 @@
-//:
+// See newer version Class: ChuckForest
+
 /* Tue, Jun 16 2015, 03:08 EEST
 
 Inspired by Steno of Julian Rohrhuber. 
@@ -9,6 +10,7 @@ https://github.com/telephon/Steno
 MiniSteno {
 	var <tree; // child branches contained in me: chucks, other MiniStenos
 	var <>parent; // MiniSteno containing me.  Needed for remove.
+	var <source;  // the string from which the 
 	classvar <>verbose = true;
 
     addBranch { | name = \root, server |
@@ -64,9 +66,8 @@ MiniSteno {
 		.replace("[", "', Par('")
 		.replace(")", "'), '")
 		.replace("]", "'), '")
-		.replace(", '')", ")")
-		.replace ("@'", "'.alink")
-		.replace ("@", "'.alink, '");
+		.replace(", '')", ")");
+
 		if (string [..2] == "', ") {
 			string = string [3..];
   			string = string [..(string.size-4)];

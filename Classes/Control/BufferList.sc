@@ -16,6 +16,7 @@ BufferList {
 		all = IdentityDictionary();
 		StartUp add: {
 			if (autoload) { this.loadFolder };
+			ServerBootCheck add: { this.initBuffers }
 		}
 	}
 
@@ -39,7 +40,7 @@ BufferList {
 			buffer = bufferDict[key];
 			[key, buffer.path]
 		});
-		}
+	}
 
 	save {
 		namesPaths.writeArchive(this.defaultPath);
@@ -52,7 +53,9 @@ BufferList {
 	}
 
 	*loadFolderDialog {
-		{ | path | this.loadFolder(path) }.doPath;
+		{ | path |
+			this.loadFolder( PathName (path).pathOnly ++ "/*" )
+		}.doPath;
 	}
 
 	*loadFolder { | path |
@@ -69,14 +72,18 @@ BufferList {
 				);
 			}
 		};
-		if (server.serverRunning) {
-			BufferFunc.initBuffers(server);
-			{
-				"=================== LOADED BUFFERS ARE: =================".postln;
-				Library.at(server).keys.asArray.sort do: _.postln;
-				"=================== END OF LOADED BUFFER LIST =================".postln;
-			} defer: 1;
-		}
+		if (server.serverRunning) { this.initBuffers }
+	}
+
+	*initBuffers {
+		var server;
+		server = Server.default;
+		BufferFunc.initBuffers(server);
+		{
+			"=================== LOADED BUFFERS ARE: =================".postln;
+			Library.at(server).keys.asArray.sort do: _.postln;
+			"=================== END OF LOADED BUFFER LIST =================".postln;
+		} defer: 1;
 	}
 
 	*showList { | key, server |
@@ -248,12 +255,23 @@ BufferList {
 	}
 
 	*getBuffer { | name, server |
-		^Library.global.at(server ?? { SynthTree.server }, name);
+		^Library.global.at(server ?? { Server.default }, name);
 	}
 }
 
 BufferDummy {
 	var <path;
 	*new { | path | ^this.newCopyArgs(path) }
-	server { ^SynthTree.server }
+	server { ^Server.default }
+}
+
++ Symbol {
+	bufnum {
+		^BufferList.getBuffer(this).bufnum;
+	}
+
+	buf {
+			^BufferList.getBuffer(this);
+	}
+
 }
