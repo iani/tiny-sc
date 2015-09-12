@@ -386,7 +386,7 @@ With MiniSteno one can specify the interconnections of several chuck instances t
 **** Playing link configurations
 :PROPERTIES:
 :ID:       B8BE21AE-0694-46D3-8695-65E5BD5B770F
-:eval-id:  10
+:eval-id:  11
 :END:
 
 Use the message =addBranch= to add link configurations to a global tree for playing.  The default branch of the tree is =root=, and adding a branch to =root= replaces the previous root, thus changing the global configuration.  Thus, to install a MiniSteno tree as the root tree that is currently played, send it the message =addBranch=.
