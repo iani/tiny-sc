@@ -257,3 +257,14 @@ BufferDummy {
 	*new { | path | ^this.newCopyArgs(path) }
 	server { ^SynthTree.server }
 }
+
++ Symbol {
+	bufnum {
+		^BufferList.getBuffer(this).bufnum;
+	}
+
+	buf {
+			^BufferList.getBuffer(this);
+	}
+
+}
