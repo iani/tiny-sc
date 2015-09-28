@@ -1,18 +1,18 @@
 /*
 Thu, Jun  4 2015, 12:29 EEST
 */
-ChuckSource {
-	var <source, <chuck;
+SynthPlayerSource {
+	var <source, <synthPlayer;
 	var <hasNoDurControl = false, <previousHasNoDurControl = false;
 	var hasAudioInputs = false;
 
-	*new { | source, chuck |
-		^this.newCopyArgs( (source ?? { ["x", 0] }).asStream, chuck).init
+	*new { | source, synthPlayer |
+		^this.newCopyArgs( (source ?? { ["x", 0] }).asStream, synthPlayer).init
 	}
 
 	init {
-		if (chuck.notNil and: { chuck.source.notNil}) { 
-			previousHasNoDurControl = chuck.source.hasNoDurControl;
+		if (synthPlayer.notNil and: { synthPlayer.source.notNil}) { 
+			previousHasNoDurControl = synthPlayer.source.hasNoDurControl;
 		};
 		this.makeSource;
 	}
@@ -35,7 +35,7 @@ ChuckSource {
 
 	release { | argDur |
 		var output;
-		output = chuck.output;
+		output = synthPlayer.output;
 		if (argDur.notNil) {
 			if (output isKindOf: Node) {
 				if (output.isPlaying) {
@@ -52,24 +52,24 @@ ChuckSource {
 			}
 		}{
 			if ((previousHasNoDurControl ? hasNoDurControl) and: { output isKindOf: Node }) {
-				output.release(chuck.args[\fadeTime].next);
+				output.release(synthPlayer.args[\fadeTime].next);
 			};
 		}
 	}
 
 	prPlay { | args |
-		chuck.output = args use: source;
+		synthPlayer.output = args use: source;
 	}
 
-	asChuckSource { ^this }
+	asSynthPlayerSource { ^this }
 
 	defLoaded {
 		postf("% WARNING: A def was loaded for %, but I am unable to process it\n",
-			this, chuck);
+			this, synthPlayer);
 	}
 }
 
-ChuckSynthSource : ChuckSource {
+SynthPlayerSynthSource : SynthPlayerSource {
 	makeSource { this processDesc: SynthDescLib.at(source.asSymbol) }
 
 	processDesc { | desc |
@@ -98,31 +98,31 @@ ChuckSynthSource : ChuckSource {
 	}
 
 	setSynth { | synth |
-		chuck.output = synth.onEnd(this, {
-			if (chuck.output === synth) { chuck.output = nil; }
+		synthPlayer.output = synth.onEnd(this, {
+			if (synthPlayer.output === synth) { synthPlayer.output = nil; }
 		})
 	}
 }
 
-ChuckFuncSynthSource : ChuckSynthSource {
-	classvar <linkRequest; // set by \chuck.a calls inside source func
+SynthPlayerFuncSynthSource : SynthPlayerSynthSource {
+	classvar <linkRequest; // set by \synthPlayer.a calls inside source func
 	var <defName;
 
 	makeSource {
 		var def, desc;
 		def = source.asSynthDef(
-			fadeTime: chuck.args[\fadeTime],
-			name: format("<%>", chuck.name)
+			fadeTime: synthPlayer.args[\fadeTime],
+			name: format("<%>", synthPlayer.name)
 		);
 		linkRequest !? {
-			linkRequest &> chuck;
+			linkRequest &> synthPlayer;
 			linkRequest = nil;
 		};
 		desc = def.asSynthDesc;
-		SynthDescLib.default add: desc; // make def available to other Chucks
+		SynthDescLib.default add: desc; // make def available to other SynthPlayers
 		this processDesc: desc;
 		// Send SynthDef to Server and notify when done:
-		SynthDefLoader.add(chuck, def, { this.defName = def.name; });
+		SynthDefLoader.add(synthPlayer, def, { this.defName = def.name; });
 	}
 
 	defLoaded { | synthDefLoader | this.defName = synthDefLoader.synthDef.name; }
@@ -143,16 +143,16 @@ ChuckFuncSynthSource : ChuckSynthSource {
 	}
 }
 
-ChuckPatternSource : ChuckSynthSource {
+SynthPlayerPatternSource : SynthPlayerSynthSource {
 	/* plays Event as EventPattern. See notes in file TODOs.org	*/
 	//	var <player;
 	//	var <bus, <group;
 
-	*new { | event, chuck |
-		if (chuck.source isKindOf: this) {
-			^chuck.source.addEvent(event);
+	*new { | event, synthPlayer |
+		if (synthPlayer.source isKindOf: this) {
+			^synthPlayer.source.addEvent(event);
 		}{
-			^this.newCopyArgs(event, chuck).init;
+			^this.newCopyArgs(event, synthPlayer).init;
 		}
 	}
 
@@ -165,7 +165,7 @@ ChuckPatternSource : ChuckSynthSource {
 		/* source is an EventPattern.
 			Args are indispensable for bus and target!
 			Therefore copied to the event of EventPattern in source before playing.
-			new target group inside Chuck's target, new bus, and fade synth
+			new target group inside SynthPlayer's target, new bus, and fade synth
 			are created each time that the pattern plays with makeSynth. 
 			1. Alloc new bus (happens immediately).
 			2. Create group (is asynchronous - must use onStart to start synth after it)

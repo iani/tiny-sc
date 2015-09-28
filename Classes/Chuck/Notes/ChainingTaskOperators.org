@@ -24,7 +24,7 @@ UNDER DEVELOPMENT /// tests
 #+END_SRC
 
 #+BEGIN_SRC sclang
-\level1a*>.xooxxoxxx \level1a; // this creates an empty chuck ....
+\level1a*>.xooxxoxxx \level1a; // this creates an empty synthPlayer ....
 #+END_SRC
 
 
@@ -73,52 +73,52 @@ UNDER DEVELOPMENT /// tests
 :END:
 
 Variants:
-1. Play new source with filtered pattern on the task of a chuck
+1. Play new source with filtered pattern on the task of a synthPlayer
 
-: { func } *>.pattern \chuck;
+: { func } *>.pattern \synthPlayer;
 
-2. Play a chuck with filtered pattern on a named task
+2. Play a synthPlayer with filtered pattern on a named task
 
-: \chuck *>.pattern \task;
+: \synthPlayer *>.pattern \task;
 
-3. Play a chuck with a filtered pattern on its own task, with a new time pattern
-: \chuck *>.pattern timepattern;
+3. Play a synthPlayer with a filtered pattern on its own task, with a new time pattern
+: \synthPlayer *>.pattern timepattern;
 
-4. (Extension of  3): Play new source to chuck and filter with pattern into new time pattern of own task
+4. (Extension of  3): Play new source to synthPlayer and filter with pattern into new time pattern of own task
 
-: { func } +> \chuck *>.pattern timepattern;
+: { func } +> \synthPlayer *>.pattern timepattern;
 
 #+BEGIN_SRC sclang
 \sine *>.xo \whistle;
 #+END_SRC
 
-1. Get TaskPlayer of same name as Chuck
+1. Get TaskPlayer of same name as SynthPlayer
 2. Set its duration pattern
-3. Get Tox named _chuckname (prepend _ to chuckname to indicate sub-pattern)
+3. Get Tox named _synthPlayername (prepend _ to synthPlayername to indicate sub-pattern)
 4. Set Tox'es filter pattern to xopattern.
 5. Connect Tox to TaskPlayer
-6. Connect Chuck to Tox
+6. Connect SynthPlayer to Tox
 7. Start TaskPlayer
 ** 5
 
-: { func } ++> \chuckname *>.xopattern \symbol;
+: { func } ++> \synthPlayername *>.xopattern \symbol;
 
 1. Get TaskPlayer or filter named by \symbol.
 2. If it is a TaskPlayer, then create Tox using prepend _ rule and connect it to the TaskPlayer.
 3. Set Tox'es filter pattern to xopattern.
 4. Connect Tox to TaskPlayer
-5. Connect Chuck to Tox
+5. Connect SynthPlayer to Tox
 6. Start TaskPlayer
 
 * 6
 
-How to create other types of filters and connect them to TaskPlayers / Chucks?
+How to create other types of filters and connect them to TaskPlayers / SynthPlayers?
 
 : ClassName (parameters) *> \taskplayerorfilter
 
-: \chuckname *>.filtername ClassName (parameters) *> \taskplayerorfilter
+: \synthPlayername *>.filtername ClassName (parameters) *> \taskplayerorfilter
 
-: { func } ++> \chuckname *>.filtername ClassName (parameters) *> \taskplayerorfilter
+: { func } ++> \synthPlayername *>.filtername ClassName (parameters) *> \taskplayerorfilter
 
 
 Generally provide a name in creation of Task Filters like this:?
@@ -133,11 +133,11 @@ Possibly keep adding _ to name, to denote level of chaining of filters...
 
 It becomes easy to notate the desired filter compctly
 
-: \chuckorchuckname *>.xopattern \a
+: \synthPlayerorsynthPlayername *>.xopattern \a
 
-: \chuckorchuckname *>.xopattern \_a
+: \synthPlayerorsynthPlayername *>.xopattern \_a
 
-: \chuckorchuckname *>.xopattern \__a
+: \synthPlayerorsynthPlayername *>.xopattern \__a
 
 
 etc.
@@ -152,9 +152,9 @@ Also it's possible to check if the parent pattern exists or the pattern to be mo
 
 =0.1 *> \test= and =\test *> 0.1= both set the duration pattern of a task.  However, their meaning is different:
 
-=\chuckname *> pattern= will always switch the Chuck to the TaskPlayer with the same name.  Thus, if Chuck =chuckname= was previously playing under Task =anothertask=, it will stop playing with =anothertask= and start playing with Task =chuckname=.
+=\synthPlayername *> pattern= will always switch the SynthPlayer to the TaskPlayer with the same name.  Thus, if SynthPlayer =synthPlayername= was previously playing under Task =anothertask=, it will stop playing with =anothertask= and start playing with Task =synthPlayername=.
 
-In order to just set the duration pattern of a TaskPlayer without affecting which Chucks are playing with it, use the revers order:
+In order to just set the duration pattern of a TaskPlayer without affecting which SynthPlayers are playing with it, use the revers order:
 
 #+BEGIN_SRC sclang
 0.1
@@ -166,7 +166,7 @@ In order to just set the duration pattern of a TaskPlayer without affecting whic
 
 Therefore
 
-: non-symbol, non-chuck *> \taskname;
+: non-symbol, non-synthPlayer *> \taskname;
 
 Set pattern of \taskname task player and play
 
@@ -174,10 +174,10 @@ Set pattern of \taskname task player and play
 [0.1.pn(20), 0.4.pn(5), 0.05.pn(40)].prand *> \test;
 #+END_SRC
 
-: non-symbol, non-chuck *>.xopattern \taskname;
+: non-symbol, non-synthPlayer *>.xopattern \taskname;
 
 if \taskname is a Tox type filter, set its pattern, else create a subfilter and connect it to taskplayer taskname, etc.
 
-: non-symbol, non-chuck **> \taskname;
+: non-symbol, non-synthPlayer **> \taskname;
 
 as =*>=, except do not start playing.

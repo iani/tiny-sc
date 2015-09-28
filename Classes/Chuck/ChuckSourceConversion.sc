@@ -1,19 +1,19 @@
 
 + Object {
-	asChuckSource { | chuck | ^ChuckSource(this, chuck) }
+	asSynthPlayerSource { | synthPlayer | ^SynthPlayerSource(this, synthPlayer) }
 }
 
 + Function {
-	asChuckSource { | chuck | ^ChuckFuncSynthSource(this, chuck) }
+	asSynthPlayerSource { | synthPlayer | ^SynthPlayerFuncSynthSource(this, synthPlayer) }
 }
 
 + String {
-	asChuckSource { | chuck |  ^ChuckSynthSource(this, chuck) }
+	asSynthPlayerSource { | synthPlayer |  ^SynthPlayerSynthSource(this, synthPlayer) }
 	play { | target, outbus, fadeTime, addAction, args |
 		^Synth (this, args ++ [out: outbus, fadeTime: fadeTime], target, addAction)
 	}
 }
 
 + Event {
-	asChuckSource { | chuck | ^ChuckPatternSource(this, chuck) }
+	asSynthPlayerSource { | synthPlayer | ^SynthPlayerPatternSource(this, synthPlayer) }
 }

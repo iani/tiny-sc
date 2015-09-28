@@ -1,5 +1,5 @@
 /* Sun, Jun 14 2015, 17:54 EEST
-Container for a Control Bus, and operators for linking it it to output from Control Synths and to input of Chucks.
+Container for a Control Bus, and operators for linking it it to output from Control Synths and to input of SynthPlayers.
 */
 
 ControlBus {
@@ -46,20 +46,20 @@ Sending the map command in a bundle at the time of the creation of the Synth wou
 
 */
 
-BusMapper { // contains parameter and chuck
-	var <controlBus, <chuck, <parameter;
+BusMapper { // contains parameter and synthPlayer
+	var <controlBus, <synthPlayer, <parameter;
 
-	addToChuck { | param, chuck |
+	addToSynthPlayer { | param, synthPlayer |
 		parameter = param;
-		chuck.args[parameter] = this;
-		if (chuck.isPlaying) { chuck.output.map(parameter, controlBus.index) };
-		this.addNotifier(chuck, \synthStarted, {
-			 chuck.output.map(parameter, controlBus.index) 
+		synthPlayer.args[parameter] = this;
+		if (synthPlayer.isPlaying) { synthPlayer.output.map(parameter, controlBus.index) };
+		this.addNotifier(synthPlayer, \synthStarted, {
+			 synthPlayer.output.map(parameter, controlBus.index) 
 		});
 	}
 
-	removeFromChuck {
-		chuck.args // []
+	removeFromSynthPlayer {
+		synthPlayer.args // []
 	}
 }
 

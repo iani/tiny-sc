@@ -3,10 +3,10 @@ Tue, May 26 2015, 09:37 CEST
 
 */
 
-Chuck {
+SynthPlayer {
 	var <name, <argsTemplate, <source, <args, <>output, <maps;
 	classvar >parentArgs;
-	*all { ^Library.at(Chuck).values}
+	*all { ^Library.at(SynthPlayer).values}
 
 	parentArgs { ^this.class.parentArgs }
 	*parentArgs {
@@ -25,7 +25,7 @@ Chuck {
 	}
 	
 	*new { | name, source, argsTemplate |
-		^Registry(Chuck, name, {
+		^Registry(SynthPlayer, name, {
 			this.newCopyArgs(name, argsTemplate ?? {
 				(in: ArBusLink.nullBus, out: ArBusLink.nullBus, fadeTime: 0.02)
 			}).init(source);
@@ -37,7 +37,7 @@ Chuck {
 		argsTemplate keysValuesDo: { | key value |
 			args[key] = value.asStream;
 		};
-		source = argSource.asChuckSource(this);
+		source = argSource.asSynthPlayerSource(this);
 		maps = IdentityDictionary();
 	}
 
@@ -60,7 +60,7 @@ Chuck {
 	}
 	
 	source_ { | argSource |
-		source = argSource.asChuckSource(this);
+		source = argSource.asSynthPlayerSource(this);
 	}
 
 	defLoaded { | synthDefLoader | source.defLoaded(synthDefLoader) }
@@ -134,7 +134,7 @@ Chuck {
 
 	addAfter { | writer |
 			// TODO: first find the *writer with the deepest target group amongst all
-			// writers of this chuck*.  Then set the target to the readergroup of that target.
+			// writers of this synthPlayer*.  Then set the target to the readergroup of that target.
 		var latestWriter; // TO TEST
 		var targetGroup;
 		latestWriter = this.getLatestWriter(writer);
@@ -230,18 +230,18 @@ Chuck {
 		}
 	}
 
-	hasDirectWriter { | chuck, slot = \in |
+	hasDirectWriter { | synthPlayer, slot = \in |
 		var link;
 		link = args[slot];
 		if (link isKindOf: BusLink) {
-			^link.writers includes: chuck;
+			^link.writers includes: synthPlayer;
 		}{
 			^false;
 		}
 	}
 
-	hasReader { | chuck |
-		^this.readers includes: chuck;
+	hasReader { | synthPlayer |
+		^this.readers includes: synthPlayer;
 	}
 
 	setInput2Null { | inParam = \in |
@@ -323,10 +323,10 @@ Chuck {
 	}
 	
 	printOn { arg stream;
-		stream << "Chuck(" << name << ")";
+		stream << "SynthPlayer(" << name << ")";
 	}
 	storeOn { arg stream;
-		stream << "Chuck(" << name << ")";
+		stream << "SynthPlayer(" << name << ")";
 	}
 
 	remove {
@@ -364,6 +364,6 @@ Chuck {
 	
 	inBus { | busName = \in | ^args[busName] }
 	outBus { ^args[\out] }
-	chucks { ^[this] } // to go to ChuckLink
+	synthPlayers { ^[this] } // to go to SynthPlayerLink
 	//	insertSerInPar {}
 }

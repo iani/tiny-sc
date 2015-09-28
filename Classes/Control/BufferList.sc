@@ -111,8 +111,8 @@ BufferList {
 					8.asAscii, { // backspace key
 						this.free(view.item);
 					},
-					Char.space, { this.chuckBuffer(view.item, modifiers != 0) },
-					$n, { this.newStChuckBuffer(view.item, modifiers != 0) },
+					Char.space, { this.synthPlayerBuffer(view.item, modifiers != 0) },
+					$n, { this.newStSynthPlayerBuffer(view.item, modifiers != 0) },
 					$x, { this.setCurrentStBuffer(view.item) },
 					$f, { SynthTree.faders; },
 					$l, { this.loadBufferDialog; },
@@ -126,7 +126,7 @@ BufferList {
 		});
 	}
 
-	newStChuckBuffer { | bufName, loop = true |
+	newStSynthPlayerBuffer { | bufName, loop = true |
 		//		BufferList.getBuffer(bufName).postln;
 		
 		`bufName
@@ -135,7 +135,7 @@ BufferList {
 		.set(\loop, if (loop) { 1 } { 0 });
 	}
 
- 	chuckBuffer { | bufName, loop = true |
+ 	synthPlayerBuffer { | bufName, loop = true |
 		var synthTree;
 		//		BufferList.getBuffer(bufName).postln;
 				synthTree = ~st;

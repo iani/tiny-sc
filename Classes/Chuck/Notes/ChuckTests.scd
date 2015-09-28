@@ -5,7 +5,7 @@
 \test.ft = 0.5;
 0.29 +>.amp \test;
 
-\test.chuck.process.args;
+\test.synthPlayer.process.args;
 
 6000 +>.freq \test;
 

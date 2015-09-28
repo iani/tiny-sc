@@ -28,7 +28,7 @@
 //: Trying how to do this with compilation:
 "%".arlink;
 //:
-Chuck.all.first.isPlaying;
+SynthPlayer.all.first.isPlaying;
 //:
 "%%".arlink;
 //:
@@ -86,7 +86,7 @@ MiniSteno.current.pp;
 MiniSteno.current.pp;
 //:
 
-b.findContainerOf(\a.chuck);
+b.findContainerOf(\a.synthPlayer);
 
 b.pp;
  b.inspect;
@@ -96,8 +96,8 @@ b.pp;
 
 "(ab)".arlink;
 "a".arlink;
-Chuck.initInactive;
-Chuck.inactive;
+SynthPlayer.initInactive;
+SynthPlayer.inactive;
 
 //:
 Server.default.queryAllNodes;

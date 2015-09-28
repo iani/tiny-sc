@@ -146,13 +146,13 @@ Like arp, but send the output to an array of 2 channels.  Can be used to quickly
 
 ***
 
-** Linking output to input of other Chucks
+** Linking output to input of other SynthPlayers
 :PROPERTIES:
 :ID:       F7A5DD81-6DE3-49B6-908F-24687D1A8D97
 :eval-id:  56
 :END:
 
-Create a Chuck to be the source:
+Create a SynthPlayer to be the source:
 
 #+BEGIN_SRC sclang
 { PinkNoise.arp() } ++> \source;
@@ -223,18 +223,18 @@ Try playing =patsound= repeatedly, to hear the sequence of values:
 :eval-id:  3
 :END:
 
-: \chuckname *> <number or pattern>;
+: \synthPlayername *> <number or pattern>;
 
-1. Get TaskPlayer of same name as Chuck
+1. Get TaskPlayer of same name as SynthPlayer
 2. Set its duration pattern
-3. Connect Chuck to TaskPlayer
+3. Connect SynthPlayer to TaskPlayer
 4. Start TaskPlayer
 
 #+BEGIN_SRC sclang
 \pock *> 0.3;
 #+END_SRC
 
-** { function } +> \chuckname
+** { function } +> \synthPlayername
 :PROPERTIES:
 :ID:       0C23640F-3427-46A2-8A8A-D6A73BEDD837
 :eval-id:  12
@@ -254,7 +254,7 @@ Try playing =patsound= repeatedly, to hear the sequence of values:
 { Resonz.arps(PinkNoise.ar(200), Rand(1500, 2500), 0.001) } +> \whistle *> 0.1;
 #+END_SRC
 
-** \chuckname *> \taskname
+** \synthPlayername *> \taskname
 :PROPERTIES:
 :ID:       7D06E4DE-45A7-40E9-976F-E073D32FBD3D
 :eval-id:  10
@@ -264,7 +264,7 @@ Try playing =patsound= repeatedly, to hear the sequence of values:
 \pock *> \whistle;
 #+END_SRC
 
-** { } +> \chuckname *> \taskname
+** { } +> \synthPlayername *> \taskname
 :PROPERTIES:
 :ID:       0F9364F7-C623-4172-B22D-343C09C4CB30
 :eval-id:  80

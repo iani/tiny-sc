@@ -1,26 +1,26 @@
 
-ChuckLink {
-	var <chuck, <inputName;
+SynthPlayerLink {
+	var <synthPlayer, <inputName;
 	// Not yet implemented:
 	var <xBus, <xBusLinkSynth; // optional branch out to other bus
 	
-	*new { | chuckName, inputName = \in |
-		^this.newCopyArgs (Chuck (chuckName.asSymbol), inputName.asSymbol);
+	*new { | synthPlayerName, inputName = \in |
+		^this.newCopyArgs (SynthPlayer (synthPlayerName.asSymbol), inputName.asSymbol);
 	}
-	chucks { ^[chuck] }
+	synthPlayers { ^[synthPlayer] }
 
 	setBussesAndGroups { | inBus, outBus, group | // used by MiniStereo
-		chuck.setInBus (inBus, inputName);
-		chuck setOutBus: outBus;
-		chuck setTarget: group;
+		synthPlayer.setInBus (inBus, inputName);
+		synthPlayer setOutBus: outBus;
+		synthPlayer setTarget: group;
 		^group.getReaderGroup;
 	}
 
-	target { ^chuck.target }
+	target { ^synthPlayer.target }
 
-	inBus { ^chuck inBus: inputName }
+	inBus { ^synthPlayer inBus: inputName }
 
-	outBus { ^chuck.outBus }
+	outBus { ^synthPlayer.outBus }
 
 	makeOutBus { ^ArBusLink () }
 }

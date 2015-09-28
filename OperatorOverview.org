@@ -16,7 +16,7 @@
 |----------+--------+--------+------------------------|
 | o1       | o2     | adverb | result/action          |
 |----------+--------+--------+------------------------|
-| function | symbol | NONE!  | play function in chuck |
+| function | symbol | NONE!  | play function in synthPlayer |
 |          |        |        |                        |
 |          |        |        |                        |
 |----------+--------+--------+------------------------|

@@ -71,7 +71,7 @@ for evaluation after processing in Emacs."
   (set-mark nil))
 
 
-(defun sclang-chuck-current-snippet ()
+(defun sclang-synthPlayer-current-snippet ()
   "Evaluate region between //: comments in sclang."
   (interactive)
   (sclang-eval-string
@@ -106,17 +106,17 @@ for evaluation after processing in Emacs."
   (sclang-goto-next-snippet)
   (sclang-execute-current-snippet))
 
-(defun sclang-chuck-previous-snippet ()
+(defun sclang-synthPlayer-previous-snippet ()
   "Go to the previous sclang snippet and evaluate it."
   (interactive)
   (sclang-goto-previous-snippet)
-  (sclang-chuck-current-snippet))
+  (sclang-synthPlayer-current-snippet))
 
-(defun sclang-chuck-next-snippet ()
+(defun sclang-synthPlayer-next-snippet ()
   "Go to the next sclang snippet and evaluate it."
   (interactive)
   (sclang-goto-next-snippet)
-  (sclang-chuck-current-snippet))
+  (sclang-synthPlayer-current-snippet))
 
 (defun sclang-select-snippet ()
   "Select the region between two //: comments."
@@ -204,14 +204,14 @@ If prefix argument given, then open inspector in SC on the result"
   (local-set-key (kbd "H-SPC") 'org-sc-toggle-synthtree)
   (local-set-key (kbd "H-C-SPC") 'sclang-execute-current-snippet)
   (local-set-key (kbd "H-C-.") 'sclang-execute-current-snippet)
-  (local-set-key (kbd "H-M-SPC") 'sclang-chuck-current-snippet)
-  (local-set-key (kbd "H-M-.") 'sclang-chuck-current-snippet)
+  (local-set-key (kbd "H-M-SPC") 'sclang-synthPlayer-current-snippet)
+  (local-set-key (kbd "H-M-.") 'sclang-synthPlayer-current-snippet)
   (local-set-key (kbd "H-n") 'sclang-goto-next-snippet)
   (local-set-key (kbd "H-p") 'sclang-goto-previous-snippet)
   (local-set-key (kbd "H-C-n") 'sclang-execute-next-snippet)
   (local-set-key (kbd "H-C-p") 'sclang-execute-previous-snippet)
-  (local-set-key (kbd "H-M-n") 'sclang-chuck-next-snippet)
-  (local-set-key (kbd "H-M-p") 'sclang-chuck-previous-snippet)
+  (local-set-key (kbd "H-M-n") 'sclang-synthPlayer-next-snippet)
+  (local-set-key (kbd "H-M-p") 'sclang-synthPlayer-previous-snippet)
   (local-set-key (kbd "H-C-r") 'sclang-process-registry-gui)
   ;; C-c C-l is overrriden by sc-extensions. Therefore substitute:
   (local-set-key (kbd "C-c l") 'sclang-recompile)

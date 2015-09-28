@@ -14,26 +14,26 @@ Always create new Tox and add it as filter to task player named by argument.
 
 */
 + Symbol {
-	*> { | taskName, xoPattern | // chuck -> task
-		^Chuck(this).addToTaskOrFilter(taskName, xoPattern, true);
+	*> { | taskName, xoPattern | // synthPlayer -> task
+		^SynthPlayer(this).addToTaskOrFilter(taskName, xoPattern, true);
 	}
 
-	**> { | taskName, xoPattern | // chuck -> task
-		^Chuck(this).addToTaskOrFilter(taskName, xoPattern, false);
+	**> { | taskName, xoPattern | // synthPlayer -> task
+		^SynthPlayer(this).addToTaskOrFilter(taskName, xoPattern, false);
 	}
 
 	*>> { | taskName, xoPattern |
-		^Chuck(this).addToxSubfilter(TaskPlayer(taskName), xoPattern, true);
+		^SynthPlayer(this).addToxSubfilter(TaskPlayer(taskName), xoPattern, true);
 	}
 
 	**>> { | taskName, xoPattern |
-		^Chuck(this).addToxSubfilter(TaskPlayer(taskName), xoPattern, false);
+		^SynthPlayer(this).addToxSubfilter(TaskPlayer(taskName), xoPattern, false);
 	}
 	
 	asTaskPlayer { ^TaskPlayer(this) }
 	
 	removeTask {
-		^Registry.doIfFound(Chuck, this, { | c |
+		^Registry.doIfFound(SynthPlayer, this, { | c |
 			c.removePreviousTask;
 			c.release;
 		})
@@ -47,7 +47,7 @@ Always create new Tox and add it as filter to task player named by argument.
 	}
 }
 
-+ Chuck {
++ SynthPlayer {
 
 	*> { | taskName, xoPattern |
 		this.addToTaskOrFilter(taskName, xoPattern, true);
@@ -66,7 +66,7 @@ Always create new Tox and add it as filter to task player named by argument.
 	}
 
 
-	addToTaskOrFilter { | taskName, xoPattern, start = false | // chuck -> task
+	addToTaskOrFilter { | taskName, xoPattern, start = false | // synthPlayer -> task
 		// TODO: integrate start switch!
 		if (xoPattern.isNil) {
 			^this.addToTask(taskName, start);
@@ -110,13 +110,13 @@ Always create new Tox and add it as filter to task player named by argument.
 }
 
 + Object {
-	asTaskPlayer { | chuck, xoPattern |
-		^TaskPlayer(chuck.name).pattern = this;
+	asTaskPlayer { | synthPlayer, xoPattern |
+		^TaskPlayer(synthPlayer.name).pattern = this;
 	}
 
 	
-	*> { | chuckName | // start immediately
-		^Chuck(chuckName).addToTask(TaskPlayer(chuckName))
+	*> { | synthPlayerName | // start immediately
+		^SynthPlayer(synthPlayerName).addToTask(TaskPlayer(synthPlayerName))
 		.pattern_(this).start;
  	}
 
@@ -129,9 +129,9 @@ Always create new Tox and add it as filter to task player named by argument.
 }
 
 + Ref {
-	// for: { func } ++> \chuckname *>.xofilter `taskName *> filterName;
-	receiveChuck { | chuck, filterPattern |
-		// ^ChuckFilterReceiver(chuck, TaskPlayer(value), filterPattern);
+	// for: { func } ++> \synthPlayername *>.xofilter `taskName *> filterName;
+	receiveSynthPlayer { | synthPlayer, filterPattern |
+		// ^SynthPlayerFilterReceiver(synthPlayer, TaskPlayer(value), filterPattern);
 	}
 }
 

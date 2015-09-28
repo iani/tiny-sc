@@ -1,5 +1,5 @@
 /*
-	A very simple interface for triggering and controlling objects in ChucK from a GUI
+	A very simple interface for triggering and controlling objects in SynthPlayer from a GUI
 	made in SC, over OSC. 
 
 	For Kostas Koukoudis, Sun, May 11 2014, 18:00 EEST.
@@ -20,7 +20,7 @@ Mouse click on button: Selects and send.
  
 */
 
-ChucKinator : UniqueWindow {
+SynthPlayerinator : UniqueWindow {
 	classvar <instance;
 
 	var <>knobs, <>buttons, <>messages, <>netAddr;
@@ -28,7 +28,7 @@ ChucKinator : UniqueWindow {
 	var netAddr, selected;
 
 	*new { | numItems = 26 |
-		instance = this.for(\chuck, \knobs, { | lose | // lose instead of winning.
+		instance = this.for(\synthPlayer, \knobs, { | lose | // lose instead of winning.
 			lose.initLoser(numItems);
 		});
 	}

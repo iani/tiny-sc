@@ -2,19 +2,19 @@
 #+DATE: Sat, Jun  6 2015, 21:17 EEST
 
 * Overview
-number_or_pattern |> \chuck // sched chuck using num or pattern for timing
+number_or_pattern |> \synthPlayer // sched synthPlayer using num or pattern for timing
 
-'' |>.sub \master; // play x_o type pattern on sub chuck listening to master chuck
+'' |>.sub \master; // play x_o type pattern on sub synthPlayer listening to master synthPlayer
 
-"" |>.sub \master; // play regex-matching string on sub chuck listening to master chuck
+"" |>.sub \master; // play regex-matching string on sub synthPlayer listening to master synthPlayer
 
 * x_o player
 
-'' |>.sub \master; // play x_o type pattern on sub chuck listening to master chuck
+'' |>.sub \master; // play x_o type pattern on sub synthPlayer listening to master synthPlayer
 
 * regex player
 
-"" |>.sub \master; // play regex-matching string on sub chuck listening to master chuck
+"" |>.sub \master; // play regex-matching string on sub synthPlayer listening to master synthPlayer
 
 * table player
 
@@ -43,9 +43,9 @@ The above table can be compared to a vertical piano-roll notation.
 - Each row corresponds a successive point in time.
 - The numbers of  the first column (=rel=) note the duration between successive rows.
 - The numbers of the second column (=abs=) note the time elapsed from the beginning of the execution of the table (from the event of row 1).  They are calculated by the table from the =rel= row using a column formula.
-- Columns whose names are enclosed in =<>= like this: =<A>= can be used to schedule actions (Functions) that are evaluated independently of any Chuck instance.
-- Columns after the =abs= column and without =<>= correspond to the =Chuck= instance, named in the header of the column.  Thus, the above table has three Chucks: =A=, =B= and =C=.
-- The symbols at each row of the Chuck columns are names of actions to be executed on the Chuck of the corresponding column.  There are two default actions: =x= means =play= and =.= means =release=.  Any other names (strings that are converted by SC to symbols) can point to actions that are stored in library under 'ChuckAction', and that can be defined by the user.  They can be any function that is applied to the chuck in question.
+- Columns whose names are enclosed in =<>= like this: =<A>= can be used to schedule actions (Functions) that are evaluated independently of any SynthPlayer instance.
+- Columns after the =abs= column and without =<>= correspond to the =SynthPlayer= instance, named in the header of the column.  Thus, the above table has three SynthPlayers: =A=, =B= and =C=.
+- The symbols at each row of the SynthPlayer columns are names of actions to be executed on the SynthPlayer of the corresponding column.  There are two default actions: =x= means =play= and =.= means =release=.  Any other names (strings that are converted by SC to symbols) can point to actions that are stored in library under 'SynthPlayerAction', and that can be defined by the user.  They can be any function that is applied to the synthPlayer in question.
 - Horizontal lines inside the piano roll serve to separate different sections of a piece.  Column =section_name= is reserved to naming the sections, and =section_dur= can be used to calculate the partial duration of each section as well as the time of the events relative to the beginning of the section, with the formula: =vsum(@-I$2..@+0$2)=
 
 ** Converting table to list for sending to SC
@@ -92,37 +92,37 @@ Here are initial coding tests.
 
   //:
 
-  ~a[\x].(\a.chuck);
-  ~a.['.'].(\a.chuck);
+  ~a[\x].(\a.synthPlayer);
+  ~a.['.'].(\a.synthPlayer);
 #+END_SRC
 
 *** Extra operators for binding actions to symbols in the table
 
-Following set the functions to be operated at the table keys using the chuck of the column as argument.
+Following set the functions to be operated at the table keys using the synthPlayer of the column as argument.
 
-The idea for the operators is: Adding an extra > to the operator makes the function be stored in the table's environment, and executes the function corresponding to the operator on the column's chuck. Thus:
+The idea for the operators is: Adding an extra > to the operator makes the function be stored in the table's environment, and executes the function corresponding to the operator on the column's synthPlayer. Thus:
 
 #+BEGIN_SRC sclang
 
-  // Set the source of the chuck:
+  // Set the source of the synthPlayer:
   { WhiteNoise.arps } ++>> \a;
 
   // Play the huck with a new source:
   { BrownNoise.arps } +>> \b;
 
-  // Set amp parameter of the chuck:
+  // Set amp parameter of the synthPlayer:
   0.02 +>>.amp \c;
 
-  // Send some other chuck as input to this chuck
+  // Send some other synthPlayer as input to this synthPlayer
   \another +>> \c;
 
-  // schedule the chuck
+  // schedule the synthPlayer
   0.2 |> \c;
 
-  // Set parameters of chuck
+  // Set parameters of synthPlayer
   (freq: [500, 600].prand, amp: [0.1, 0.2].prand) +>> \c;
 
-  // Extra operator for sending any message to the chuck: !>>
+  // Extra operator for sending any message to the synthPlayer: !>>
 
   5 !>>.release \c; // translates to: \c.release(5)
 #+END_SRC
@@ -136,14 +136,14 @@ Note: If we want to use this in the table, we can not use | inside an operator b
 **** Draft 1 (rejected)
 |---+-----------------------+-----------------------------------------------------|
 | ! | in table              | expansion                                           |
-|   | x                     | _.play     (where _ is the column's Chuck)          |
+|   | x                     | _.play     (where _ is the column's SynthPlayer)          |
 |   | .                     | _.release                                           |
 |   | anything .            | _ release: anything                                 |
 |   | asymbol . anything    | _.asymbol(*anything)  (!!!???)                      |
-|   | anything +>           | anything +> theColumnsChuck                         |
-|   | anything +>.adverb    | anything +>.adverb theColumnsChuck                  |
-|   | anything *>           | anything *> theColumnsChuck                         |
-|   | anything *>.adverb    | anything *>.adverb theColumnsChuck                  |
+|   | anything +>           | anything +> theColumnsSynthPlayer                         |
+|   | anything +>.adverb    | anything +>.adverb theColumnsSynthPlayer                  |
+|   | anything *>           | anything *> theColumnsSynthPlayer                         |
+|   | anything *>.adverb    | anything *>.adverb theColumnsSynthPlayer                  |
 |   | 'symbol other than x' | play function stored using extra operators above[1] |
 |---+-----------------------+-----------------------------------------------------|
 
@@ -152,7 +152,7 @@ An alternative that is more concise, more general, and easier to parse:
 
 |---+-----------------------+-----------------------------------------------------|
 | ! | in table              | expansion                                           |
-|   | x                     | _.play     (where _ is the column's Chuck)          |
+|   | x                     | _.play     (where _ is the column's SynthPlayer)          |
 |   | .                     | _.release                                           |
 |   | _ anything            | _.anything (may include message + argument)         |
 |   | anything _            | anything _ (eg: \src +> _)                          |

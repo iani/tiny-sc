@@ -1,12 +1,12 @@
 /*
-A very simple interface for triggering and controlling objects in ChucK via SC.
+A very simple interface for triggering and controlling objects in SynthPlayer via SC.
 For Kostas Koukoudis, Sun, May 11 2014, 18:00 EEST.
 s
 More to follow.
 */
 
 
-UniqueWindow.for(\chuck, \knobs, { | lose | // lose instead of winning.
+UniqueWindow.for(\synthPlayer, \knobs, { | lose | // lose instead of winning.
 	var knobs, labels, messages;
 	var netAddr, selected = 0;
 	netAddr = NetAddr("127.0.0.1", 6449);

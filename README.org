@@ -27,14 +27,14 @@ This is version 1.2alpha (=retiny=).
 :eval-id:  842
 :END:
 
-Tiny-sc stores objects that create synths and tasks in the global Library under symbols, so that they can be recalled easily by their names, in order to play, start, stop, modify, and combine them.  There are two main types of objects: A =Chuck= is an object that can execute a function or create a synth.  A =TaskPlayer= is an object that plays tasks.  One can play a Chuck on its own, or one can attach a Chuck to a TaskPlayer in order to play a sequence of events.
+Tiny-sc stores objects that create synths and tasks in the global Library under symbols, so that they can be recalled easily by their names, in order to play, start, stop, modify, and combine them.  There are two main types of objects: A =SynthPlayer= is an object that can execute a function or create a synth.  A =TaskPlayer= is an object that plays tasks.  One can play a SynthPlayer on its own, or one can attach a SynthPlayer to a TaskPlayer in order to play a sequence of events.
 
-=Chuck= and =TaskPlayer= each have their own type of operator:
+=SynthPlayer= and =TaskPlayer= each have their own type of operator:
 
-- +> :: Do something with a Chuck
+- +> :: Do something with a SynthPlayer
 - *> :: Do something with a TaskPlayer
 
-Basic example: Set the source of a Chuck, and then play it:
+Basic example: Set the source of a SynthPlayer, and then play it:
 #+BEGIN_SRC sclang
 { SinOsc.arps(Rand(400, 1000)).perc } +> \test0; // set the source
 \test0.play; // play the source
@@ -52,7 +52,7 @@ One can combine a sound-source and a task expression in one statement like this:
 { SinOsc.arps(Rand(400, 1000)) * 0.3 } +> \test0 *> 0.1; // play a sequence of events
 #+END_SRC
 
-The above creates a Chuck =test0= playing the function as source, and schedules it to play events with a TaskPlayer named =test0=.  To stop the Task player, run:
+The above creates a SynthPlayer =test0= playing the function as source, and schedules it to play events with a TaskPlayer named =test0=.  To stop the Task player, run:
 
 #+BEGIN_SRC sclang
 \test0.stop;
@@ -60,12 +60,12 @@ The above creates a Chuck =test0= playing the function as source, and schedules 
 
 There are two variants of the basic operators =+>= and =*>=:
 
-- ++> :: Send a new function or SynthDef name to a Chuck, and play it immediately. *NOTE: This also disconnects the Chuck from any task that it may be attached to.*
+- ++> :: Send a new function or SynthDef name to a SynthPlayer, and play it immediately. *NOTE: This also disconnects the SynthPlayer from any task that it may be attached to.*
 - **> :: Modify a TaskPlayer, but do not start it.
 
 For example:
 
-Send a new SynthDef function to Chuck =test0=, and play it:
+Send a new SynthDef function to SynthPlayer =test0=, and play it:
 
 #+BEGIN_SRC sclang
 { SinOsc.arp(Rand(1000, 2000)).perc } ++> \test0;
@@ -93,7 +93,7 @@ Stop:
 :ID:       5A4BBD0F-7722-42C9-8E7D-50E3AACCAF34
 :eval-id:  285
 :END:
-Tiny-sc uses class =Chuck= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, pan and various envelopes.  Chuck instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
+Tiny-sc uses class =SynthPlayer= to define containers that can run synths. It also defines some shortcuts for commonly used UGen combinations and patterns and for control UGen arugments such as amp, pan and various envelopes.  SynthPlayer instances are accessed by their name.  Playing a SynthDef function or a SynthDef name will start a new Synth and fade out the previous one:
 
 #+BEGIN_SRC sclang
 { WhiteNoise.ar(0.1) } ++> \test; // ++> starts immediately
@@ -105,7 +105,7 @@ Play different synthdef, replace previous synth:
 "default" ++> \test; // play with SynthDef "default"
 #+END_SRC
 
-Parameters of a Chuck's synth process can be set as numbers:
+Parameters of a SynthPlayer's synth process can be set as numbers:
 
 #+BEGIN_SRC sclang
 1000 +>.freq \test;
@@ -129,15 +129,15 @@ Release with custom fade-out duration:
 \test.release(3);
 #+END_SRC
 
-** Starting and stopping, Tasks and Chucks
+** Starting and stopping, Tasks and SynthPlayers
 :PROPERTIES:
 :ID:       54ABF720-6AB1-45C1-B48B-89FB79CC384F
 :eval-id:  27
 :END:
 
-Overview of methods (messages) sent to symbols to play with Chuck and TaskPlayer instances:
+Overview of methods (messages) sent to symbols to play with SynthPlayer and TaskPlayer instances:
 
-- To play Chucks named by a symbol: :: send that symbol messages =play= to start, =release= to stop.
+- To play SynthPlayers named by a symbol: :: send that symbol messages =play= to start, =release= to stop.
 - To play tasks named by a symbol: :: send that symbol =start= to start playing, =stop= to stop playing
 
 In other words:
@@ -145,18 +145,18 @@ In other words:
 Examples:
 
 #+BEGIN_SRC sclang
-"default" +> \c; // set source of Chuck c to SynthDef "default", but do not play
-\c.play;         // play Chuck c
+"default" +> \c; // set source of SynthPlayer c to SynthDef "default", but do not play
+\c.play;         // play SynthPlayer c
 #+END_SRC
 
-Release (stop) Chuck:
+Release (stop) SynthPlayer:
 
 #+BEGIN_SRC sclang
-\c.release;      // stop playing chuck c
+\c.release;      // stop playing synthPlayer c
 #+END_SRC
 
 #+BEGIN_SRC sclang
-\c **> \c; // attach chuck c to task c, without starting
+\c **> \c; // attach synthPlayer c to task c, without starting
 \c.start;  // start task c explicitly. Default event duration is 1 second
 #+END_SRC
 
@@ -169,7 +169,7 @@ TaskPlayers stop when their duration pattern ends:
 #+BEGIN_SRC sclang
 { SinOsc.arp(\freq.kr(400)).perc } +> \c;
 [60, 65, 67, 72].midicps.pseq +>.freq \c; // set an endless frequency patern to c
-0.1.pn(16) *> \c;  // Play the c chuck with a task using a duration pattern of 16 events
+0.1.pn(16) *> \c;  // Play the c synthPlayer with a task using a duration pattern of 16 events
 #+END_SRC
 
 ** Playing sequences of synth events
@@ -177,7 +177,7 @@ TaskPlayers stop when their duration pattern ends:
 :ID:       C169857C-C151-4D9B-8BC3-A588AD4FFE59
 :eval-id:  206
 :END:
-A Chuck can play with a duration pattern, which runs in a TaskPlayer.
+A SynthPlayer can play with a duration pattern, which runs in a TaskPlayer.
 
 It which may be a single number:
 
@@ -197,7 +197,7 @@ Set the fadeTime to create texture of cross-fading tones:
 \test1.fadeTime = 1;
 #+END_SRC
 
-Stop the pattern that drives the Chuck:
+Stop the pattern that drives the SynthPlayer:
 
 #+BEGIN_SRC sclang
 \test1.stop;
@@ -209,15 +209,15 @@ Stop the pattern that drives the Chuck:
 :eval-id:  626
 :END:
 
-A Chuck can be driven by a TaskPlayer to run patterns in a similar way as Pbind.  The difference is that any key of a pattern as well as the duration pattern can be changed at any time.  Furthermore, a Chuck can switch TaskPlayers at any time, and can also be made to respond to a TaskFilter which only plays at beats that match a given condition.  In this way, several Chuck instances can be synchronized by following the same TaskPlayer or its attached filters.
+A SynthPlayer can be driven by a TaskPlayer to run patterns in a similar way as Pbind.  The difference is that any key of a pattern as well as the duration pattern can be changed at any time.  Furthermore, a SynthPlayer can switch TaskPlayers at any time, and can also be made to respond to a TaskFilter which only plays at beats that match a given condition.  In this way, several SynthPlayer instances can be synchronized by following the same TaskPlayer or its attached filters.
 
-Start the test2 Chuck with a SynthDef function, and a pattern:
+Start the test2 SynthPlayer with a SynthDef function, and a pattern:
 #+BEGIN_SRC sclang
 { Blip.arps(\freq.kr(400), 3) } +> \test2 *> 0.1;
 (60..90).midicps.prand +>.freq \test2
 #+END_SRC
 
-Add a second chuck to the same pattern:
+Add a second synthPlayer to the same pattern:
 
 (Note: =+>= waits to be triggered, and =**>= does not restart the task)
 
@@ -241,13 +241,13 @@ Example:
 \test2 **>.x___xoxox_x_xoxxxooo \test2; // **> : Do not start parent task
 #+END_SRC
 
-Remove chuck named =test= from its task - but leave the other Chucks still attached:
+Remove synthPlayer named =test= from its task - but leave the other SynthPlayers still attached:
 
 #+BEGIN_SRC sclang
 \test2.removeTask;
 #+END_SRC
 
-Stop the task, and all it's dependent Chucks:
+Stop the task, and all it's dependent SynthPlayers:
 
 #+BEGIN_SRC sclang
 \test2.stop;
@@ -256,9 +256,9 @@ Stop the task, and all it's dependent Chucks:
 Here is a more complicated example:
 
 #+BEGIN_SRC sclang
-"default" +> \high; // set source of chuck high
+"default" +> \high; // set source of synthPlayer high
 Pwhite(70, 90, inf).midicps +>.freq \high; // set frequency pattern for high
-{ Blip.arps(Rand(50, 200), Rand(1, 10)).perc * 1.2 } +> \low; // set source of chuck low
+{ Blip.arps(Rand(50, 200), Rand(1, 10)).perc * 1.2 } +> \low; // set source of synthPlayer low
 \high **> \low; // Make high follow task pattern of low
 \low *> 0.1;   // Set and start task pattern of low to play beats at 0.1 seconds
 #+END_SRC
@@ -266,7 +266,7 @@ Pwhite(70, 90, inf).midicps +>.freq \high; // set frequency pattern for high
 Let =high= play a sub-pattern of the TaskPlayer =low=.
 
 #+BEGIN_SRC sclang
-\high **>.x___x_xoxoxxxooo \low; // creates filter \_low and attaches chuck \high to it
+\high **>.x___x_xoxoxxxooo \low; // creates filter \_low and attaches synthPlayer \high to it
 #+END_SRC
 
 Change the duration pattern of master Task =low=:
@@ -277,8 +277,8 @@ Change the duration pattern of master Task =low=:
 
 Make both =high= and =low= play on the same filter of =low= Task;
 #+BEGIN_SRC sclang
-\high **>.xooox___xxox_xxxx \low; // create filter \_low and attaches chuck \low to it
-\low **> \_low; // also make chuck low follow filter \_low
+\high **>.xooox___xxox_xxxx \low; // create filter \_low and attaches synthPlayer \low to it
+\low **> \_low; // also make synthPlayer low follow filter \_low
 #+END_SRC
 
 Change base beat pattern and reset =low= to that root pattern:
@@ -291,9 +291,9 @@ Change base beat pattern again:
 \low **> Prand([Pn(0.12, 4), 0.3, 0.6, Pn(0.06, 2)], inf);
 #+END_SRC
 
-Synch chuck =low= with chuck =high= again:
+Synch synthPlayer =low= with synthPlayer =high= again:
 #+BEGIN_SRC sclang
-\low **> \_low; // also make chuck low follow filter \_low
+\low **> \_low; // also make synthPlayer low follow filter \_low
 #+END_SRC
 
 Stop the master pattern:
@@ -374,7 +374,7 @@ Note: MiniSteno is inspired by syntax of /Steno/ by Julian Rohrhuber. (See https
 :ID:       55664B8E-2D68-448B-A6C9-2AEA8CC022D5
 :eval-id:  3
 :END:
-With MiniSteno one can specify the interconnections of several chuck instances to create a tree consisting of parallel and serial branches. The tree is written as a string.  The names of the chucks are separated by ".".  Parentheses () indicate serial interconnections.  Brackets [] indicate parallel intereconnections.  Thus:
+With MiniSteno one can specify the interconnections of several synthPlayer instances to create a tree consisting of parallel and serial branches. The tree is written as a string.  The names of the synthPlayers are separated by ".".  Parentheses () indicate serial interconnections.  Brackets [] indicate parallel intereconnections.  Thus:
 
 #+BEGIN_SRC sclang
 "(source.effect)".miniSteno;
@@ -386,7 +386,7 @@ With MiniSteno one can specify the interconnections of several chuck instances t
 "[c1.c2]".miniSteno;
 #+END_SRC
 
-... creates a group of parallel chucks. =c1= and =c2= read from the same input and write to the same output bus.
+... creates a group of parallel synthPlayers. =c1= and =c2= read from the same input and write to the same output bus.
 
 **** Playing link configurations
 :PROPERTIES:
@@ -398,7 +398,7 @@ Use the message =addBranch= to add link configurations to a global tree for play
 
 Examples:
 
-Add 2 chucks =a= and =b= linked together in series:
+Add 2 synthPlayers =a= and =b= linked together in series:
 
 #+BEGIN_SRC sclang
 "(a.b)".addBranch;
@@ -460,13 +460,13 @@ Release with different durations:
 \c.release(2);
 #+END_SRC
 
-**** Linking to multiple inputs of one Chuck
+**** Linking to multiple inputs of one SynthPlayer
 :PROPERTIES:
 :ID:       51712FCB-D988-472C-AB8E-B775DD24DF89
 :eval-id:  7
 :END:
 
-Connect the reading Chuck instance in multiple serial branches, and use ":" as separator between chuck name and input name to indicate the name of the input.
+Connect the reading SynthPlayer instance in multiple serial branches, and use ":" as separator between synthPlayer name and input name to indicate the name of the input.
 
 Create source and effect synths, and listen to the 2 source synths separately:
 
@@ -489,7 +489,7 @@ Link the output of the first source to =in1= and the output of the second source
 :eval-id:  377
 :END:
 
-Just a demo with 8 Chuck instances playing on 8 different TaskPlayers.
+Just a demo with 8 SynthPlayer instances playing on 8 different TaskPlayers.
 
 #+BEGIN_SRC sclang
   (

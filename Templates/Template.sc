@@ -86,7 +86,7 @@ Template {
 					switch (modifiers,
 						0, { // no modifier (just one key typed)
 							switch (char,
-								13.asAscii, { // return key: chuck into selected ST
+								13.asAscii, { // return key: synthPlayer into selected ST
 									if (~st.isNil) {
 										sourceView.object.template +> 
 										format("st%", UniqueID.next - 1001).asSymbol;
@@ -104,7 +104,7 @@ Template {
 						},
 						131072, { // shift key
 							switch (char, // KeyFunc
-								13.asAscii, { // shift+return: chuck into new ST
+								13.asAscii, { // shift+return: synthPlayer into new ST
 									sourceView.object.template +> 
 									format("st%", UniqueID.next - 1001).asSymbol;}
 							)

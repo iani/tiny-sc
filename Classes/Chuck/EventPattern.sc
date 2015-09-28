@@ -91,7 +91,7 @@ EventPatternSynth : Synth {
 			start playing eventpattern
 			doneAction is free self, group, and synths contained in group
 			onEnd: free bus and stop EventStreamPlayer
-			set source's chuck's output to newly created instance of self.
+			set source's synthPlayer's output to newly created instance of self.
 		*/
 
 		var synth, target, group, bus, addNum, server, defname;
@@ -125,7 +125,7 @@ EventPatternSynth : Synth {
 	}
 
 	play { | target, outBus, fadeTime, addAction, args |
-		// Called by ChuckPatternSource:makeSynth
+		// Called by SynthPlayerPatternSource:makeSynth
 		//	player = pattern.
 		thisMethod.notImplemented;
 		/*

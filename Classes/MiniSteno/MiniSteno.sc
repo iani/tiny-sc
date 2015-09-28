@@ -1,4 +1,4 @@
-// See newer version Class: ChuckForest
+// See newer version Class: SynthPlayerForest
 
 /* Tue, Jun 16 2015, 03:08 EEST
 
@@ -8,21 +8,21 @@ https://github.com/telephon/Steno
 */
 
 MiniSteno {
-	var <tree; // child branches contained in me: chucks, other MiniStenos
+	var <tree; // child branches contained in me: synthPlayers, other MiniStenos
 	var <>parent; // MiniSteno containing me.  Needed for remove.
 	var <source;  // the string from which the 
 	classvar <>verbose = true;
 
     addBranch { | name = \root, server |
-		var oldBranch, oldChucks, newChucks, nullGroup;
+		var oldBranch, oldSynthPlayers, newSynthPlayers, nullGroup;
 		server = server.asTarget.server;
 		oldBranch = this.named (name, server);
-		oldBranch !? { oldChucks = oldBranch.chucks };
+		oldBranch !? { oldSynthPlayers = oldBranch.synthPlayers };
 		nullGroup = GroupLink.nullGroup;
 		this.setBussesAndGroups(ArBusLink.nullBus, ArBusLink.nullBus, GroupLink.default);
-		newChucks = this.chucks;
-		oldChucks do: { | p |
-			if (newChucks.includes (p).not) { p.setTarget(nullGroup) } // also free busses? !
+		newSynthPlayers = this.synthPlayers;
+		oldSynthPlayers do: { | p |
+			if (newSynthPlayers.includes (p).not) { p.setTarget(nullGroup) } // also free busses? !
 		};
 		Library.put (MiniSteno, server, name, this);
 		if (verbose) {
@@ -34,19 +34,19 @@ MiniSteno {
   
 	named {  | name, server | ^Library.at (MiniSteno, server.asTarget.server, name ) }
 
-	*includes { | chuck | ^this.root includes: chuck }
-	includes { | chuck |
-		^this.findParentOf (chuck).notNil;
+	*includes { | synthPlayer | ^this.root includes: synthPlayer }
+	includes { | synthPlayer |
+		^this.findParentOf (synthPlayer).notNil;
 	}
 
-	findParentOf { | chuck |
+	findParentOf { | synthPlayer |
 		var found;
 		tree do: { | l |
-			if (l === chuck) {  // l.chuck === chuck !!!
+			if (l === synthPlayer) {  // l.synthPlayer === synthPlayer !!!
 				^this
 			}{
 				if (l isKindOf: MiniSteno) {
-					found = l findParentOf: chuck;
+					found = l findParentOf: synthPlayer;
 					if (found.notNil) { ^found }
 				}
 			};
@@ -54,8 +54,8 @@ MiniSteno {
 		^nil;
 	}
 
-	chucks {
-		^tree.collect (_.chucks).flat;
+	synthPlayers {
+		^tree.collect (_.synthPlayers).flat;
 	}
 
 	*fromString { | string |
@@ -95,9 +95,9 @@ MiniSteno {
 	pp { | levels = "" | // prettyprint
 		postf ("% (        // % % %\n", levels, levels, this.class, levels);
 		tree do: { | x |
-			if (x isKindOf: ChuckLink) {
+			if (x isKindOf: SynthPlayerLink) {
 				postf("*%* % % % % % %\n", x.target.level,
-					levels, x.chuck.name, x.target, x.inputName, x.inBus, x.outBus);
+					levels, x.synthPlayer.name, x.target, x.inputName, x.inBus, x.outBus);
 			}{
 				x.pp(levels ++ "-");
 			};
@@ -107,12 +107,12 @@ MiniSteno {
 
 	// ================================================================
 	// TODO: Changing the structure of the tree after it was created:
-	removeChuck { | chuck |
-		/* rearrange tree by removing chuck from it, if it exists. */
+	removeSynthPlayer { | synthPlayer |
+		/* rearrange tree by removing synthPlayer from it, if it exists. */
 		var container;
-		container = this findParentOf: chuck;
+		container = this findParentOf: synthPlayer;
 		container !? {
-			tree remove: chuck;
+			tree remove: synthPlayer;
 			this.removeSelfIfNeeded;
 		};
 	}
@@ -131,15 +131,15 @@ MiniSteno {
 		}
 	}
 
-	insertAfter { | existingChuck, newChuck |
+	insertAfter { | existingSynthPlayer, newSynthPlayer |
 
 	}
 
-	addSiblingAfter {  | existingChuck, newChuck |
+	addSiblingAfter {  | existingSynthPlayer, newSynthPlayer |
 
 	}
 
-	addSibling { | newChuck oldChuck |
+	addSibling { | newSynthPlayer oldSynthPlayer |
 
 	}
 
@@ -230,9 +230,9 @@ Ser : MiniSteno {
 + Symbol {
 	asSteno {
 		/*
-			var chuck;
-			chuck = Chuck(this);
-			if (MiniSteno.root.includes(chuck) {
+			var synthPlayer;
+			synthPlayer = SynthPlayer(this);
+			if (MiniSteno.root.includes(synthPlayer) {
 			    silently remove from previous location
 			    / or remove from previous location and issue warning
                 / or issue error????
@@ -240,8 +240,8 @@ Ser : MiniSteno {
 
 		*/
 		
-		^ChuckLink(*this.asString.split($:));
+		^SynthPlayerLink(*this.asString.split($:));
 		
-		//	^Chuck (this)
+		//	^SynthPlayer (this)
 	}
 }

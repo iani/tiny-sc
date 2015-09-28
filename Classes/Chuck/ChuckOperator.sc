@@ -1,17 +1,17 @@
 + Object {
-	+> { | chuckName, adverb | ^Chuck(chuckName).setArgs (adverb, this) }
+	+> { | synthPlayerName, adverb | ^SynthPlayer(synthPlayerName).setArgs (adverb, this) }
 }
 
 + Event {
-	+> { | chuckName | ^Chuck(chuckName).setArgs(*this.getPairs) }
+	+> { | synthPlayerName | ^SynthPlayer(synthPlayerName).setArgs(*this.getPairs) }
 }
 
 + SequenceableCollection {
-	+> { | chuckName | ^Chuck(chuckName).setArgs(*this) }
+	+> { | synthPlayerName | ^SynthPlayer(synthPlayerName).setArgs(*this) }
 }
 
-+ Chuck {
-	+> { | reader, io = \in_out | ^this.append (Chuck (reader), io); }
++ SynthPlayer {
+	+> { | reader, io = \in_out | ^this.append (SynthPlayer (reader), io); }
 	receiveFunc { | func, param |
 		case
 		{ param.isNil } { this.source_(func) }
@@ -25,43 +25,43 @@
 
 + Symbol {
 	+> { | reader, io = \in_out |
-		^Chuck (this).append (Chuck (reader),
+		^SynthPlayer (this).append (SynthPlayer (reader),
 			*io.asString.split($_).collect(_.asSymbol));
 	}
 	!> { | reader, io = \in_out |
-		^Chuck (this).removeReader (Chuck(reader),
+		^SynthPlayer (this).removeReader (SynthPlayer(reader),
 			*io.asString.split($_).collect(_.asSymbol));
 	}
-	chuck { ^Chuck (this) }
+	synthPlayer { ^SynthPlayer (this) }
 	// can use dur +>.fadeTime \symbol instead, but this is shorter:
 	fadeTime_ { | dur = 0.1 |  ^this.ft_ (dur); }
-	ft_ { | dur = 0.1 | ^this.chuck.setArgs (\fadeTime, dur) }
-	out_ { | bus = 0, slot = \out | ^this.chuck.setArgs(slot, bus); }
-	free { ^Registry.doIfFound(Chuck, this, _.free); }
-	release { | dur = 0.1 | ^Registry.doIfFound(Chuck, this, _.release (dur)); }
-	play { ^Chuck (this).play; }
-	sched { | dur = 1, clock | ^Chuck (this).sched (dur, clock ?? { TempoClock () }) }
-	//	|> { | master pattern | ^Chuck (this).playSubPattern (Chuck (master), pattern) }
+	ft_ { | dur = 0.1 | ^this.synthPlayer.setArgs (\fadeTime, dur) }
+	out_ { | bus = 0, slot = \out | ^this.synthPlayer.setArgs(slot, bus); }
+	free { ^Registry.doIfFound(SynthPlayer, this, _.free); }
+	release { | dur = 0.1 | ^Registry.doIfFound(SynthPlayer, this, _.release (dur)); }
+	play { ^SynthPlayer (this).play; }
+	sched { | dur = 1, clock | ^SynthPlayer (this).sched (dur, clock ?? { TempoClock () }) }
+	//	|> { | master pattern | ^SynthPlayer (this).playSubPattern (SynthPlayer (master), pattern) }
 	asBeatPattern { ^Pseq(this.asString, inf) }
-	target { ^Chuck(this).target }
-	toRoot { ^Chuck(this).toRoot }
+	target { ^SynthPlayer(this).target }
+	toRoot { ^SynthPlayer(this).toRoot }
 }
 
 + Function {
-	+> { | symbol, adverb |  ^Chuck(symbol).receiveFunc(this, adverb); }
-	++> { | symbol, adverb | ^Chuck(symbol).receiveFunc(this, adverb).play }
+	+> { | symbol, adverb |  ^SynthPlayer(symbol).receiveFunc(this, adverb); }
+	++> { | symbol, adverb | ^SynthPlayer(symbol).receiveFunc(this, adverb).play }
 }
 
 + Ref { // `{ } quotes function so that it evals rather than {}.plays
 	+> { | symbol |
-		^Chuck(symbol).source_(ChuckSource(value)) }
+		^SynthPlayer(symbol).source_(SynthPlayerSource(value)) }
 	++> { | symbol |
-		^Chuck(symbol).source_(ChuckSource(value)).play }
+		^SynthPlayer(symbol).source_(SynthPlayerSource(value)).play }
 }
 
 + String {
-	+> { | symbol | ^Chuck (symbol).source_(this); } // add adverb to play parameter!
-	++> { | symbol | ^Chuck (symbol).source_(this).play; } // add adverb to play parameter!
+	+> { | symbol | ^SynthPlayer (symbol).source_(this); } // add adverb to play parameter!
+	++> { | symbol | ^SynthPlayer (symbol).source_(this).play; } // add adverb to play parameter!
 }
 
 + Method {

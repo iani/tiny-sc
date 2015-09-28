@@ -43,12 +43,12 @@ BusLink {
 		bus.free;
 	}
 
-	add { | chuck, role |
-		this.perform(role) add: chuck;
+	add { | synthPlayer, role |
+		this.perform(role) add: synthPlayer;
 	}
 
-	remove { | chuck, role |
-		this.perform(role) remove: chuck;
+	remove { | synthPlayer, role |
+		this.perform(role) remove: synthPlayer;
 		if (readers.size == 0 and: { writers.size == 0}) { this.free }
 	}
 
@@ -80,7 +80,7 @@ KrBusLink : BusLink {
 		^Registry(KrBusLink, this, { KrBusLink() });
 	}
 
-	@> { | chuckName, param = \in |
+	@> { | synthPlayerName, param = \in |
 		
 	}
 
@@ -113,7 +113,7 @@ KrBusLink : BusLink {
 		^components;
 	}
 
-	chuckIO { | specs |
+	synthPlayerIO { | specs |
 		
 	}
 

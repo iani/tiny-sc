@@ -35,7 +35,7 @@ Note: cancelled:
 :DATE:     <2015-07-16 Thu 20:23>
 :END:
 
-=setTree= : remove all buses and set group of all chucks to 0.  Then rebuild tree according to the specification given by the statement =specs.setTree=.
+=setTree= : remove all buses and set group of all synthPlayers to 0.  Then rebuild tree according to the specification given by the statement =specs.setTree=.
 
 =addBranches= : add all connection pairs specified by the spec-string to the existing root tree.  Note: There is no way to replace a named sub-branch of the tree, because the branch may have been modified by addReader/Writer or removeReader/Writer and it is not always possible to identify which subtree that modification applies to.  Therefore:
 
@@ -122,32 +122,32 @@ Equivalent in new simplified syntax:
 "([a.b]x)([b.c]y)"
 #+END_SRC
 
-**** New chuck interconnection principle: Check for cycles before adding each reader
+**** New synthPlayer interconnection principle: Check for cycles before adding each reader
 
-IMPORTANT: Checking of cycles must be done for each chuck, BEFORE ADDING IT TO THE BRANCH, by checking amongst its writers, if it is already there.
+IMPORTANT: Checking of cycles must be done for each synthPlayer, BEFORE ADDING IT TO THE BRANCH, by checking amongst its writers, if it is already there.
 
-Therefore: Before adding any chuck =r= as reader to some other chuck =w=, check do a backtrace of all writers of =w=. If =w= any of the writers of =w= (and their writers, recursively), are identical with =r= then:
+Therefore: Before adding any synthPlayer =r= as reader to some other synthPlayer =w=, check do a backtrace of all writers of =w=. If =w= any of the writers of =w= (and their writers, recursively), are identical with =r= then:
 
 1. Post a warning that =r= will not be added because it would create a cycle.
-2. Skip =r=, i.e. do not add it as writer to =w=, but continue with adding any remaining chucks in the branch-construction process.
+2. Skip =r=, i.e. do not add it as writer to =w=, but continue with adding any remaining synthPlayers in the branch-construction process.
 
 **** New tree sorting algorithm
 
-For all those chucks that have no writers:
+For all those synthPlayers that have no writers:
 
-1. Place each chuck to head group (0)
+1. Place each synthPlayer to head group (0)
 2. For all its readers:
    - If
-     1. the chuck encountered already has a group
+     1. the synthPlayer encountered already has a group
      2. *AND* that group is higher or equal to that of the group of the parent (writer) + 1,
-   - then do nothing - skip the current reader chuck and all its readers
+   - then do nothing - skip the current reader synthPlayer and all its readers
    - else set the group of the current reader to writer + 1, and iterete the process with the readers of the reader.
 
 **** Compute necessary signal branch cross-links
 
-Iterate through all chucks (in any order, once) doing this:
+Iterate through all synthPlayers (in any order, once) doing this:
 
-For all readers of each chuck (in any order, once):
+For all readers of each synthPlayer (in any order, once):
 
 If the reader has not been connected,
 
@@ -156,9 +156,9 @@ If the reader has not been connected,
 3. If the reader has a bus (... see details below)
 4. If both the reader has a bus and the writer has a bus (... see details below)
 
-In cases 2, 3, 4 above, must check if it is needed to create a split-bus copy signal link, depending on the existence of other readers/writers of the busses and chucks in question.
+In cases 2, 3, 4 above, must check if it is needed to create a split-bus copy signal link, depending on the existence of other readers/writers of the busses and synthPlayers in question.
 
-Additionally, write a method that posts all readers and writers of each chuck by tracing the actual bus interconnections, to aid in manual debugging and checkign the correctness of the algorithm .
+Additionally, write a method that posts all readers and writers of each synthPlayer by tracing the actual bus interconnections, to aid in manual debugging and checkign the correctness of the algorithm .
 
 The 4 cases one-by-one:
 
@@ -383,26 +383,26 @@ DONE
 :DATE:     <2015-07-15 Wed 11:52>
 :END:
 
-1. Start with any unvisited chuck (chucks already visited by the algorithm must be marked during the first time that they are visited)
-2. Put the chuck in a new object =signal-sharer= contaning two sets of chucks (=writers= and =readers=), which forms a new candidate group for sharing a bus.  The sets of shared bus chucks are collected themselves in a list called =shared=.
+1. Start with any unvisited synthPlayer (synthPlayers already visited by the algorithm must be marked during the first time that they are visited)
+2. Put the synthPlayer in a new object =signal-sharer= contaning two sets of synthPlayers (=writers= and =readers=), which forms a new candidate group for sharing a bus.  The sets of shared bus synthPlayers are collected themselves in a list called =shared=.
 3. For all its unvisited readers
    1. Check if they have the same writers.
-   2. Check if their writers have the same readers.  As long as the same set of writers and readers is found, add the visited chuck to the current =signal-sharer= object, putting it in either the =writers= or the =readers= sets, according to its function when found in the traversal.
-   3. When a chuck has been found that has a reader or a writer which is not shared by all the other chucks in the examined group:
-      1. Mark the chuck just visited as =split-end-point=
-      2. and the chuck from which this chuck was reached as =splice-point=, forming a pair that needs a signal-copying bus link to be created. (and also add it to a list of pairs that need copy-links, called =splits=)
-      3. Also mark the chuck that no longer belongs to the readers or writers of the group being investigated as =bus-to-next-group=
-   4. Continue with all other readers of the chuck and their writers
-4. Repreat the process from 1 with the next unvisited chuck.
+   2. Check if their writers have the same readers.  As long as the same set of writers and readers is found, add the visited synthPlayer to the current =signal-sharer= object, putting it in either the =writers= or the =readers= sets, according to its function when found in the traversal.
+   3. When a synthPlayer has been found that has a reader or a writer which is not shared by all the other synthPlayers in the examined group:
+      1. Mark the synthPlayer just visited as =split-end-point=
+      2. and the synthPlayer from which this synthPlayer was reached as =splice-point=, forming a pair that needs a signal-copying bus link to be created. (and also add it to a list of pairs that need copy-links, called =splits=)
+      3. Also mark the synthPlayer that no longer belongs to the readers or writers of the group being investigated as =bus-to-next-group=
+   4. Continue with all other readers of the synthPlayer and their writers
+4. Repreat the process from 1 with the next unvisited synthPlayer.
 
-During the above traversal, mark each visited chuck, so that it does not need to be visited twice.
+During the above traversal, mark each visited synthPlayer, so that it does not need to be visited twice.
 
-When all chucks have been visited:
+When all synthPlayers have been visited:
 
 1. Each =signal-sharer= object in the list =shared= is a group of readers and writers that can share one bus.  Link these accordingly.
 2. For each pair in the list =splits=: (THE FOLLOWING NEEDS CHECKING:)
    1. create a new bus.
-   2. attach it to the input or the ouput of the chuck marked as =split-end-point= and link it with a copy-bus to =splice-point=.  Create bus and link =split-end-point= to =bus-to-next-group= with it.
+   2. attach it to the input or the ouput of the synthPlayer marked as =split-end-point= and link it with a copy-bus to =splice-point=.  Create bus and link =split-end-point= to =bus-to-next-group= with it.
 
 **** CANCELED Alternative Algorithm 2
 :PROPERTIES:
@@ -421,7 +421,7 @@ Problem: Which subsets are more economical?
 :PROPERTIES:
 :DATE:     <2015-07-04 Sat 22:58>
 :END:
-***** DONE Use . as a separator for names of chucks
+***** DONE Use . as a separator for names of synthPlayers
 :PROPERTIES:
 :DATE:     <2015-07-04 Sat 23:45>
 :END:
@@ -443,7 +443,7 @@ Problem: Which subsets are more economical?
   //:
   // "a.b.c".replace (".", "', '")
 #+END_SRC
-***** DONE Use : separator to enable multiple custom inputs in one chuck
+***** DONE Use : separator to enable multiple custom inputs in one synthPlayer
 :PROPERTIES:
 :DATE:     <2015-07-13 Mon 10:58>
 :END:
@@ -467,20 +467,20 @@ Problem: Which subsets are more economical?
 :DATE:     <2015-07-13 Mon 11:31>
 :END:
 
-Use Par only for grouping one or more chucks that need named input or output
+Use Par only for grouping one or more synthPlayers that need named input or output
 
-[inbus@chuck1.chuck2>outbus]
+[inbus@synthPlayer1.synthPlayer2>outbus]
 
-With optional input name specification for chucks chuck1:in1.chuck2:in1 etc.
+With optional input name specification for synthPlayers synthPlayer1:in1.synthPlayer2:in1 etc.
 
 For output-copy links use %:
 
-[inbus@chuck1.chuck2%outbus]
+[inbus@synthPlayer1.synthPlayer2%outbus]
 
 ******* REJECTED Try 1
-1. for single chucks:
+1. for single synthPlayers:
 
-inbus@input:chuck>outbus
+inbus@input:synthPlayer>outbus
 
 2. For whole MiniStenos
 
@@ -500,13 +500,13 @@ inbus@input:chuck>outbus
 :END:
 
 
-***** TODO implement output copy links in ChuckLink
+***** TODO implement output copy links in SynthPlayerLink
 :PROPERTIES:
 :DATE:     <2015-07-13 Mon 11:13>
 :END:
 
 
-***** STARTED Direct creation of link in synth-function code { \sourcechuck.a ... } ++> \fxchuck
+***** STARTED Direct creation of link in synth-function code { \sourcesynthPlayer.a ... } ++> \fxsynthPlayer
 :PROPERTIES:
 :DATE:     <2015-07-05 Sun 19:55>
 :END:
@@ -514,18 +514,18 @@ inbus@input:chuck>outbus
 Implementation requires storing the link request in a class var and then executing the link request after compiling the function to a SynthDef but before adding the resulting synthdef to the server via SynthDefLoader.
 
 #+BEGIN_SRC sclang
-{ \sourcechuck.a ... } ++> \fxchuck
+{ \sourcesynthPlayer.a ... } ++> \fxsynthPlayer
 #+END_SRC
 
-Add \fxchuck serially after \sourcechuck.
+Add \fxsynthPlayer serially after \sourcesynthPlayer.
 
-: { \sourcechuck.a ... } ++> \fxchuck;
+: { \sourcesynthPlayer.a ... } ++> \fxsynthPlayer;
 
 is a shortcut for:
 
 #+BEGIN_SRC sclang
-{ Inp.ar ... } ++> \fxchuck;
-\sourcechuck &> \fxchuck;
+{ Inp.ar ... } ++> \fxsynthPlayer;
+\sourcesynthPlayer &> \fxsynthPlayer;
 #+END_SRC
 
 Possible second shortcut =.ap= for =&>>=
@@ -544,7 +544,7 @@ See above ...
 - \branchname.remove; :: ...?
 - "stenostring" &> \root :: the root branch is the entire active tree.
 
-***** Link two chucks on-the-fly
+***** Link two synthPlayers on-the-fly
 :PROPERTIES:
 :DATE:     <2015-07-06 Mon 12:05>
 :END:
@@ -566,10 +566,10 @@ Two basic operators/operations only:
 :PROPERTIES:
 :DATE:     <2015-07-09 Thu 15:15>
 :END:
-- \source &> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another chuck \previous is already connected serially to the output of \source, then add \effect in parallel to the existing one: (source.previous) becomes (source[effect.previous]).  But note:
+- \source &> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another synthPlayer \previous is already connected serially to the output of \source, then add \effect in parallel to the existing one: (source.previous) becomes (source[effect.previous]).  But note:
      ([source.source2]previous) becomes:
      ([(source.effect)source2]previous)
-- \source &>> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another chuck \previous is already connected serially to the output of \source, then add \effect between \source and \previous.  (source.previous) becomes (source.effect.previous)
+- \source &>> \effect :: Add \effect serially after \source, and only after source (not after any of its siblings).  If another synthPlayer \previous is already connected serially to the output of \source, then add \effect between \source and \previous.  (source.previous) becomes (source.effect.previous)
 
 We may want to introduce also <& and <<& for adding siblings to the head of the pair.  Analysis:
 
@@ -592,23 +592,23 @@ before:
 after:
 
 Shortcuts:
-***** TODO prevent duplicate chucks in the steno tree
+***** TODO prevent duplicate synthPlayers in the steno tree
 :PROPERTIES:
 :DATE:     <2015-07-07 Tue 12:16>
 :END:
 
 See notes in: Symbol.asSteno.
 
-***** TODO silence chucks removed from the steno tree
+***** TODO silence synthPlayers removed from the steno tree
 :PROPERTIES:
 :DATE:     <2015-07-07 Tue 12:16>
 :END:
 
 The following needs to be run for the branch that is modified (branches above or besides this branch are not modified, and therefore do not need to run the following):
 
-1. Get l = list of chucks contained in the branch before the modification.
+1. Get l = list of synthPlayers contained in the branch before the modification.
 2. Modify or rebuild (substitute) the branch and store it in var n.
-3. For each chuck c in l: If c is not in n, then move c to null-group.  Note: The null group must have a tail synth that silences all outputs.
+3. For each synthPlayer c in l: If c is not in n, then move c to null-group.  Note: The null group must have a tail synth that silences all outputs.
 
 ***** TODO Note: Only the tree being modified needs to be re-rendered for groups and busses
 :PROPERTIES:
@@ -620,7 +620,7 @@ The following needs to be run for the branch that is modified (branches above or
 :DATE:     <2015-07-09 Thu 13:49>
 :END:
 
-What is the minimum number of methods needed to insert any chuck or subtree anywhere in the root tree?  Enumerate cases:
+What is the minimum number of methods needed to insert any synthPlayer or subtree anywhere in the root tree?  Enumerate cases:
 
 | writer status  | reader status | action                           |
 | new in tree    | new in tree   | add (writer.reader) to root tree |
@@ -629,68 +629,68 @@ What is the minimum number of methods needed to insert any chuck or subtree anyw
 **** Thoughts for further refinement
 
 - use "astring".asteno for audio config and "astring".ksteno for control config
-- Do not use { } @>.param \chuck, because of the problem of naming the created k-chucks.  Stick with ksteno.  Perhaps use: { } @> \kchuck @>.param \achuck or:
-  { } @>.param_k \achuck where k is the name of the kchuck.  The name of the chuck is _after_ the name of the parameter to enable one to use capital letters in the adverb to name kchucks whose name is a capital letter.
+- Do not use { } @>.param \synthPlayer, because of the problem of naming the created k-synthPlayers.  Stick with ksteno.  Perhaps use: { } @> \ksynthPlayer @>.param \asynthPlayer or:
+  { } @>.param_k \asynthPlayer where k is the name of the ksynthPlayer.  The name of the synthPlayer is _after_ the name of the parameter to enable one to use capital letters in the adverb to name ksynthPlayers whose name is a capital letter.
 - At any moment there is only strictly one audio-rate MiniSteno and one control-rate MiniSteno tree active and stored in Library.
-- For Audio: Strictly only the chucks contained in the latest compiled MiniSteno tree are audible.  The other chucks are not removed or stopped, but moved to the head of the nullGroup, and their out bus parameter set to 0.  Additionally, at the tail of the nullGroup, create a permanent synth that replaces out (ReplaceOut.kr()), with silence, sent to bus 0, for all channels of Server.default.options.numAudioOutputChannels.  This masks the output of any chucks that are still running but are not contained in the currently active MiniSteno tree. Note: These inactive chucks could also be paused at the moment that they are entered in the nullGroup - but this should be optional, for example for the case of chucks that play audio buffers, when it is desired to keep advancing the playback position.
-- In the MiniSteno tree, each chuck has only one input (=in=) and one output (=out=).  However, one can create additional inputs and outputs that access the busses attached to inputs and outputs in other chucks, by using shortcut methods defined in the tiny-sc library that create In and Out ugens, by addressing the source or target chucks per name.  For example:
+- For Audio: Strictly only the synthPlayers contained in the latest compiled MiniSteno tree are audible.  The other synthPlayers are not removed or stopped, but moved to the head of the nullGroup, and their out bus parameter set to 0.  Additionally, at the tail of the nullGroup, create a permanent synth that replaces out (ReplaceOut.kr()), with silence, sent to bus 0, for all channels of Server.default.options.numAudioOutputChannels.  This masks the output of any synthPlayers that are still running but are not contained in the currently active MiniSteno tree. Note: These inactive synthPlayers could also be paused at the moment that they are entered in the nullGroup - but this should be optional, for example for the case of synthPlayers that play audio buffers, when it is desired to keep advancing the playback position.
+- In the MiniSteno tree, each synthPlayer has only one input (=in=) and one output (=out=).  However, one can create additional inputs and outputs that access the busses attached to inputs and outputs in other synthPlayers, by using shortcut methods defined in the tiny-sc library that create In and Out ugens, by addressing the source or target synthPlayers per name.  For example:
 
-Read from the default audio output of chuck =x=.
+Read from the default audio output of synthPlayer =x=.
 #+BEGIN_SRC sclang
 \x.ain  // or just: \x.a
 #+END_SRC
 
-Read from the audio output of chuck =x= named =out2=.
+Read from the audio output of synthPlayer =x= named =out2=.
 #+BEGIN_SRC sclang
 \x.ain(\out2) // or just: \z.a(\out2)
 #+END_SRC
 
-Read from the default audio output of chuck =x= with an input of 2 channels.
+Read from the default audio output of synthPlayer =x= with an input of 2 channels.
 #+BEGIN_SRC sclang
 \x.ain(numChans: 2)
 #+END_SRC
 
-Read from the default audio output of chuck =x=, with =InFeedback.ar=:
+Read from the default audio output of synthPlayer =x=, with =InFeedback.ar=:
 #+BEGIN_SRC sclang
 \x.fin // or just \x.af
 #+END_SRC
 
 etc.
 
-Read from the default control output of (control rate) chuck =x=.
+Read from the default control output of (control rate) synthPlayer =x=.
 #+BEGIN_SRC sclang
 \x.kin // or just: \x.k
 #+END_SRC
 
 etc.
 
-Write to the default audio input of (audio rate) chuck =x=:
+Write to the default audio input of (audio rate) synthPlayer =x=:
 
 #+BEGIN_SRC sclang
 \x.out(...)
 #+END_SRC
 
-Note that these shortcuts must be attached to the source chucks with notifications so that they change the numbers of their i/o channel when the source chuck's corresponding parameter changes bus index.
+Note that these shortcuts must be attached to the source synthPlayers with notifications so that they change the numbers of their i/o channel when the source synthPlayer's corresponding parameter changes bus index.
 
-- Building the audio-rate mini-steno tree places the chucks in layered groups so that they stay in the correct order.
-- While building the mini-steno tree, keep track of which chucks have been added to it.  Use this to:
-  - Prevent that a chuck is added twice to the tree.
-  - Move chucks that are no longer part of the tree to the nullGroup.
-** STARTED ChuckPatternSource, EventPatternSynth
+- Building the audio-rate mini-steno tree places the synthPlayers in layered groups so that they stay in the correct order.
+- While building the mini-steno tree, keep track of which synthPlayers have been added to it.  Use this to:
+  - Prevent that a synthPlayer is added twice to the tree.
+  - Move synthPlayers that are no longer part of the tree to the nullGroup.
+** STARTED SynthPlayerPatternSource, EventPatternSynth
 :PROPERTIES:
 :DATE:     <2015-06-22 Mon 00:54>
 :END:
 
-Play EventPatterns in a Chuck.
-*** ChuckPatternSource
+Play EventPatterns in a SynthPlayer.
+*** SynthPlayerPatternSource
 Notes:
 
 - Plays Event as EventPattern
 - The Event is stored in an EventPattern.
 - The EventPattern is stored in source.
-- Chuck's args specify in and out bus and target.  Therefore they are copied to the event of EventPattern in source before playing.
-- However, the Events generated by the EventPattern must play through a separate group, that is create inside the target group, and that serves to move those synths when the whole chuck needs to move to another group (target) because of linking I/O.  Therefore, the target of the event of the Event of the EventPattern must be replaced by that group before the EventPattern starts playing.
-- The makeSynth function of ChuckEventPattern creates an EventPatternSynth, a subclass of Synth, which creates its own group inside the target group, and overloads method =moveToTail= to move its own group to the tail of the target instead of itself.  The details of EventPatternSynth are explained below.
+- SynthPlayer's args specify in and out bus and target.  Therefore they are copied to the event of EventPattern in source before playing.
+- However, the Events generated by the EventPattern must play through a separate group, that is create inside the target group, and that serves to move those synths when the whole synthPlayer needs to move to another group (target) because of linking I/O.  Therefore, the target of the event of the Event of the EventPattern must be replaced by that group before the EventPattern starts playing.
+- The makeSynth function of SynthPlayerEventPattern creates an EventPatternSynth, a subclass of Synth, which creates its own group inside the target group, and overloads method =moveToTail= to move its own group to the tail of the target instead of itself.  The details of EventPatternSynth are explained below.
 
 *** EventPatternSynth
 :PROPERTIES:
@@ -706,7 +706,7 @@ Subclass of Synth
   3. Set the EventPattern's target to the newly created group.
   4. Create self as fade synth (asynchronous, use onStart to start pattern after it)
   5. Fade synth's doneAction frees group and all synths inside the group.
-  6. Fade synths's onEnd notifies ChuckPatternSource to stop playing EventPattern.
+  6. Fade synths's onEnd notifies SynthPlayerPatternSource to stop playing EventPattern.
   7. Start playing EventPattern.
 
 Implementation notes for =new= method:
@@ -718,12 +718,12 @@ Implementation notes for =new= method:
 5. start playing eventpattern
 6. doneAction is free self, group, and synths contained in group
 7. onEnd: free bus and stop EventStreamPlayer
-8. set source's chuck's output to newly created instance of self.
+8. set source's synthPlayer's output to newly created instance of self.
 
 
 
 
-** STARTED Investigate event sharing/filtering in Chuck (like in Tiny 0)
+** STARTED Investigate event sharing/filtering in SynthPlayer (like in Tiny 0)
 
 This is linked to using ().play as play method
 
@@ -731,7 +731,7 @@ Task could be generating the events to be shared. But how to access the shared d
 
 First steps:
 
-- Passing task as argument to Chuck.play, and having task process Chucks args with its own data.
+- Passing task as argument to SynthPlayer.play, and having task process SynthPlayers args with its own data.
 
 Next:
 
@@ -751,14 +751,14 @@ Design new class EventFilter that will either be a subclass of Event or contain 
 :PROPERTIES:
 :DATE:     <2015-06-19 Fri 13:29>
 :END:
-** TODO Chuck: Enable functions in args for dur filtering etc
+** TODO SynthPlayer: Enable functions in args for dur filtering etc
 :PROPERTIES:
 :DATE:     <2015-06-12 Fri 11:58>
 :END:
 
 
 * Done
-** DONE Optimize ChuckSynthSource
+** DONE Optimize SynthPlayerSynthSource
 :LOGBOOK:
 - State "DONE"       from "DELEGATED"  [2015-06-11 Thu 15:58] \\
   Done!
@@ -767,28 +767,28 @@ Design new class EventFilter that will either be a subclass of Event or contain 
 :DATE:     <2015-06-09 Tue 12:51>
 :END:
 
-Extend ChuckSynthSource with new subclass ChuckFuncSynthSource to add the SynthDef of the Synth source function when a new ChuckFuncSynthSource is created, and create synths with =Synth()= instead of ={ ... }.play=.
+Extend SynthPlayerSynthSource with new subclass SynthPlayerFuncSynthSource to add the SynthDef of the Synth source function when a new SynthPlayerFuncSynthSource is created, and create synths with =Synth()= instead of ={ ... }.play=.
 
-This is easy: =Chuck:source({ ... })= (called by: ={ ... } +> \aChuck=) always creates a new ChuckSynthSource instance.
+This is easy: =SynthPlayer:source({ ... })= (called by: ={ ... } +> \aSynthPlayer=) always creates a new SynthPlayerSynthSource instance.
 
-Method ChuckFuncSynthSource:new:
+Method SynthPlayerFuncSynthSource:new:
 
 - Construct the name of the SynthDef like this =format("<%>", name)=.
 - Immediately construct and =add= the SynthDef, using Function:asSynthDef, possibly with modification of GraphBuilder.wrapOut to add fadeTime as control instead of as one-time-only (fixed) value.
-- Use modified Function:play method (possibly named =add=) to /store synth name and notify the containing chuck (!) that it has completed loading/.
+- Use modified Function:play method (possibly named =add=) to /store synth name and notify the containing synthPlayer (!) that it has completed loading/.
 
-Method ChuckFuncSynthSource:prPlay:
+Method SynthPlayerFuncSynthSource:prPlay:
 
 Check if synthdef name is set.
-- If it is nil, add ChuckFuncSynthSource instance as listener to the containing Chuck instance on message =defloaded= and create the new synth then.
+- If it is nil, add SynthPlayerFuncSynthSource instance as listener to the containing SynthPlayer instance on message =defloaded= and create the new synth then.
 - If it is not nil, play the new synth using the stored synthdef name string.
 
-Note: The ChuckSource class hierarchy becomes:
-- ChuckSource
-  - Chucksynthsource :: play strings as DefNames with Synth()
-    - ChuckFuncSynthSource :: play functions by adding them as SynthDefs and storing the string to play synths as soon as the def is loaded on the server.
+Note: The SynthPlayerSource class hierarchy becomes:
+- SynthPlayerSource
+  - SynthPlayersynthsource :: play strings as DefNames with Synth()
+    - SynthPlayerFuncSynthSource :: play functions by adding them as SynthDefs and storing the string to play synths as soon as the def is loaded on the server.
 
-** DONE Chuck: Store =out=, =fadeTime= in event, not parent
+** DONE SynthPlayer: Store =out=, =fadeTime= in event, not parent
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2015-06-11 Thu 15:59] \\
   done
@@ -797,7 +797,7 @@ Note: The ChuckSource class hierarchy becomes:
 :DATE:     <2015-06-09 Tue 14:04>
 :END:
 
-So that they be always included in args when playing ChuckSynthSource with new methods resulting from [[*Optimize%20ChuckSynthSource][Optimize ChuckSynthSource]].
+So that they be always included in args when playing SynthPlayerSynthSource with new methods resulting from [[*Optimize%20SynthPlayerSynthSource][Optimize SynthPlayerSynthSource]].
 
 ** DONE Debug Tox addition to Tox
 :LOGBOOK:
@@ -846,7 +846,7 @@ Server.default.queryAllNodes;
 \b.toRoot;
 #+END_SRC
 
-** DONE Chuck: Rewrite scheduling using a separate class.
+** DONE SynthPlayer: Rewrite scheduling using a separate class.
 :LOGBOOK:
 - State "DONE"       from "STARTED"    [2015-06-12 Fri 11:42] \\
   done
@@ -860,18 +860,18 @@ Server.default.queryAllNodes;
 :END:
 
 - Should contain a task.
-- Can register under same name as Chuck, but in its own subtree.
+- Can register under same name as SynthPlayer, but in its own subtree.
 
-: ^Registry(ChuckTask, chuckName, { ChuckTask(chuck, pattern) })
+: ^Registry(SynthPlayerTask, synthPlayerName, { SynthPlayerTask(synthPlayer, pattern) })
 
 Advantages:
 
-- Simplifies Chuck by removing durStream, dur
+- Simplifies SynthPlayer by removing durStream, dur
 - Allows sharing of TempoClocks by stopping Task instead of TempoClock.
 - Simplifies and standardizes method for generating count + pattern for matching.
 - May be used for playing timing structures generated by Org-Mode tables (see PatternLang.org).
 
-** DONE Implement queue of synthdef sends for ().play in ChuckSource
+** DONE Implement queue of synthdef sends for ().play in SynthPlayerSource
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2015-06-19 Fri 12:50] \\
   Done and tested.  Class: SynthDefLoader
@@ -891,13 +891,13 @@ See MiniSteno
 
 For audio busses:
 
-- \bus @>.input \chuck :: Chuck reads from this bus at parameter named by adverb ('input').
-- \bus <@.output \chuck :: Chuck writes to this bus at parameter named by adverb ('output').
+- \bus @>.input \synthPlayer :: SynthPlayer reads from this bus at parameter named by adverb ('input').
+- \bus <@.output \synthPlayer :: SynthPlayer writes to this bus at parameter named by adverb ('output').
 
 For control busses
 
-- \bus %>.input \chuck :: Chuck reads from this bus at parameter named by adverb ('input').
-- \bus <%.output \chuck :: Chuck writes to this bus at parameter named by adverb ('output').
+- \bus %>.input \synthPlayer :: SynthPlayer reads from this bus at parameter named by adverb ('input').
+- \bus <%.output \synthPlayer :: SynthPlayer writes to this bus at parameter named by adverb ('output').
 
 But you can also use shortcuts:
 
@@ -909,7 +909,7 @@ But you can also use shortcuts:
 - State "CANCELLED"  from "TODO"       [2015-06-18 Thu 10:27] \\
   Covered by MiniSteno
 :END:
-** OBSOLETE Chuck: Store =target= in extra instance var?
+** OBSOLETE SynthPlayer: Store =target= in extra instance var?
 :LOGBOOK:
 - State "OBSOLETE"   from "TODO"       [2015-06-18 Thu 10:30] \\
   Planning to use ().play as main playing method.  This will require Target to be part of the Event that is played
@@ -917,14 +917,14 @@ But you can also use shortcuts:
 :PROPERTIES:
 :DATE:     <2015-06-09 Tue 14:04>
 :END:
-** OBSOLETE Investigate use of ().play as play method in ChuckSource
+** OBSOLETE Investigate use of ().play as play method in SynthPlayerSource
 :LOGBOOK:
 - State "OBSOLETE"   from "CANCELLED"  [2015-06-19 Fri 12:54] \\
-  obsolete rather than cancelled - because overtaken by ChuckPatternSource
+  obsolete rather than cancelled - because overtaken by SynthPlayerPatternSource
 - State "CANCELLED"  from "TODO"       [2015-06-19 Fri 12:52] \\
-  Mushy mushy mushy.  Behavior not so clear as current implementation with synth creation.  Instead, now defining new subclass of ChuckSynthSource, called ChuckPatternSource, which plays EventPatterns.
+  Mushy mushy mushy.  Behavior not so clear as current implementation with synth creation.  Instead, now defining new subclass of SynthPlayerSynthSource, called SynthPlayerPatternSource, which plays EventPatterns.
 :END:
-** CANCELED ChuckSynthSource+arp, perc: Use release for safer synth stopping
+** CANCELED SynthPlayerSynthSource+arp, perc: Use release for safer synth stopping
 :LOGBOOK:
 - State "CANCELLED"  from "TODO"       [2015-06-19 Fri 13:06] \\
   Current scheme with SynthDefLoader, dur self-freeing envelopes and release behaves well under all stress-tests so far.

@@ -211,31 +211,31 @@ Adapted from org-toggle-ordered-property."
         t))
      "AUTOLOAD" 'file))))
 
-;; Select a SynthTree instance to chuck current expression into
+;; Select a SynthTree instance to synthPlayer current expression into
 ;; Proof of principle.
 
 (defvar org-sc-selected-synthtree "sound1"
 "Store name of last synthtree selected.
-Acts as default for org-sc-chuck-selecting-into-synthtree.")
+Acts as default for org-sc-synthPlayer-selecting-into-synthtree.")
 
 (defun org-sc-faders ()
   "Open global faders window in SuperCollider."
   (interactive)
   (sclang-eval-string "SynthTree.faders;"))
 
-(defun org-sc-chuck-into-last-synthtree ()
-  "Chuck current SC expression into latest selected SynthTree."
+(defun org-sc-synthPlayer-into-last-synthtree ()
+  "SynthPlayer current SC expression into latest selected SynthTree."
   (interactive)
   (sclang-eval-string
    (format "{ %s } +> ~st;" (sclang-get-current-snippet))))
 
-(defun org-sc-chuck-selecting-into-synthtree (synthtree-list)
-  "Select a synthtree returned from SC and chuck current SC expression into it.
+(defun org-sc-synthPlayer-selecting-into-synthtree (synthtree-list)
+  "Select a synthtree returned from SC and synthPlayer current SC expression into it.
 This function is called by SC in response to
-org-sc-select-synthtree-then-chuck"
+org-sc-select-synthtree-then-synthPlayer"
   (let (expression
         (synthtree
-         (completing-read-ido "Select synthtree to chuck into: " synthtree-list
+         (completing-read-ido "Select synthtree to synthPlayer into: " synthtree-list
                                nil nil nil nil org-sc-selected-synthtree
                               )))
     (setq org-sc-selected-synthtree synthtree)
@@ -244,14 +244,14 @@ org-sc-select-synthtree-then-chuck"
       (setq expression (org-sc-get-section-contents)))
     (sclang-eval-string (format "{ %s } +> \\%s" expression synthtree))))
 
-(defun org-sc-select-synthtree-then-chuck ()
-  "Select or enter a synthree, then chuck current snippet or org-mode section
+(defun org-sc-select-synthtree-then-synthPlayer ()
+  "Select or enter a synthree, then synthPlayer current snippet or org-mode section
 into it.  This is the interactive function called by keyboard command."
   (interactive)
-  (sclang-eval-string "SynthTree.chuckSelectingSynthTree;"))
+  (sclang-eval-string "SynthTree.synthPlayerSelectingSynthTree;"))
 
 (defun org-sc-select-synthtree-then-knobs (select-last)
-  "Select or enter a synthree, then chuck current snippet or org-mode section
+  "Select or enter a synthree, then synthPlayer current snippet or org-mode section
 into it.  This is the interactive function called by keyboard command."
   (interactive "P")
   (if select-last
@@ -393,8 +393,8 @@ property SYNTHTREE of current section (inheritable)."
       (or org-sc-section-synthtree "st0")
       contents))))
 
-;;'org-sc-chuck-this-section
-(defun org-sc-chuck-this-section ()
+;;'org-sc-synthPlayer-this-section
+(defun org-sc-synthPlayer-this-section ()
   (interactive)
   (let ((contents (org-sc-get-section-contents)))
     (sclang-eval-string
@@ -420,19 +420,19 @@ property SYNTHTREE of current section (inheritable)."
   (outline-previous-heading)
   (org-sc-eval-this-section))
 
-;;'org-sc-chuck-next-section
-(defun org-sc-chuck-next-section ()
+;;'org-sc-synthPlayer-next-section
+(defun org-sc-synthPlayer-next-section ()
   (interactive)
   (outline-next-heading)
-  (org-sc-chuck-this-section))
+  (org-sc-synthPlayer-this-section))
 
-;;'org-sc-chuck-previous-section
-(defun org-sc-chuck-previous-section ()
+;;'org-sc-synthPlayer-previous-section
+(defun org-sc-synthPlayer-previous-section ()
   (interactive)
   (when (not (eq 'headline (car (org-element-at-point))))
       (outline-previous-heading))
   (outline-previous-heading)
-  (org-sc-chuck-this-section))
+  (org-sc-synthPlayer-this-section))
 
 ;;;;
 ;;'org-sc-next-same-level-section
@@ -459,17 +459,17 @@ property SYNTHTREE of current section (inheritable)."
   (org-backward-heading-same-level 1)
   (org-sc-eval-this-section))
 
-;;'org-sc-chuck-next-same-level-section
-(defun org-sc-chuck-next-same-level-section ()
+;;'org-sc-synthPlayer-next-same-level-section
+(defun org-sc-synthPlayer-next-same-level-section ()
   (interactive)
   (org-forward-heading-same-level 1)
-  (org-sc-chuck-this-section))
+  (org-sc-synthPlayer-this-section))
 
-;;'org-sc-chuck-previous-same-level-section
-(defun org-sc-chuck-next-same-level-section ()
+;;'org-sc-synthPlayer-previous-same-level-section
+(defun org-sc-synthPlayer-next-same-level-section ()
   (interactive)
   (org-backward-heading-same-level 1)
-  (org-sc-chuck-this-section))
+  (org-sc-synthPlayer-this-section))
 
 (global-set-key (kbd "H-c l") 'sclang-start)
 (global-set-key (kbd "H-c w") 'sclang-switch-to-workspace)
@@ -483,8 +483,8 @@ property SYNTHTREE of current section (inheritable)."
 (global-set-key (kbd "H-c H-t") 'org-sc-templates-gui)
 (global-set-key (kbd "H-c H-g") 'org-sc-guis)
 (global-set-key (kbd "H-c p") 'org-sc-patterntemplate-gui)
-(global-set-key (kbd "H-c c") 'org-sc-select-synthtree-then-chuck)
-(global-set-key (kbd "H-c H-c") 'org-sc-chuck-into-last-synthtree)
+(global-set-key (kbd "H-c c") 'org-sc-select-synthtree-then-synthPlayer)
+(global-set-key (kbd "H-c H-c") 'org-sc-synthPlayer-into-last-synthtree)
 (global-set-key (kbd "H-c k") 'org-sc-select-synthtree-then-knobs)
 (global-set-key (kbd "H-c f") 'org-sc-faders)
 ;; (global-set-key (kbd "H-c H-f") 'org-sc-set-global-fade-time)
@@ -503,23 +503,23 @@ property SYNTHTREE of current section (inheritable)."
 (global-set-key (kbd "H-b f") 'org-sc-free-buffer)
 
 (eval-after-load "org"
-  ;; move / eval / chuck sections
+  ;; move / eval / synthPlayer sections
   '(progn
      (define-key org-mode-map (kbd "H-C-SPC") 'org-sc-eval-this-section)
-     (define-key org-mode-map (kbd "H-M-SPC") 'org-sc-chuck-this-section)
+     (define-key org-mode-map (kbd "H-M-SPC") 'org-sc-synthPlayer-this-section)
      (define-key org-mode-map (kbd "H-s n") 'org-sc-next-section)
      (define-key org-mode-map (kbd "H-s p") 'org-sc-previous-section)
      (define-key org-mode-map (kbd "H-C-n") 'org-sc-eval-next-section)
      (define-key org-mode-map (kbd "H-C-p") 'org-sc-eval-previous-section)
-     (define-key org-mode-map (kbd "H-M-n") 'org-sc-chuck-next-section)
-     (define-key org-mode-map (kbd "H-M-p") 'org-sc-chuck-previous-section)
+     (define-key org-mode-map (kbd "H-M-n") 'org-sc-synthPlayer-next-section)
+     (define-key org-mode-map (kbd "H-M-p") 'org-sc-synthPlayer-previous-section)
      ;; same level movement: up and down arrow keys
      (define-key org-mode-map (kbd "H-j") 'org-sc-next-same-level-section)
      (define-key org-mode-map (kbd "H-k") 'org-sc-previous-same-level-section)
      (define-key org-mode-map (kbd "H-C-j") 'org-sc-eval-next-same-level-section)
      (define-key org-mode-map (kbd "H-C-k") 'org-sc-eval-previous-same-level-section)
-     (define-key org-mode-map (kbd "H-M-j") 'org-sc-chuck-next-same-level-section)
-     (define-key org-mode-map (kbd "H-M-k") 'org-sc-chuck-previous-same-level-section)
+     (define-key org-mode-map (kbd "H-M-j") 'org-sc-synthPlayer-next-same-level-section)
+     (define-key org-mode-map (kbd "H-M-k") 'org-sc-synthPlayer-previous-same-level-section)
      ;; more stuff:
      (define-key org-mode-map (kbd "C-M-x") 'org-sc-eval)
      (define-key org-mode-map (kbd "C-c C-,") 'sclang-eval-line)
