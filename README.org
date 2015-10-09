@@ -175,7 +175,7 @@ TaskPlayers stop when their duration pattern ends:
 ** Playing sequences of synth events
 :PROPERTIES:
 :ID:       C169857C-C151-4D9B-8BC3-A588AD4FFE59
-:eval-id:  206
+:eval-id:  210
 :END:
 A SynthPlayer can play with a duration pattern, which runs in a TaskPlayer.
 
@@ -206,7 +206,7 @@ Stop the pattern that drives the SynthPlayer:
 ** Task Player filters
 :PROPERTIES:
 :ID:       33EC0959-E840-4DA0-9891-0692387E5332
-:eval-id:  626
+:eval-id:  636
 :END:
 
 A SynthPlayer can be driven by a TaskPlayer to run patterns in a similar way as Pbind.  The difference is that any key of a pattern as well as the duration pattern can be changed at any time.  Furthermore, a SynthPlayer can switch TaskPlayers at any time, and can also be made to respond to a TaskFilter which only plays at beats that match a given condition.  In this way, several SynthPlayer instances can be synchronized by following the same TaskPlayer or its attached filters.
@@ -486,7 +486,7 @@ Link the output of the first source to =in1= and the output of the second source
 ** Multiple voice example
 :PROPERTIES:
 :ID:       CDEFFE5C-E976-4D0C-9983-A5E27467AB0F
-:eval-id:  377
+:eval-id:  406
 :END:
 
 Just a demo with 8 SynthPlayer instances playing on 8 different TaskPlayers.

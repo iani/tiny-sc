@@ -8,7 +8,7 @@ GroupLink {
 		CmdPeriod add: { this.remakeGroups; };
 	}
 	*init {
-		Chuck.parentArgs[\target] = this.default;
+		SynthPlayer.parentArgs[\target] = this.default;
 		nullGroup = GroupLink();
 		default = GroupLink();
 		this.remakeGroups;
